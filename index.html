@@ -5,6 +5,9 @@
 		<link rel="stylesheet" href="index.css">
 	</head>
 	<body>
+    <button
+        id="jump-to-this-track"
+    ></button>
 		<footer>
 			<div id="current-playing-text"></div>
 			<audio id="player" controls>
@@ -92,6 +95,10 @@
 			playTrack(currentTrackEl.previousElementSibling)
 		}
 
+    const onScrollThisTrack = () => {
+      document.getElementById(state.currentTrackId).scrollIntoView({ inline: 'center', behavior: 'smooth', block: 'center' })
+    }
+
 		// Inject track list into html...
 		A(...trackList
 			.filter(track =>
@@ -108,6 +115,8 @@
 		document.getElementById('next-button').onkeydown = onClickOrEnter(onNext)
 		document.getElementById('prev-button').onclick = onClickOrEnter(onPrev)
 		document.getElementById('prev-button').onkeydown = onClickOrEnter(onPrev)
+    document.getElementById('jump-to-this-track').onclick = onClickOrEnter(onScrollThisTrack)
+    document.getElementById('jump-to-this-track').onkeydown = onClickOrEnter(onScrollThisTrack)
 
 		// Key commands...
 		const onKey = (...maps) => e => {

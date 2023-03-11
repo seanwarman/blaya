@@ -47,6 +47,24 @@ footer {
 	'playhead playhead playhead playhead';
 }
 
+#jump-to-this-track {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  box-shadow: 5px 5px 12px 0px #00000024;
+  border-radius: 50%;
+  border: none;
+  width: 40px;
+  height: 40px;
+  background: whitesmoke;
+}
+#jump-to-this-track:hover {
+  background: #f0f0f0;
+}
+#jump-to-this-track:active {
+  background: #e3e2e2
+}
+
 #player {
 	grid-area: playhead;
 	position: relative;
