@@ -39,6 +39,7 @@ footer {
 	position: fixed;
 	bottom: 0;
 	width: 100%;
+  box-shadow: 0px -5px 12px 0px #00000024;
 	display: grid;
 	background: linear-gradient(to right, #7affff, white);
 	grid-template-areas:

@@ -120,7 +120,7 @@
 			})
 		}
 
-		document.onkeyup = onKey(
+		document.onkeydown = onKey(
 			[' ', e => {
 				const player = document.getElementById('player')
 				if (player.paused) {
