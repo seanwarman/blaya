@@ -53,7 +53,7 @@
 			newEl.className = 'track'
 			newEl.role = 'link'
 			newEl.dataset.href = href
-			newEl.tabIndex = '0'
+			newEl.tabIndex = i
 			newEl.id = 'track-' + i
 
 			const [track, album] = text.slice(9, -4).split('/').reverse()
@@ -140,9 +140,8 @@
 
 			}],
 			['ArrowRight', onNext],
-			['ArrowLeft', onPrev]
+			['ArrowLeft', onPrev],
 		)
-
 
 	</script>
 <html>
