@@ -1,0 +1,139 @@
+<html>
+	<meta content="width=device-width, initial-scale=1" name="viewport" />
+	<head>
+		<script id="track-list" type="text/javascript" src="track-list.js"></script>
+		<link rel="stylesheet" href="index.css">
+	</head>
+	<body>
+		<footer>
+			<div id="current-playing-text"></div>
+			<audio id="player" controls>
+				<source id="current-track" type="audio/mpeg"></source>
+			</audio>
+			<button id="prev-button" role="link">prev</button>
+			<button id="next-button" role="link">next</button>
+		</footer>
+	</body>
+	<script>
+		const state = {
+			currentTrackId: null
+		}
+
+		const onClickOrEnter = cb => (e) => {
+			if (e.type === "click" || e.key === "Enter") {
+				cb(e)
+			}
+		}
+
+		const updateCurrentTrack = element => {
+			document.getElementById(state.currentTrackId)?.classList?.remove('playing')
+			state.currentTrackId = element.id
+			element.classList.add('playing')
+			document.getElementById('current-playing-text').innerHTML = `<div>${element.firstChild.innerText}</div><div>${element.lastChild.innerText}</div>`
+		}
+
+		const onPlay = (e) => {
+			 const ref = e.currentTarget
+			 if (ref) {
+				const sourcer = document.getElementById('current-track')
+				sourcer.src = ref.getAttribute('data-href')
+				const player = document.getElementById('player')
+				player.load()
+				updateCurrentTrack(ref)
+				player.play()
+			 }
+		}
+
+		const E = (tag, text, href, i) => {
+			const newEl = document.createElement(tag)
+
+			newEl.className = 'track'
+			newEl.role = 'link'
+			newEl.dataset.href = href
+			newEl.tabIndex = '-1'
+			newEl.id = 'track-' + i
+
+			const [track, album] = text.slice(9, -4).split('/').reverse()
+
+			if (/#/.test(track) || /#/.test(album)) {
+				delete newEl
+				return
+			}
+
+			newEl.innerHTML = '<div class="track-name">' + track + '</div>' + (album ? '<div class="track-album">' + album + '</div>' : '')
+
+			newEl.onclick = onClickOrEnter(onPlay)
+			newEl.onkeydown = onClickOrEnter(onPlay)
+
+			return newEl
+		}
+
+		const A = (...newEls) => {
+			document.body.append(...newEls)
+		}
+
+		const playTrack = (element) => {
+			document.getElementById('current-track').src = element.getAttribute('data-href')
+			const player = document.getElementById('player')
+			player.load()
+			updateCurrentTrack(element)
+			player.play()
+		}
+
+		const onNext = () => {
+			const currentTrackEl = document.getElementById(state.currentTrackId)
+			if (!currentTrackEl) return playTrack(document.querySelector('.track'))
+			playTrack(currentTrackEl.nextElementSibling)
+		}
+
+		const onPrev = () => {
+			const currentTrackEl = document.getElementById(state.currentTrackId)
+			if (!currentTrackEl) return playTrack(document.querySelector('.track'))
+			playTrack(currentTrackEl.previousElementSibling)
+		}
+
+		// Inject track list into html...
+		A(...trackList
+			.filter(track =>
+		       		!/\/$/.test(track)
+				&& (/.mp3$/.test(track) || /.flac$/.test(track))
+			)
+			.map((track, i) => E('div', track, track, i))
+			.filter(Boolean)
+		)
+
+		// Buttons...
+		document.getElementById('player').onended = onNext
+		document.getElementById('next-button').onclick = onClickOrEnter(onNext)
+		document.getElementById('next-button').onkeydown = onClickOrEnter(onNext)
+		document.getElementById('prev-button').onclick = onClickOrEnter(onPrev)
+		document.getElementById('prev-button').onkeydown = onClickOrEnter(onPrev)
+
+		// Key commands...
+		const onKey = (...maps) => e => {
+			console.log(e)
+			maps.forEach(([key, cb]) => {
+				if(e.key === key) {
+					e.preventDefault()
+					cb(e)
+				}
+			})
+		}
+
+		document.onkeyup = onKey(
+			[' ', e => {
+				const player = document.getElementById('player')
+				if (player.paused) {
+					player.play()
+				} else {
+					player.pause()
+				}
+
+			}],
+			['ArrowRight', onNext],
+			['ArrowLeft', onPrev]
+		)
+
+
+	</script>
+<html>

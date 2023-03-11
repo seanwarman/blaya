@@ -1,0 +1,90 @@
+body {
+	font-family: sans-serif;
+	padding: 0;
+	font-size: 1.5rem;
+	margin: 0;
+	padding-bottom: 8rem;
+}
+.track {
+	columns: 2;
+}
+.track:nth-child(odd) {
+	background: #efefef;
+}
+div[role="link"] {
+	padding-left: 1rem;
+	padding-right: 1rem;
+	padding-top: 1.5rem;
+	padding-bottom: 1.5rem;
+	cursor: pointer;
+}
+.playing,
+.playing.track,
+div[role="link"]:active,
+div[role="link"]:focus {
+	background-color: #e2e2e2;
+	outline: 1px;
+}
+.track-name {
+	overflow: auto;
+	word-wrap: break-word;
+}
+.track-album {
+	text-align: end;
+	overflow: auto;
+	word-wrap: break-word;
+	font-size: 1.2rem
+}
+footer {
+	position: fixed;
+	bottom: 0;
+	width: 100%;
+	display: grid;
+	background: linear-gradient(to right, #7affff, white);
+	grid-template-areas:
+	'tracktext tracktext prevbutton nextbutton'
+	'playhead playhead playhead playhead';
+}
+
+#player {
+	grid-area: playhead;
+	position: relative;
+	background: #f1f3f4;
+	width: 100%;
+}
+
+button#prev-button: { grid-area: prevbutton; }
+button#next-button: { grid-area: nextbutton; }
+
+button#prev-button, button#next-button {
+	border: none;
+	background-color: #f1f3f4;
+}
+button#prev-button:hover, button#next-button:hover {
+	background-color: #e2e2e2;
+}
+div#current-playing-text {
+	grid-area: tracktext;
+	padding: 0.7rem;
+	font-size: 0.9rem;
+	min-height: 30px;
+}
+
+@media (min-width: 768px) {
+	body {
+		font-size: 1rem;
+	}
+	div[role="link"] {
+		padding-left: 1rem;
+		padding-top: .5rem;
+		padding-bottom: .5rem;
+	}
+	.track-album {
+		text-align: start;
+	}
+	footer {
+		grid-template-areas:
+		'tracktext tracktext tracktext playhead playhead playhead playhead prevbutton nextbutton'
+	}
+}
+
