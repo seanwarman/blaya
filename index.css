@@ -1,3 +1,7 @@
+*,*:before,*:after {
+  box-sizing: border-box;
+}
+
 body {
 	font-family: sans-serif;
 	padding: 0;
@@ -5,12 +9,15 @@ body {
 	margin: 0;
 	padding-bottom: 8rem;
 }
+
 .track {
 	columns: 2;
 }
+
 .track:nth-child(odd) {
 	background: #efefef;
 }
+
 div[role="link"] {
 	padding-left: 1rem;
 	padding-right: 1rem;
@@ -18,23 +25,66 @@ div[role="link"] {
 	padding-bottom: 1.5rem;
 	cursor: pointer;
 }
+
 .playing,
-.playing.track,
+.playing.track {
+  background-color: #e2e2e2;
+}
 div[role="link"]:active,
 div[role="link"]:focus {
-	background-color: #e2e2e2;
-	outline: 1px;
+  outline: 1px;
+  outline-style: dashed;
+  outline-color: #444444;
 }
+
 .track-name {
 	overflow: auto;
 	word-wrap: break-word;
 }
+
 .track-album {
 	text-align: end;
 	overflow: auto;
 	word-wrap: break-word;
 	font-size: 1.2rem
 }
+
+header {
+  position: fixed;
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto auto auto auto;
+  justify-items: end;
+  padding: 1rem 2rem;
+}
+
+input#search-input {
+  grid-column: 2 / span 2;
+  width: 100%;
+  border: none;
+  box-shadow: 1px 7px 17px 0px #00000024;
+  border-radius: 2px;
+  padding-left: 1rem;
+}
+
+#jump-to-this-track {
+  box-shadow: 5px 5px 12px 0px #00000024;
+  border-radius: 50%;
+  border: none;
+  width: 40px;
+  height: 40px;
+  background: whitesmoke;
+  grid-column: 4 / span 1;
+}
+
+#jump-to-this-track:hover {
+  background: #f0f0f0;
+}
+
+#jump-to-this-track:active {
+  background: #e3e2e2
+}
+
 footer {
 	position: fixed;
 	bottom: 0;
@@ -47,24 +97,6 @@ footer {
 	'playhead playhead playhead playhead';
 }
 
-#jump-to-this-track {
-  position: fixed;
-  top: 2rem;
-  right: 2rem;
-  box-shadow: 5px 5px 12px 0px #00000024;
-  border-radius: 50%;
-  border: none;
-  width: 40px;
-  height: 40px;
-  background: whitesmoke;
-}
-#jump-to-this-track:hover {
-  background: #f0f0f0;
-}
-#jump-to-this-track:active {
-  background: #e3e2e2
-}
-
 #player {
 	grid-area: playhead;
 	position: relative;
@@ -72,16 +104,25 @@ footer {
 	width: 100%;
 }
 
-button#prev-button: { grid-area: prevbutton; }
-button#next-button: { grid-area: nextbutton; }
+button#prev-button { grid-area: prevbutton; }
+button#prev-button svg {
+  width: .6rem;
+}
+
+button#next-button { grid-area: nextbutton; }
+button#next-button svg {
+  width: .6rem;
+}
 
 button#prev-button, button#next-button {
 	border: none;
 	background-color: #f1f3f4;
 }
+
 button#prev-button:hover, button#next-button:hover {
 	background-color: #e2e2e2;
 }
+
 div#current-playing-text {
 	grid-area: tracktext;
 	padding: 0.7rem;
@@ -93,14 +134,17 @@ div#current-playing-text {
 	body {
 		font-size: 1rem;
 	}
+
 	div[role="link"] {
 		padding-left: 1rem;
 		padding-top: .5rem;
 		padding-bottom: .5rem;
 	}
+
 	.track-album {
 		text-align: start;
 	}
+
 	footer {
 		grid-template-areas:
 		'tracktext tracktext tracktext playhead playhead playhead playhead prevbutton nextbutton'
