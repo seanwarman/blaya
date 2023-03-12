@@ -24,8 +24,10 @@ function cleanDir(req, res, next) {
 	readdir(__dirname + '/complete', (error, files) => {
 		if(error) return console.log(error)
 
+    console.log('files.length: ', files.length)
+
 		if (files.length > 3) {
-			const rm = spawn('rm', ['-rf', __dirname + '/complete/*'])
+			const rm = spawn('rm', ['-rf', __dirname + '/complete'])
 			rm.on('error', (error) => {
 				console.log(error)
 			})
