@@ -32,6 +32,8 @@
       texts: [],
       throttleId: null,
       throttleGap: 500,
+      page: 1,
+      lazyLoadDebounce: false,
 		}
 
 		const onClickOrEnter = cb => (e) => {
@@ -156,15 +158,45 @@
       }, 100)
     }
 
-		// Inject track list into html...
-		A(...trackList
-			.filter(track =>
-		       		!/\/$/.test(track)
-				&& (/.mp3$/.test(track) || /.flac$/.test(track))
-			)
-			.map((track, i) => E('div', track, track, i))
-			.filter(Boolean)
-		)
+    function injectTracks(trackList) {
+      A(...trackList
+        .filter(track =>
+                !/\/$/.test(track)
+          && (/.mp3$/.test(track) || /.flac$/.test(track))
+        )
+        .map((track, i) => E('div', track, track, i))
+        .filter(Boolean)
+      )
+    }
+
+    function injectTracksByPage(page, trackList) {
+      const pageSize = 200
+
+      const sliceArgs = [pageSize * (page - 1), pageSize * page]
+
+      injectTracks(trackList.slice(...sliceArgs))
+
+      return page + 1
+    }
+
+
+
+    state.page = injectTracksByPage(state.page, trackList)
+
+    window.onscroll = function(ev) {
+      const offset = 5000
+
+      if ((window.innerHeight + window.scrollY + offset) >= document.body.offsetHeight) {
+
+        if (state.lazyLoadDebounce) return
+
+        state.page = injectTracksByPage(state.page, trackList)
+        state.lazyLoadDebounce = true
+        setTimeout(() => {
+          state.lazyLoadDebounce = false
+        }, 500)
+      }
+    }
 
 		// Buttons...
 		document.getElementById('player').onended = onNext
@@ -201,7 +233,6 @@
 			['ArrowRight', onNext],
 			['ArrowLeft', onPrev],
 		)
-
 
 	</script>
 <html>

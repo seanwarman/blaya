@@ -34,7 +34,13 @@ function cleanDir(req, res, next) {
 			rm.on('error', (error) => {
 				console.log(error)
 			})
-			rm.on('close', () => next())
+			rm.on('close', () => {
+        const mkdir = spawn('mkdir', [__dirname + '/complete'])
+        mkdir.on('error', (error) => {
+          console.log(error)
+        })
+        mkdir.on('close', () => next())
+      })
 		} else {
 			next()
 		}
