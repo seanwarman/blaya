@@ -34,6 +34,8 @@
       throttleGap: 500,
       page: 1,
       lazyLoadDebounce: false,
+      searching: false,
+      searchingPage: 1,
 		}
 
 		const onClickOrEnter = cb => (e) => {
@@ -128,37 +130,33 @@
       el.focus()
     }
 
-    function throttle(fn) {
-      return (...args) => {
-        if (state.throttleId) clearTimeout(state.throttleId)
-        state.throttleId = setTimeout(() => fn(...args), state.throttleGap)
+    const hideElementsSearchMethod = (e) => {
+      if (e.target.value.length === 0) {
+        const elsHidden = document.querySelectorAll('.track[hidden]')
+        for (let i = 0; i < elsHidden.length; i++) {
+          elsHidden[i].hidden = false
+        }
+        return
+      }
+
+      const els = document.getElementsByClassName('track')
+      state.texts.forEach((t,i) => {
+        if(RegExp(e.target.value, 'i').test(t)) {
+          els[i].hidden = false
+        } else {
+          els[i].hidden = true
+        }
+      })
+    }
+
+    const removeTrackEls = () => {
+      const els = document.getElementsByClassName('track')
+      for (let i = 0; i < els.length; i++) {
+        els[i].remove()
       }
     }
 
-    const onSearch = (e) => {
-      if (state.throttleId) clearTimeout(state.throttleId)
-      state.throttleId = setTimeout(() => {
-        if (e.target.value.length === 0) {
-          const elsHidden = document.querySelectorAll('.track[hidden]')
-          for (let i = 0; i < elsHidden.length; i++) {
-            elsHidden[i].hidden = false
-          }
-          return
-        }
-
-        const els = document.getElementsByClassName('track')
-        state.texts.forEach((t,i) => {
-          if(RegExp(e.target.value, 'i').test(t)) {
-            els[i].hidden = false
-          } else {
-            els[i].hidden = true
-          }
-        })
-
-      }, 100)
-    }
-
-    function injectTracks(trackList) {
+    const injectTracks = (trackList) => {
       A(...trackList
         .filter(track =>
                 !/\/$/.test(track)
@@ -169,7 +167,7 @@
       )
     }
 
-    function injectTracksByPage(page, trackList) {
+    const injectTracksByPage = (page, trackList) => {
       const pageSize = 200
 
       const sliceArgs = [pageSize * (page - 1), pageSize * page]
@@ -179,7 +177,26 @@
       return page + 1
     }
 
+    const onSearch = (e) => {
+      if (!state.searching) state.searchingPage = 1
 
+      if (e.target.value.length === 0) {
+        state.searching = false
+        // TODO: fix this so the user goes back to their original position...
+        state.page = 1
+        removeTrackEls()
+        injectTracksByPage(state.page, trackList)
+        return
+      }
+
+      if (state.throttleId) clearTimeout(state.throttleId)
+      state.throttleId = setTimeout(() => {
+        state.searching = true
+        removeTrackEls()
+        injectTracksByPage(state.searchingPage, trackList.filter(t => RegExp(e.target.value, 'i').test(t)))
+        //hideElementsSearchMethod(e)
+      }, 100)
+    }
 
     state.page = injectTracksByPage(state.page, trackList)
 
@@ -189,12 +206,16 @@
       if ((window.innerHeight + window.scrollY + offset) >= document.body.offsetHeight) {
 
         if (state.lazyLoadDebounce) return
-
-        state.page = injectTracksByPage(state.page, trackList)
-        state.lazyLoadDebounce = true
-        setTimeout(() => {
-          state.lazyLoadDebounce = false
-        }, 500)
+        if (state.searching) {
+          const searchEl = document.getElementById('search-input')
+          if (searchEl.value.length > 0) state.searchPage = injectTracksByPage(state.searchingPage, trackList.filter(t => RegExp(searchEl.value, 'i').test(t)))
+        } else {
+          state.page = injectTracksByPage(state.page, trackList)
+        }
+          state.lazyLoadDebounce = true
+          setTimeout(() => {
+            state.lazyLoadDebounce = false
+          }, 500)
       }
     }
 
