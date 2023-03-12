@@ -85,6 +85,10 @@ input#search-input {
   background: #e3e2e2
 }
 
+#jump-to-this-track svg {
+  width: 1rem;
+}
+
 footer {
 	position: fixed;
 	bottom: 0;
