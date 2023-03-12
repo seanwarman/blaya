@@ -40,13 +40,14 @@ div[role="link"]:focus {
 .track-name {
 	overflow: auto;
 	word-wrap: break-word;
+  font-size: 0.9rem;
 }
 
 .track-album {
 	text-align: end;
 	overflow: auto;
 	word-wrap: break-word;
-	font-size: 1.2rem
+  font-size: 0.9rem;
 }
 
 header {
@@ -59,20 +60,22 @@ header {
 }
 
 input#search-input {
-  grid-column: 2 / span 2;
+  grid-column: 1 / span 3;
   width: 100%;
   border: none;
   box-shadow: 1px 7px 17px 0px #00000024;
   border-radius: 2px;
   padding-left: 1rem;
+  font-size: 1.2rem;
+  height: 4rem;
 }
 
 #jump-to-this-track {
   box-shadow: 5px 5px 12px 0px #00000024;
   border-radius: 50%;
   border: none;
-  width: 40px;
-  height: 40px;
+  width: 60px;
+  height: 60px;
   background: whitesmoke;
   grid-column: 4 / span 1;
 }
@@ -131,13 +134,24 @@ div#current-playing-text {
 	grid-area: tracktext;
 	padding: 0.7rem;
 	font-size: 0.9rem;
-	min-height: 30px;
+	min-height: 50px;
 }
 
 @media (min-width: 768px) {
 	body {
 		font-size: 1rem;
 	}
+
+  input#search-input {
+    grid-column: 2 / span 2;
+    font-size: 1rem;
+    height: unset;
+  }
+
+  #jump-to-this-track {
+    width: 40px;
+    height: 40px;
+  }
 
 	div[role="link"] {
 		padding-left: 1rem;
@@ -147,11 +161,21 @@ div#current-playing-text {
 
 	.track-album {
 		text-align: start;
+    font-size: 1rem;
 	}
+
+  .track-name {
+    font-size: 1rem;
+  }
 
 	footer {
 		grid-template-areas:
 		'tracktext tracktext tracktext playhead playhead playhead playhead prevbutton nextbutton'
 	}
+
+  div#current-playing-text {
+    min-height: 30px;
+  }
+
 }
 
