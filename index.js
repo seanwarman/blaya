@@ -22,7 +22,10 @@ function streamFile(req, res) {
 
 function cleanDir(req, res, next) {
 	readdir(__dirname + '/complete', (error, files) => {
-		if(error) return console.log(error)
+		if(error) {
+      console.log('@FILTER error:', error)
+      return next()
+    }
 
     console.log('files.length: ', files.length)
 
