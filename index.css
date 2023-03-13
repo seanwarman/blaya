@@ -142,7 +142,12 @@ div#current-playing-text {
 @media (min-width: 768px) {
 	body {
 		font-size: 1rem;
+    padding: 5rem 0;
 	}
+
+  header {
+    margin-top: -5rem;
+  }
 
   input#search-input {
     grid-column: 2 / span 2;
