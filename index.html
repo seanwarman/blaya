@@ -33,6 +33,11 @@
 	</body>
 	<script>
 
+    // TODO
+    // Improve the search
+    // Make the pagination go backwards as well
+    // Make the reset after the search only load in a section of the tracklist
+
 		const state = {
 			currentTrackId: null,
       texts: [],
@@ -212,10 +217,15 @@
       scrollTo(0, state.previousScrollPositionY)
     }
 
-    const searchFilter = value => text => {
+    const searchFilter = value => track => {
+      // TODO: change this into a reduce that filters but also gives different types of matches a score.
+      // [score, track]
+      // Then use .sort to sort the results in order of their scores
+      if (RegExp(value, 'i').test(track)) return true
+
       const words = value.split(' ')
 
-      return words.some(word => RegExp(word, 'i').test(text))
+      return words.some(word => RegExp(word, 'i').test(track))
     }
 
     const onClearSearch = () => {
