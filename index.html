@@ -34,8 +34,9 @@
 	<script>
 
     // TODO
+    // ~~Make the pagination go backwards as well~~
+    // Fix the search pagination and make it also work backwards
     // Improve the search
-    // Make the pagination go backwards as well
     // Make the reset after the search only load in a section of the tracklist
 
 		const state = {
@@ -44,6 +45,7 @@
       throttleId: null,
       throttleGap: 500,
       page: 1,
+      numberOfPages: 3,
       lazyLoadDebounce: false,
       searching: false,
       searchingPage: 1,
@@ -66,6 +68,10 @@
       return new Uint32Array([hash])[0].toString(36)
     }
 
+    const filter = fn => arr => arr.filter(fn)
+    const map = fn => arr => arr.map(fn)
+    const pipe = (...fns) => (...args) => fns.reduce((acc, fn) => [fn.call(null, ...acc)], args)[0]
+
 		const updateCurrentTrack = element => {
 			document.getElementById(state.currentTrackId)?.classList?.remove('playing')
 			state.currentTrackId = element.id
@@ -85,7 +91,7 @@
 			 }
 		}
 
-		const E = (tag, text, href, i) => {
+		const Create = (tag, text, href, i) => {
 			const newEl = document.createElement(tag)
 
 			newEl.className = 'track'
@@ -111,10 +117,69 @@
 			return newEl
 		}
 
-		const A = (...newEls) => {
-      document.getElementById('track-list-container').append(...newEls)
+		const Append = (page, newEls) => {
+      const div = document.createElement('div')
+      div.id = 'page-' + page
+      div.append(...newEls)
+      document.getElementById('track-list-container').append(div)
       state.texts = newEls.map(({ innerText }) => innerText)
 		}
+
+		const Prepend = (page, newEls) => {
+      const div = document.createElement('div')
+      div.id = 'page-' + page
+      div.append(...newEls)
+      document.getElementById('track-list-container').prepend(div)
+      state.texts = newEls.map(({ innerText }) => innerText)
+		}
+
+    const trackListElements = pipe(
+      filter(track =>
+        !/\/$/.test(track)
+        && (/.mp3$/.test(track) || /.flac$/.test(track))
+      ),
+      map((track, i) => Create('div', track, track, i)),
+      filter(Boolean)
+    )
+
+    const appendTracks = pipe(
+      (page, trackList) => Append(page, trackListElements(trackList))
+    )
+
+    const prependTracks = pipe(
+      (page, trackList) => Prepend(page, trackListElements(trackList))
+    )
+
+    const indexRangeFromPages = (pageRange) => {
+      const [pageStart, pageEnd] = pageRange
+      // pageEnd is our current page, loading page one would be [0, 1]
+      const pageSize = 200
+
+      return [pageSize * pageStart, pageSize * pageEnd]
+    }
+
+    const appendTracksByPage = pipe(
+      page => [page, trackList.slice(...indexRangeFromPages([page - 1, page]))],
+      ([page, trackList]) => appendTracks(page, trackList) || page,
+      page => {
+        if (page > state.numberOfPages) {
+          const trackListContainer = document.getElementById('track-list-container')
+          trackListContainer.removeChild(trackListContainer.firstChild)
+        }
+        return page + 1
+      },
+    )
+
+    const prependTracksByPage = pipe(
+      page => (page - state.numberOfPages) - 1,
+      page => [page, trackList.slice(...indexRangeFromPages([page - 1, page]))],
+      ([page, trackList]) => prependTracks(page, trackList) || page,
+      page => {
+        const trackListContainer = document.getElementById('track-list-container')
+        trackListContainer.removeChild(trackListContainer.lastChild)
+        return page + state.numberOfPages
+      }
+    )
 
 		const playTrack = (element) => {
 			document.getElementById('current-track').src = element.getAttribute('data-href')
@@ -188,25 +253,14 @@
       document.body.insertBefore(trackListContainer, footer)
     }
 
-    const injectTracks = (trackList) => {
-      A(...trackList
-        .filter(track =>
-                !/\/$/.test(track)
-          && (/.mp3$/.test(track) || /.flac$/.test(track))
-        )
-        .map((track, i) => E('div', track, track, i))
-        .filter(Boolean)
-      )
-    }
-
     const injectTracksByPage = (pageRange, trackList) => {
       const [pageStart, pageEnd] = pageRange
       // pageEnd is our current page, loading page one would be [0, 1]
       const pageSize = 200
 
-      const sliceArgs = [pageSize * pageStart, pageSize * pageEnd]
+      const startAndEndIndexes = [pageSize * pageStart, pageSize * pageEnd]
 
-      injectTracks(trackList.slice(...sliceArgs))
+      appendTracks(pageEnd, trackList.slice(...startAndEndIndexes))
 
       return pageEnd + 1
     }
@@ -256,24 +310,44 @@
       }, 100)
     }
 
-    state.page = injectTracksByPage([0, state.page], trackList)
+    // BEGIN
+    state.page = appendTracksByPage(state.page)
 
     window.onscroll = function(ev) {
-      const offset = 5000
+      if (state.lazyLoadDebounce) {
+        return
+      }
 
+      const offset = 3000
+
+      // Down scroll
       if ((window.innerHeight + window.scrollY + offset) >= document.body.offsetHeight) {
-
-        if (state.lazyLoadDebounce) return
         if (state.searching) {
           const searchEl = document.getElementById('search-input')
-          if (searchEl.value.length > 0) state.searchPage = injectTracksByPage([state.searchingPage - 1, state.searchingPage], trackList.filter(t => RegExp(searchEl.value, 'i').test(t)))
+          if (searchEl.value.length > 0) {
+            state.searchPage = injectTracksByPage([state.searchingPage - 1, state.searchingPage], trackList.filter(t => RegExp(searchEl.value, 'i').test(t)))
+          }
         } else {
-          state.page = injectTracksByPage([state.page - 1, state.page], trackList)
+          state.page = appendTracksByPage(state.page)
         }
-          state.lazyLoadDebounce = true
-          setTimeout(() => {
-            state.lazyLoadDebounce = false
-          }, 500)
+
+        state.lazyLoadDebounce = true
+        setTimeout(() => {
+          state.lazyLoadDebounce = false
+        }, 500)
+      }
+
+      // Up scroll
+      if (
+        state.page > state.numberOfPages + 1
+        && window.scrollY < offset
+      ) {
+        state.page = prependTracksByPage(state.page)
+
+        state.lazyLoadDebounce = true
+        setTimeout(() => {
+          state.lazyLoadDebounce = false
+        }, 500)
       }
     }
 
