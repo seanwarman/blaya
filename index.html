@@ -31,7 +31,7 @@
     // TODO
     // ~~Make the searchPage reset on every keypress~~
     // ~~Relaod the main page number by range so [1, page] 1 is from page is to.~~
-    // Fix the target button
+    // ~~Fix the target button~~
     // Split the search by words and do RegExp(firstWord).test(t) && RegExp(secondWord).test(t)
 
 
@@ -148,8 +148,14 @@
 		}
 
     const onScrollThisTrack = () => {
-      const el = document.getElementById(state.currentTrackId)
-      // el.scrollIntoView({ inline: 'center', behavior: 'smooth', block: 'center' })
+      let el = document.getElementById(state.currentTrackId)
+
+      if (!el && !state.searching) {
+        while (!el) {
+          state.page = injectTracksByPage([state.page -1, state.page], trackList)
+          el = document.getElementById(state.currentTrackId)
+        }
+      }
       el.focus()
     }
 
