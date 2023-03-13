@@ -93,6 +93,8 @@
 			newEl.tabIndex = i
 			newEl.id = simpleHash(text)
 
+      if (newEl.id === state.currentTrackId) newEl.classList.add('playing')
+
 			const [track, album] = text.slice(9, -4).split('/').reverse()
 
 			if (/#/.test(track) || /#/.test(album)) {
@@ -146,7 +148,6 @@
 		}
 
     const onScrollThisTrack = () => {
-
       const el = document.getElementById(state.currentTrackId)
       // el.scrollIntoView({ inline: 'center', behavior: 'smooth', block: 'center' })
       el.focus()
