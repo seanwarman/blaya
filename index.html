@@ -28,14 +28,6 @@
 		</footer>
 	</body>
 	<script>
-    // TODO
-    // ~~Make the searchPage reset on every keypress~~
-    // ~~Relaod the main page number by range so [1, page] 1 is from page is to.~~
-    // ~~Fix the target button~~
-    // Split the search by words and do RegExp(firstWord).test(t) && RegExp(secondWord).test(t)
-
-
-
 
 		const state = {
 			currentTrackId: null,
@@ -216,6 +208,12 @@
       scrollTo(0, state.previousScrollPositionY)
     }
 
+    const searchFilter = value => text => {
+      const words = value.split(' ')
+
+      return words.some(word => RegExp(word, 'i').test(text))
+    }
+
     const onSearch = (e) => {
       // If this is the first search, remember the scroll position...
       if (!state.searching) state.previousScrollPositionY = window.scrollY
@@ -232,7 +230,7 @@
         state.searching = true
         window.scrollTo(0, 0)
         removeTrackEls()
-        const filteredTracks = trackList.filter(t => RegExp(e.target.value, 'i').test(t))
+        const filteredTracks = trackList.filter(searchFilter(e.target.value))
         injectTracksByPage([0, state.searchingPage], filteredTracks)
         //hideElementsSearchMethod(e)
       }, 100)
