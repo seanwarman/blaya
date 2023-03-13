@@ -30,7 +30,7 @@
 	<script>
     // TODO
     // ~~Make the searchPage reset on every keypress~~
-    // Relaod the main page number by range so [1, page] 1 is from page is to.
+    // ~~Relaod the main page number by range so [1, page] 1 is from page is to.~~
     // Fix the target button
     // Split the search by words and do RegExp(firstWord).test(t) && RegExp(secondWord).test(t)
 
@@ -46,6 +46,7 @@
       lazyLoadDebounce: false,
       searching: false,
       searchingPage: 1,
+      previousScrollPositionY: 0,
 		}
 
 		const onClickOrEnter = cb => (e) => {
@@ -191,15 +192,20 @@
       return pageEnd + 1
     }
 
+    const afterSearchReset = () => {
+      removeTrackEls()
+      injectTracksByPage([0, state.page], trackList)
+      scrollTo(0, state.previousScrollPositionY)
+    }
+
     const onSearch = (e) => {
+      // If this is the first search, remember the scroll position...
+      if (!state.searching) state.previousScrollPositionY = window.scrollY
       state.searchingPage = 1
 
       if (e.target.value.length === 0) {
         state.searching = false
-        // TODO: fix this so the user goes back to their original position...
-        state.page = 1
-        removeTrackEls()
-        injectTracksByPage([0, state.page], trackList)
+        afterSearchReset()
         return
       }
 
