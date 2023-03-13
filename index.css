@@ -7,47 +7,7 @@ body {
 	padding: 0;
 	font-size: 1.5rem;
 	margin: 0;
-	padding-bottom: 8rem;
-}
-
-.track {
-	columns: 2;
-}
-
-.track:nth-child(odd) {
-	background: #efefef;
-}
-
-div[role="link"] {
-	padding-left: 1rem;
-	padding-right: 1rem;
-	padding-top: 1.5rem;
-	padding-bottom: 1.5rem;
-	cursor: pointer;
-}
-
-.playing,
-.playing.track {
-  background-color: #e2e2e2;
-}
-div[role="link"]:active,
-div[role="link"]:focus {
-  outline: 1px;
-  outline-style: dashed;
-  outline-color: #444444;
-}
-
-.track-name {
-	overflow: auto;
-	word-wrap: break-word;
-  font-size: 0.9rem;
-}
-
-.track-album {
-	text-align: end;
-	overflow: auto;
-	word-wrap: break-word;
-  font-size: 0.9rem;
+	padding: 6rem 0;
 }
 
 header {
@@ -57,6 +17,7 @@ header {
   grid-template-columns: auto auto auto auto;
   justify-items: end;
   padding: 1rem 2rem;
+  margin-top: -6rem;
 }
 
 input#search-input {
@@ -90,6 +51,47 @@ input#search-input {
 
 #jump-to-this-track svg {
   width: 1rem;
+}
+
+.track {
+	columns: 2;
+}
+
+.track:nth-child(odd) {
+	background: #efefef;
+}
+
+.playing,
+.playing.track {
+  background-color: #e2e2e2;
+}
+
+.track-name {
+	overflow: auto;
+	word-wrap: break-word;
+  font-size: 0.9rem;
+}
+
+.track-album {
+	text-align: end;
+	overflow: auto;
+	word-wrap: break-word;
+  font-size: 0.9rem;
+}
+
+div[role="link"] {
+	padding-left: 1rem;
+	padding-right: 1rem;
+	padding-top: 1.5rem;
+	padding-bottom: 1.5rem;
+	cursor: pointer;
+}
+
+div[role="link"]:active,
+div[role="link"]:focus {
+  outline: 1px;
+  outline-style: dashed;
+  outline-color: #444444;
 }
 
 footer {
