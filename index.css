@@ -31,7 +31,7 @@ input#search-input {
   height: 4rem;
 }
 
-#jump-to-this-track {
+#target-button {
   box-shadow: 5px 5px 12px 0px #00000024;
   border-radius: 50%;
   border: none;
@@ -41,15 +41,15 @@ input#search-input {
   grid-column: 4 / span 1;
 }
 
-#jump-to-this-track:hover {
+#target-button:hover {
   background: #f0f0f0;
 }
 
-#jump-to-this-track:active {
+#target-button:active {
   background: #e3e2e2
 }
 
-#jump-to-this-track svg {
+#target-button svg {
   width: 1rem;
 }
 
@@ -150,7 +150,7 @@ div#current-playing-text {
     height: unset;
   }
 
-  #jump-to-this-track {
+  #target-button {
     width: 40px;
     height: 40px;
   }
