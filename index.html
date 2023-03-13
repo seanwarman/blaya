@@ -55,6 +55,16 @@
 			}
 		}
 
+    const simpleHash = str => {
+      let hash = 0
+      for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i)
+        hash = (hash << 5) - hash + char
+        hash &= hash
+      }
+      return new Uint32Array([hash])[0].toString(36)
+    }
+
 		const updateCurrentTrack = element => {
 			document.getElementById(state.currentTrackId)?.classList?.remove('playing')
 			state.currentTrackId = element.id
@@ -81,7 +91,7 @@
 			newEl.role = 'link'
 			newEl.dataset.href = href
 			newEl.tabIndex = i
-			newEl.id = 'track-' + i
+			newEl.id = simpleHash(text)
 
 			const [track, album] = text.slice(9, -4).split('/').reverse()
 
@@ -136,6 +146,7 @@
 		}
 
     const onScrollThisTrack = () => {
+
       const el = document.getElementById(state.currentTrackId)
       // el.scrollIntoView({ inline: 'center', behavior: 'smooth', block: 'center' })
       el.focus()
