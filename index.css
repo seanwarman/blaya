@@ -20,15 +20,33 @@ header {
   margin-top: -6rem;
 }
 
-input#search-input {
+.search-container {
   grid-column: 1 / span 3;
+  height: 4rem;
+  position: relative;
+  width: 100%;
+}
+
+input#search-input {
+  height: 100%;
   width: 100%;
   border: none;
   box-shadow: 1px 7px 17px 0px #00000024;
   border-radius: 2px;
   padding-left: 1rem;
   font-size: 1.2rem;
-  height: 4rem;
+}
+
+#clear-search-button {
+  position: absolute;
+  border: none;
+  background: white;
+  right: 1rem;
+  top: 1.2rem;
+}
+
+#clear-search-button svg {
+  width: 1.4rem;
 }
 
 #target-button {
@@ -149,10 +167,22 @@ div#current-playing-text {
     margin-top: -5rem;
   }
 
-  input#search-input {
+  .search-container {
     grid-column: 2 / span 2;
-    font-size: 1rem;
     height: unset;
+  }
+
+  input#search-input {
+    font-size: 1rem;
+  }
+
+  #clear-search-button {
+    right: 0.2rem;
+    top: 0.7rem;
+  }
+
+  #clear-search-button svg {
+    width: 1rem;
   }
 
   #target-button {

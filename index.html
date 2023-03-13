@@ -6,23 +6,27 @@
 	</head>
 	<body>
     <header>
-      <input id="search-input" type="input" placeholder="Search..." />
-      <button
-          id="target-button"
-      >
+      <div class="search-container">
+        <label hidden for="search-input">Search</label>
+        <input id="search-input" type="input" placeholder="⌘ K" />
+        <button tabindex="0" id="clear-search-button">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="#e2e2e2" d="M256 512c141.4 0 256-114.6 256-256S397.4 0 256 0S0 114.6 0 256S114.6 512 256 512zM175 175c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z"/></svg>
+        </button>
+      </div>
+      <button id="target-button">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 0c17.7 0 32 14.3 32 32V66.7C368.4 80.1 431.9 143.6 445.3 224H480c17.7 0 32 14.3 32 32s-14.3 32-32 32H445.3C431.9 368.4 368.4 431.9 288 445.3V480c0 17.7-14.3 32-32 32s-32-14.3-32-32V445.3C143.6 431.9 80.1 368.4 66.7 288H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H66.7C80.1 143.6 143.6 80.1 224 66.7V32c0-17.7 14.3-32 32-32zM128 256a128 128 0 1 0 256 0 128 128 0 1 0 -256 0zm128-80a80 80 0 1 1 0 160 80 80 0 1 1 0-160z"/></svg>
       </button>
     </header>
     <div id="track-list-container"></div>
 		<footer>
-			<div id="current-playing-text"></div>
+			<div tabindex="0" id="current-playing-text" role="button"></div>
 			<audio tabindex="-1" id="player" controls>
 				<source id="current-track" type="audio/mpeg"></source>
 			</audio>
-			<button tabindex="-1" id="prev-button" role="link">
+			<button id="prev-button" role="link">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M267.5 440.6c9.5 7.9 22.8 9.7 34.1 4.4s18.4-16.6 18.4-29V96c0-12.4-7.2-23.7-18.4-29s-24.5-3.6-34.1 4.4l-192 160L64 241V96c0-17.7-14.3-32-32-32S0 78.3 0 96V416c0 17.7 14.3 32 32 32s32-14.3 32-32V271l11.5 9.6 192 160z"/></svg>
       </button>
-			<button tabindex="-1" id="next-button" role="link">
+			<button id="next-button" role="link">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M52.5 440.6c-9.5 7.9-22.8 9.7-34.1 4.4S0 428.4 0 416V96C0 83.6 7.2 72.3 18.4 67s24.5-3.6 34.1 4.4l192 160L256 241V96c0-17.7 14.3-32 32-32s32 14.3 32 32V416c0 17.7-14.3 32-32 32s-32-14.3-32-32V271l-11.5 9.6-192 160z"/></svg>
       </button>
 		</footer>
@@ -82,7 +86,7 @@
 			newEl.className = 'track'
 			newEl.role = 'link'
 			newEl.dataset.href = href
-			newEl.tabIndex = i
+			newEl.tabIndex = '0'
 			newEl.id = simpleHash(text)
 
       if (newEl.id === state.currentTrackId) newEl.classList.add('playing')
@@ -214,6 +218,12 @@
       return words.some(word => RegExp(word, 'i').test(text))
     }
 
+    const onClearSearch = () => {
+      document.getElementById('search-input').value = ''
+      state.searching = false
+      afterSearchReset()
+    }
+
     const onSearch = (e) => {
       // If this is the first search, remember the scroll position...
       if (!state.searching) state.previousScrollPositionY = window.scrollY
@@ -265,14 +275,22 @@
 		document.getElementById('prev-button').onkeydown = onClickOrEnter(onPrev)
     document.getElementById('target-button').onclick = onClickOrEnter(onScrollThisTrack)
     document.getElementById('target-button').onkeydown = onClickOrEnter(onScrollThisTrack)
+    document.getElementById('current-playing-text').onclick = onClickOrEnter(onScrollThisTrack)
+    document.getElementById('current-playing-text').onkeydown = onClickOrEnter(onScrollThisTrack)
 
     document.getElementById('search-input').onkeydown = e => e.stopPropagation()
     document.getElementById('search-input').oninput = onSearch
+    document.getElementById('clear-search-button').onclick = onClickOrEnter(onClearSearch)
+    document.getElementById('clear-search-button').onkeydown = onClickOrEnter(onClearSearch)
 
 		// Key commands...
 		const onKey = (...maps) => e => {
 			maps.forEach(([key, cb]) => {
-				if(e.key === key) {
+      if(
+        (typeof key === 'string' && e.key === key)
+        || (key.key === e.key && key.ctrlKey === e.ctrlKey)
+        || (key.key === e.key && key.metaKey === e.metaKey)
+      ) {
 					e.preventDefault()
 					cb(e)
 				}
@@ -291,6 +309,9 @@
 			}],
 			['ArrowRight', onNext],
 			['ArrowLeft', onPrev],
+      [{ key: 'k', ctrlKey: true }, () => document.getElementById('search-input').focus()],
+      [{ key: 'k', metaKey: true }, () => document.getElementById('search-input').focus()],
+      ['Escape', () => document.getElementById('search-input').blur()],
 		)
 
 	</script>
