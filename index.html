@@ -13,6 +13,7 @@
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 0c17.7 0 32 14.3 32 32V66.7C368.4 80.1 431.9 143.6 445.3 224H480c17.7 0 32 14.3 32 32s-14.3 32-32 32H445.3C431.9 368.4 368.4 431.9 288 445.3V480c0 17.7-14.3 32-32 32s-32-14.3-32-32V445.3C143.6 431.9 80.1 368.4 66.7 288H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H66.7C80.1 143.6 143.6 80.1 224 66.7V32c0-17.7 14.3-32 32-32zM128 256a128 128 0 1 0 256 0 128 128 0 1 0 -256 0zm128-80a80 80 0 1 1 0 160 80 80 0 1 1 0-160z"/></svg>
       </button>
     </header>
+    <div id="track-list-container"></div>
 		<footer>
 			<div id="current-playing-text"></div>
 			<audio tabindex="-1" id="player" controls>
@@ -27,6 +28,15 @@
 		</footer>
 	</body>
 	<script>
+    // TODO
+    // ~~Make the searchPage reset on every keypress~~
+    // Relaod the main page number by range so [1, page] 1 is from page is to.
+    // Fix the target button
+    // Split the search by words and do RegExp(firstWord).test(t) && RegExp(secondWord).test(t)
+
+
+
+
 		const state = {
 			currentTrackId: null,
       texts: [],
@@ -88,7 +98,7 @@
 		}
 
 		const A = (...newEls) => {
-			document.body.append(...newEls)
+      document.getElementById('track-list-container').append(...newEls)
       state.texts = newEls.map(({ innerText }) => innerText)
 		}
 
@@ -150,10 +160,12 @@
     }
 
     const removeTrackEls = () => {
-      const els = document.getElementsByClassName('track')
-      for (let i = 0; i < els.length; i++) {
-        els[i].remove()
-      }
+      document.getElementById('track-list-container').remove()
+
+      const footer = document.getElementsByTagName('footer')[0]
+			const trackListContainer = document.createElement('div')
+      trackListContainer.id = 'track-list-container'
+      document.body.insertBefore(trackListContainer, footer)
     }
 
     const injectTracks = (trackList) => {
@@ -167,38 +179,42 @@
       )
     }
 
-    const injectTracksByPage = (page, trackList) => {
+    const injectTracksByPage = (pageRange, trackList) => {
+      const [pageStart, pageEnd] = pageRange
+      // pageEnd is our current page, loading page one would be [0, 1]
       const pageSize = 200
 
-      const sliceArgs = [pageSize * (page - 1), pageSize * page]
+      const sliceArgs = [pageSize * pageStart, pageSize * pageEnd]
 
       injectTracks(trackList.slice(...sliceArgs))
 
-      return page + 1
+      return pageEnd + 1
     }
 
     const onSearch = (e) => {
-      if (!state.searching) state.searchingPage = 1
+      state.searchingPage = 1
 
       if (e.target.value.length === 0) {
         state.searching = false
         // TODO: fix this so the user goes back to their original position...
         state.page = 1
         removeTrackEls()
-        injectTracksByPage(state.page, trackList)
+        injectTracksByPage([0, state.page], trackList)
         return
       }
 
       if (state.throttleId) clearTimeout(state.throttleId)
       state.throttleId = setTimeout(() => {
         state.searching = true
+        window.scrollTo(0, 0)
         removeTrackEls()
-        injectTracksByPage(state.searchingPage, trackList.filter(t => RegExp(e.target.value, 'i').test(t)))
+        const filteredTracks = trackList.filter(t => RegExp(e.target.value, 'i').test(t))
+        injectTracksByPage([0, state.searchingPage], filteredTracks)
         //hideElementsSearchMethod(e)
       }, 100)
     }
 
-    state.page = injectTracksByPage(state.page, trackList)
+    state.page = injectTracksByPage([0, state.page], trackList)
 
     window.onscroll = function(ev) {
       const offset = 5000
@@ -208,9 +224,9 @@
         if (state.lazyLoadDebounce) return
         if (state.searching) {
           const searchEl = document.getElementById('search-input')
-          if (searchEl.value.length > 0) state.searchPage = injectTracksByPage(state.searchingPage, trackList.filter(t => RegExp(searchEl.value, 'i').test(t)))
+          if (searchEl.value.length > 0) state.searchPage = injectTracksByPage([state.searchingPage - 1, state.searchingPage], trackList.filter(t => RegExp(searchEl.value, 'i').test(t)))
         } else {
-          state.page = injectTracksByPage(state.page, trackList)
+          state.page = injectTracksByPage([state.page - 1, state.page], trackList)
         }
           state.lazyLoadDebounce = true
           setTimeout(() => {
