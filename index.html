@@ -71,6 +71,7 @@
     const filter = fn => arr => arr.filter(fn)
     const map = fn => arr => arr.map(fn)
     const pipe = (...fns) => (...args) => fns.reduce((acc, fn) => [fn.call(null, ...acc)], args)[0]
+    const logger = tag => (arg) => console.log(tag, arg) || arg
 
 		const updateCurrentTrack = element => {
 			document.getElementById(state.currentTrackId)?.classList?.remove('playing')
@@ -123,6 +124,7 @@
       div.append(...newEls)
       document.getElementById('track-list-container').append(div)
       state.texts = newEls.map(({ innerText }) => innerText)
+      return page + 1
 		}
 
 		const Prepend = (page, newEls) => {
@@ -131,6 +133,7 @@
       div.append(...newEls)
       document.getElementById('track-list-container').prepend(div)
       state.texts = newEls.map(({ innerText }) => innerText)
+      return page - 1
 		}
 
     const trackListElements = pipe(
@@ -158,27 +161,60 @@
       return [pageSize * pageStart, pageSize * pageEnd]
     }
 
-    const appendTracksByPage = pipe(
-      page => [page, trackList.slice(...indexRangeFromPages([page - 1, page]))],
-      ([page, trackList]) => appendTracks(page, trackList) || page,
-      page => {
-        if (page > state.numberOfPages) {
-          const trackListContainer = document.getElementById('track-list-container')
-          trackListContainer.removeChild(trackListContainer.firstChild)
-        }
-        return page + 1
-      },
+    const convertPageNumberToDecrease = page => (page - state.numberOfPages) - 1
+    const sliceTrackListByPage = trackList => page => [page, trackList.slice(...indexRangeFromPages([page - 1, page]))]
+    const appendTracksAndReturnPage = ([page, trackList]) => appendTracks(page, trackList)
+    const prependTracksAndReturnPage = ([page, trackList]) => {
+      prependTracks(page, trackList)
+      return page + state.numberOfPages
+    }
+
+    const removeLastChildFromContainer = (arg) => {
+      const trackListContainer = document.getElementById('track-list-container')
+      trackListContainer.removeChild(trackListContainer.lastChild)
+      return arg
+    }
+
+    const removeFirstChildFromContainer = (page) => {
+      if (page > state.numberOfPages + 1) {
+        const trackListContainer = document.getElementById('track-list-container')
+        trackListContainer.firstChild && trackListContainer.removeChild(trackListContainer.firstChild)
+      }
+      return page
+    }
+
+    const removeTrackEls = (arg) => {
+      document.getElementById('track-list-container').remove()
+      const footer = document.getElementsByTagName('footer')[0]
+			const trackListContainer = document.createElement('div')
+      trackListContainer.id = 'track-list-container'
+      document.body.insertBefore(trackListContainer, footer)
+      return arg
+    }
+
+    const appendTracksByPageLazy = pipe(
+      sliceTrackListByPage(trackList),
+      appendTracksAndReturnPage,
+      removeFirstChildFromContainer,
     )
 
-    const prependTracksByPage = pipe(
-      page => (page - state.numberOfPages) - 1,
-      page => [page, trackList.slice(...indexRangeFromPages([page - 1, page]))],
-      ([page, trackList]) => prependTracks(page, trackList) || page,
-      page => {
-        const trackListContainer = document.getElementById('track-list-container')
-        trackListContainer.removeChild(trackListContainer.lastChild)
-        return page + state.numberOfPages
-      }
+    const prependTracksByPageLazy = pipe(
+      convertPageNumberToDecrease,
+      sliceTrackListByPage(trackList),
+      prependTracksAndReturnPage,
+      removeLastChildFromContainer,
+    )
+
+    const appendTracksByPage = pipe(
+      sliceTrackListByPage(trackList),
+      appendTracksAndReturnPage,
+    )
+
+    const replaceAllWithThreePages = pipe(
+      removeTrackEls,
+      appendTracksByPage,
+      appendTracksByPage,
+      appendTracksByPage,
     )
 
 		const playTrack = (element) => {
@@ -216,9 +252,10 @@
     const onScrollThisTrack = () => {
       let el = document.getElementById(state.currentTrackId)
 
+      // TODO: make this faster by checking the position in the trackList first
       if (!el && !state.searching) {
         while (!el) {
-          state.page = injectTracksByPage([state.page -1, state.page], trackList)
+          state.page = replaceAllWithThreePages(state.page)
           el = document.getElementById(state.currentTrackId)
         }
       }
@@ -244,34 +281,14 @@
       })
     }
 
-    const removeTrackEls = () => {
-      document.getElementById('track-list-container').remove()
-
-      const footer = document.getElementsByTagName('footer')[0]
-			const trackListContainer = document.createElement('div')
-      trackListContainer.id = 'track-list-container'
-      document.body.insertBefore(trackListContainer, footer)
-    }
-
-    const injectTracksByPage = (pageRange, trackList) => {
-      const [pageStart, pageEnd] = pageRange
-      // pageEnd is our current page, loading page one would be [0, 1]
-      const pageSize = 200
-
-      const startAndEndIndexes = [pageSize * pageStart, pageSize * pageEnd]
-
-      appendTracks(pageEnd, trackList.slice(...startAndEndIndexes))
-
-      return pageEnd + 1
-    }
-
     const afterSearchReset = () => {
       removeTrackEls()
-      injectTracksByPage([0, state.page], trackList)
+      appendTracksByPageLazy(state.page)
       scrollTo(0, state.previousScrollPositionY)
     }
 
     const searchFilter = value => track => {
+      if (value === undefined) return true
       // TODO: change this into a reduce that filters but also gives different types of matches a score.
       // [score, track]
       // Then use .sort to sort the results in order of their scores
@@ -305,13 +322,13 @@
         window.scrollTo(0, 0)
         removeTrackEls()
         const filteredTracks = trackList.filter(searchFilter(e.target.value))
-        injectTracksByPage([0, state.searchingPage], filteredTracks)
+        appendTracks(state.searchingPage, filteredTracks)
         //hideElementsSearchMethod(e)
       }, 100)
     }
 
     // BEGIN
-    state.page = appendTracksByPage(state.page)
+    state.page = appendTracksByPage(1)
 
     window.onscroll = function(ev) {
       if (state.lazyLoadDebounce) {
@@ -325,10 +342,11 @@
         if (state.searching) {
           const searchEl = document.getElementById('search-input')
           if (searchEl.value.length > 0) {
-            state.searchPage = injectTracksByPage([state.searchingPage - 1, state.searchingPage], trackList.filter(t => RegExp(searchEl.value, 'i').test(t)))
+          // TODO: this is laoding endlessly fix it
+            // state.searchPage = injectTracksByPage([state.searchingPage - 1, state.searchingPage], trackList.filter(t => RegExp(searchEl.value, 'i').test(t)))
           }
         } else {
-          state.page = appendTracksByPage(state.page)
+          state.page = appendTracksByPageLazy(state.page)
         }
 
         state.lazyLoadDebounce = true
@@ -342,7 +360,7 @@
         state.page > state.numberOfPages + 1
         && window.scrollY < offset
       ) {
-        state.page = prependTracksByPage(state.page)
+        state.page = prependTracksByPageLazy(state.page)
 
         state.lazyLoadDebounce = true
         setTimeout(() => {
