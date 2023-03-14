@@ -296,7 +296,7 @@
 
       const words = value.split(' ')
 
-      return words.some(word => RegExp(word, 'i').test(track))
+      return words.every(word => RegExp(word, 'i').test(track))
     }
 
     const onClearSearch = () => {
