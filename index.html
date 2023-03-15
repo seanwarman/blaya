@@ -1,7 +1,6 @@
 <html>
 	<meta content="width=device-width, initial-scale=1" name="viewport" />
 	<head>
-		<script id="track-list" type="text/javascript" src="track-list.js"></script>
 		<link rel="stylesheet" href="index.css">
 	</head>
 	<body>
@@ -31,7 +30,8 @@
       </button>
 		</footer>
 	</body>
-	<script>
+	<script type="module">
+    import { trackList } from '/track-list.js'
 
     // TODO
     // ~~Make the pagination go backwards as well~~
@@ -107,7 +107,7 @@
 			const [track, album] = text.slice(9, -4).split('/').reverse()
 
 			if (/#/.test(track) || /#/.test(album)) {
-				delete newEl
+				// delete newEl
 				return
 			}
 
