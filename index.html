@@ -50,6 +50,7 @@
       searching: false,
       searchingPage: 1,
       previousScrollPositionY: 0,
+      pageSize: 300,
 		}
 
 		const onClickOrEnter = cb => (e) => {
@@ -156,9 +157,16 @@
     const indexRangeFromPages = (pageRange) => {
       const [pageStart, pageEnd] = pageRange
       // pageEnd is our current page, loading page one would be [0, 1]
-      const pageSize = 200
+      const pageSize = state.pageSize
 
       return [pageSize * pageStart, pageSize * pageEnd]
+    }
+
+    const pagesFromIndexRange = (indexRange) => {
+      const [startIndex, endIndex] = indexRange
+      const pageFromIndex = i => Math.max(1, Math.floor(startIndex / state.pageSize))
+
+      return [pageFromIndex(startIndex), pageFromIndex(endIndex)]
     }
 
     const convertPageNumberToDecrease = page => (page - state.numberOfPages) - 1
@@ -250,15 +258,12 @@
 		}
 
     const onScrollThisTrack = () => {
-      let el = document.getElementById(state.currentTrackId)
+      const trackListIndex = trackList.findIndex(track => state.currentTrackId === simpleHash(track))
 
-      // TODO: make this faster by checking the position in the trackList first
-      if (!el && !state.searching) {
-        while (!el) {
-          state.page = replaceAllWithThreePages(state.page)
-          el = document.getElementById(state.currentTrackId)
-        }
-      }
+      const [page] = pagesFromIndexRange([trackListIndex, 0])
+      state.page = replaceAllWithThreePages(page)
+
+      let el = document.getElementById(state.currentTrackId)
       el.focus()
     }
 
