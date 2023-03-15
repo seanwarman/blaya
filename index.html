@@ -35,7 +35,7 @@
 
     // TODO
     // ~~Make the pagination go backwards as well~~
-    // Fix the search pagination and make it also work backwards
+    // ~~Fix the search pagination and make it also work backwards~~
     // Improve the search
     // Make the reset after the search only load in a section of the tracklist
 
@@ -51,6 +51,7 @@
       searchingPage: 1,
       previousScrollPositionY: 0,
       pageSize: 300,
+      previousTrackListContainer: null,
 		}
 
 		const onClickOrEnter = cb => (e) => {
@@ -72,7 +73,14 @@
     const filter = fn => arr => arr.filter(fn)
     const map = fn => arr => arr.map(fn)
     const pipe = (...fns) => (...args) => fns.reduce((acc, fn) => [fn.call(null, ...acc)], args)[0]
+    const breakPipe = (...fns) => (...args) => fns.reduce((acc, fn) => {
+      if (acc.break) return acc
+      const res = fn.call(null, ...acc.args)
+      if (res === 'break') return { args: acc.args, break: true }
+      return { args: [res], break: false }
+    }, { args, break: false }).args[0]
     const logger = tag => (arg) => console.log(tag, arg) || arg
+    const breakIf = fn => arg => fn(arg) ? 'break' : arg
 
 		const updateCurrentTrack = element => {
 			document.getElementById(state.currentTrackId)?.classList?.remove('playing')
@@ -95,7 +103,6 @@
 
 		const Create = (tag, text, href, i) => {
 			const newEl = document.createElement(tag)
-
 			newEl.className = 'track'
 			newEl.role = 'link'
 			newEl.dataset.href = href
@@ -112,7 +119,6 @@
 			}
 
 			newEl.innerHTML = '<div class="track-name">' + track + '</div>' + (album ? '<div class="track-album">' + album + '</div>' : '')
-
 			newEl.onclick = onClickOrEnter(onPlay)
 			newEl.onkeydown = onClickOrEnter(onPlay)
 
@@ -120,6 +126,7 @@
 		}
 
 		const Append = (page, newEls) => {
+      if (newEls.length < 1) return page
       const div = document.createElement('div')
       div.id = 'page-' + page
       div.append(...newEls)
@@ -158,14 +165,12 @@
       const [pageStart, pageEnd] = pageRange
       // pageEnd is our current page, loading page one would be [0, 1]
       const pageSize = state.pageSize
-
       return [pageSize * pageStart, pageSize * pageEnd]
     }
 
     const pagesFromIndexRange = (indexRange) => {
       const [startIndex, endIndex] = indexRange
       const pageFromIndex = i => Math.max(1, Math.floor(startIndex / state.pageSize))
-
       return [pageFromIndex(startIndex), pageFromIndex(endIndex)]
     }
 
@@ -200,6 +205,37 @@
       return arg
     }
 
+    const searchFilter = value => track => {
+      if (value === undefined) return true
+      // TODO: change this into a reduce that filters but also gives different types of matches a score.
+      // [score, track]
+      // Then use .sort to sort the results in order of their scores
+      if (RegExp(value, 'i').test(track)) return true
+      const words = value.split(' ')
+      return words.every(word => RegExp(word, 'i').test(track))
+    }
+
+    const appendFilteredTracksByPageLazy = value => breakPipe(
+      sliceTrackListByPage(
+        trackList.filter(searchFilter(value))
+      ),
+      appendTracksAndReturnPage,
+      breakIf(page => page === state.searchingPage),
+      removeFirstChildFromContainer,
+    )
+
+    const prependFilteredTracksByPageLazy = value => pipe(
+      convertPageNumberToDecrease,
+      sliceTrackListByPage(trackList.filter(searchFilter(value))),
+      prependTracksAndReturnPage,
+      removeLastChildFromContainer,
+    )
+
+    const appendTracksByPageFilteredBy = value => pipe(
+      sliceTrackListByPage(trackList.filter(searchFilter(value))),
+      appendTracksAndReturnPage,
+    )
+
     const appendTracksByPageLazy = pipe(
       sliceTrackListByPage(trackList),
       appendTracksAndReturnPage,
@@ -225,9 +261,18 @@
       appendTracksByPage,
     )
 
+    const scrollToTrackByTrackId = trackId => {
+      const trackListIndex = trackList.findIndex(track => trackId === simpleHash(track))
+      const [page] = pagesFromIndexRange([trackListIndex, 0])
+      state.page = replaceAllWithThreePages(page)
+      let el = document.getElementById(trackId)
+      el.focus()
+    }
+
 		const playTrack = (element) => {
 			document.getElementById('current-track').src = element.getAttribute('data-href')
 			const player = document.getElementById('player')
+			player.pause()
 			player.load()
 			updateCurrentTrack(element)
 			player.play()
@@ -237,11 +282,10 @@
 			const currentTrackEl = document.getElementById(state.currentTrackId)
 			if (!currentTrackEl || currentTrackEl.hidden) return playTrack(document.querySelector('.track'))
       if (!currentTrackEl.nextElementSibling.hidden) return playTrack(currentTrackEl.nextElementSibling)
-
       const nextTrackIndex = Number(currentTrackEl.nextElementSibling.id.split('-')[1])
       const els = document.getElementsByClassName('track')
       for (let i = nextTrackIndex; i < els.length; i++) {
-          if (!els[i].hidden) return playTrack(els[i])
+        if (!els[i].hidden) return playTrack(els[i])
       }
 		}
 
@@ -249,7 +293,6 @@
 			const currentTrackEl = document.getElementById(state.currentTrackId)
 			if (!currentTrackEl || currentTrackEl.hidden) return playTrack(document.querySelector('.track'))
       if (!currentTrackEl.previousElementSibling.hidden) return playTrack(currentTrackEl.previousElementSibling)
-
       const prevTrackIndex = Number(currentTrackEl.previousElementSibling.id.split('-')[1])
       const els = document.getElementsByClassName('track')
       for (let i = prevTrackIndex; i > -1; i--) {
@@ -258,13 +301,7 @@
 		}
 
     const onScrollThisTrack = () => {
-      const trackListIndex = trackList.findIndex(track => state.currentTrackId === simpleHash(track))
-
-      const [page] = pagesFromIndexRange([trackListIndex, 0])
-      state.page = replaceAllWithThreePages(page)
-
-      let el = document.getElementById(state.currentTrackId)
-      el.focus()
+      scrollToTrackByTrackId(state.currentTrackId)
     }
 
     const hideElementsSearchMethod = (e) => {
@@ -275,7 +312,6 @@
         }
         return
       }
-
       const els = document.getElementsByClassName('track')
       state.texts.forEach((t,i) => {
         if(RegExp(e.target.value, 'i').test(t)) {
@@ -287,53 +323,45 @@
     }
 
     const afterSearchReset = () => {
-      removeTrackEls()
-      appendTracksByPageLazy(state.page)
+      state.searching = false
+      document.getElementById('track-list-container').remove()
+      const footer = document.getElementsByTagName('footer')[0]
+      document.body.insertBefore(state.previousTrackListContainer, footer)
       scrollTo(0, state.previousScrollPositionY)
-    }
-
-    const searchFilter = value => track => {
-      if (value === undefined) return true
-      // TODO: change this into a reduce that filters but also gives different types of matches a score.
-      // [score, track]
-      // Then use .sort to sort the results in order of their scores
-      if (RegExp(value, 'i').test(track)) return true
-
-      const words = value.split(' ')
-
-      return words.every(word => RegExp(word, 'i').test(track))
     }
 
     const onClearSearch = () => {
       document.getElementById('search-input').value = ''
-      state.searching = false
       afterSearchReset()
     }
 
     const onSearch = (e) => {
       // If this is the first search, remember the scroll position...
-      if (!state.searching) state.previousScrollPositionY = window.scrollY
+      if (!state.searching) {
+        state.previousScrollPositionY = window.scrollY
+        state.previousTrackListContainer = document.getElementById('track-list-container').cloneNode(true)
+      }
       state.searchingPage = 1
-
       if (e.target.value.length === 0) {
-        state.searching = false
         afterSearchReset()
         return
       }
-
       if (state.throttleId) clearTimeout(state.throttleId)
       state.throttleId = setTimeout(() => {
         state.searching = true
         window.scrollTo(0, 0)
         removeTrackEls()
-        const filteredTracks = trackList.filter(searchFilter(e.target.value))
-        appendTracks(state.searchingPage, filteredTracks)
-        //hideElementsSearchMethod(e)
+        state.searchingPage = appendTracksByPageFilteredBy(e.target.value)(state.searchingPage)
       }, 100)
     }
 
     // BEGIN
     state.page = appendTracksByPage(1)
+
+    const setDebounce = () => {
+      state.lazyLoadDebounce = true
+      setTimeout(() => { state.lazyLoadDebounce = false }, 500)
+    }
 
     window.onscroll = function(ev) {
       if (state.lazyLoadDebounce) {
@@ -341,36 +369,40 @@
       }
 
       const offset = 3000
+      const searchElValue = () => document.getElementById('search-input')?.value || ''
 
       // Down scroll
       if ((window.innerHeight + window.scrollY + offset) >= document.body.offsetHeight) {
         if (state.searching) {
-          const searchEl = document.getElementById('search-input')
-          if (searchEl.value.length > 0) {
-          // TODO: this is laoding endlessly fix it
-            // state.searchPage = injectTracksByPage([state.searchingPage - 1, state.searchingPage], trackList.filter(t => RegExp(searchEl.value, 'i').test(t)))
+          if (searchElValue().length > 0) {
+            const searchingPage = appendFilteredTracksByPageLazy(searchElValue())(state.searchingPage)
+            state.searchingPage = searchingPage || state.searchingPage
+            return setDebounce()
           }
         } else {
           state.page = appendTracksByPageLazy(state.page)
+          return setDebounce()
         }
-
-        state.lazyLoadDebounce = true
-        setTimeout(() => {
-          state.lazyLoadDebounce = false
-        }, 500)
       }
 
       // Up scroll
       if (
-        state.page > state.numberOfPages + 1
+        !state.searching
+        && state.page > state.numberOfPages + 1
         && window.scrollY < offset
       ) {
         state.page = prependTracksByPageLazy(state.page)
+        return setDebounce()
+      }
 
-        state.lazyLoadDebounce = true
-        setTimeout(() => {
-          state.lazyLoadDebounce = false
-        }, 500)
+      if (
+        state.searching
+        && state.searchingPage > state.numberOfPages + 1
+        && window.scrollY < offset
+        && searchElValue().length > 0
+      ) {
+        state.searchingPage = prependFilteredTracksByPageLazy(searchElValue())(state.searchingPage)
+        return setDebounce()
       }
     }
 
@@ -384,7 +416,6 @@
     document.getElementById('target-button').onkeydown = onClickOrEnter(onScrollThisTrack)
     document.getElementById('current-playing-text').onclick = onClickOrEnter(onScrollThisTrack)
     document.getElementById('current-playing-text').onkeydown = onClickOrEnter(onScrollThisTrack)
-
     document.getElementById('search-input').onkeydown = e => e.stopPropagation()
     document.getElementById('search-input').oninput = onSearch
     document.getElementById('clear-search-button').onclick = onClickOrEnter(onClearSearch)
@@ -412,7 +443,6 @@
 				} else {
 					player.pause()
 				}
-
 			}],
 			['ArrowRight', onNext],
 			['ArrowLeft', onPrev],
