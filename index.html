@@ -202,12 +202,14 @@
     }
 
     const conditionsInOrder = [
-      ([track, value]) => (value.split(' ').some(w => RegExp(w, 'i').test(track))),
+      ([track, value]) => (value.split(' ').filter(Boolean).some(w => RegExp(w, 'i').test(track))),
       ([track, value]) => (RegExp(value, 'i').test(track)),
       ([track, value]) => (RegExp(value).test(track)),
       // ([track, value]) => (value.split(' ').every(w => track.toLowerCase().includes(w.toLowerCase()))),
       // ([track, value]) => (value === track),
     ]
+
+    window.conditionsInOrder = conditionsInOrder
 
     const searchFilter = value => track => {
       // work through conditionsInOrder backwards so that if the minimum
@@ -226,7 +228,7 @@
       return trackList.map((track) => {
         if (value === undefined) return { track, score: 0 }
         let score = 0
-        for (let i = conditionsInOrder.length - 1; i > -1; i--) {
+        for (let i = 0; i < conditionsInOrder.length - 1; i++) {
           if (conditionsInOrder[i]([track, value])) {
             score = i
           }
