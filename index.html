@@ -32,6 +32,7 @@
 	</body>
 	<script type="module">
     import { trackList } from '/track-list.js'
+    import { Fzf } from '/node_modules/fzf/dist/fzf.es.js'
 
 		const state = {
 			currentTrackId: null,
@@ -47,6 +48,11 @@
       pageSize: 300,
       previousTrackListContainer: null,
 		}
+
+    const fzfFilter = value => {
+      const fzf = new Fzf(trackList)
+      return fzf.find(value).map(({ item }) => item)
+    }
 
 		const onClickOrEnter = cb => (e) => {
 			if (e.type === "click" || e.key === "Enter") {
@@ -201,59 +207,9 @@
       return arg
     }
 
-    const conditionsInOrder = [
-      ([track, value]) => (value.split(' ').filter(Boolean).some(w => RegExp(w, 'i').test(track))),
-      ([track, value]) => (RegExp(value, 'i').test(track)),
-      ([track, value]) => (RegExp(value).test(track)),
-      // ([track, value]) => (value.split(' ').every(w => track.toLowerCase().includes(w.toLowerCase()))),
-      // ([track, value]) => (value === track),
-    ]
-
-    window.conditionsInOrder = conditionsInOrder
-
-    const searchFilter = value => track => {
-      // work through conditionsInOrder backwards so that if the minimum
-      // condition isn't met we discard the item
-      let include = false
-      for (let i = 0; i < conditionsInOrder.length - 1; i++) {
-        if (conditionsInOrder[i]([track, value])) {
-          include = true
-          break
-        }
-      }
-      return include
-    }
-
-    const searchFilterAndScore = value => trackList => {
-      return trackList.map((track) => {
-        if (value === undefined) return { track, score: 0 }
-        let score = 0
-        for (let i = 0; i < conditionsInOrder.length - 1; i++) {
-          if (conditionsInOrder[i]([track, value])) {
-            score = i
-          }
-        }
-        return { track, score }
-      })
-    }
-
-    const filterAndSortTrackList = value => breakPipe(
-      filter(searchFilter(value)),
-      breakIf(trackList => {
-        return trackList.length > 10000
-      }),
-      searchFilterAndScore(value),
-      sort((a,b) => {
-        if (a.score < b.score) return 1
-        if (a.score > b.score) return - 1
-        return 0
-      }),
-      map(({ track }) => track)
-    )
-
     const appendFilteredTracksByPageLazy = value => breakPipe(
       sliceTrackListByPage(
-        filterAndSortTrackList(value)(trackList)
+        fzfFilter(value)
       ),
       appendTracksAndReturnPage,
       breakIf(page => page === state.searchingPage),
@@ -262,13 +218,13 @@
 
     const prependFilteredTracksByPageLazy = value => pipe(
       convertPageNumberToDecrease,
-      sliceTrackListByPage(filterAndSortTrackList(value)(trackList)),
+      sliceTrackListByPage(fzfFilter(value)),
       prependTracksAndReturnPage,
       removeLastChildFromContainer,
     )
 
     const appendTracksByPageFilteredBy = value => pipe(
-      sliceTrackListByPage(filterAndSortTrackList(value)(trackList)),
+      sliceTrackListByPage(fzfFilter(value)),
       appendTracksAndReturnPage,
     )
 
