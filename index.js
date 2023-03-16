@@ -2,7 +2,7 @@ const express = require('express')
 const { readdir, access, constants } = require('fs')
 const { spawn, exec } = require('child_process');
 const app = express()
-const port = 80
+const port = process.argv[2] || 80
 
 // Something to refresh the index and remove any cached files...
 // setInterval(() => {
