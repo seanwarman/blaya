@@ -62,7 +62,7 @@
 		}
 
     // BEGIN
-    window.state.page = appendTracksByPage(1)
+    window.state.page = appendTracksByPage(trackList)(1)
 
     window.onscroll = onScroll
     document.getElementById('player').onended = onNext
@@ -70,10 +70,10 @@
 		document.getElementById('next-button').onkeydown = onClickOrEnter(onNext)
 		document.getElementById('prev-button').onclick = onClickOrEnter(onPrev)
 		document.getElementById('prev-button').onkeydown = onClickOrEnter(onPrev)
-    document.getElementById('target-button').onclick = onClickOrEnter(onScrollThisTrack)
-    document.getElementById('target-button').onkeydown = onClickOrEnter(onScrollThisTrack)
-    document.getElementById('current-playing-text').onclick = onClickOrEnter(onScrollThisTrack)
-    document.getElementById('current-playing-text').onkeydown = onClickOrEnter(onScrollThisTrack)
+    document.getElementById('target-button').onclick = onClickOrEnter(onScrollThisTrack(trackList))
+    document.getElementById('target-button').onkeydown = onClickOrEnter(onScrollThisTrack(trackList))
+    document.getElementById('current-playing-text').onclick = onClickOrEnter(onScrollThisTrack(trackList))
+    document.getElementById('current-playing-text').onkeydown = onClickOrEnter(onScrollThisTrack(trackList))
     document.getElementById('search-input').oninput = onSearch
     document.getElementById('search-input').onkeydown = e => e.stopPropagation()
     document.getElementById('clear-search-button').onclick = onClickOrEnter(onClearSearch)

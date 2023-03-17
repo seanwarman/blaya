@@ -69,7 +69,7 @@ export const prependTracksAndReturnPage = ([page, trackList]) => {
 // appendFilteredTracksByPageLazy :: String -> [String] -> Number
 export const appendFilteredTracksByPageLazy = value => breakPipe(
   sliceTrackListByPage(
-    fzfFilter(value)
+    fzfFilter(trackList)(value)
   ),
   appendTracksAndReturnPage,
   breakIf(page => page === window.state.searchingPage),
@@ -80,18 +80,16 @@ export const appendFilteredTracksByPageLazy = value => breakPipe(
 // prependFilteredTracksByPageLazy :: String -> [String] -> Number
 export const prependFilteredTracksByPageLazy = value => pipe(
   convertPageNumberToDecrease,
-  sliceTrackListByPage(fzfFilter(value)),
+  sliceTrackListByPage(fzfFilter(trackList)(value)),
   prependTracksAndReturnPage,
   removeLastChildFromContainer,
 )
 
-
 // appendTracksByPageFilteredBy :: String -> [String] -> Number
 export const appendTracksByPageFilteredBy = value => pipe(
-  sliceTrackListByPage(fzfFilter(value)),
+  sliceTrackListByPage(fzfFilter(trackList)(value)),
   appendTracksAndReturnPage,
 )
-
 
 // appendTracksByPageLazy :: [String] -> Number
 export const appendTracksByPageLazy = pipe(
@@ -99,8 +97,6 @@ export const appendTracksByPageLazy = pipe(
   appendTracksAndReturnPage,
   removeFirstChildFromContainer,
 )
-
-
 
 // prependTracksByPageLazy :: [String] -> Number
 export const prependTracksByPageLazy = pipe(
@@ -110,18 +106,16 @@ export const prependTracksByPageLazy = pipe(
   removeLastChildFromContainer,
 )
 
-
 // appendTracksByPage :: [String] -> Number
-export const appendTracksByPage = pipe(
+export const appendTracksByPage = trackList => pipe(
   sliceTrackListByPage(trackList),
   appendTracksAndReturnPage,
 )
 
-
-// replaceAllWithThreePages :: [String] -> Number
-export const replaceAllWithThreePages = pipe(
+// replaceAllWithThreePages :: [String] -> Number -> Number
+export const replaceAllWithThreePages = trackList => pipe(
   removeTrackEls,
-  appendTracksByPage,
-  appendTracksByPage,
-  appendTracksByPage,
+  appendTracksByPage(trackList),
+  appendTracksByPage(trackList),
+  appendTracksByPage(trackList),
 )

@@ -1,6 +1,5 @@
 import { simpleHash } from './utils.js'
 import { onClickOrEnter, onPlay } from './events.js'
-import { trackList } from '../track-list.js'
 import { pagesFromIndexRange, replaceAllWithThreePages } from './index.js'
 
 // updateCurrentTrack :: Element -> undefined
@@ -101,11 +100,16 @@ export const afterSearchReset = () => {
 }
 
 
-// scrollToTrackByTrackId :: Number -> undefined
-export const scrollToTrackByTrackId = trackId => {
+// scrollToTrackByTrackId :: Number -> [String] -> undefined
+export const scrollToTrackByTrackId = trackId => trackList => {
   const trackListIndex = trackList.findIndex(track => trackId === simpleHash(track))
   const [page] = pagesFromIndexRange([trackListIndex, 0])
-  window.state.page = replaceAllWithThreePages(page)
+  window.state.page = replaceAllWithThreePages(trackList)(page)
   let el = document.getElementById(trackId)
   el.focus()
+}
+
+// getSearchValue :: undefined -> String
+export const getSearchValue = () => {
+  return document.getElementById('search-input').value
 }

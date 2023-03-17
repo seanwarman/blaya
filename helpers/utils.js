@@ -1,5 +1,4 @@
 import { Fzf } from '/node_modules/fzf/dist/fzf.es.js'
-import { trackList } from '../track-list.js'
 
 // simpleHash :: String -> String
 export const simpleHash = str => {
@@ -13,8 +12,8 @@ export const simpleHash = str => {
 }
 
 
-// fzfFilter :: [String] -> [String]
-export const fzfFilter = value => {
+// fzfFilter :: [String] -> String -> [String]
+export const fzfFilter = trackList => value => {
   const fzf = new Fzf(trackList)
   const fzfFast = new Fzf(trackList, { fuzzy: 'v1' })
   if (value.length <= 3) return fzfFast.find(value).map(({ item }) => item)

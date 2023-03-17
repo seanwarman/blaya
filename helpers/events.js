@@ -1,10 +1,12 @@
-import { setDebounce } from './utils.js'
+import { trackList } from '../track-list.js'
+import { setDebounce, fzfFilter } from './utils.js'
 import {
   updateCurrentTrack,
   removeTrackEls,
   playTrack,
   afterSearchReset,
   scrollToTrackByTrackId,
+  getSearchValue,
 } from './dom.js'
 import {
   appendTracksByPageFilteredBy,
@@ -74,9 +76,13 @@ export const onPrev = () => {
 }
 
 
-// onScrollThisTrack :: undefined -> undefined
-export const onScrollThisTrack = () => {
-  scrollToTrackByTrackId(window.state.currentTrackId)
+// onScrollThisTrack :: [String] -> undefined -> undefined
+export const onScrollThisTrack = trackList => () => {
+  if (window.state.searching) {
+    scrollToTrackByTrackId(window.state.currentTrackId)(fzfFilter(trackList)(getSearchValue()))
+  } else {
+    scrollToTrackByTrackId(window.state.currentTrackId)(trackList)
+  }
 }
 
 
