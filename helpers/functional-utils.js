@@ -36,3 +36,27 @@ export const simpleHash = str => {
   }
   return new Uint32Array([hash])[0].toString(36)
 }
+
+// plusOne :: [a] -> Number -> b
+export const plusOne = arr => i => i+1 < arr.length ? arr[i+1] : arr[i]
+
+// takeOne :: [a] -> Number -> b
+export const takeOne = arr => i => i-1 < 0 ? 0 : arr[i-1]
+
+// findIndexEqTo :: [String] -> String -> Number
+export const findIndexEqTo = arr => str => arr.findIndex(t => t === str)
+
+// findIndex :: (a -> Boolean) -> [a] -> Number
+export const findIndex = fn => arr => arr.findIndex(fn)
+
+// select :: [a] -> Number -> [b]
+export const select = arr => i => arr[i]
+
+// slice :: String -> Number -> Number -> String
+export const slice = i => j => str => str.slice(i, j)
+
+// split :: String -> String -> String
+export const split = by => str => str.split(by)
+
+// reverse = [a] -> [a]
+export const reverse = arr => arr.slice().reverse()

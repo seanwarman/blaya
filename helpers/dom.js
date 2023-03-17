@@ -1,15 +1,32 @@
 import { simpleHash } from './utils.js'
 import { onClickOrEnter, onPlay } from './events.js'
-import { pagesFromIndexRange, replaceAllWithThreePages } from './index.js'
+import { getTrackAndAlbumFromId, pagesFromIndexRange, replaceAllWithThreePages } from './index.js'
 
-// updateCurrentTrack :: Element -> undefined
-export const updateCurrentTrack = element => {
-  document.getElementById(window.state.currentTrackId)?.classList?.remove('playing')
-  window.state.currentTrackId = element.id
-  element.classList.add('playing')
-  document.getElementById('current-playing-text').innerHTML = `<div>${element.firstChild.innerText}</div><div>${element.lastChild.innerText}</div>`
+// playHead :: String -> Element
+export const playHead = src => {
+  const sourcer = document.getElementById('current-track')
+  sourcer.src = src
+  const player = document.getElementById('player')
+  return player
 }
 
+// updateCurrentTrack :: String -> undefined
+export const updateCurrentTrack = nextTrackId => {
+  const playingEls = document.getElementsByClassName('playing')
+  if (playingEls.length) {
+    for (let el of playingEls) {
+      el.classList.remove('playing')
+    }
+  }
+
+  window.state.currentTrackId = nextTrackId
+  const element = document.getElementById(nextTrackId)
+  if (element) {
+    element.classList.add('playing')
+  }
+  const [track, album] = getTrackAndAlbumFromId(window.state.trackList)(nextTrackId)
+  document.getElementById('current-playing-text').innerHTML = `<div>${track}</div><div>${album}</div>`
+}
 
 // Create :: (String, String, String, Number) -> Element
 export const Create = (tag, text, href, i) => {
@@ -85,7 +102,7 @@ export const playTrack = (element) => {
   const player = document.getElementById('player')
   player.pause()
   player.load()
-  updateCurrentTrack(element)
+  updateCurrentTrack(element.id)
   player.play()
 }
 

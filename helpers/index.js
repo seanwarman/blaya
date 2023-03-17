@@ -1,4 +1,3 @@
-import { trackList } from '../track-list.js'
 import {
   filter,
   sort,
@@ -7,6 +6,14 @@ import {
   breakPipe,
   breakIf,
   logger,
+  plusOne,
+  takeOne,
+  findIndexEqTo,
+  findIndex,
+  select,
+  slice,
+  split,
+  reverse,
 } from './functional-utils.js'
 import {
   Create,
@@ -16,16 +23,21 @@ import {
   removeFirstChildFromContainer,
   removeTrackEls,
 } from './dom.js'
-import { fzfFilter } from './utils.js'
+import { fzfFilter, simpleHash } from './utils.js'
 
-// trackListElements :: [String] -> [Element]
-export const trackListElements = pipe(
+// parseTrackList :: [String] -> [String]
+export const parseTrackList = pipe(
   filter(track =>
     !/\/$/.test(track)
     && (/.mp3$/.test(track) || /.flac$/.test(track))
   ),
+  filter(Boolean),
+)
+
+// trackListElements :: [String] -> [Element]
+export const trackListElements = pipe(
   map((track, i) => Create('div', track, track, i)),
-  filter(Boolean)
+  filter(Boolean),
 )
 
 // pagesFromIndexRange :: [Number, Number] -> [Number, Number]
@@ -66,8 +78,8 @@ export const prependTracksAndReturnPage = ([page, trackList]) => {
   return page + window.state.numberOfPages
 }
 
-// appendFilteredTracksByPageLazy :: String -> [String] -> Number
-export const appendFilteredTracksByPageLazy = value => breakPipe(
+// appendFilteredTracksByPageLazy :: [String] -> String -> [String] -> Number
+export const appendFilteredTracksByPageLazy = trackList => value => breakPipe(
   sliceTrackListByPage(
     fzfFilter(trackList)(value)
   ),
@@ -77,29 +89,29 @@ export const appendFilteredTracksByPageLazy = value => breakPipe(
 )
 
 
-// prependFilteredTracksByPageLazy :: String -> [String] -> Number
-export const prependFilteredTracksByPageLazy = value => pipe(
+// prependFilteredTracksByPageLazy :: [String] -> String -> [String] -> Number
+export const prependFilteredTracksByPageLazy = trackList => value => pipe(
   convertPageNumberToDecrease,
   sliceTrackListByPage(fzfFilter(trackList)(value)),
   prependTracksAndReturnPage,
   removeLastChildFromContainer,
 )
 
-// appendTracksByPageFilteredBy :: String -> [String] -> Number
-export const appendTracksByPageFilteredBy = value => pipe(
+// appendTracksByPageFilteredBy :: [String] -> String -> [String] -> Number
+export const appendTracksByPageFilteredBy = trackList => value => pipe(
   sliceTrackListByPage(fzfFilter(trackList)(value)),
   appendTracksAndReturnPage,
 )
 
 // appendTracksByPageLazy :: [String] -> Number
-export const appendTracksByPageLazy = pipe(
+export const appendTracksByPageLazy = trackList => pipe(
   sliceTrackListByPage(trackList),
   appendTracksAndReturnPage,
   removeFirstChildFromContainer,
 )
 
 // prependTracksByPageLazy :: [String] -> Number
-export const prependTracksByPageLazy = pipe(
+export const prependTracksByPageLazy = trackList => pipe(
   convertPageNumberToDecrease,
   sliceTrackListByPage(trackList),
   prependTracksAndReturnPage,
@@ -118,4 +130,30 @@ export const replaceAllWithThreePages = trackList => pipe(
   appendTracksByPage(trackList),
   appendTracksByPage(trackList),
   appendTracksByPage(trackList),
+)
+
+// getCurrentTrackString :: [String] -> String -> String
+export const getCurrentTrackString = trackList => breakPipe(
+  currentTrackId => trackList.findIndex(t => currentTrackId === simpleHash(t)),
+  select(trackList),
+)
+
+// getNextTrackString :: [String] -> String -> String
+export const getNextTrackString = trackList => breakPipe(
+  currentTrackId => trackList.findIndex(t => currentTrackId === simpleHash(t)),
+  breakIf(i => trackList[i+1] === undefined),
+  plusOne(trackList),
+)
+
+// getPrevTrackString :: [String] -> String -> String
+export const getPrevTrackString = trackList => breakPipe(
+  currentTrackId => trackList.findIndex(t => currentTrackId === simpleHash(t)),
+  takeOne(trackList),
+)
+
+export const getTrackAndAlbumFromId = trackList => pipe(
+  getCurrentTrackString(trackList),
+  slice(9)(-4),
+  split('/'),
+  reverse,
 )

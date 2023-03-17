@@ -1,5 +1,4 @@
-import { trackList } from '../track-list.js'
-import { setDebounce, fzfFilter } from './utils.js'
+import { setDebounce, fzfFilter, simpleHash } from './utils.js'
 import {
   updateCurrentTrack,
   removeTrackEls,
@@ -7,6 +6,7 @@ import {
   afterSearchReset,
   scrollToTrackByTrackId,
   getSearchValue,
+  playHead,
 } from './dom.js'
 import {
   appendTracksByPageFilteredBy,
@@ -14,6 +14,8 @@ import {
   appendFilteredTracksByPageLazy,
   prependTracksByPageLazy,
   prependFilteredTracksByPageLazy,
+  getNextTrackString,
+  getPrevTrackString,
 } from './index.js'
 
 // onClickOrEnter :: (a -> b) -> Event -> undefined
@@ -30,7 +32,7 @@ export const onClearSearch = () => {
 }
 
 // onSearch :: Event -> undefined
-export const onSearch = (e) => {
+export const onSearch = trackList => (e) => {
   // If this is the first search, remember the scroll position...
   if (!window.state.searching) {
     window.state.previousScrollPositionY = window.scrollY
@@ -46,35 +48,37 @@ export const onSearch = (e) => {
       window.state.searching = true
       window.scrollTo(0, 0)
       removeTrackEls()
-      window.state.searchingPage = appendTracksByPageFilteredBy(e.target.value)(window.state.searchingPage)
+      window.state.searchingPage = appendTracksByPageFilteredBy(trackList)(e.target.value)(window.state.searchingPage)
     }, 100)
 }
 
-// onNext :: undefined -> undefined
-export const onNext = () => {
-  const currentTrackEl = document.getElementById(window.state.currentTrackId)
-  if (!currentTrackEl || currentTrackEl.hidden) return playTrack(document.querySelector('.track'))
-    if (!currentTrackEl.nextElementSibling.hidden) return playTrack(currentTrackEl.nextElementSibling)
-      const nextTrackIndex = Number(currentTrackEl.nextElementSibling.id.split('-')[1])
-  const els = document.getElementsByClassName('track')
-  for (let i = nextTrackIndex; i < els.length; i++) {
-    if (!els[i].hidden) return playTrack(els[i])
+// onNext :: [String] -> undefined -> undefined
+export const onNext = trackList => () => {
+  const src = getNextTrackString(trackList)(window.state.currentTrackId)
+  const player = playHead(src)
+  window.state.currentTrackId = simpleHash(src)
+  if (player.paused) {
+    player.load()
+  } else {
+    player.load()
+    player.play()
   }
+  updateCurrentTrack(window.state.currentTrackId)
 }
 
-
-// onPrev :: undefined -> undefined
-export const onPrev = () => {
-  const currentTrackEl = document.getElementById(window.state.currentTrackId)
-  if (!currentTrackEl || currentTrackEl.hidden) return playTrack(document.querySelector('.track'))
-    if (!currentTrackEl.previousElementSibling.hidden) return playTrack(currentTrackEl.previousElementSibling)
-      const prevTrackIndex = Number(currentTrackEl.previousElementSibling.id.split('-')[1])
-  const els = document.getElementsByClassName('track')
-  for (let i = prevTrackIndex; i > -1; i--) {
-    if (!els[i].hidden) return playTrack(els[i])
+// onPrev :: [String] -> undefined -> undefined
+export const onPrev = trackList => () => {
+  const src = getPrevTrackString(trackList)(window.state.currentTrackId)
+  const player = playHead(src)
+  window.state.currentTrackId = simpleHash(src)
+  if (player.paused) {
+    player.load()
+  } else {
+    player.load()
+    player.play()
   }
+  updateCurrentTrack(window.state.currentTrackId)
 }
-
 
 // onScrollThisTrack :: [String] -> undefined -> undefined
 export const onScrollThisTrack = trackList => () => {
@@ -90,17 +94,15 @@ export const onScrollThisTrack = trackList => () => {
 export const onPlay = (e) => {
   const ref = e.currentTarget
   if (ref) {
-    const sourcer = document.getElementById('current-track')
-    sourcer.src = ref.getAttribute('data-href')
-    const player = document.getElementById('player')
+    const player = playHead(ref.getAttribute('data-href'))
+    updateCurrentTrack(ref.id)
     player.load()
-    updateCurrentTrack(ref)
     player.play()
   }
 }
 
 // onScroll :: undefined -> undefined
-export const onScroll = () => {
+export const onScroll = trackList => () => {
   if (window.state.lazyLoadDebounce) {
     return
   }
@@ -112,12 +114,12 @@ export const onScroll = () => {
   if ((window.innerHeight + window.scrollY + offset) >= document.body.offsetHeight) {
     if (window.state.searching) {
       if (searchElValue().length > 0) {
-        const searchingPage = appendFilteredTracksByPageLazy(searchElValue())(window.state.searchingPage)
+        const searchingPage = appendFilteredTracksByPageLazy(trackList)(searchElValue())(window.state.searchingPage)
         window.state.searchingPage = searchingPage || window.state.searchingPage
         return setDebounce()
       }
     } else {
-      window.state.page = appendTracksByPageLazy(window.state.page)
+      window.state.page = appendTracksByPageLazy(trackList)(window.state.page)
       return setDebounce()
     }
   }
@@ -128,7 +130,7 @@ export const onScroll = () => {
   && window.state.page > window.state.numberOfPages + 1
   && window.scrollY < offset
   ) {
-    window.state.page = prependTracksByPageLazy(window.state.page)
+    window.state.page = prependTracksByPageLazy(trackList)(window.state.page)
     return setDebounce()
   }
 
@@ -138,7 +140,7 @@ export const onScroll = () => {
   && window.scrollY < offset
   && searchElValue().length > 0
   ) {
-    window.state.searchingPage = prependFilteredTracksByPageLazy(searchElValue())(window.state.searchingPage)
+    window.state.searchingPage = prependFilteredTracksByPageLazy(trackList)(searchElValue())(window.state.searchingPage)
     return setDebounce()
   }
 }
