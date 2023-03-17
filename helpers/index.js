@@ -21,11 +21,11 @@ import { fzfFilter } from './utils.js'
 // trackListElements :: [String] -> [Element]
 export const trackListElements = pipe(
   filter(track =>
-         !/\/$/.test(track)
-         && (/.mp3$/.test(track) || /.flac$/.test(track))
-        ),
-        map((track, i) => Create('div', track, track, i)),
-          filter(Boolean)
+    !/\/$/.test(track)
+    && (/.mp3$/.test(track) || /.flac$/.test(track))
+  ),
+  map((track, i) => Create('div', track, track, i)),
+  filter(Boolean)
 )
 
 // pagesFromIndexRange :: [Number, Number] -> [Number, Number]
@@ -73,7 +73,7 @@ export const appendFilteredTracksByPageLazy = value => breakPipe(
   ),
   appendTracksAndReturnPage,
   breakIf(page => page === window.state.searchingPage),
-    removeFirstChildFromContainer,
+  removeFirstChildFromContainer,
 )
 
 
