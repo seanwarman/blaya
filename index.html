@@ -31,10 +31,30 @@
 		</footer>
 	</body>
 	<script type="module">
-    import { trackList } from '/track-list.js'
-    import { Fzf } from '/node_modules/fzf/dist/fzf.es.js'
+    import { trackList } from './track-list.js'
+    import { simpleHash, setDebounce } from './helpers/utils.js'
+    import {
+      appendTracks,
+      prependTracks,
+      appendFilteredTracksByPageLazy,
+      prependFilteredTracksByPageLazy,
+      appendTracksByPageLazy,
+      prependTracksByPageLazy,
+      appendTracksByPage,
+      replaceAllWithThreePages,
+      pagesFromIndexRange,
+    } from './helpers/index.js'
+    import {
+      onClearSearch,
+      onSearch,
+      onNext,
+      onPrev,
+      onScrollThisTrack,
+      onClickOrEnter,
+      onScroll,
+    } from './helpers/events.js'
 
-		const state = {
+		window.state = {
 			currentTrackId: null,
       texts: [],
       throttleId: null,
@@ -49,359 +69,11 @@
       previousTrackListContainer: null,
 		}
 
-    const fzfFilter = value => {
-      const fzf = new Fzf(trackList)
-      const fzfFast = new Fzf(trackList, { fuzzy: 'v1' })
-      if (value.length <= 3) return fzfFast.find(value).map(({ item }) => item)
-      return fzf.find(value).map(({ item }) => item)
-    }
-
-		const onClickOrEnter = cb => (e) => {
-			if (e.type === "click" || e.key === "Enter") {
-				cb(e)
-			}
-		}
-
-    const simpleHash = str => {
-      let hash = 0
-      for (let i = 0; i < str.length; i++) {
-        const char = str.charCodeAt(i)
-        hash = (hash << 5) - hash + char
-        hash &= hash
-      }
-      return new Uint32Array([hash])[0].toString(36)
-    }
-
-    const filter = fn => arr => arr.filter(fn)
-    // Slice clones the array so sort doesn't sort in place...
-    const sort = fn => arr => arr.slice().sort(fn)
-    const map = fn => arr => arr.map(fn)
-    const pipe = (...fns) => (...args) => fns.reduce((acc, fn) => [fn.call(null, ...acc)], args)[0]
-    const breakPipe = (...fns) => (...args) => fns.reduce((acc, fn) => {
-      if (acc.break) return acc
-      const res = fn.call(null, ...acc.args)
-      if (res === 'break') return { args: acc.args, break: true }
-      return { args: [res], break: false }
-    }, { args, break: false }).args[0]
-    const logger = tag => (arg) => console.log(tag, arg) || arg
-    const breakIf = fn => arg => fn(arg) ? 'break' : arg
-
-		const updateCurrentTrack = element => {
-			document.getElementById(state.currentTrackId)?.classList?.remove('playing')
-			state.currentTrackId = element.id
-			element.classList.add('playing')
-			document.getElementById('current-playing-text').innerHTML = `<div>${element.firstChild.innerText}</div><div>${element.lastChild.innerText}</div>`
-		}
-
-		const onPlay = (e) => {
-			 const ref = e.currentTarget
-			 if (ref) {
-				const sourcer = document.getElementById('current-track')
-				sourcer.src = ref.getAttribute('data-href')
-				const player = document.getElementById('player')
-				player.load()
-				updateCurrentTrack(ref)
-				player.play()
-			 }
-		}
-
-		const Create = (tag, text, href, i) => {
-			const newEl = document.createElement(tag)
-			newEl.className = 'track'
-			newEl.role = 'link'
-			newEl.dataset.href = href
-			newEl.tabIndex = '0'
-			newEl.id = simpleHash(text)
-
-      if (newEl.id === state.currentTrackId) newEl.classList.add('playing')
-
-			const [track, album] = text.slice(9, -4).split('/').reverse()
-
-			if (/#/.test(track) || /#/.test(album)) {
-				// delete newEl
-				return
-			}
-
-			newEl.innerHTML = '<div class="track-name">' + track + '</div>' + (album ? '<div class="track-album">' + album + '</div>' : '')
-			newEl.onclick = onClickOrEnter(onPlay)
-			newEl.onkeydown = onClickOrEnter(onPlay)
-
-			return newEl
-		}
-
-		const Append = (page, newEls) => {
-      if (newEls.length < 1) return page
-      const div = document.createElement('div')
-      div.id = 'page-' + page
-      div.append(...newEls)
-      document.getElementById('track-list-container').append(div)
-      state.texts = newEls.map(({ innerText }) => innerText)
-      return page + 1
-		}
-
-		const Prepend = (page, newEls) => {
-      const div = document.createElement('div')
-      div.id = 'page-' + page
-      div.append(...newEls)
-      document.getElementById('track-list-container').prepend(div)
-      state.texts = newEls.map(({ innerText }) => innerText)
-      return page - 1
-		}
-
-    const trackListElements = pipe(
-      filter(track =>
-        !/\/$/.test(track)
-        && (/.mp3$/.test(track) || /.flac$/.test(track))
-      ),
-      map((track, i) => Create('div', track, track, i)),
-      filter(Boolean)
-    )
-
-    const appendTracks = pipe(
-      (page, trackList) => Append(page, trackListElements(trackList))
-    )
-
-    const prependTracks = pipe(
-      (page, trackList) => Prepend(page, trackListElements(trackList))
-    )
-
-    const indexRangeFromPages = (pageRange) => {
-      const [pageStart, pageEnd] = pageRange
-      // pageEnd is our current page, loading page one would be [0, 1]
-      const pageSize = state.pageSize
-      return [pageSize * pageStart, pageSize * pageEnd]
-    }
-
-    const pagesFromIndexRange = (indexRange) => {
-      const [startIndex, endIndex] = indexRange
-      const pageFromIndex = i => Math.max(1, Math.floor(startIndex / state.pageSize))
-      return [pageFromIndex(startIndex), pageFromIndex(endIndex)]
-    }
-
-    const convertPageNumberToDecrease = page => (page - state.numberOfPages) - 1
-    const sliceTrackListByPage = trackList => page => [page, trackList.slice(...indexRangeFromPages([page - 1, page]))]
-    const appendTracksAndReturnPage = ([page, trackList]) => appendTracks(page, trackList)
-    const prependTracksAndReturnPage = ([page, trackList]) => {
-      prependTracks(page, trackList)
-      return page + state.numberOfPages
-    }
-
-    const removeLastChildFromContainer = (arg) => {
-      const trackListContainer = document.getElementById('track-list-container')
-      trackListContainer.removeChild(trackListContainer.lastChild)
-      return arg
-    }
-
-    const removeFirstChildFromContainer = (page) => {
-      if (page > state.numberOfPages + 1) {
-        const trackListContainer = document.getElementById('track-list-container')
-        trackListContainer.firstChild && trackListContainer.removeChild(trackListContainer.firstChild)
-      }
-      return page
-    }
-
-    const removeTrackEls = (arg) => {
-      document.getElementById('track-list-container').remove()
-      const footer = document.getElementsByTagName('footer')[0]
-			const trackListContainer = document.createElement('div')
-      trackListContainer.id = 'track-list-container'
-      document.body.insertBefore(trackListContainer, footer)
-      return arg
-    }
-
-    const appendFilteredTracksByPageLazy = value => breakPipe(
-      sliceTrackListByPage(
-        fzfFilter(value)
-      ),
-      appendTracksAndReturnPage,
-      breakIf(page => page === state.searchingPage),
-      removeFirstChildFromContainer,
-    )
-
-    const prependFilteredTracksByPageLazy = value => pipe(
-      convertPageNumberToDecrease,
-      sliceTrackListByPage(fzfFilter(value)),
-      prependTracksAndReturnPage,
-      removeLastChildFromContainer,
-    )
-
-    const appendTracksByPageFilteredBy = value => pipe(
-      sliceTrackListByPage(fzfFilter(value)),
-      appendTracksAndReturnPage,
-    )
-
-    const appendTracksByPageLazy = pipe(
-      sliceTrackListByPage(trackList),
-      appendTracksAndReturnPage,
-      removeFirstChildFromContainer,
-    )
-
-    const prependTracksByPageLazy = pipe(
-      convertPageNumberToDecrease,
-      sliceTrackListByPage(trackList),
-      prependTracksAndReturnPage,
-      removeLastChildFromContainer,
-    )
-
-    const appendTracksByPage = pipe(
-      sliceTrackListByPage(trackList),
-      appendTracksAndReturnPage,
-    )
-
-    const replaceAllWithThreePages = pipe(
-      removeTrackEls,
-      appendTracksByPage,
-      appendTracksByPage,
-      appendTracksByPage,
-    )
-
-    const scrollToTrackByTrackId = trackId => {
-      const trackListIndex = trackList.findIndex(track => trackId === simpleHash(track))
-      const [page] = pagesFromIndexRange([trackListIndex, 0])
-      state.page = replaceAllWithThreePages(page)
-      let el = document.getElementById(trackId)
-      el.focus()
-    }
-
-		const playTrack = (element) => {
-			document.getElementById('current-track').src = element.getAttribute('data-href')
-			const player = document.getElementById('player')
-			player.pause()
-			player.load()
-			updateCurrentTrack(element)
-			player.play()
-		}
-
-		const onNext = () => {
-			const currentTrackEl = document.getElementById(state.currentTrackId)
-			if (!currentTrackEl || currentTrackEl.hidden) return playTrack(document.querySelector('.track'))
-      if (!currentTrackEl.nextElementSibling.hidden) return playTrack(currentTrackEl.nextElementSibling)
-      const nextTrackIndex = Number(currentTrackEl.nextElementSibling.id.split('-')[1])
-      const els = document.getElementsByClassName('track')
-      for (let i = nextTrackIndex; i < els.length; i++) {
-        if (!els[i].hidden) return playTrack(els[i])
-      }
-		}
-
-		const onPrev = () => {
-			const currentTrackEl = document.getElementById(state.currentTrackId)
-			if (!currentTrackEl || currentTrackEl.hidden) return playTrack(document.querySelector('.track'))
-      if (!currentTrackEl.previousElementSibling.hidden) return playTrack(currentTrackEl.previousElementSibling)
-      const prevTrackIndex = Number(currentTrackEl.previousElementSibling.id.split('-')[1])
-      const els = document.getElementsByClassName('track')
-      for (let i = prevTrackIndex; i > -1; i--) {
-          if (!els[i].hidden) return playTrack(els[i])
-      }
-		}
-
-    const onScrollThisTrack = () => {
-      scrollToTrackByTrackId(state.currentTrackId)
-    }
-
-    const hideElementsSearchMethod = (e) => {
-      if (e.target.value.length === 0) {
-        const elsHidden = document.querySelectorAll('.track[hidden]')
-        for (let i = 0; i < elsHidden.length; i++) {
-          elsHidden[i].hidden = false
-        }
-        return
-      }
-      const els = document.getElementsByClassName('track')
-      state.texts.forEach((t,i) => {
-        if(RegExp(e.target.value, 'i').test(t)) {
-          els[i].hidden = false
-        } else {
-          els[i].hidden = true
-        }
-      })
-    }
-
-    const afterSearchReset = () => {
-      state.searching = false
-      document.getElementById('track-list-container').remove()
-      const footer = document.getElementsByTagName('footer')[0]
-      document.body.insertBefore(state.previousTrackListContainer, footer)
-      scrollTo(0, state.previousScrollPositionY)
-    }
-
-    const onClearSearch = () => {
-      document.getElementById('search-input').value = ''
-      afterSearchReset()
-    }
-
-    const onSearch = (e) => {
-      // If this is the first search, remember the scroll position...
-      if (!state.searching) {
-        state.previousScrollPositionY = window.scrollY
-        state.previousTrackListContainer = document.getElementById('track-list-container').cloneNode(true)
-      }
-      state.searchingPage = 1
-      if (e.target.value.length === 0) {
-        afterSearchReset()
-        return
-      }
-      if (state.throttleId) clearTimeout(state.throttleId)
-      state.throttleId = setTimeout(() => {
-        state.searching = true
-        window.scrollTo(0, 0)
-        removeTrackEls()
-        state.searchingPage = appendTracksByPageFilteredBy(e.target.value)(state.searchingPage)
-      }, 100)
-    }
-
     // BEGIN
-    state.page = appendTracksByPage(1)
+    window.state.page = appendTracksByPage(1)
 
-    const setDebounce = () => {
-      state.lazyLoadDebounce = true
-      setTimeout(() => { state.lazyLoadDebounce = false }, 500)
-    }
-
-    window.onscroll = function(ev) {
-      if (state.lazyLoadDebounce) {
-        return
-      }
-
-      const offset = 3000
-      const searchElValue = () => document.getElementById('search-input')?.value || ''
-
-      // Down scroll
-      if ((window.innerHeight + window.scrollY + offset) >= document.body.offsetHeight) {
-        if (state.searching) {
-          if (searchElValue().length > 0) {
-            const searchingPage = appendFilteredTracksByPageLazy(searchElValue())(state.searchingPage)
-            state.searchingPage = searchingPage || state.searchingPage
-            return setDebounce()
-          }
-        } else {
-          state.page = appendTracksByPageLazy(state.page)
-          return setDebounce()
-        }
-      }
-
-      // Up scroll
-      if (
-        !state.searching
-        && state.page > state.numberOfPages + 1
-        && window.scrollY < offset
-      ) {
-        state.page = prependTracksByPageLazy(state.page)
-        return setDebounce()
-      }
-
-      if (
-        state.searching
-        && state.searchingPage > state.numberOfPages + 1
-        && window.scrollY < offset
-        && searchElValue().length > 0
-      ) {
-        state.searchingPage = prependFilteredTracksByPageLazy(searchElValue())(state.searchingPage)
-        return setDebounce()
-      }
-    }
-
-		// Buttons...
-		document.getElementById('player').onended = onNext
+    window.onscroll = onScroll
+    document.getElementById('player').onended = onNext
 		document.getElementById('next-button').onclick = onClickOrEnter(onNext)
 		document.getElementById('next-button').onkeydown = onClickOrEnter(onNext)
 		document.getElementById('prev-button').onclick = onClickOrEnter(onPrev)
@@ -410,8 +82,8 @@
     document.getElementById('target-button').onkeydown = onClickOrEnter(onScrollThisTrack)
     document.getElementById('current-playing-text').onclick = onClickOrEnter(onScrollThisTrack)
     document.getElementById('current-playing-text').onkeydown = onClickOrEnter(onScrollThisTrack)
-    document.getElementById('search-input').onkeydown = e => e.stopPropagation()
     document.getElementById('search-input').oninput = onSearch
+    document.getElementById('search-input').onkeydown = e => e.stopPropagation()
     document.getElementById('clear-search-button').onclick = onClickOrEnter(onClearSearch)
     document.getElementById('clear-search-button').onkeydown = onClickOrEnter(onClearSearch)
 
