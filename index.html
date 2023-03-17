@@ -40,6 +40,7 @@
     import {
       onClearSearch,
       onSearch,
+      onEndNext,
       onNext,
       onPrev,
       onScrollThisTrack,
@@ -67,7 +68,7 @@
     window.state.page = appendTracksByPage(window.state.trackList)(1)
 
     window.onscroll = onScroll(window.state.trackList)
-    document.getElementById('player').onended = onNext(window.state.trackList)
+    document.getElementById('player').onended = onEndNext(window.state.trackList)
 		document.getElementById('next-button').onclick = onClickOrEnter(onNext(window.state.trackList))
 		document.getElementById('next-button').onkeydown = onClickOrEnter(onNext(window.state.trackList))
 		document.getElementById('prev-button').onclick = onClickOrEnter(onPrev(window.state.trackList))

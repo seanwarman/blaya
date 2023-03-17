@@ -52,6 +52,15 @@ export const onSearch = trackList => (e) => {
     }, 100)
 }
 
+export const onEndNext = trackList => () => {
+  const src = getNextTrackString(trackList)(window.state.currentTrackId)
+  const player = playHead(src)
+  window.state.currentTrackId = simpleHash(src)
+  player.load()
+  player.play()
+  updateCurrentTrack(window.state.currentTrackId)
+}
+
 // onNext :: [String] -> undefined -> undefined
 export const onNext = trackList => () => {
   const src = getNextTrackString(trackList)(window.state.currentTrackId)
@@ -88,7 +97,6 @@ export const onScrollThisTrack = trackList => () => {
     scrollToTrackByTrackId(window.state.currentTrackId)(trackList)
   }
 }
-
 
 // onPlay :: Event -> undefined
 export const onPlay = (e) => {
