@@ -14,7 +14,7 @@ header {
   position: fixed;
   width: 100%;
   display: grid;
-  grid-template-columns: auto auto auto auto;
+  grid-template-columns: 25% 25% 25% auto;
   justify-items: end;
   padding: 1rem 2rem;
   margin-top: -6rem;
@@ -23,7 +23,7 @@ header {
 
 .search-container {
   grid-column: 1 / span 3;
-  height: 4rem;
+  /* height: 4rem; */
   position: relative;
   width: 100%;
 }
@@ -50,14 +50,43 @@ input#search-input {
   width: 1.4rem;
 }
 
+.history {
+  position: relative;
+  grid-column: 4 / span 1;
+  width: 100%;
+  background: white;
+  box-shadow: 1px 7px 17px 0px #00000024;
+  border-radius: 2px;
+  overflow-y: auto;
+  transform:rotateX(180deg);
+  -moz-transform:rotateX(180deg); /* Mozilla */
+  -webkit-transform:rotateX(180deg); /* Safari and Chrome */
+  -ms-transform:rotateX(180deg); /* IE 9+ */
+  -o-transform:rotateX(180deg); /* Opera */
+}
+
+.history .track .history-placeholder {
+  color: grey;
+}
+
+.history .track {
+  transform:rotateX(180deg);
+  -moz-transform:rotateX(180deg); /* Mozilla */
+  -webkit-transform:rotateX(180deg); /* Safari and Chrome */
+  -ms-transform:rotateX(180deg); /* IE 9+ */
+  -o-transform:rotateX(180deg); /* Opera */
+}
+
 #target-button {
+  position: absolute;
+  top: 0;
+  right: 0;
   box-shadow: 5px 5px 12px 0px #00000024;
   border-radius: 50%;
   border: none;
   width: 60px;
   height: 60px;
   background: whitesmoke;
-  grid-column: 4 / span 1;
 }
 
 #target-button:hover {
@@ -170,7 +199,7 @@ div#current-playing-text {
 
   .search-container {
     grid-column: 2 / span 2;
-    height: unset;
+    height: 2.5rem;
   }
 
   input#search-input {
