@@ -46,6 +46,8 @@
       onScrollThisTrack,
       onClickOrEnter,
       onScroll,
+      onUpScroll,
+      onDownScroll,
     } from './helpers/events.js'
 
 		window.state = {
@@ -62,27 +64,15 @@
       previousScrollPositionY: 0,
       pageSize: 300,
       previousTrackListContainer: null,
+      lastScrollTop: 0,
+      offset: 3000,
+      targeting: false,
 		}
 
     // BEGIN
     window.state.page = appendTracksByPage(window.state.trackList)(1)
 
-    var lastScrollTop = 0;
-
-    // element should be replaced with the actual target element on which you have applied scroll, use window in case of no target element.
-    window.addEventListener('scroll', function() { // or window.addEventListener("scroll"....
-      var st = window.pageYOffset || document.documentElement.scrollTop; // Credits: "https://github.com/qeremy/so/blob/master/so.dom.js#L426"
-      if (st > lastScrollTop) {
-        // downscroll code
-        console.log(`@FILTER down`)
-      } else if (st < lastScrollTop) {
-        console.log(`@FILTER up`)
-        // upscroll code
-      } // else was horizontal scroll
-      lastScrollTop = st <= 0 ? 0 : st; // For Mobile or negative scrolling
-    }, false);
-
-    window.onscroll = onScroll(window.state.trackList)
+    window.addEventListener('scroll', onScroll([onUpScroll(window.state.trackList), onDownScroll(window.state.trackList)]), false)
     document.getElementById('player').onended = onEndNext(window.state.trackList)
 		document.getElementById('next-button').onclick = onClickOrEnter(onNext(window.state.trackList))
 		document.getElementById('next-button').onkeydown = onClickOrEnter(onNext(window.state.trackList))

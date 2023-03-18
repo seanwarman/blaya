@@ -90,12 +90,18 @@ export const onPrev = trackList => () => {
 
 // onScrollThisTrack :: [String] -> undefined -> undefined
 export const onScrollThisTrack = trackList => () => {
+  window.state.targeting = true
+
   if (window.state.searching) {
     const trackListFiltered = fzfFilter(trackList)(getSearchValue())
     scrollToTrackByTrackId(window.state.currentTrackId)(trackListFiltered)
   } else {
     scrollToTrackByTrackId(window.state.currentTrackId)(trackList)
   }
+
+  setTimeout(() => {
+    window.state.targeting = false
+  }, 100)
 }
 
 // onPlay :: Event -> undefined
@@ -110,18 +116,16 @@ export const onPlay = (e) => {
 }
 
 export const searchElValue = () => document.getElementById('search-input')?.value || ''
-export const offset = 3000
 
 export const onUpScroll = trackList => () => {
   if (window.state.lazyLoadDebounce) {
     return
   }
 
-  // Up scroll
   if (
     !window.state.searching
     && window.state.page > window.state.numberOfPages + 1
-    && window.scrollY < offset
+    && window.scrollY < window.state.offset
   ) {
     window.state.page = prependTracksByPageLazy(trackList)(window.state.page)
     return setDebounce()
@@ -130,10 +134,10 @@ export const onUpScroll = trackList => () => {
   if (
     window.state.searching
     && window.state.searchingPage > window.state.numberOfPages + 1
-    && window.scrollY < offset
+    && window.scrollY < window.state.offset
     && searchElValue().length > 0
   ) {
-    // window.state.searchingPage = prependFilteredTracksByPageLazy(trackList)(searchElValue())(window.state.searchingPage)
+    window.state.searchingPage = prependFilteredTracksByPageLazy(trackList)(searchElValue())(window.state.searchingPage)
     return setDebounce()
   }
 }
@@ -145,8 +149,7 @@ export const onDownScroll = trackList => () => {
 
   const searchElValue = () => document.getElementById('search-input')?.value || ''
 
-  // Down scroll
-  if ((window.innerHeight + window.scrollY + offset) >= document.body.offsetHeight) {
+  if ((window.innerHeight + window.scrollY + window.state.offset) >= document.body.offsetHeight) {
     if (window.state.searching) {
       if (searchElValue().length > 0) {
         const searchingPage = appendFilteredTracksByPageLazy(trackList)(searchElValue())(window.state.searchingPage)
@@ -158,9 +161,17 @@ export const onDownScroll = trackList => () => {
       return setDebounce()
     }
   }
-
 }
 
-// onScroll :: undefined -> undefined
-export const onScroll = trackList => () => {
+// onScroll :: [Event -> undefined] -> Event -> (Event -> undefined)
+export const onScroll = ([onUpScroll, onDownScroll]) => (e) => {
+  if (window.state.targeting) return
+  const st = window.pageYOffset || document.documentElement.scrollTop
+  if (st > window.state.lastScrollTop) {
+    onDownScroll(e)
+  } else if (st < window.state.lastScrollTop) {
+    onUpScroll(e)
+  }
+
+  window.state.lastScrollTop = st <= 0 ? 0 : st
 }
