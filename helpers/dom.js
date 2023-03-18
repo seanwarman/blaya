@@ -1,6 +1,6 @@
 import { simpleHash } from './utils.js'
 import { onClickOrEnter, onPlay } from './events.js'
-import { getTrackAndAlbumFromId, pagesFromIndexRange, replaceAllWithThreePages } from './index.js'
+import { trackListElements, sliceTrackListByPagePlain, getTrackAndAlbumFromId, pagesFromIndexRange, replaceAllWithThreePages } from './index.js'
 
 // playHead :: String -> Element
 export const playHead = src => {
@@ -50,6 +50,7 @@ export const Create = (tag, text, href, i) => {
 
 // Append :: (Number, [Element]) -> Number
 export const Append = (page, newEls) => {
+  console.log(`append @FILTER page:`, page)
   if (newEls.length < 1) return page
   const div = document.createElement('div')
   div.id = 'page-' + page
@@ -61,6 +62,7 @@ export const Append = (page, newEls) => {
 
 // Prepend :: (Number, [Element]) -> Number
 export const Prepend = (page, newEls) => {
+  console.error(`prepend @FILTER page:`, page)
   const div = document.createElement('div')
   div.id = 'page-' + page
   div.append(...newEls)
@@ -116,6 +118,12 @@ export const afterSearchReset = () => {
   scrollTo(0, window.state.previousScrollPositionY)
 }
 
+// createPageElement :: Number => Element
+export const createPageElement = page => {
+  const div = document.createElement('div')
+  div.id = 'page-' + page
+  return div
+}
 
 // scrollToTrackByTrackId :: Number -> [String] -> undefined
 export const scrollToTrackByTrackId = trackId => trackList => {

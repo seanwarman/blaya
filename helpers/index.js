@@ -43,7 +43,7 @@ export const trackListElements = pipe(
 // pagesFromIndexRange :: [Number, Number] -> [Number, Number]
 export const pagesFromIndexRange = (indexRange) => {
   const [startIndex, endIndex] = indexRange
-  const pageFromIndex = i => Math.max(1, Math.floor(startIndex / window.state.pageSize))
+  const pageFromIndex = i => Math.max(1, Math.floor(i / window.state.pageSize))
   return [pageFromIndex(startIndex), pageFromIndex(endIndex)]
 }
 
@@ -61,6 +61,9 @@ export const appendTracksAndReturnPage = ([page, trackList]) => appendTracks(pag
 // sliceTrackListByPage :: [String] -> Number -> [Number [String]]
 export const sliceTrackListByPage = trackList => page => [page, trackList.slice(...indexRangeFromPages([page - 1, page]))]
 
+// sliceTrackListByPage :: [String] -> Number -> [String]
+export const sliceTrackListByPagePlain = trackList => page => trackList.slice(...indexRangeFromPages([page - 1, page]))
+
 // convertPageNumberToDecrease :: Number -> Number
 export const convertPageNumberToDecrease = page => (page - window.state.numberOfPages) - 1
 
@@ -70,7 +73,6 @@ export const appendTracks = (page, trackList) => Append(page, trackListElements(
 
 // prependTracks :: (Number, [String]) -> Number
 export const prependTracks = (page, trackList) => Prepend(page, trackListElements(trackList))
-
 
 // prependTracksAndReturnPage :: [Number, [String]] -> Number
 export const prependTracksAndReturnPage = ([page, trackList]) => {
@@ -127,9 +129,13 @@ export const appendTracksByPage = trackList => pipe(
 // replaceAllWithThreePages :: [String] -> Number -> Number
 export const replaceAllWithThreePages = trackList => pipe(
   removeTrackEls,
+  logger('1: '),
   appendTracksByPage(trackList),
+  logger('2: '),
   appendTracksByPage(trackList),
+  logger('3: '),
   appendTracksByPage(trackList),
+  logger('4: '),
 )
 
 // getCurrentTrackString :: [String] -> String -> String
