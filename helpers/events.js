@@ -115,8 +115,6 @@ export const onPlay = (e) => {
   }
 }
 
-export const searchElValue = () => document.getElementById('search-input')?.value || ''
-
 export const onUpScroll = trackList => () => {
   if (window.state.lazyLoadDebounce) {
     return
@@ -135,9 +133,9 @@ export const onUpScroll = trackList => () => {
     window.state.searching
     && window.state.searchingPage > window.state.numberOfPages + 1
     && window.scrollY < window.state.offset
-    && searchElValue().length > 0
+    && getSearchValue().length > 0
   ) {
-    window.state.searchingPage = prependFilteredTracksByPageLazy(trackList)(searchElValue())(window.state.searchingPage)
+    window.state.searchingPage = prependFilteredTracksByPageLazy(trackList)(getSearchValue())(window.state.searchingPage)
     return setDebounce()
   }
 }
@@ -147,12 +145,10 @@ export const onDownScroll = trackList => () => {
     return
   }
 
-  const searchElValue = () => document.getElementById('search-input')?.value || ''
-
   if ((window.innerHeight + window.scrollY + window.state.offset) >= document.body.offsetHeight) {
     if (window.state.searching) {
-      if (searchElValue().length > 0) {
-        const searchingPage = appendFilteredTracksByPageLazy(trackList)(searchElValue())(window.state.searchingPage)
+      if (getSearchValue().length > 0) {
+        const searchingPage = appendFilteredTracksByPageLazy(trackList)(getSearchValue())(window.state.searchingPage)
         window.state.searchingPage = searchingPage || window.state.searchingPage
         return setDebounce()
       }

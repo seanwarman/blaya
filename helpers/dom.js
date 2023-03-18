@@ -1,6 +1,6 @@
 import { simpleHash } from './utils.js'
 import { onClickOrEnter, onPlay } from './events.js'
-import { trackListElements, sliceTrackListByPagePlain, getTrackAndAlbumFromId, pagesFromIndexRange, replaceAllWithThreePages } from './index.js'
+import { getTrackAndAlbumFromId, pagesFromIndexRange, replaceAllWithThreePages } from './index.js'
 
 // playHead :: String -> Element
 export const playHead = src => {
