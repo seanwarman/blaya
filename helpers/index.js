@@ -157,9 +157,17 @@ export const getPrevTrackString = trackList => breakPipe(
   takeOne(trackList),
 )
 
+// getTrackAndAlbumFromTrackString :: String -> [String]
+export function getTrackAndAlbumFromTrackString(trackString) {
+  return pipe(
+    slice(9)(-4),
+    split('/'),
+    reverse,
+  )(trackString)
+}
+
+// getTrackAndAlbumFromId :: [String] -> String -> [String]
 export const getTrackAndAlbumFromId = trackList => pipe(
   getCurrentTrackString(trackList),
-  slice(9)(-4),
-  split('/'),
-  reverse,
+  getTrackAndAlbumFromTrackString,
 )

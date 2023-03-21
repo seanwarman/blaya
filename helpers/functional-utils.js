@@ -60,3 +60,15 @@ export const split = by => str => str.split(by)
 
 // reverse = [a] -> [a]
 export const reverse = arr => arr.slice().reverse()
+
+// ObjectAssign :: a -> b -> c
+export const ObjectAssign = source => target => Object.assign(target, source)
+
+// ObjectAssignDataSet :: a -> b -> c
+export const ObjectAssignDataSet = source => target => {
+  Object.assign(target.dataset, source)
+  return target
+}
+
+// classListAdd :: String -> Element
+export const classListAdd = className => element => element.classList.add(className) || element

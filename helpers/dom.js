@@ -1,6 +1,67 @@
 import { simpleHash } from './utils.js'
 import { onClickOrEnter, onPlay } from './events.js'
-import { getTrackAndAlbumFromId, pagesFromIndexRange, replaceAllWithThreePages } from './index.js'
+import { getCurrentTrackString, getTrackAndAlbumFromTrackString, getTrackAndAlbumFromId, pagesFromIndexRange, replaceAllWithThreePages } from './index.js'
+import { ObjectAssign, ObjectAssignDataSet, pipe } from './functional-utils.js'
+
+// initialiseTrackElement :: Element -> Element
+export const initialiseTrackElement = pipe(
+  ObjectAssign({
+    className: 'track',
+    role: 'link',
+    tabIndex: '0',
+  }),
+)
+
+// addPlayingClassIf :: Element -> Boolean -> Element
+export const addPlayingClassIf = condition => element => {
+  if (condition) {
+    return classListAdd('playing')(element)
+  }
+  return element
+}
+
+// createTrackInnerHTMLFromTrackAndAlbum :: [String] -> String
+export const createTrackInnerHTMLFromTrackAndAlbum = ([track, album]) => '<div class="track-name">' + track + '</div>' + (album ? '<div class="track-album">' + album + '</div>' : '')
+
+// createTrackInnerHTML :: String -> String
+export const createTrackInnerHTML = pipe(
+  getTrackAndAlbumFromTrackString,
+  createTrackInnerHTMLFromTrackAndAlbum,
+)
+
+// createTrackElementForHistory :: [String] -> String -> Element
+export const createTrackElementForHistory = trackList => trackId => {
+  const trackString = getCurrentTrackString(trackList)(trackId)
+
+  const createTrackElementFromDiv = pipe(
+    initialiseTrackElement,
+    ObjectAssign({
+      id: 'history__' + trackId,
+      innerHTML: createTrackInnerHTML(trackString),
+      onclick: onClickOrEnter(onPlay),
+      onkeydown: onClickOrEnter(onPlay),
+    }),
+    ObjectAssignDataSet({
+      histId: trackId,
+      href: trackString,
+    }),
+    addPlayingClassIf(trackId === window.state.currentTrackId),
+  )
+
+  return createTrackElementFromDiv(document.createElement('div'))
+}
+
+export const appendTrackElementToHistory = element => {
+  const hist = document.getElementById('history')
+  hist.append(element)
+  return hist
+}
+
+// appendTrackElementToHistorybyId :: trackId -> Element
+export const appendTrackElementToHistoryById = trackList => pipe(
+  createTrackElementForHistory(trackList),
+  appendTrackElementToHistory,
+)
 
 // playHead :: String -> Element
 export const playHead = src => {
@@ -50,7 +111,6 @@ export const Create = (tag, text, href, i) => {
 
 // Append :: (Number, [Element]) -> Number
 export const Append = (page, newEls) => {
-  console.log(`append @FILTER page:`, page)
   if (newEls.length < 1) return page
   const div = document.createElement('div')
   div.id = 'page-' + page
