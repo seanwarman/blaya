@@ -3,15 +3,6 @@ import { onClickOrEnter, onPlay } from './events.js'
 import { getCurrentTrackString, getTrackAndAlbumFromTrackString, getTrackAndAlbumFromId, pagesFromIndexRange, replaceAllWithThreePages } from './index.js'
 import { ObjectAssign, ObjectAssignDataSet, pipe } from './functional-utils.js'
 
-// initialiseTrackElement :: Element -> Element
-export const initialiseTrackElement = pipe(
-  ObjectAssign({
-    className: 'track',
-    role: 'link',
-    tabIndex: '0',
-  }),
-)
-
 // addPlayingClassIf :: Element -> Boolean -> Element
 export const addPlayingClassIf = condition => element => {
   if (condition) {
@@ -34,8 +25,10 @@ export const createTrackElementForHistory = trackList => trackId => {
   const trackString = getCurrentTrackString(trackList)(trackId)
 
   const createTrackElementFromDiv = pipe(
-    initialiseTrackElement,
     ObjectAssign({
+      className: 'track',
+      role: 'link',
+      tabIndex: '0',
       id: 'history__' + trackId,
       innerHTML: createTrackInnerHTML(trackString),
       onclick: onClickOrEnter(onPlay),
