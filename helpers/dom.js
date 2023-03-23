@@ -1,6 +1,12 @@
 import { simpleHash } from './utils.js'
 import { onClickOrEnter, onPlay } from './events.js'
-import { getCurrentTrackString, getTrackAndAlbumFromTrackString, getTrackAndAlbumFromId, pagesFromIndexRange, replaceAllWithThreePages } from './index.js'
+import {
+  getCurrentTrackString,
+  getTrackAndAlbumFromTrackString,
+  getTrackAndAlbumFromId,
+  pagesFromIndexRange,
+  replaceAllWithThreePages,
+} from './index.js'
 import { ObjectAssign, ObjectAssignDataSet, pipe } from './functional-utils.js'
 
 // addPlayingClassIf :: Element -> Boolean -> Element
@@ -12,7 +18,8 @@ export const addPlayingClassIf = condition => element => {
 }
 
 // createTrackInnerHTMLFromTrackAndAlbum :: [String] -> String
-export const createTrackInnerHTMLFromTrackAndAlbum = ([track, album]) => '<div class="track-name">' + track + '</div>' + (album ? '<div class="track-album">' + album + '</div>' : '')
+export const createTrackInnerHTMLFromTrackAndAlbum = ([track, album]) =>
+  '<div class="track-name">' + track + '</div>' + (album ? '<div class="track-album">' + album + '</div>' : '')
 
 // createTrackInnerHTML :: String -> String
 export const createTrackInnerHTML = pipe(
@@ -24,7 +31,8 @@ export const createTrackInnerHTML = pipe(
 export const createTrackElementForHistory = trackList => trackId => {
   const trackString = getCurrentTrackString(trackList)(trackId)
 
-  const createTrackElementFromDiv = pipe(
+  // createTrackHistoryElementFromDiv :: Element -> Element
+  const createTrackHistoryElementFromDiv = pipe(
     ObjectAssign({
       className: 'track',
       role: 'link',
@@ -41,9 +49,10 @@ export const createTrackElementForHistory = trackList => trackId => {
     addPlayingClassIf(trackId === window.state.currentTrackId),
   )
 
-  return createTrackElementFromDiv(document.createElement('div'))
+  return createTrackHistoryElementFromDiv(document.createElement('div'))
 }
 
+// appendTrackElementToHistory :: Element -> Element
 export const appendTrackElementToHistory = element => {
   const hist = document.getElementById('history')
   hist.append(element)
@@ -83,23 +92,31 @@ export const updateCurrentTrack = nextTrackId => {
 }
 
 // Create :: (String, String, String, Number) -> Element
-export const Create = (tag, text, href, i) => {
-  const newEl = document.createElement(tag)
-  newEl.className = 'track'
-  newEl.role = 'link'
-  newEl.dataset.href = href
-  newEl.tabIndex = '0'
-  newEl.id = simpleHash(text)
-  if (newEl.id === window.state.currentTrackId) newEl.classList.add('playing')
-  const [track, album] = text.slice(9, -4).split('/').reverse()
+export const Create = (tag, text, href) => {
+  const trackId = simpleHash(text)
+  const [track, album] = getTrackAndAlbumFromTrackString(text)
+
   if (/#/.test(track) || /#/.test(album)) {
-    // delete newEl
     return
   }
-  newEl.innerHTML = '<div class="track-name">' + track + '</div>' + (album ? '<div class="track-album">' + album + '</div>' : '')
-  newEl.onclick = onClickOrEnter(onPlay)
-  newEl.onkeydown = onClickOrEnter(onPlay)
-  return newEl
+
+  const createTrackElementFromDiv = pipe(
+    ObjectAssign({
+      className: 'track',
+      role: 'link',
+      tabIndex: '0',
+      id: trackId,
+      innerHTML: createTrackInnerHTMLFromTrackAndAlbum([track, album]),
+      onclick: onClickOrEnter(onPlay),
+      onkeydown: onClickOrEnter(onPlay),
+    }),
+    ObjectAssignDataSet({
+      href,
+    }),
+    addPlayingClassIf(trackId === window.state.currentTrackId),
+  )
+
+  return createTrackElementFromDiv(document.createElement(tag))
 }
 
 // Append :: (Number, [Element]) -> Number
