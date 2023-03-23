@@ -1,6 +1,5 @@
 import {
   filter,
-  sort,
   map,
   pipe,
   breakPipe,
@@ -8,8 +7,6 @@ import {
   logger,
   plusOne,
   takeOne,
-  findIndexEqTo,
-  findIndex,
   select,
   slice,
   split,
@@ -36,7 +33,7 @@ export const parseTrackList = pipe(
 
 // trackListElements :: [String] -> [Element]
 export const trackListElements = pipe(
-  map((track, i) => Create('div', track, track, i)),
+  map(Create),
   filter(Boolean),
 )
 

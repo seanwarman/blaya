@@ -27,17 +27,17 @@ export const createTrackInnerHTML = pipe(
   createTrackInnerHTMLFromTrackAndAlbum,
 )
 
-// createTrackElementForHistory :: [String] -> String -> Element
-export const createTrackElementForHistory = trackList => trackId => {
+// createTrackElementForPlaylist :: [String] -> String -> Element
+export const createTrackElementForPlaylist = trackList => trackId => {
   const trackString = getCurrentTrackString(trackList)(trackId)
 
-  // createTrackHistoryElementFromDiv :: Element -> Element
-  const createTrackHistoryElementFromDiv = pipe(
+  // createTrackPlaylistElementFromDiv :: Element -> Element
+  const createTrackPlaylistElementFromDiv = pipe(
     ObjectAssign({
       className: 'track',
       role: 'link',
       tabIndex: '0',
-      id: 'history__' + trackId,
+      id: 'playlist__' + trackId,
       innerHTML: createTrackInnerHTML(trackString),
       onclick: onClickOrEnter(onPlay),
       onkeydown: onClickOrEnter(onPlay),
@@ -49,20 +49,20 @@ export const createTrackElementForHistory = trackList => trackId => {
     addPlayingClassIf(trackId === window.state.currentTrackId),
   )
 
-  return createTrackHistoryElementFromDiv(document.createElement('div'))
+  return createTrackPlaylistElementFromDiv(document.createElement('div'))
 }
 
-// appendTrackElementToHistory :: Element -> Element
-export const appendTrackElementToHistory = element => {
-  const hist = document.getElementById('history')
+// appendTrackElementToPlaylist :: Element -> Element
+export const appendTrackElementToPlaylist = element => {
+  const hist = document.getElementById('playlist')
   hist.append(element)
   return hist
 }
 
-// appendTrackElementToHistorybyId :: trackId -> Element
-export const appendTrackElementToHistoryById = trackList => pipe(
-  createTrackElementForHistory(trackList),
-  appendTrackElementToHistory,
+// appendTrackElementToPlaylistbyId :: trackId -> Element
+export const appendTrackElementToPlaylistById = trackList => pipe(
+  createTrackElementForPlaylist(trackList),
+  appendTrackElementToPlaylist,
 )
 
 // playHead :: String -> Element
@@ -91,10 +91,30 @@ export const updateCurrentTrack = nextTrackId => {
   document.getElementById('current-playing-text').innerHTML = `<div>${track}</div><div>${album}</div>`
 }
 
+export const onAddToPlaylist = e => {
+  e.stopPropagation()
+  return appendTrackElementToPlaylistById(window.state.trackList)(e.currentTarget.dataset.trackId)
+}
+
+// createAddToPlaylistElement :: String -> Element
+export const createAddToPlaylistElement = trackId => pipe(
+  ObjectAssign({
+    id: 'add-to-playlist__' + trackId,
+    className: 'add-to-playlist',
+    tabIndex: '0',
+    innerText: '+',
+    onclick: onClickOrEnter(onAddToPlaylist),
+    onkeydown: onClickOrEnter(onAddToPlaylist),
+  }),
+  ObjectAssignDataSet({
+    trackId,
+  }),
+)(document.createElement('div'))
+
 // Create :: (String, String, String, Number) -> Element
-export const Create = (tag, text, href) => {
-  const trackId = simpleHash(text)
-  const [track, album] = getTrackAndAlbumFromTrackString(text)
+export const Create = trackString => {
+  const trackId = simpleHash(trackString)
+  const [track, album] = getTrackAndAlbumFromTrackString(trackString)
 
   if (/#/.test(track) || /#/.test(album)) {
     return
@@ -111,12 +131,16 @@ export const Create = (tag, text, href) => {
       onkeydown: onClickOrEnter(onPlay),
     }),
     ObjectAssignDataSet({
-      href,
+      href: trackString,
     }),
     addPlayingClassIf(trackId === window.state.currentTrackId),
   )
 
-  return createTrackElementFromDiv(document.createElement(tag))
+  const trackEl = createTrackElementFromDiv(document.createElement('div'))
+
+  trackEl.lastChild.append(createAddToPlaylistElement(trackId))
+
+  return trackEl
 }
 
 // Append :: (Number, [Element]) -> Number
