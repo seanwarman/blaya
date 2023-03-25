@@ -51,7 +51,7 @@ export const createTrackElementForPlaylist = trackList => trackId => {
 
   const playlistEl = createTrackPlaylistElementFromDiv(document.createElement('div'))
 
-  playlistEl.firstChild.prepend(createAddToPlaylistElement(document.createElement('div')))
+  playlistEl.firstChild.prepend(createRemoveFromPlaylistElement(document.createElement('div')))
 
   return playlistEl
 }
@@ -95,10 +95,20 @@ export const updateCurrentTrack = nextTrackId => {
   document.getElementById('current-playing-text').innerHTML = `<div>${track}</div><div>${album}</div>`
 }
 
+// onAddToPlaylist :: Event -> Element
 export const onAddToPlaylist = e => {
   e.stopPropagation()
   return appendTrackElementToPlaylistById(window.state.trackList)(e.currentTarget.dataset.trackId)
 }
+
+// onRemoveFromPlaylist :: Event -> Element
+export const onRemoveFromPlaylist = e => {
+  e.stopPropagation()
+  document.getElementById('playlist')
+    .removeChild(e.currentTarget.parentElement.parentElement)
+  return e.currentTarget.parentElement.parentElement
+}
+
 
 // createAddToPlaylistElement :: String -> Element
 export const createAddToPlaylistElement = trackId => pipe(
@@ -109,6 +119,21 @@ export const createAddToPlaylistElement = trackId => pipe(
     innerHTML: '<img style="height:1.5rem;" src="public/icons/plus-solid.svg" />',
     onclick: onClickOrEnter(onAddToPlaylist),
     onkeydown: onClickOrEnter(onAddToPlaylist),
+  }),
+  ObjectAssignDataSet({
+    trackId,
+  }),
+)(document.createElement('div'))
+
+// createRemoveFromPlaylistElement :: String -> Element
+export const createRemoveFromPlaylistElement = trackId => pipe(
+  ObjectAssign({
+    id: 'add-to-playlist__' + trackId,
+    className: 'add-to-playlist',
+    tabIndex: '0',
+    innerHTML: '<img style="height:1.5rem;" src="public/icons/minus-solid.svg" />',
+    onclick: onClickOrEnter(onRemoveFromPlaylist),
+    onkeydown: onClickOrEnter(onRemoveFromPlaylist),
   }),
   ObjectAssignDataSet({
     trackId,
