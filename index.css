@@ -116,10 +116,16 @@ input#search-input {
   background-color: #e2e2e2;
 }
 
+.add-to-playlist {
+  margin-right: 1rem;
+}
+
 .track-name {
 	overflow: auto;
 	word-wrap: break-word;
   font-size: 0.9rem;
+  display: flex;
+  align-items: center;
 }
 
 .track-album {
