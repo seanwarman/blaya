@@ -19,6 +19,7 @@ header {
   padding: 1rem 2rem;
   margin-top: -6rem;
   grid-gap: 2rem;
+  height: 4.5rem;
 }
 
 .search-container {
@@ -63,6 +64,7 @@ input#search-input {
   -webkit-transform:rotateX(180deg); /* Safari and Chrome */
   -ms-transform:rotateX(180deg); /* IE 9+ */
   -o-transform:rotateX(180deg); /* Opera */
+  overflow: visible;
 }
 
 #playlist .track .playlist-placeholder {
@@ -195,6 +197,7 @@ div#current-playing-text {
 
   header {
     margin-top: -5rem;
+    height: 4.5rem;
   }
 
   .search-container {
@@ -231,8 +234,17 @@ div#current-playing-text {
     font-size: 1rem;
 	}
 
+  #playlist .track-album {
+    text-align: right;
+    font-size: 0.7rem;
+  }
+
   .track-name {
     font-size: 1rem;
+  }
+
+  #playlist .track-name {
+    font-size: 0.8rem;
   }
 
 	footer {
