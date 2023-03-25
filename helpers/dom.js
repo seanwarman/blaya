@@ -49,7 +49,11 @@ export const createTrackElementForPlaylist = trackList => trackId => {
     addPlayingClassIf(trackId === window.state.currentTrackId),
   )
 
-  return createTrackPlaylistElementFromDiv(document.createElement('div'))
+  const playlistEl = createTrackPlaylistElementFromDiv(document.createElement('div'))
+
+  playlistEl.firstChild.prepend(createAddToPlaylistElement(document.createElement('div')))
+
+  return playlistEl
 }
 
 // appendTrackElementToPlaylist :: Element -> Element
@@ -102,7 +106,7 @@ export const createAddToPlaylistElement = trackId => pipe(
     id: 'add-to-playlist__' + trackId,
     className: 'add-to-playlist',
     tabIndex: '0',
-    innerText: '+',
+    innerHTML: '<img style="height:1.5rem;" src="public/icons/plus-solid.svg" />',
     onclick: onClickOrEnter(onAddToPlaylist),
     onkeydown: onClickOrEnter(onAddToPlaylist),
   }),
@@ -138,7 +142,7 @@ export const Create = trackString => {
 
   const trackEl = createTrackElementFromDiv(document.createElement('div'))
 
-  trackEl.lastChild.append(createAddToPlaylistElement(trackId))
+  trackEl.firstChild.prepend(createAddToPlaylistElement(trackId))
 
   return trackEl
 }
