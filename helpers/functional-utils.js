@@ -1,3 +1,16 @@
+// curry :: ((a, b, ...) -> c) -> a -> b -> ... -> c
+export function curry(fn) {
+  const arity = fn.length;
+
+  return function $curry(...args) {
+    if (args.length < arity) {
+      return $curry.bind(null, ...args);
+    }
+
+    return fn.call(null, ...args);
+  };
+}
+
 // filter :: (a -> Boolean) -> [a] -> [a]
 export const filter = fn => arr => arr.filter(fn)
 
@@ -5,7 +18,7 @@ export const filter = fn => arr => arr.filter(fn)
 // sort :: (a -> Number) -> [a] -> [a]
 export const sort = fn => arr => arr.slice().sort(fn)
 
-// map :: (a -> b) -> [a] -> [b]
+// map :: (a -> b) -> Functor a -> Functor b
 export const map = fn => arr => arr.map(fn)
 
 // pipe :: ((a -> b), (c -> d),  ..., (y -> z)) -> a -> z
@@ -61,8 +74,11 @@ export const split = by => str => str.split(by)
 // reverse = [a] -> [a]
 export const reverse = arr => arr.slice().reverse()
 
-// ObjectAssign :: a -> b -> c
-export const ObjectAssign = source => target => Object.assign(target, source)
+// AssignObject :: (a, ...) -> a -> a
+export const AssignObject = (...sources) => target => Object.assign(target, ...sources)
+
+// ObjectAssign :: a -> (a, ...) -> a
+export const ObjectAssign = target => (...sources) => Object.assign(target, ...sources)
 
 // ObjectAssignDataSet :: a -> b -> c
 export const ObjectAssignDataSet = source => target => {
@@ -70,5 +86,24 @@ export const ObjectAssignDataSet = source => target => {
   return target
 }
 
-// classListAdd :: String -> Element
+// classListAdd :: String -> Element -> Element
 export const classListAdd = className => element => element.classList.add(className) || element
+
+// parallel :: [fn] -> b -> [c]
+export const parallel = ([...fns]) => arg => fns.map(fn => fn(arg))
+
+// push :: a -> [b] -> [b, a]
+export const push = item => arr => {
+  return [
+    ...arr,
+    item
+  ]
+}
+
+// shift :: a -> [b] -> [b, a]
+export const shift = item => arr => {
+  return [
+    item,
+    ...arr,
+  ]
+}

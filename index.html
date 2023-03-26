@@ -35,7 +35,7 @@
 		</footer>
 	</body>
 	<script type="module">
-    import { trackList as rawTrackList } from './track-list.js'
+    import { trackList as RAW_TRACKLIST } from './track-list.js'
     import { simpleHash, setDebounce } from './helpers/utils.js'
     import {
       appendTracksByPage,
@@ -57,8 +57,15 @@
 
     window.logger = logger
 
+    window.TRACKLIST_TEMPLATE = {
+      title: '',
+      trackList: [],
+    }
+
 		window.state = {
-      trackList: parseTrackList(rawTrackList),
+      trackList: parseTrackList(RAW_TRACKLIST),
+      playlists: {},
+      selectedPlaylist: 'My cool playlist',
       currentTrackId: null,
       texts: [],
       throttleId: null,

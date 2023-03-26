@@ -7,7 +7,16 @@ import {
   pagesFromIndexRange,
   replaceAllWithThreePages,
 } from './index.js'
-import { ObjectAssign, ObjectAssignDataSet, pipe } from './functional-utils.js'
+import {
+  parallel,
+  shift,
+  AssignObject,
+  filter,
+  ObjectAssignDataSet,
+  pipe,
+  breakIf,
+  breakPipe,
+} from './functional-utils.js'
 
 // addPlayingClassIf :: Element -> Boolean -> Element
 export const addPlayingClassIf = condition => element => {
@@ -33,7 +42,7 @@ export const createTrackElementForPlaylist = trackList => trackId => {
 
   // createTrackPlaylistElementFromDiv :: Element -> Element
   const createTrackPlaylistElementFromDiv = pipe(
-    ObjectAssign({
+    AssignObject({
       className: 'track',
       role: 'link',
       tabIndex: '0',
@@ -95,10 +104,28 @@ export const updateCurrentTrack = nextTrackId => {
   document.getElementById('current-playing-text').innerHTML = `<div>${track}</div><div>${album}</div>`
 }
 
-// onAddToPlaylist :: Event -> Element
-export const onAddToPlaylist = e => {
+// onAddToPlaylistDOM :: Event -> Element
+export const onAddToPlaylistDOM = e => {
   e.stopPropagation()
   return appendTrackElementToPlaylistById(window.state.trackList)(e.currentTarget.dataset.trackId)
+}
+
+// reducePlaylist :: [String] -> Object
+export const reducePlaylist = href => pipe(
+  filter(Boolean),
+  shift(href),
+)(window.state.playlists[window.state.selectedPlaylist] || [])
+
+// onAddToPlaylist :: Event -> Object
+export const onAddToPlaylist = e => {
+  e.stopPropagation()
+  const href = e.currentTarget.parentElement.parentElement.dataset.href
+  if (!href) return e
+  return pipe(
+    AssignObject({
+      [window.state.selectedPlaylist]: reducePlaylist(href),
+    })
+  )(window.state.playlists)
 }
 
 // onRemoveFromPlaylist :: Event -> Element
@@ -109,16 +136,24 @@ export const onRemoveFromPlaylist = e => {
   return e.currentTarget.parentElement.parentElement
 }
 
+// ifTrueOnAddToPlaylist :: fn -> Event -> [Element, Object] | Event
+const ifTrueOnAddToPlaylist = conditionFn => breakPipe(
+  breakIf(conditionFn),
+  parallel([
+    onClickOrEnter(onAddToPlaylistDOM),
+    onClickOrEnter(onAddToPlaylist),
+  ]),
+)
 
 // createAddToPlaylistElement :: String -> Element
 export const createAddToPlaylistElement = trackId => pipe(
-  ObjectAssign({
+  AssignObject({
     id: 'add-to-playlist__' + trackId,
     className: 'add-to-playlist',
     tabIndex: '0',
     innerHTML: '<img style="height:1.5rem;" src="public/icons/plus-solid.svg" />',
-    onclick: onClickOrEnter(onAddToPlaylist),
-    onkeydown: onClickOrEnter(onAddToPlaylist),
+    onclick: ifTrueOnAddToPlaylist(() => !window.state.selectedPlaylist.length),
+    onkeydown: ifTrueOnAddToPlaylist(() => !window.state.selectedPlaylist.length),
   }),
   ObjectAssignDataSet({
     trackId,
@@ -127,7 +162,7 @@ export const createAddToPlaylistElement = trackId => pipe(
 
 // createRemoveFromPlaylistElement :: String -> Element
 export const createRemoveFromPlaylistElement = trackId => pipe(
-  ObjectAssign({
+  AssignObject({
     id: 'add-to-playlist__' + trackId,
     className: 'add-to-playlist',
     tabIndex: '0',
@@ -150,7 +185,7 @@ export const Create = trackString => {
   }
 
   const createTrackElementFromDiv = pipe(
-    ObjectAssign({
+    AssignObject({
       className: 'track',
       role: 'link',
       tabIndex: '0',
