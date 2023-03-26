@@ -26,7 +26,9 @@ export const onClickOrEnter = cb => (e) => {
 
 // onClearSearch :: undefined -> undefined
 export const onClearSearch = () => {
-  document.getElementById('search-input').value = ''
+  const searchInput = document.getElementById('search-input')
+  if (!searchInput.value.length) return
+  searchInput.value = ''
   afterSearchReset()
 }
 
