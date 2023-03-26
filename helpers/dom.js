@@ -269,11 +269,14 @@ export const playTrack = (element) => {
 
 // afterSearchReset :: undefined -> undefined
 export const afterSearchReset = () => {
-  window.state.searching = false
   document.getElementById('track-list-container').remove()
   const footer = document.getElementsByTagName('footer')[0]
-  document.body.insertBefore(window.state.previousTrackListContainer, footer)
-  scrollTo(0, window.state.previousScrollPositionY)
+  if (window.state.previousTrackListContainer) {
+    document.body.insertBefore(window.state.previousTrackListContainer, footer)
+    scrollTo(0, window.state.previousScrollPositionY)
+  } else {
+    appendTracksByPage(window.state.trackList)(1)
+  }
 }
 
 // createPageElement :: Number => Element

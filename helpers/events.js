@@ -30,6 +30,7 @@ export const onClearSearch = () => {
   if (!searchInput.value.length) return
   searchInput.value = ''
   afterSearchReset()
+  window.state.searching = false
 }
 
 // onSearch :: Event -> undefined
@@ -40,13 +41,14 @@ export const onSearch = trackList => (e) => {
     window.state.previousTrackListContainer = document.getElementById('track-list-container').cloneNode(true)
   }
   window.state.searchingPage = 1
+  window.state.searching = true
   if (e.target.value.length === 0) {
     afterSearchReset()
+    window.state.searching = false
     return
   }
   if (window.state.throttleId) clearTimeout(window.state.throttleId)
     window.state.throttleId = setTimeout(() => {
-      window.state.searching = true
       window.scrollTo(0, 0)
       removeTrackEls()
       window.state.searchingPage = appendTracksByPageFilteredBy(trackList)(e.target.value)(window.state.searchingPage)
