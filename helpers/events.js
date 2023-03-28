@@ -113,7 +113,7 @@ export const onPlayPlaylist = (e) => {
   const ref = e.currentTarget
   if (ref) {
     const player = playHead(ref.getAttribute('data-href'))
-    updateCurrentTrack(ref.id.slice(10))
+    updateCurrentTrack(ref.id.match('playlist__(.*)')[1])
     player.load()
     player.play()
   }

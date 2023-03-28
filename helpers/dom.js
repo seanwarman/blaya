@@ -16,6 +16,7 @@ import {
   pipe,
   breakIf,
   breakPipe,
+  classListAdd,
 } from './functional-utils.js'
 
 // addPlayingClassIf :: Element -> Boolean -> Element
