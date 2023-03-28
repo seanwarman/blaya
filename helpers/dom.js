@@ -1,5 +1,5 @@
 import { simpleHash } from './utils.js'
-import { onClickOrEnter, onPlay } from './events.js'
+import { onClickOrEnter, onPlay, onPlayPlaylist } from './events.js'
 import {
   getCurrentTrackString,
   getTrackAndAlbumFromTrackString,
@@ -48,8 +48,8 @@ export const createTrackElementForPlaylist = trackList => trackId => {
       tabIndex: '0',
       id: 'playlist__' + trackId,
       innerHTML: createTrackInnerHTML(trackString),
-      onclick: onClickOrEnter(onPlay),
-      onkeydown: onClickOrEnter(onPlay),
+      onclick: onClickOrEnter(onPlayPlaylist),
+      onkeydown: onClickOrEnter(onPlayPlaylist),
     }),
     ObjectAssignDataSet({
       histId: trackId,

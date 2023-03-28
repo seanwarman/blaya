@@ -108,6 +108,17 @@ export const onScrollThisTrack = trackList => () => {
   }, 100)
 }
 
+// onPlayPlaylist :: Event -> undefined
+export const onPlayPlaylist = (e) => {
+  const ref = e.currentTarget
+  if (ref) {
+    const player = playHead(ref.getAttribute('data-href'))
+    updateCurrentTrack(ref.id.slice(10))
+    player.load()
+    player.play()
+  }
+}
+
 // onPlay :: Event -> undefined
 export const onPlay = (e) => {
   const ref = e.currentTarget
