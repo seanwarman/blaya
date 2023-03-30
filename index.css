@@ -52,18 +52,14 @@ input#search-input {
 }
 
 #playlist {
-  position: relative;
-  grid-column: 4 / span 1;
-  width: 100%;
+  position: fixed;
+  right: 1rem;
+  bottom: 4.5rem;
+  width: 30%;
   background: white;
   box-shadow: 1px 7px 17px 0px #00000024;
   border-radius: 2px;
   overflow-y: auto;
-  transform:rotateX(180deg);
-  -moz-transform:rotateX(180deg); /* Mozilla */
-  -webkit-transform:rotateX(180deg); /* Safari and Chrome */
-  -ms-transform:rotateX(180deg); /* IE 9+ */
-  -o-transform:rotateX(180deg); /* Opera */
   overflow: visible;
 }
 
@@ -72,11 +68,6 @@ input#search-input {
 }
 
 #playlist .track {
-  transform:rotateX(180deg);
-  -moz-transform:rotateX(180deg); /* Mozilla */
-  -webkit-transform:rotateX(180deg); /* Safari and Chrome */
-  -ms-transform:rotateX(180deg); /* IE 9+ */
-  -o-transform:rotateX(180deg); /* Opera */
 }
 
 #target-button {

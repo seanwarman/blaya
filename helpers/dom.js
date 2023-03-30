@@ -167,7 +167,7 @@ export const createRemoveFromPlaylistElement = trackId => pipe(
     id: 'add-to-playlist__' + trackId,
     className: 'add-to-playlist',
     tabIndex: '0',
-    innerHTML: '<img style="height:1.5rem;" src="public/icons/minus-solid.svg" />',
+    innerHTML: '<img style="height:1rem;" src="public/icons/minus-solid.svg" />',
     onclick: onClickOrEnter(onRemoveFromPlaylist),
     onkeydown: onClickOrEnter(onRemoveFromPlaylist),
   }),
