@@ -126,13 +126,9 @@ export const appendTracksByPage = trackList => pipe(
 // replaceAllWithThreePages :: [String] -> Number -> Number
 export const replaceAllWithThreePages = trackList => pipe(
   removeTrackEls,
-  logger('1: '),
   appendTracksByPage(trackList),
-  logger('2: '),
   appendTracksByPage(trackList),
-  logger('3: '),
   appendTracksByPage(trackList),
-  logger('4: '),
 )
 
 // getCurrentTrackString :: [String] -> String -> String

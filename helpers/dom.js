@@ -73,7 +73,7 @@ export const appendTrackElementToPlaylist = element => {
   return hist
 }
 
-// appendTrackElementToPlaylistbyId :: trackId -> Element
+// appendTrackElementToPlaylistById :: trackId -> Element
 export const appendTrackElementToPlaylistById = trackList => pipe(
   createTrackElementForPlaylist(trackList),
   appendTrackElementToPlaylist,
