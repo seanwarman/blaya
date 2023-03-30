@@ -14,10 +14,7 @@
       </div>
     </header>
     <div id="track-list-container"></div>
-
-    <div id="playlist">
-    </div>
-
+    <div id="playlist"></div>
 		<footer>
 			<div tabindex="0" id="current-playing-text" role="button">
         <button id="target-button">
@@ -65,8 +62,10 @@
 
 		window.state = {
       trackList: parseTrackList(RAW_TRACKLIST),
-      playlists: {},
-      selectedPlaylist: 'My cool playlist',
+      playlists: [
+        [0, []]
+      ],
+      selectedPlaylist: 0,
       currentTrackId: null,
       texts: [],
       throttleId: null,

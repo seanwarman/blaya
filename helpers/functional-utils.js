@@ -56,6 +56,9 @@ export const plusOne = arr => i => i+1 < arr.length ? arr[i+1] : arr[i]
 // takeOne :: [a] -> Number -> b
 export const takeOne = arr => i => i-1 < 0 ? 0 : arr[i-1]
 
+// find :: [a] -> [a]
+export const find = fn => arr => arr.find(fn)
+
 // findIndexEqTo :: [String] -> String -> Number
 export const findIndexEqTo = arr => str => arr.findIndex(t => t === str)
 
@@ -107,3 +110,9 @@ export const shift = item => arr => {
     ...arr,
   ]
 }
+
+export const ifUndefinedReturn = instead => maybeUndefined => !!maybeUndefined ? maybeUndefined : instead
+
+export const tail = arr => arr[arr.length-1]
+
+export const some = fn => arr => arr.some(fn)
