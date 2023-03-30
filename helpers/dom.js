@@ -101,23 +101,32 @@ export const onAddToPlaylistDOM = e => {
   return appendTrackElementToPlaylistById(window.state.trackList)(e.currentTarget.dataset.trackId)
 }
 
-// onAddToPlaylist :: Event -> Object
+// (String -> Boolean) -> String -> [String, [String]] -> [String, [String]]
+export const updatePlaylistIf = conditionFn => href => f.pipe(
+  f.arrifyArgs,
+  f.boolean(([, [name]]) =>
+    conditionFn(name)
+  )(
+    [
+      ([acc, [name, playlist]]) => [ ...acc, [name, [...playlist, href]]],
+      f.head,
+    ]
+  )
+)
+
+// addHrefToPlaylist :: (String, a, [[String, [String]]]) -> [[String, [String]]]
+const addHrefToPlaylist = (selectedPlaylist, href, playlists) => f.pipe(
+  updatePlaylistIf(name => name === selectedPlaylist),
+  f.reduce([]),
+)(href)(playlists)
+
+// onAddToPlaylist :: Event -> void
 export const onAddToPlaylist = e => {
   e.stopPropagation()
   const href = e.currentTarget.parentElement.parentElement.dataset.href
   if (!href) return e
-  window.state.playlists = window.state.playlists.reduce((acc, [name, playlist]) => {
-    if (name === window.state.selectedPlaylist) {
-      return [
-        ...acc,
-        [name, [
-          ...playlist,
-          href
-        ]]
-      ]
-    }
-    return acc
-  }, [])
+
+  window.state.playlists = addHrefToPlaylist(window.state.selectedPlaylist, href, window.state.playlists)
 }
 
 // onRemoveFromPlaylist :: Event -> Element

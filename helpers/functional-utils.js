@@ -111,8 +111,26 @@ export const shift = item => arr => {
   ]
 }
 
+// ifUndefinedReturn :: a -> b | undefined -> a | b
 export const ifUndefinedReturn = instead => maybeUndefined => !!maybeUndefined ? maybeUndefined : instead
 
+// head :: [a, b] -> [a]
+export const head = arr => arr[0]
+
+// tail :: [a, b] -> [b]
 export const tail = arr => arr[arr.length-1]
 
+// some :: (a -> Boolean) -> [a] -> Boolean
 export const some = fn => arr => arr.some(fn)
+
+// id :: a -> a
+export const id = arg => arg
+
+// boolean :: (a -> Boolean) -> ([(a -> b), (a -> c)]) -> a -> (a -> b) | (a -> c)
+export const boolean = fn => ([evalTrue, evalFalse]) => arg => fn(arg) ? evalTrue(arg) : evalFalse(arg)
+
+// arrifyArgs :: (a, b) -> [a, b]
+export const arrifyArgs = (...args) => args
+
+// reduce :: a -> (b -> c) -> [b] -> c
+export const reduce = arg => fn => arr => arr.reduce(fn, arg)
