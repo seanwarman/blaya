@@ -4,7 +4,6 @@ import {
   pipe,
   breakPipe,
   breakIf,
-  logger,
   plusOne,
   takeOne,
   select,
@@ -12,6 +11,7 @@ import {
   split,
   reverse,
 } from './functional-utils.js'
+import * as f from './functional-utils.js'
 import {
   Create,
   Append,
@@ -164,3 +164,22 @@ export const getTrackAndAlbumFromId = trackList => pipe(
   getCurrentTrackString(trackList),
   getTrackAndAlbumFromTrackString,
 )
+
+// (String -> Boolean) -> String -> [String, [String]] -> [String, [String]]
+export const updatePlaylistIf = conditionFn => href => f.pipe(
+  f.arrifyArgs,
+  f.boolean(([, [name]]) =>
+    conditionFn(name)
+  )(
+    [
+      ([acc, [name, playlist]]) => [ ...acc, [name, [...playlist, href]]],
+      f.head,
+    ]
+  )
+)
+
+// addHrefToPlaylist :: (String, a, [[String, [String]]]) -> [[String, [String]]]
+export const addHrefToPlaylist = (selectedPlaylist, href, playlists) => f.pipe(
+  updatePlaylistIf(name => name === selectedPlaylist),
+  f.reduce([]),
+)(href)(playlists)

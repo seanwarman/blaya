@@ -6,6 +6,7 @@ import {
   getTrackAndAlbumFromId,
   pagesFromIndexRange,
   replaceAllWithThreePages,
+  addHrefToPlaylist,
 } from './index.js'
 import * as f from './functional-utils.js'
 
@@ -100,25 +101,6 @@ export const onAddToPlaylistDOM = e => {
   e.stopPropagation()
   return appendTrackElementToPlaylistById(window.state.trackList)(e.currentTarget.dataset.trackId)
 }
-
-// (String -> Boolean) -> String -> [String, [String]] -> [String, [String]]
-export const updatePlaylistIf = conditionFn => href => f.pipe(
-  f.arrifyArgs,
-  f.boolean(([, [name]]) =>
-    conditionFn(name)
-  )(
-    [
-      ([acc, [name, playlist]]) => [ ...acc, [name, [...playlist, href]]],
-      f.head,
-    ]
-  )
-)
-
-// addHrefToPlaylist :: (String, a, [[String, [String]]]) -> [[String, [String]]]
-const addHrefToPlaylist = (selectedPlaylist, href, playlists) => f.pipe(
-  updatePlaylistIf(name => name === selectedPlaylist),
-  f.reduce([]),
-)(href)(playlists)
 
 // onAddToPlaylist :: Event -> void
 export const onAddToPlaylist = e => {
