@@ -60,7 +60,9 @@ input#search-input {
   box-shadow: 1px 7px 17px 0px #00000024;
   border-radius: 2px;
   overflow-y: auto;
-  overflow: visible;
+  max-height: 61vh;
+  display: flex;
+  flex-direction: column-reverse;
 }
 
 #playlist .track .playlist-placeholder {
@@ -73,9 +75,7 @@ input#search-input {
   padding: 0.5rem;
   background: white;
   font-size: 0.8rem;
-  position: absolute;
   border-bottom: 3px solid #5ed0cf;
-  top: -2.1rem;
 }
 
 .dragover {

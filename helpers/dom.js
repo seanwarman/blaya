@@ -41,7 +41,7 @@ export const onDragLeave = e => {
 export const onDrop = e => {
   const data = e.dataTransfer.getData('Text')
   const droppedTrack = document.getElementById(data)
-  e.currentTarget.before(droppedTrack)
+  e.currentTarget.after(droppedTrack)
   droppedTrack.focus()
   e.preventDefault()
   for (const child of document.getElementsByClassName('dragover')) {
@@ -90,9 +90,9 @@ export const createTrackElementForPlaylist = trackList => trackId => {
 
 // appendTrackElementToPlaylist :: Element -> Element
 export const appendTrackElementToPlaylist = element => {
-  const hist = document.getElementById('playlist')
-  hist.append(element)
-  return hist
+  const playlist = document.getElementById('playlist')
+  playlist.prepend(element)
+  return playlist
 }
 
 // appendTrackElementToPlaylistById :: trackId -> Element
@@ -153,7 +153,7 @@ export const onAddToPlaylist = e => {
 
 export const onAddToPlaylistNewOrIgnore = () => {
   const playlistEl = document.getElementById('playlist')
-  if (playlistEl.firstChild.firstChild.className === 'playlist-name') {
+  if (playlistEl.getElementsByClassName('playlist-name').length) {
     return
   }
   const div = document.createElement('div')
@@ -165,7 +165,7 @@ export const onAddToPlaylistNewOrIgnore = () => {
     type="text"
   />`
 
-  playlistEl.prepend(div)
+  playlistEl.append(div)
   playlistEl.ondrop = e => e.preventDefault()
   playlistEl.firstChild.addEventListener('keydown', onPlaylistName)
 }
