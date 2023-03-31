@@ -1,5 +1,5 @@
 import { simpleHash } from './utils.js'
-import { onClickOrEnter, onPlay, onPlayPlaylist } from './events.js'
+import { onPlaylistName, onClickOrEnter, onPlay, onPlayPlaylist } from './events.js'
 import {
   getCurrentTrackString,
   getTrackAndAlbumFromTrackString,
@@ -111,6 +111,24 @@ export const onAddToPlaylist = e => {
   window.state.playlists = addHrefToPlaylist(window.state.selectedPlaylist, href, window.state.playlists)
 }
 
+export const onAddToPlaylistNewOrIgnore = () => {
+  const playlistEl = document.getElementById('playlist')
+  if (playlistEl.firstChild.className === 'playlist-name') {
+    return
+  }
+  const div = document.createElement('div')
+
+  div.innerHTML = `<input
+    placeholder="Playlist name"
+    class="playlist-name"
+    aria-label="Playlist name"
+    type="text"
+  />`
+
+  playlistEl.prepend(div)
+  playlistEl.firstChild.addEventListener('keydown', onPlaylistName)
+}
+
 // onRemoveFromPlaylist :: Event -> Element
 export const onRemoveFromPlaylist = e => {
   e.stopPropagation()
@@ -119,12 +137,13 @@ export const onRemoveFromPlaylist = e => {
   return e.currentTarget.parentElement.parentElement
 }
 
-// ifTrueOnAddToPlaylist :: fn -> Event -> [Element, Object] | Event
-const ifTrueOnAddToPlaylist = conditionFn => f.breakPipe(
+// ifFalseOnAddToPlaylist :: fn -> Event -> [Element, Object] | Event
+const ifFalseOnAddToPlaylist = conditionFn => f.breakPipe(
   f.breakIf(conditionFn),
   f.parallel([
-    onClickOrEnter(onAddToPlaylistDOM),
     onClickOrEnter(onAddToPlaylist),
+    onClickOrEnter(onAddToPlaylistDOM),
+    onClickOrEnter(onAddToPlaylistNewOrIgnore),
   ]),
 )
 
@@ -135,8 +154,8 @@ export const createAddToPlaylistElement = trackId => f.pipe(
     className: 'add-to-playlist',
     tabIndex: '0',
     innerHTML: '<img style="height:1.5rem;" src="public/icons/plus-solid.svg" />',
-    onclick: ifTrueOnAddToPlaylist(() => window.state.selectedPlaylist === undefined),
-    onkeydown: ifTrueOnAddToPlaylist(() => window.state.selectedPlaylist === undefined),
+    onclick: ifFalseOnAddToPlaylist(() => window.state.selectedPlaylist === undefined),
+    onkeydown: ifFalseOnAddToPlaylist(() => window.state.selectedPlaylist === undefined),
   }),
   f.ObjectAssignDataSet({
     trackId,

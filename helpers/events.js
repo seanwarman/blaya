@@ -48,11 +48,20 @@ export const onSearch = trackList => (e) => {
     return
   }
   if (window.state.throttleId) clearTimeout(window.state.throttleId)
-    window.state.throttleId = setTimeout(() => {
-      window.scrollTo(0, 0)
-      removeTrackEls()
-      window.state.searchingPage = appendTracksByPageFilteredBy(trackList)(e.target.value)(window.state.searchingPage)
-    }, 100)
+  window.state.throttleId = setTimeout(() => {
+    window.scrollTo(0, 0)
+    removeTrackEls()
+    window.state.searchingPage = appendTracksByPageFilteredBy(trackList)(e.target.value)(window.state.searchingPage)
+  }, 100)
+}
+
+// onPlaylistName :: Event -> undefined
+export const onPlaylistName = e => {
+  e.stopPropagation()
+  if (window.state.throttleId) clearTimeout(window.state.throttleId)
+  window.state.throttleId = setTimeout(() => {
+    window.state.playlists[window.state.selectedPlaylist][0] = e.target.value
+  }, 100)
 }
 
 export const onEndNext = trackList => () => {

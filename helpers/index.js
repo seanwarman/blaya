@@ -168,8 +168,8 @@ export const getTrackAndAlbumFromId = trackList => pipe(
 // (String -> Boolean) -> String -> [String, [String]] -> [String, [String]]
 export const updatePlaylistIf = conditionFn => href => f.pipe(
   f.arrifyArgs,
-  f.boolean(([, [name]]) =>
-    conditionFn(name)
+  f.boolean((args) =>
+    conditionFn(args)
   )(
     [
       ([acc, [name, playlist]]) => [ ...acc, [name, [...playlist, href]]],
@@ -180,6 +180,6 @@ export const updatePlaylistIf = conditionFn => href => f.pipe(
 
 // addHrefToPlaylist :: (String, a, [[String, [String]]]) -> [[String, [String]]]
 export const addHrefToPlaylist = (selectedPlaylist, href, playlists) => f.pipe(
-  updatePlaylistIf(name => name === selectedPlaylist),
+  updatePlaylistIf(([,,i]) => i === selectedPlaylist),
   f.reduce([]),
 )(href)(playlists)
