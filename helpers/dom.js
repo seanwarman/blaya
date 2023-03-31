@@ -28,6 +28,32 @@ export const createTrackInnerHTML = f.pipe(
   createTrackInnerHTMLFromTrackAndAlbum,
 )
 
+export const onDragover = e => {
+  e.preventDefault()
+  e.currentTarget.classList.add('dragover')
+}
+
+export const onDragLeave = e => {
+  e.preventDefault()
+  e.currentTarget.classList.remove('dragover')
+}
+
+export const onDrop = e => {
+  const data = e.dataTransfer.getData('Text')
+  const droppedTrack = document.getElementById(data)
+  e.currentTarget.before(droppedTrack)
+  droppedTrack.focus()
+  e.preventDefault()
+  for (const child of document.getElementsByClassName('dragover')) {
+    child.classList.remove('dragover')
+  }
+  // TODO: update state.playlists
+}
+
+export const onDragStart = e => {
+  e.dataTransfer.setData('Text', e.currentTarget.id)
+}
+
 // createTrackElementForPlaylist :: [String] -> String -> Element
 export const createTrackElementForPlaylist = trackList => trackId => {
   const trackString = getCurrentTrackString(trackList)(trackId)
@@ -37,11 +63,16 @@ export const createTrackElementForPlaylist = trackList => trackId => {
     f.AssignObject({
       className: 'track',
       role: 'link',
+      draggable: true,
       tabIndex: '0',
       id: 'playlist__' + trackId,
       innerHTML: createTrackInnerHTML(trackString),
       onclick: onClickOrEnter(onPlayPlaylist),
       onkeydown: onClickOrEnter(onPlayPlaylist),
+      ondragover: onDragover,
+      ondragleave: onDragLeave,
+      ondrop: onDrop,
+      ondragstart: onDragStart
     }),
     f.ObjectAssignDataSet({
       histId: trackId,
@@ -96,6 +127,15 @@ export const updateCurrentTrack = nextTrackId => {
   document.getElementById('current-playing-text').innerHTML = `<div>${track}</div><div>${album}</div>`
 }
 
+// onPassTrackList :: ([[String], [String]]) -> [String]
+export const onPassTrackList = ([stateTrackList, playlistTrackList]) => {
+  const track = document.getElementsByClassName('playing')[0]
+  if (/^playlist__/.test(track?.id)) {
+    return playlistTrackList
+  }
+  return stateTrackList
+}
+
 // onAddToPlaylistDOM :: Event -> Element
 export const onAddToPlaylistDOM = e => {
   e.stopPropagation()
@@ -113,7 +153,7 @@ export const onAddToPlaylist = e => {
 
 export const onAddToPlaylistNewOrIgnore = () => {
   const playlistEl = document.getElementById('playlist')
-  if (playlistEl.firstChild.className === 'playlist-name') {
+  if (playlistEl.firstChild.firstChild.className === 'playlist-name') {
     return
   }
   const div = document.createElement('div')

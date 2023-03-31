@@ -78,7 +78,12 @@ input#search-input {
   top: -2.1rem;
 }
 
+.dragover {
+  background: #dedede !important;
+}
+
 #playlist .track {
+  transition: background .3s;
 }
 
 #target-button {
