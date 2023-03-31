@@ -166,6 +166,7 @@ export const onAddToPlaylistNewOrIgnore = () => {
   />`
 
   playlistEl.prepend(div)
+  playlistEl.ondrop = e => e.preventDefault()
   playlistEl.firstChild.addEventListener('keydown', onPlaylistName)
 }
 
