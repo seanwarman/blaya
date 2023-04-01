@@ -54,6 +54,8 @@ export const onDrop = e => {
 
   const toIndex = findIndexOfElement(droppedTrack)(trackEls)
 
+  // TODO: this removes the track if you put it in the last position...
+
   // The dom will get redrawn here from the setter on state.playlists...
   window.state.playlists = rearrangeInPlaylist(
     window.state.selectedPlaylist,

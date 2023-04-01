@@ -165,59 +165,14 @@ export const getTrackAndAlbumFromId = trackList => pipe(
   getTrackAndAlbumFromTrackString,
 )
 
-// appendToPlaylistIf :: (String -> Boolean) -> String -> [String, [String]] -> [String, [String]]
-export const appendToPlaylistIf = conditionFn => href => f.pipe(
+// applyReducerIf :: (String -> Boolean) -> (a -> b) -> (a -> b)
+export const applyReducerIf = conditionFn => reducer => f.pipe(
   f.arrifyArgs,
   f.boolean((args) =>
     conditionFn(args)
   )(
     [
-      ([acc, [name, playlist]]) => [ ...acc, [name, [...playlist, href]]],
-      f.head,
-    ]
-  )
-)
-
-// addHrefToPlaylist :: (String, a, [[String, [String]]]) -> [[String, [String]]]
-export const addHrefToPlaylist = (selectedPlaylist, href, playlists) => f.pipe(
-  appendToPlaylistIf(([,,i]) => i === selectedPlaylist),
-  f.reduce([]),
-)(href)(playlists)
-
-// removeFromPlaylistIf :: (String -> Boolean) -> String -> [String, [String]] -> [String, [String]]
-export const removeFromPlaylistIf = conditionFn => index => f.pipe(
-  f.arrifyArgs,
-  f.boolean((args) =>
-    conditionFn(args)
-  )(
-    [
-      ([acc, [name, playlist]]) => [ ...acc, [name, f.reduce([])((acc2, track, i) => {
-        if (i === index) return acc2
-        return [...acc2, track]
-      })(playlist)]],
-      f.head,
-    ]
-  )
-)
-
-// removeTrackFromPlaylist :: (String, a, [[String, [String]]]) -> [[String, [String]]]
-export const removeTrackFromPlaylist = (selectedPlaylist, index, playlists) => f.pipe(
-  removeFromPlaylistIf(([,,i]) => i === selectedPlaylist),
-  f.reduce([]),
-)(index)(playlists)
-
-// rearrangeInPlaylistIf :: (String -> Boolean) -> String -> [String, [String]] -> [String, [String]]
-export const rearrangeInPlaylistIf = conditionFn => ([iFrom, iTo]) => f.pipe(
-  f.arrifyArgs,
-  f.boolean((args) =>
-    conditionFn(args)
-  )(
-    [
-      ([acc, [name, playlist]]) => [ ...acc, [name, f.reduce([])((acc2, track, i) => {
-        if (i === iFrom) return acc2
-        if (i === iTo) return [...acc2, playlist[iFrom], track]
-        return [...acc2, track]
-      })(playlist)]],
+      reducer,
       f.head,
     ]
   )
@@ -225,9 +180,28 @@ export const rearrangeInPlaylistIf = conditionFn => ([iFrom, iTo]) => f.pipe(
 
 // rearrangeInPlaylist :: (String, a, [[String, [String]]]) -> [[String, [String]]]
 export const rearrangeInPlaylist = (selectedPlaylist, [iFrom, iTo], playlists) => f.pipe(
-  rearrangeInPlaylistIf(([,,i]) => i === selectedPlaylist),
+  applyReducerIf(([,,i]) => i === selectedPlaylist),
   f.reduce([]),
-)([iFrom, iTo])(playlists)
+)(([acc, [name, playlist]]) => [ ...acc, [name, f.reduce([])((acc2, track, i) => {
+  if (i === iFrom) return acc2
+  if (i === iTo) return [...acc2, playlist[iFrom], track]
+  return [...acc2, track]
+})(playlist)]])(playlists)
+
+// addHrefToPlaylist :: (String, a, [[String, [String]]]) -> [[String, [String]]]
+export const addHrefToPlaylist = (selectedPlaylist, href, playlists) => f.pipe(
+  applyReducerIf(([,,i]) => i === selectedPlaylist),
+  f.reduce([]),
+)(([acc, [name, playlist]]) => [ ...acc, [name, [...playlist, href]]])(playlists)
+
+// removeTrackFromPlaylist :: (String, a, [[String, [String]]]) -> [[String, [String]]]
+export const removeTrackFromPlaylist = (selectedPlaylist, index, playlists) => f.pipe(
+  applyReducerIf(([,,i]) => i === selectedPlaylist),
+  f.reduce([]),
+)(([acc, [name, playlist]]) => [ ...acc, [name, f.reduce([])((acc2, track, i) => {
+  if (i === index) return acc2
+  return [...acc2, track]
+})(playlist)]])(playlists)
 
 // findIndexOfElement :: Element -> Elements -> Number
 export const findIndexOfElement = trackEl => f.pipe(
