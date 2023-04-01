@@ -136,12 +136,6 @@ export const onPassTrackList = ([stateTrackList, playlistTrackList]) => {
   return stateTrackList
 }
 
-// onAddToPlaylistDOM :: Event -> Element
-export const onAddToPlaylistDOM = e => {
-  e.stopPropagation()
-  return appendTrackElementToPlaylistById(window.state.trackList)(e.currentTarget.dataset.trackId)
-}
-
 // onAddToPlaylist :: Event -> void
 export const onAddToPlaylist = e => {
   e.stopPropagation()
@@ -181,11 +175,7 @@ export const onRemoveFromPlaylist = e => {
 // ifFalseOnAddToPlaylist :: fn -> Event -> [Element, Object] | Event
 const ifFalseOnAddToPlaylist = conditionFn => f.breakPipe(
   f.breakIf(conditionFn),
-  f.parallel([
-    onClickOrEnter(onAddToPlaylist),
-    onClickOrEnter(onAddToPlaylistDOM),
-    onClickOrEnter(onAddToPlaylistNewOrIgnore),
-  ]),
+  onClickOrEnter(onAddToPlaylist),
 )
 
 // createAddToPlaylistElement :: String -> Element
@@ -298,6 +288,14 @@ export const removeTrackEls = (arg) => {
   return arg
 }
 
+// removePlaylistEls :: undefined -> undefined
+export const removePlaylistEls = () => {
+  document.getElementById('playlist').remove()
+  const footer = document.getElementsByTagName('footer')[0]
+  const playlistContainer = document.createElement('div')
+  playlistContainer.id = 'playlist'
+  footer.insertAdjacentElement('beforebegin', playlistContainer)
+}
 
 // playTrack :: Element -> undefined
 export const playTrack = (element) => {

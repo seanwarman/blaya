@@ -55,13 +55,27 @@
     } from './helpers/events.js'
     import { logger } from './helpers/functional-utils.js'
 
+    import * as dom from './helpers/dom.js'
+    import * as utils from './helpers/utils.js'
+
     window.logger = logger
 
 		window.state = {
       trackList: parseTrackList(RAW_TRACKLIST),
-      playlists: [
+      playlistsState: [
         ['', []]
       ],
+      set playlists(value) {
+        this.playlistsState = value
+        dom.removePlaylistEls()
+        dom.onAddToPlaylistNewOrIgnore()
+        for (const track of this.playlistsState[this.selectedPlaylist][1]) {
+          dom.appendTrackElementToPlaylistById(this.trackList)(utils.simpleHash(track))
+        }
+      },
+      get playlists() {
+        return this.playlistsState
+      },
       selectedPlaylist: 0,
       currentTrackId: null,
       texts: [],
