@@ -7,6 +7,7 @@ import {
   pagesFromIndexRange,
   replaceAllWithThreePages,
   addHrefToPlaylist,
+  removeTrackFromPlaylist,
 } from './index.js'
 import * as f from './functional-utils.js'
 
@@ -145,6 +146,27 @@ export const onAddToPlaylist = e => {
   window.state.playlists = addHrefToPlaylist(window.state.selectedPlaylist, href, window.state.playlists)
 }
 
+// onRemoveFromPlaylist :: Event -> Element
+export const onRemoveFromPlaylist = e => {
+  e.stopPropagation()
+
+  const trackEl = e.currentTarget.parentElement.parentElement
+  if (!trackEl) return
+
+  const trackElIndex = f.pipe(
+    Array.from,
+    f.slice()(),
+    f.reverse,
+    f.findIndex(track => track === trackEl),
+  )
+
+  window.state.playlists = removeTrackFromPlaylist(
+    window.state.selectedPlaylist,
+    trackElIndex(document.getElementById('playlist').getElementsByClassName('track')),
+    window.state.playlists
+  )
+}
+
 export const onAddToPlaylistNewOrIgnore = () => {
   const playlistEl = document.getElementById('playlist')
   if (playlistEl.getElementsByClassName('playlist-name').length) {
@@ -162,14 +184,6 @@ export const onAddToPlaylistNewOrIgnore = () => {
   playlistEl.append(div)
   playlistEl.ondrop = e => e.preventDefault()
   playlistEl.firstChild.addEventListener('keydown', onPlaylistName)
-}
-
-// onRemoveFromPlaylist :: Event -> Element
-export const onRemoveFromPlaylist = e => {
-  e.stopPropagation()
-  document.getElementById('playlist')
-    .removeChild(e.currentTarget.parentElement.parentElement)
-  return e.currentTarget.parentElement.parentElement
 }
 
 // ifFalseOnAddToPlaylist :: fn -> Event -> [Element, Object] | Event
