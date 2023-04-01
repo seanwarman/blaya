@@ -21,3 +21,10 @@ PORT=3000
 ```
 
 To add more users just keep adding to this variable.
+
+# TODO
+
+- Back button should always play the previously played track.
+- The playlists should show as tabs above the playlist name
+- Multi select songs to set as offline
+- Have a query param that allows linking to a particular track /?track=q334cX <-- this would be the track's id
