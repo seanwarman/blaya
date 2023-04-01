@@ -205,3 +205,34 @@ export const removeTrackFromPlaylist = (selectedPlaylist, index, playlists) => f
   removeFromPlaylistIf(([,,i]) => i === selectedPlaylist),
   f.reduce([]),
 )(index)(playlists)
+
+// rearrangeInPlaylistIf :: (String -> Boolean) -> String -> [String, [String]] -> [String, [String]]
+export const rearrangeInPlaylistIf = conditionFn => ([iFrom, iTo]) => f.pipe(
+  f.arrifyArgs,
+  f.boolean((args) =>
+    conditionFn(args)
+  )(
+    [
+      ([acc, [name, playlist]]) => [ ...acc, [name, f.reduce([])((acc2, track, i) => {
+        if (i === iFrom) return acc2
+        if (i === iTo) return [...acc2, playlist[iFrom], track]
+        return [...acc2, track]
+      })(playlist)]],
+      f.head,
+    ]
+  )
+)
+
+// rearrangeInPlaylist :: (String, a, [[String, [String]]]) -> [[String, [String]]]
+export const rearrangeInPlaylist = (selectedPlaylist, [iFrom, iTo], playlists) => f.pipe(
+  rearrangeInPlaylistIf(([,,i]) => i === selectedPlaylist),
+  f.reduce([]),
+)([iFrom, iTo])(playlists)
+
+// findIndexOfElement :: Element -> Elements -> Number
+export const findIndexOfElement = trackEl => f.pipe(
+  Array.from,
+  f.slice()(),
+  f.reverse,
+  f.findIndex(track => track === trackEl),
+)

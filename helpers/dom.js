@@ -8,6 +8,8 @@ import {
   replaceAllWithThreePages,
   addHrefToPlaylist,
   removeTrackFromPlaylist,
+  findIndexOfElement,
+  rearrangeInPlaylist,
 } from './index.js'
 import * as f from './functional-utils.js'
 
@@ -40,15 +42,31 @@ export const onDragLeave = e => {
 }
 
 export const onDrop = e => {
-  const data = e.dataTransfer.getData('Text')
-  const droppedTrack = document.getElementById(data)
+
+  const droppedTrack = document.getElementById(e.dataTransfer.getData('Text'))
+  const trackEls = droppedTrack.parentElement.getElementsByClassName('track')
+
+  const fromIndex = findIndexOfElement(droppedTrack)(trackEls)
+
+  // This method techinically updates the dom twice but it's the most reliable
+  // way I know of to get the right index after dropping the track...
   e.currentTarget.after(droppedTrack)
+
+  const toIndex = findIndexOfElement(droppedTrack)(trackEls)
+
+  // The dom will get redrawn here from the setter on state.playlists...
+  window.state.playlists = rearrangeInPlaylist(
+    window.state.selectedPlaylist,
+    [fromIndex, toIndex],
+    window.state.playlists
+  )
+
   droppedTrack.focus()
+
   e.preventDefault()
   for (const child of document.getElementsByClassName('dragover')) {
     child.classList.remove('dragover')
   }
-  // TODO: update state.playlists
 }
 
 export const onDragStart = e => {
@@ -153,16 +171,15 @@ export const onRemoveFromPlaylist = e => {
   const trackEl = e.currentTarget.parentElement.parentElement
   if (!trackEl) return
 
-  const trackElIndex = f.pipe(
-    Array.from,
-    f.slice()(),
-    f.reverse,
-    f.findIndex(track => track === trackEl),
+  const trackElIndex = findIndexOfElement(
+    trackEl
+  )(
+    document.getElementById('playlist').getElementsByClassName('track')
   )
 
   window.state.playlists = removeTrackFromPlaylist(
     window.state.selectedPlaylist,
-    trackElIndex(document.getElementById('playlist').getElementsByClassName('track')),
+    trackElIndex,
     window.state.playlists
   )
 }
