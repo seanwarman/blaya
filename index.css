@@ -14,17 +14,16 @@ header {
   position: fixed;
   width: 100%;
   display: grid;
-  grid-template-columns: 25% 25% 25% auto;
+  grid-template-columns: auto auto auto auto;
   justify-items: end;
   padding: 1rem 2rem;
   margin-top: -6rem;
   grid-gap: 2rem;
-  height: 4.5rem;
 }
 
 .search-container {
   grid-column: 1 / span 3;
-  /* height: 4rem; */
+  height: 4rem;
   position: relative;
   width: 100%;
 }
@@ -87,15 +86,13 @@ input#search-input {
 }
 
 #target-button {
-  position: absolute;
-  top: 0;
-  right: 0;
   box-shadow: 5px 5px 12px 0px #00000024;
   border-radius: 50%;
   border: none;
   width: 60px;
   height: 60px;
   background: whitesmoke;
+  grid-column: 4 / span 1;
 }
 
 #target-button:hover {
@@ -210,12 +207,11 @@ div#current-playing-text {
 
   header {
     margin-top: -5rem;
-    height: 4.5rem;
   }
 
   .search-container {
     grid-column: 2 / span 2;
-    height: 2.5rem;
+    height: unset;
   }
 
   input#search-input {
