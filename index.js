@@ -1,8 +1,22 @@
 const express = require('express')
+const basicAuth = require('express-basic-auth')
 const { readdir, access, constants } = require('fs')
-const { spawn, exec } = require('child_process');
+const { spawn, exec } = require('child_process')
 const app = express()
-const port = process.argv[2] || 80
+require('dotenv').config()
+
+const { BASIC_AUTH_USERS, PORT = 80 } = process.env
+
+app.use(basicAuth({
+  users: BASIC_AUTH_USERS.split(',').reduce((acc, userpass) => {
+    const [username, password] = userpass.split(':')
+    return {
+      ...acc,
+      [username]: password,
+    }
+  }, {}),
+  challenge: true,
+}))
 
 // Something to refresh the index and remove any cached files...
 // setInterval(() => {
@@ -69,6 +83,6 @@ function copySendFile(req, res) {
 
 app.get('*', cleanDir, copySendFile)
 
-app.listen(port, () => {
-	console.log(`Example app listening on port ${port}`)
+app.listen(PORT, () => {
+	console.log(`Example app listening on port ${PORT}`)
 })
