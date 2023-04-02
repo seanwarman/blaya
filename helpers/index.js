@@ -168,9 +168,7 @@ export const getTrackAndAlbumFromId = trackList => pipe(
 // applyArrayReducerIf :: (String -> Boolean) -> (a -> b) -> (a -> b)
 export const applyArrayReducerIf = conditionFn => reducer => f.pipe(
   f.arrifyArgs,
-  f.boolean((args) =>
-    conditionFn(args)
-  )(
+  f.boolean(conditionFn)(
     [
       reducer,
       // This is the reducer version of an id function,
