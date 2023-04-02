@@ -48,14 +48,15 @@ export const onDrop = e => {
 
   const fromIndex = findIndexOfElement(droppedTrack)(trackEls)
 
-  // This method techinically updates the dom twice but it's the most reliable
-  // way I know of to get the right index after dropping the track...
+  // This method is dom-first rather than data-first but it's the most reliable
+  // way I know of to rearrange the dom and data reliably
   e.currentTarget.after(droppedTrack)
 
   const toIndex = findIndexOfElement(droppedTrack)(trackEls)
 
-  // The dom will get redrawn here from the setter on state.playlists...
-  window.state.playlists = rearrangeInPlaylist(
+  // We're cheating here by adding to playlistsState rather than playlists
+  // so the dom doesn't get re-drawn.
+  window.state.playlistsState = rearrangeInPlaylist(
     window.state.selectedPlaylist,
     [fromIndex, toIndex],
     window.state.playlists
