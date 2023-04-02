@@ -165,22 +165,24 @@ export const getTrackAndAlbumFromId = trackList => pipe(
   getTrackAndAlbumFromTrackString,
 )
 
-// applyReducerIf :: (String -> Boolean) -> (a -> b) -> (a -> b)
-export const applyReducerIf = conditionFn => reducer => f.pipe(
+// applyArrayReducerIf :: (String -> Boolean) -> (a -> b) -> (a -> b)
+export const applyArrayReducerIf = conditionFn => reducer => f.pipe(
   f.arrifyArgs,
   f.boolean((args) =>
     conditionFn(args)
   )(
     [
       reducer,
-      f.head,
+      // This is the reducer version of an id function,
+      // basically keep the array the same...
+      ([acc, nextItem]) => [...acc, nextItem],
     ]
   )
 )
 
 // rearrangeInPlaylist :: (String, a, [[String, [String]]]) -> [[String, [String]]]
 export const rearrangeInPlaylist = (selectedPlaylist, [iFrom, iTo], playlists) => f.pipe(
-  applyReducerIf(([,,i]) => i === selectedPlaylist),
+  applyArrayReducerIf(([,,i]) => i === selectedPlaylist && iFrom !== iTo),
   f.reduce([]),
 )(([acc, [name, playlist]]) => [ ...acc, [name, f.reduce([])((acc2, track, i) => {
   if (i === iFrom) return acc2
@@ -190,13 +192,13 @@ export const rearrangeInPlaylist = (selectedPlaylist, [iFrom, iTo], playlists) =
 
 // addHrefToPlaylist :: (String, a, [[String, [String]]]) -> [[String, [String]]]
 export const addHrefToPlaylist = (selectedPlaylist, href, playlists) => f.pipe(
-  applyReducerIf(([,,i]) => i === selectedPlaylist),
+  applyArrayReducerIf(([,,i]) => i === selectedPlaylist),
   f.reduce([]),
 )(([acc, [name, playlist]]) => [ ...acc, [name, [...playlist, href]]])(playlists)
 
 // removeTrackFromPlaylist :: (String, a, [[String, [String]]]) -> [[String, [String]]]
 export const removeTrackFromPlaylist = (selectedPlaylist, index, playlists) => f.pipe(
-  applyReducerIf(([,,i]) => i === selectedPlaylist),
+  applyArrayReducerIf(([,,i]) => i === selectedPlaylist),
   f.reduce([]),
 )(([acc, [name, playlist]]) => [ ...acc, [name, f.reduce([])((acc2, track, i) => {
   if (i === index) return acc2
