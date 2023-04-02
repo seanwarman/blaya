@@ -186,7 +186,11 @@ export const rearrangeInPlaylist = (selectedPlaylist, [iFrom, iTo], playlists) =
   f.reduce([]),
 )(([acc, [name, playlist]]) => [ ...acc, [name, f.reduce([])((acc2, track, i) => {
   if (i === iFrom) return acc2
-  if (i === iTo) return [...acc2, playlist[iFrom], track]
+  if (i === iTo) {
+    // If dragging down it feels natural to put the track before, and vise
+    // versa if dragging up...
+    return iFrom > iTo ? [...acc2, playlist[iFrom], track] : [...acc2, track, playlist[iFrom]]
+  }
   return [...acc2, track]
 })(playlist)]])(playlists)
 

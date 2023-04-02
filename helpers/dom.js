@@ -48,24 +48,13 @@ export const onDrop = e => {
   const trackEls = droppedTrack.parentElement.getElementsByClassName('track')
 
   const fromIndex = findIndexOfElement(droppedTrack)(trackEls)
+  const toIndex = findIndexOfElement(e.currentTarget)(trackEls)
 
-  // This method is dom-first rather than data-first but it's the most reliable
-  // way I know of to rearrange the dom and data reliably
-  e.currentTarget.after(droppedTrack)
-
-  const toIndex = findIndexOfElement(droppedTrack)(trackEls)
-
-  // We're cheating here by adding to playlistsState rather than playlists
-  // so the dom doesn't get re-drawn.
-  window.state.playlistsState = rearrangeInPlaylist(
+  window.state.playlists = rearrangeInPlaylist(
     window.state.selectedPlaylist,
     [fromIndex, toIndex],
     window.state.playlists
   )
-
-  // Also have to update localStorage, which is usually handled by the setter
-  // (might be better to just allow the re-draw)
-  window.localStorage.setItem(PLAYLISTS_STATE_KEY, JSON.stringify(window.state.playlistsState))
 
   droppedTrack.focus()
 

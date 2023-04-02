@@ -61,6 +61,12 @@
 
     window.logger = logger
 
+    function initStateItem(key, defaultInitiliser) {
+      const stateItem = JSON.parse(window.localStorage.getItem(key))
+      if (stateItem) return stateItem
+      return defaultInitiliser
+    }
+
 		window.state = {
       trackList: parseTrackList(RAW_TRACKLIST),
       playlistsState: undefined,
@@ -94,15 +100,9 @@
       targeting: false,
 		}
 
-    function initialisePlaylists(defaultInitiliser) {
-      const playlists = JSON.parse(window.localStorage.getItem(PLAYLISTS_STATE_KEY))
-      if (playlists) return playlists
-      return defaultInitiliser
-    }
-
     // Initialise the playlists, this way the setter can build a playlist in
     // the dom data-first...
-    window.state.playlists = initialisePlaylists([['', []]])
+    window.state.playlists = initStateItem(PLAYLISTS_STATE_KEY, [['', []]])
 
     // BEGIN
     window.state.page = appendTracksByPage(window.state.trackList)(1)

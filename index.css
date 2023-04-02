@@ -111,6 +111,10 @@ input#search-input {
 	columns: 2;
 }
 
+.track:nth-child(even) {
+  z-index: 1;
+}
+
 .track:nth-child(odd) {
 	background: #efefef;
 }
