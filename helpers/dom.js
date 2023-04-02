@@ -13,6 +13,8 @@ import {
 } from './index.js'
 import * as f from './functional-utils.js'
 
+export const PLAYLISTS_STATE_KEY = 'blaya__playlists'
+
 // addPlayingClassIf :: Element -> Boolean -> Element
 export const addPlayingClassIf = condition => element => {
   if (condition) {
@@ -42,7 +44,6 @@ export const onDragLeave = e => {
 }
 
 export const onDrop = e => {
-
   const droppedTrack = document.getElementById(e.dataTransfer.getData('Text'))
   const trackEls = droppedTrack.parentElement.getElementsByClassName('track')
 
@@ -61,6 +62,10 @@ export const onDrop = e => {
     [fromIndex, toIndex],
     window.state.playlists
   )
+
+  // Also have to update localStorage, which is usually handled by the setter
+  // (might be better to just allow the re-draw)
+  window.localStorage.setItem(PLAYLISTS_STATE_KEY, JSON.stringify(window.state.playlistsState))
 
   droppedTrack.focus()
 

@@ -40,6 +40,7 @@
     } from './helpers/index.js'
     import {
       onPassTrackList,
+      PLAYLISTS_STATE_KEY,
     } from './helpers/dom.js'
     import {
       onClearSearch,
@@ -62,11 +63,10 @@
 
 		window.state = {
       trackList: parseTrackList(RAW_TRACKLIST),
-      playlistsState: [
-        ['', []]
-      ],
+      playlistsState: undefined,
       set playlists(value) {
         this.playlistsState = value
+        window.localStorage.setItem(PLAYLISTS_STATE_KEY, JSON.stringify(value))
         dom.removePlaylistEls()
         dom.onAddToPlaylistNewOrIgnore()
         for (const track of this.playlistsState[this.selectedPlaylist][1]) {
@@ -93,6 +93,16 @@
       offset: 3000,
       targeting: false,
 		}
+
+    function initialisePlaylists(defaultInitiliser) {
+      const playlists = JSON.parse(window.localStorage.getItem(PLAYLISTS_STATE_KEY))
+      if (playlists) return playlists
+      return defaultInitiliser
+    }
+
+    // Initialise the playlists, this way the setter can build a playlist in
+    // the dom data-first...
+    window.state.playlists = initialisePlaylists([['', []]])
 
     // BEGIN
     window.state.page = appendTracksByPage(window.state.trackList)(1)

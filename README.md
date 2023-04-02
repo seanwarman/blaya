@@ -26,9 +26,9 @@ To add more users just keep adding to this variable.
 
 ### Playlists
 - play tracks in playlist (next button and onnext)
-- have playlist ui follow the data (set get)
+- ~~have playlist ui follow the data (set get)~~
 - make mobile look good and usable
-- persist playlists in localStorage
+- ~~persist playlists in localStorage~~
 
 ## Features
 - Back button should always play the previously played track.
