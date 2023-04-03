@@ -6,6 +6,8 @@ import {
   scrollToTrackByTrackId,
   getSearchValue,
   playHead,
+  playTrack,
+  chooseTrackList,
 } from './dom.js'
 import {
   appendTracksByPageFilteredBy,
@@ -64,23 +66,29 @@ export const onPlaylistName = e => {
   }, 100)
 }
 
-export const onEndNext = trackList => () => {
+export const onEndNext = () => {
+  const trackList = chooseTrackList([window.state.trackList, window.state.playlists[window.state.selectedPlaylist]])
   const src = getNextTrackString(trackList)(window.state.currentTrackId)
   const player = playHead(src)
   window.state.currentTrackId = simpleHash(src)
+  player.pause()
   player.load()
   player.play()
   updateCurrentTrack(window.state.currentTrackId)
 }
 
 // onNext :: [String] -> undefined -> undefined
-export const onNext = trackList => () => {
+export const onNext = () => {
+  const trackList = chooseTrackList([window.state.trackList, window.state.playlists[window.state.selectedPlaylist]])
+
   const src = getNextTrackString(trackList)(window.state.currentTrackId)
+  console.log(`@FILTER src:`, src)
   const player = playHead(src)
   window.state.currentTrackId = simpleHash(src)
   if (player.paused) {
     player.load()
   } else {
+    player.pause()
     player.load()
     player.play()
   }
@@ -88,7 +96,8 @@ export const onNext = trackList => () => {
 }
 
 // onPrev :: [String] -> undefined -> undefined
-export const onPrev = trackList => () => {
+export const onPrev = () => {
+  const trackList = chooseTrackList([window.state.trackList, window.state.playlists[window.state.selectedPlaylist]])
   const src = getPrevTrackString(trackList)(window.state.currentTrackId)
   const player = playHead(src)
   window.state.currentTrackId = simpleHash(src)
@@ -121,10 +130,7 @@ export const onScrollThisTrack = trackList => () => {
 export const onPlayPlaylist = (e) => {
   const ref = e.currentTarget
   if (ref) {
-    const player = playHead(ref.getAttribute('data-href'))
-    updateCurrentTrack(ref.id.match('playlist__(.*)')[1])
-    player.load()
-    player.play()
+    playTrack(ref)
   }
 }
 
@@ -132,10 +138,7 @@ export const onPlayPlaylist = (e) => {
 export const onPlay = (e) => {
   const ref = e.currentTarget
   if (ref) {
-    const player = playHead(ref.getAttribute('data-href'))
-    updateCurrentTrack(ref.id)
-    player.load()
-    player.play()
+    playTrack(ref)
   }
 }
 

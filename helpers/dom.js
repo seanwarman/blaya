@@ -79,7 +79,7 @@ export const createTrackElementForPlaylist = trackList => trackId => {
       role: 'link',
       draggable: true,
       tabIndex: '0',
-      id: 'playlist__' + trackId,
+      id: trackId,
       innerHTML: createTrackInnerHTML(trackString),
       onclick: onClickOrEnter(onPlayPlaylist),
       onkeydown: onClickOrEnter(onPlayPlaylist),
@@ -89,7 +89,7 @@ export const createTrackElementForPlaylist = trackList => trackId => {
       ondragstart: onDragStart
     }),
     f.ObjectAssignDataSet({
-      histId: trackId,
+      playlist: true,
       href: trackString,
     }),
     addPlayingClassIf(trackId === window.state.currentTrackId),
@@ -125,6 +125,8 @@ export const playHead = src => {
 
 // updateCurrentTrack :: String -> undefined
 export const updateCurrentTrack = nextTrackId => {
+  // TODO: this should all be done in a setter on state.currentTrack
+  // convert the trackId in that setter and keep currentTrack as a plain string
   const playingEls = document.getElementsByClassName('playing')
   if (playingEls.length) {
     for (let el of playingEls) {
@@ -133,18 +135,14 @@ export const updateCurrentTrack = nextTrackId => {
   }
 
   window.state.currentTrackId = nextTrackId
-  const element = document.getElementById(nextTrackId)
-  if (element) {
-    element.classList.add('playing')
-  }
   const [track, album] = getTrackAndAlbumFromId(window.state.trackList)(nextTrackId)
   document.getElementById('current-playing-text').innerHTML = `<div>${track}</div><div>${album}</div>`
 }
 
-// onPassTrackList :: ([[String], [String]]) -> [String]
-export const onPassTrackList = ([stateTrackList, playlistTrackList]) => {
+// chooseTrackList :: ([[String], [String]]) -> [String]
+export const chooseTrackList = ([stateTrackList, playlistTrackList]) => {
   const track = document.getElementsByClassName('playing')[0]
-  if (/^playlist__/.test(track?.id)) {
+  if (track?.dataset?.playlist) {
     return playlistTrackList
   }
   return stateTrackList
@@ -330,6 +328,7 @@ export const playTrack = (element) => {
   player.pause()
   player.load()
   updateCurrentTrack(element.id)
+  element.classList.add('playing')
   player.play()
 }
 

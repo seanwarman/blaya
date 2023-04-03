@@ -39,7 +39,6 @@
       parseTrackList,
     } from './helpers/index.js'
     import {
-      onPassTrackList,
       PLAYLISTS_STATE_KEY,
     } from './helpers/dom.js'
     import {
@@ -108,11 +107,11 @@
     window.state.page = appendTracksByPage(window.state.trackList)(1)
 
     window.addEventListener('scroll', onScroll([onUpScroll(window.state.trackList), onDownScroll(window.state.trackList)]), false)
-    document.getElementById('player').onended = onEndNext(onPassTrackList([window.state.trackList, window.state.playlists[window.state.selectedPlaylist][1]]))
-		document.getElementById('next-button').onclick = onClickOrEnter(onNext(onPassTrackList([window.state.trackList, window.state.playlists[window.state.selectedPlaylist][1]])))
-		document.getElementById('next-button').onkeydown = onClickOrEnter(onNext(onPassTrackList([window.state.trackList, window.state.playlists[window.state.selectedPlaylist][1]])))
-		document.getElementById('prev-button').onclick = onClickOrEnter(onPrev(onPassTrackList([window.state.trackList, window.state.playlists[window.state.selectedPlaylist][1]])))
-		document.getElementById('prev-button').onkeydown = onClickOrEnter(onPrev(onPassTrackList([window.state.trackList, window.state.playlists[window.state.selectedPlaylist][1]])))
+    document.getElementById('player').onended = onEndNext
+		document.getElementById('next-button').onclick = onClickOrEnter(onNext)
+		document.getElementById('next-button').onkeydown = onClickOrEnter(onNext)
+		document.getElementById('prev-button').onclick = onClickOrEnter(onPrev)
+		document.getElementById('prev-button').onkeydown = onClickOrEnter(onPrev)
     document.getElementById('target-button').onclick = onClickOrEnter(onScrollThisTrack(window.state.trackList))
     document.getElementById('target-button').onkeydown = onClickOrEnter(onScrollThisTrack(window.state.trackList))
     document.getElementById('current-playing-text').onclick = onClickOrEnter(onScrollThisTrack(window.state.trackList))
