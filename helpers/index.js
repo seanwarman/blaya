@@ -179,7 +179,7 @@ export const applyArrayReducerIf = conditionFn => reducer => f.pipe(
 )
 
 // rearrangeInPlaylist :: (String, a, [[String, [String]]]) -> [[String, [String]]]
-export const rearrangeInPlaylist = (selectedPlaylist, [iFrom, iTo], playlists) => f.pipe(
+export const rearrangeInPlaylist = ([iFrom, iTo], selectedPlaylist, playlists) => f.pipe(
   applyArrayReducerIf(([,,i]) => i === selectedPlaylist && iFrom !== iTo),
   f.reduce([]),
 )(([acc, [name, playlist]]) => [ ...acc, [name, f.reduce([])((acc2, track, i) => {

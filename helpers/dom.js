@@ -51,8 +51,8 @@ export const onDrop = e => {
   const toIndex = findIndexOfElement(e.currentTarget)(trackEls)
 
   window.state.playlists = rearrangeInPlaylist(
-    window.state.selectedPlaylist,
     [fromIndex, toIndex],
+    window.state.selectedPlaylist,
     window.state.playlists
   )
 
