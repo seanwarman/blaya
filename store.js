@@ -30,9 +30,10 @@ export default () => {
     },
     playModule: {
       playlist: false,
-      setTrack({ src, playlist }) {
+      setTrack({ src, playlist, playlistIndex }) {
         this.currentTrackSrc = src
-        this.playlist = playlist
+        this.playlist = !!playlist
+        if (!!playlist) state.playlists[state.selectedPlaylist][1] = playlistIndex
       },
       nextTrack() {
         if (this.playlist) {
@@ -97,7 +98,7 @@ export default () => {
   // BEGIN
   state.page = appendTracksByPage(state.trackList)(1)
 
-  return state
+  return { state }
 }
 
 function initStateItem(key, defaultInitiliser) {

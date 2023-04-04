@@ -49,7 +49,7 @@
 
     window.logger = logger
 
-		window.state = store()
+		window.state = store().state
 
     window.addEventListener('scroll', onScroll([onUpScroll(window.state.trackList), onDownScroll(window.state.trackList)]), false)
     document.getElementById('player').onended = onEndNext

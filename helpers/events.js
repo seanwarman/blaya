@@ -11,6 +11,7 @@ import {
   appendFilteredTracksByPageLazy,
   prependTracksByPageLazy,
   prependFilteredTracksByPageLazy,
+  findIndexOfElement,
 } from './index.js'
 
 // onClickOrEnter :: (a -> b) -> Event -> undefined
@@ -117,7 +118,11 @@ export const onPrev = () => {
 export const onPlayPlaylist = (e) => {
   const ref = e.currentTarget
   if (ref) {
-    window.state.playModule.setTrack({ src: ref.dataset.href, playlist: true })
+    window.state.playModule.setTrack({ 
+      src: ref.dataset.href,
+      playlistIndex: findIndexOfElement(ref)(document.getElementById('playlist').getElementsByClassName('track')),
+      playlist: true
+    })
   }
 }
 
