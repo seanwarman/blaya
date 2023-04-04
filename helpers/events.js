@@ -61,12 +61,6 @@ export const onPlaylistName = e => {
   }, 100)
 }
 
-
-
-
-
-
-
 export const onEndNext = () => {
   window.state.playModule.nextTrack()
 }
@@ -98,20 +92,6 @@ export const onPlay = (e) => {
     window.state.playModule.setTrack({ src: ref.dataset.href, isPlaylist: false })
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // onScrollThisTrack :: [String] -> undefined -> undefined
 export const onScrollThisTrack = trackList => () => {

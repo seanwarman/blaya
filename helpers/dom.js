@@ -340,16 +340,6 @@ export const playTrack = (element) => {
   player.play()
 }
 
-
-
-
-
-
-
-
-
-
-
 // afterSearchReset :: undefined -> undefined
 export const afterSearchReset = () => {
   document.getElementById('track-list-container').remove()
