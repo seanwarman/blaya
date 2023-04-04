@@ -63,6 +63,7 @@ export const onPlaylistName = e => {
 
 export const onEndNext = () => {
   window.state.playModule.nextTrack()
+  document.getElementById('player').play()
 }
 
 export const onNext = () => {
