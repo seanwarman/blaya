@@ -29,34 +29,25 @@ export default () => {
       }
     },
     playModule: {
-      playlist: false,
-      setTrack({ src, playlist, playlistIndex }) {
-        this.currentTrackSrc = src
-        this.playlist = !!playlist
-        if (!!playlist) state.playlists[state.selectedPlaylist][1] = playlistIndex
+      isPlaylist: false,
+      trackHistory: [],
+      setTrackHistory({ src, isPlaylist, playlistIndex, selectedPlaylist }) {
+        this.trackHistory.push({
+          src,
+          isPlaylist,
+          playlistIndex: isPlaylist ? playlistIndex : null,
+          selectedPlaylist: isPlaylist ? selectedPlaylist : null,
+        })
       },
-      nextTrack() {
-        if (this.playlist) {
-          this.nextTrackPlaylist()
-        } else {
-          this.nextTrackTrackList()
-        }
-      },
-      nextTrackTrackList() {
-        const trackList = state.trackList
-        const i = trackList.findIndex(t => t === this.currentTrackSrc)
-        if (trackList[i+1]) {
-          this.currentTrackSrc = trackList[i+1]
-        }
-      },
-      nextTrackPlaylist() {
-        const [_, playlistIndex, playlist] = state.playlists[state.selectedPlaylist]
-        const trackList = playlist
-        const i = playlistIndex
-        if (trackList[i+1]) {
-          this.currentTrackSrc = trackList[i+1]
-          state.playlists[state.selectedPlaylist][1] = i+1
-        }
+      trackHistoryPrevious() {
+        const { src, isPlaylist, playlistIndex, selectedPlaylist } = this.trackHistory.pop()
+        this.setTrack({
+          src, 
+          isPlaylist,
+          playlistIndex,
+          selectedPlaylist,
+          withHistory: false,
+        })
       },
       currentTrackSrcState: null,
       get currentTrackSrc() {
@@ -75,6 +66,87 @@ export default () => {
         }
         const [track, album] = getTrackAndAlbumFromTrackString(src)
         document.getElementById('current-playing-text').innerHTML = `<div>${track}</div><div>${album}</div>`
+      },
+      setTrack({ src, isPlaylist, playlistIndex, selectedPlaylist = null, withHistory = true }) {
+        if (selectedPlaylist !== null) state.selectedPlaylist = selectedPlaylist
+        this.currentTrackSrc = src
+        this.isPlaylist = !!isPlaylist
+        if (!!isPlaylist) state.playlists[state.selectedPlaylist][1] = playlistIndex
+        if (withHistory) {
+          this.setTrackHistory({
+            src,
+            isPlaylist,
+            playlistIndex: playlistIndex,
+            selectedPlaylist: state.selectedPlaylist,
+          })
+        }
+      },
+      nextTrack() {
+        if (this.isPlaylist) {
+          this.nextTrackPlaylist()
+        } else {
+          this.nextTrackTrackList()
+        }
+      },
+      nextTrackTrackList() {
+        const trackList = state.trackList
+        const i = trackList.findIndex(t => t === this.currentTrackSrc)
+        if (trackList[i+1]) {
+          this.currentTrackSrc = trackList[i+1]
+        }
+        this.setTrackHistory({
+          src: this.currentTrackSrc,
+          isPlaylist: false,
+        })
+      },
+      nextTrackPlaylist() {
+        const [_, playlistIndex, playlist] = state.playlists[state.selectedPlaylist]
+        const trackList = playlist
+        const i = playlistIndex
+        if (trackList[i+1]) {
+          this.currentTrackSrc = trackList[i+1]
+          state.playlists[state.selectedPlaylist][1] = i+1
+          this.setTrackHistory({
+            src: trackList[i+1],
+            isPlaylist: true,
+            playlistIndex: playlistIndex,
+            selectedPlaylist: state.selectedPlaylist,
+          })
+        }
+      },
+      inHistory: false,
+      prevTrack() {
+        // This prevents the user from having to press back twice on the first
+        // go...
+        if (
+          this.inHistory && this.trackHistory.length > 0
+          || !this.inHistory && this.trackHistory.length > 1
+        ) {
+          if (!this.inHistory) this.trackHistory.pop()
+          this.inHistory = true
+          this.trackHistoryPrevious()
+        } else if (this.isPlaylist) {
+          this.inHistory = false
+          this.prevTrackPlaylist()
+        } else {
+          this.inHistory = false
+          this.prevTrackTrackList()
+        }
+      },
+      prevTrackPlaylist() {
+        const [_, playlistIndex, playlist] = state.playlists[state.selectedPlaylist]
+        const i = playlistIndex
+        if (playlist[i-1]) {
+          this.currentTrackSrc = playlist[i-1]
+          state.playlists[state.selectedPlaylist][1] = i-1
+        }
+      },
+      prevTrackTrackList() {
+        const trackList = state.trackList
+        const i = trackList.findIndex(t => t === this.currentTrackSrc)
+        if (trackList[i-1]) {
+          this.currentTrackSrc = trackList[i-1]
+        }
       },
     },
     texts: [],
@@ -103,11 +175,6 @@ export default () => {
 
 function initStateItem(key, defaultInitiliser) {
   const stateItem = JSON.parse(window.localStorage.getItem(key))
-  if (
-    stateItem
-    && typeof stateItem[0] === 'string'
-    && typeof stateItem[1] === 'object'
-    && typeof stateItem[2] === 'object'
-  ) return stateItem
-    return defaultInitiliser
+  if (stateItem) return stateItem
+  return defaultInitiliser
 }

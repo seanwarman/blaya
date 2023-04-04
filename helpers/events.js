@@ -67,51 +67,16 @@ export const onPlaylistName = e => {
 
 
 
-// HERE
-
 export const onEndNext = () => {
-  // const trackList = chooseTrackList([window.state.trackList, window.state.playlists[window.state.selectedPlaylist]])
-  // const src = getNextTrackString(trackList)(window.state.currentTrackId)
-  // const player = playHead(src)
-  // window.state.currentTrackId = simpleHash(src)
-  // player.pause()
-  // player.load()
-  // player.play()
-  // updateCurrentTrack(window.state.currentTrackId)
+  window.state.playModule.nextTrack()
 }
 
-// onNext :: [String] -> undefined -> undefined
 export const onNext = () => {
   window.state.playModule.nextTrack()
-  // const trackList = chooseTrackList([window.state.trackList, window.state.playlists[window.state.selectedPlaylist]])
-
-  // const src = getNextTrackString(trackList)(window.state.currentTrackId)
-  // console.log(`@FILTER src:`, src)
-  // const player = playHead(src)
-  // window.state.currentTrackId = simpleHash(src)
-  // if (player.paused) {
-  //   player.load()
-  // } else {
-  //   player.pause()
-  //   player.load()
-  //   player.play()
-  // }
-  // updateCurrentTrack(window.state.currentTrackId)
 }
 
-// onPrev :: [String] -> undefined -> undefined
 export const onPrev = () => {
-  // const trackList = chooseTrackList([window.state.trackList, window.state.playlists[window.state.selectedPlaylist]])
-  // const src = getPrevTrackString(trackList)(window.state.currentTrackId)
-  // const player = playHead(src)
-  // window.state.currentTrackId = simpleHash(src)
-  // if (player.paused) {
-  //   player.load()
-  // } else {
-  //   player.load()
-  //   player.play()
-  // }
-  // updateCurrentTrack(window.state.currentTrackId)
+  window.state.playModule.prevTrack()
 }
 
 // onPlayPlaylist :: Event -> undefined
@@ -121,7 +86,7 @@ export const onPlayPlaylist = (e) => {
     window.state.playModule.setTrack({ 
       src: ref.dataset.href,
       playlistIndex: findIndexOfElement(ref)(document.getElementById('playlist').getElementsByClassName('track')),
-      playlist: true
+      isPlaylist: true
     })
   }
 }
@@ -130,7 +95,7 @@ export const onPlayPlaylist = (e) => {
 export const onPlay = (e) => {
   const ref = e.currentTarget
   if (ref) {
-    window.state.playModule.setTrack({ src: ref.dataset.href, playlist: false })
+    window.state.playModule.setTrack({ src: ref.dataset.href, isPlaylist: false })
   }
 }
 
