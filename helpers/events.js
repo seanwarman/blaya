@@ -80,8 +80,10 @@ export const onPlayPlaylist = (e) => {
     window.state.playModule.setTrack({ 
       src: ref.dataset.href,
       playlistIndex: findIndexOfElement(ref)(document.getElementById('playlist').getElementsByClassName('track')),
-      isPlaylist: true
+      isPlaylist: true,
     })
+
+    document.getElementById('player').play()
   }
 }
 
@@ -90,6 +92,7 @@ export const onPlay = (e) => {
   const ref = e.currentTarget
   if (ref) {
     window.state.playModule.setTrack({ src: ref.dataset.href, isPlaylist: false })
+    document.getElementById('player').play()
   }
 }
 
