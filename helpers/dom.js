@@ -90,7 +90,7 @@ export const createTrackElementForPlaylist = trackList => trackId => {
       playlist: true,
       href: trackString,
     }),
-    addPlayingClassIf(trackId === window.state.currentTrackId),
+    addPlayingClassIf(trackId === window.state?.currentTrackId),
   )
 
   const playlistEl = createTrackPlaylistElementFromDiv(document.createElement('div'))
