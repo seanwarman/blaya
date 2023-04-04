@@ -35,12 +35,26 @@ export default () => {
         this.playlist = playlist
       },
       nextTrack() {
-        const trackList = this.playlist
-          ? state.playlists[state.selectedPlaylist][2]
-          : state.trackList
+        if (this.playlist) {
+          this.nextTrackPlaylist()
+        } else {
+          this.nextTrackTrackList()
+        }
+      },
+      nextTrackTrackList() {
+        const trackList = state.trackList
         const i = trackList.findIndex(t => t === this.currentTrackSrc)
         if (trackList[i+1]) {
           this.currentTrackSrc = trackList[i+1]
+        }
+      },
+      nextTrackPlaylist() {
+        const [_, playlistIndex, playlist] = state.playlists[state.selectedPlaylist]
+        const trackList = playlist
+        const i = playlistIndex
+        if (trackList[i+1]) {
+          this.currentTrackSrc = trackList[i+1]
+          state.playlists[state.selectedPlaylist][1] = i+1
         }
       },
       currentTrackSrcState: null,
