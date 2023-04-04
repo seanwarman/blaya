@@ -1,13 +1,9 @@
-import { setDebounce, fzfFilter, simpleHash } from './utils.js'
+import { setDebounce, fzfFilter } from './utils.js'
 import {
-  updateCurrentTrack,
   removeTrackEls,
   afterSearchReset,
   scrollToTrackByTrackId,
   getSearchValue,
-  playHead,
-  playTrack,
-  chooseTrackList,
 } from './dom.js'
 import {
   appendTracksByPageFilteredBy,
@@ -15,8 +11,6 @@ import {
   appendFilteredTracksByPageLazy,
   prependTracksByPageLazy,
   prependFilteredTracksByPageLazy,
-  getNextTrackString,
-  getPrevTrackString,
 } from './index.js'
 
 // onClickOrEnter :: (a -> b) -> Event -> undefined
