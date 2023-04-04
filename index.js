@@ -1,11 +1,19 @@
 const express = require('express')
 const basicAuth = require('express-basic-auth')
 const { readdir, access, constants } = require('fs')
-const { spawn, exec } = require('child_process')
+const { spawn } = require('child_process')
 const app = express()
+const http = require('http').Server(app)
+const io = require('socket.io')(http)
 require('dotenv').config()
 
 const { BASIC_AUTH_USERS, PORT = 80 } = process.env
+
+let reloaded = false
+io.on('connection', () => {
+  if (!reloaded) io.emit('reload')
+  reloaded = true
+})
 
 app.use(basicAuth({
   users: BASIC_AUTH_USERS.split(',').reduce((acc, userpass) => {
@@ -23,6 +31,7 @@ app.use(basicAuth({
 //      exec('rm -rf ' + __dirname + '/complete')
 // 	exec(__dirname + '/./ls_s3.sh > ' + __dirname + '/index.html')
 // }, 1000000)
+
 
 app.get('/', (req, res) => {
 	res.sendFile(__dirname + '/index.html')
@@ -83,6 +92,6 @@ function copySendFile(req, res) {
 
 app.get('*', cleanDir, copySendFile)
 
-app.listen(PORT, () => {
+http.listen(PORT, () => {
 	console.log(`Example app listening on port ${PORT}`)
 })
