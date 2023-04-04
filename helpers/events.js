@@ -66,49 +66,88 @@ export const onPlaylistName = e => {
   }, 100)
 }
 
+
+
+
+
+
+
+// HERE
+
 export const onEndNext = () => {
-  const trackList = chooseTrackList([window.state.trackList, window.state.playlists[window.state.selectedPlaylist]])
-  const src = getNextTrackString(trackList)(window.state.currentTrackId)
-  const player = playHead(src)
-  window.state.currentTrackId = simpleHash(src)
-  player.pause()
-  player.load()
-  player.play()
-  updateCurrentTrack(window.state.currentTrackId)
+  // const trackList = chooseTrackList([window.state.trackList, window.state.playlists[window.state.selectedPlaylist]])
+  // const src = getNextTrackString(trackList)(window.state.currentTrackId)
+  // const player = playHead(src)
+  // window.state.currentTrackId = simpleHash(src)
+  // player.pause()
+  // player.load()
+  // player.play()
+  // updateCurrentTrack(window.state.currentTrackId)
 }
 
 // onNext :: [String] -> undefined -> undefined
 export const onNext = () => {
-  const trackList = chooseTrackList([window.state.trackList, window.state.playlists[window.state.selectedPlaylist]])
+  window.state.playModule.nextTrack()
+  // const trackList = chooseTrackList([window.state.trackList, window.state.playlists[window.state.selectedPlaylist]])
 
-  const src = getNextTrackString(trackList)(window.state.currentTrackId)
-  console.log(`@FILTER src:`, src)
-  const player = playHead(src)
-  window.state.currentTrackId = simpleHash(src)
-  if (player.paused) {
-    player.load()
-  } else {
-    player.pause()
-    player.load()
-    player.play()
-  }
-  updateCurrentTrack(window.state.currentTrackId)
+  // const src = getNextTrackString(trackList)(window.state.currentTrackId)
+  // console.log(`@FILTER src:`, src)
+  // const player = playHead(src)
+  // window.state.currentTrackId = simpleHash(src)
+  // if (player.paused) {
+  //   player.load()
+  // } else {
+  //   player.pause()
+  //   player.load()
+  //   player.play()
+  // }
+  // updateCurrentTrack(window.state.currentTrackId)
 }
 
 // onPrev :: [String] -> undefined -> undefined
 export const onPrev = () => {
-  const trackList = chooseTrackList([window.state.trackList, window.state.playlists[window.state.selectedPlaylist]])
-  const src = getPrevTrackString(trackList)(window.state.currentTrackId)
-  const player = playHead(src)
-  window.state.currentTrackId = simpleHash(src)
-  if (player.paused) {
-    player.load()
-  } else {
-    player.load()
-    player.play()
-  }
-  updateCurrentTrack(window.state.currentTrackId)
+  // const trackList = chooseTrackList([window.state.trackList, window.state.playlists[window.state.selectedPlaylist]])
+  // const src = getPrevTrackString(trackList)(window.state.currentTrackId)
+  // const player = playHead(src)
+  // window.state.currentTrackId = simpleHash(src)
+  // if (player.paused) {
+  //   player.load()
+  // } else {
+  //   player.load()
+  //   player.play()
+  // }
+  // updateCurrentTrack(window.state.currentTrackId)
 }
+
+// onPlayPlaylist :: Event -> undefined
+export const onPlayPlaylist = (e) => {
+  const ref = e.currentTarget
+  if (ref) {
+    window.state.playModule.setTrack({ src: ref.dataset.href, playlist: true })
+  }
+}
+
+// onPlay :: Event -> undefined
+export const onPlay = (e) => {
+  const ref = e.currentTarget
+  if (ref) {
+    window.state.playModule.setTrack({ src: ref.dataset.href, playlist: false })
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // onScrollThisTrack :: [String] -> undefined -> undefined
 export const onScrollThisTrack = trackList => () => {
@@ -124,22 +163,6 @@ export const onScrollThisTrack = trackList => () => {
   setTimeout(() => {
     window.state.targeting = false
   }, 100)
-}
-
-// onPlayPlaylist :: Event -> undefined
-export const onPlayPlaylist = (e) => {
-  const ref = e.currentTarget
-  if (ref) {
-    playTrack(ref)
-  }
-}
-
-// onPlay :: Event -> undefined
-export const onPlay = (e) => {
-  const ref = e.currentTarget
-  if (ref) {
-    playTrack(ref)
-  }
 }
 
 export const onUpScroll = trackList => () => {

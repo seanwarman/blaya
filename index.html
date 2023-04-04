@@ -32,15 +32,7 @@
 		</footer>
 	</body>
 	<script type="module">
-    import { trackList as RAW_TRACKLIST } from './track-list.js'
-    import { simpleHash, setDebounce } from './helpers/utils.js'
-    import {
-      appendTracksByPage,
-      parseTrackList,
-    } from './helpers/index.js'
-    import {
-      PLAYLISTS_STATE_KEY,
-    } from './helpers/dom.js'
+    import store from './store.js'
     import {
       onClearSearch,
       onSearch,
@@ -55,56 +47,9 @@
     } from './helpers/events.js'
     import { logger } from './helpers/functional-utils.js'
 
-    import * as dom from './helpers/dom.js'
-    import * as utils from './helpers/utils.js'
-
     window.logger = logger
 
-    function initStateItem(key, defaultInitiliser) {
-      const stateItem = JSON.parse(window.localStorage.getItem(key))
-      if (stateItem) return stateItem
-      return defaultInitiliser
-    }
-
-		window.state = {
-      trackList: parseTrackList(RAW_TRACKLIST),
-      playlistsState: undefined,
-      set playlists(value) {
-        this.playlistsState = value
-        window.localStorage.setItem(PLAYLISTS_STATE_KEY, JSON.stringify(value))
-        dom.removePlaylistEls()
-        dom.onAddToPlaylistNewOrIgnore()
-        for (const track of this.playlistsState[this.selectedPlaylist][1]) {
-          dom.appendTrackElementToPlaylistById(this.trackList)(utils.simpleHash(track))
-        }
-      },
-      get playlists() {
-        return this.playlistsState
-      },
-      selectedPlaylist: 0,
-      currentTrackId: null,
-      texts: [],
-      throttleId: null,
-      throttleGap: 500,
-      page: 1,
-      numberOfPages: 3,
-      lazyLoadDebounce: false,
-      searching: false,
-      searchingPage: 1,
-      previousScrollPositionY: 0,
-      pageSize: 300,
-      previousTrackListContainer: null,
-      lastScrollTop: 0,
-      offset: 3000,
-      targeting: false,
-		}
-
-    // Initialise the playlists, this way the setter can build a playlist in
-    // the dom data-first...
-    window.state.playlists = initStateItem(PLAYLISTS_STATE_KEY, [['', []]])
-
-    // BEGIN
-    window.state.page = appendTracksByPage(window.state.trackList)(1)
+		window.state = store()
 
     window.addEventListener('scroll', onScroll([onUpScroll(window.state.trackList), onDownScroll(window.state.trackList)]), false)
     document.getElementById('player').onended = onEndNext

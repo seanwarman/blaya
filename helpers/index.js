@@ -21,6 +21,7 @@ import {
   removeTrackEls,
 } from './dom.js'
 import { fzfFilter, simpleHash } from './utils.js'
+import { PAGE_SIZE } from '../constants.js'
 
 // parseTrackList :: [String] -> [String]
 export const parseTrackList = pipe(
@@ -48,7 +49,7 @@ export const pagesFromIndexRange = (indexRange) => {
 export const indexRangeFromPages = (pageRange) => {
   const [pageStart, pageEnd] = pageRange
   // pageEnd is our current page, loading page one would be [0, 1]
-  const pageSize = window.state.pageSize
+  const pageSize = PAGE_SIZE
   return [pageSize * pageStart, pageSize * pageEnd]
 }
 
@@ -178,31 +179,54 @@ export const applyArrayReducerIf = conditionFn => reducer => f.pipe(
   )
 )
 
+//setPlaylistIndexBasedOnFromAndToPositions :: (Number, Number, Number) -> Number
+const setPlaylistIndexBasedOnFromAndToPositions = (playlistIndex, iFrom, iTo) => {
+  if (
+    iFrom < playlistIndex
+    && iTo > playlistIndex
+  ) return playlistIndex - 1
+
+  if (
+    iFrom > playlistIndex
+    && iTo < playlistIndex
+  ) return playlistIndex + 1
+
+  return playlistIndex
+}
+
 // rearrangeInPlaylist :: (String, a, [[String, [String]]]) -> [[String, [String]]]
 export const rearrangeInPlaylist = ([iFrom, iTo], selectedPlaylist, playlists) => f.pipe(
   applyArrayReducerIf(([,,i]) => i === selectedPlaylist && iFrom !== iTo),
   f.reduce([]),
-)(([acc, [name, playlist]]) => [ ...acc, [name, f.reduce([])((acc2, track, i) => {
-  if (i === iFrom) return acc2
-  if (i === iTo) {
-    // If dragging down it feels natural to put the track before, and vise
-    // versa if dragging up...
-    return iFrom > iTo ? [...acc2, playlist[iFrom], track] : [...acc2, track, playlist[iFrom]]
-  }
-  return [...acc2, track]
-})(playlist)]])(playlists)
+)(([acc, [name, playlistIndex, playlist]]) => [
+  ...acc,
+  setPlaylistIndexBasedOnFromAndToPositions(playlistIndex, iFrom, iTo),
+  [
+    name,
+    f.reduce([])((acc2, track, i) => {
+      if (i === iFrom) return acc2
+      if (i === iTo) {
+        // If dragging down it feels natural to put the track before, and vise
+        // versa if dragging up...
+        return iFrom > iTo ? [...acc2, playlist[iFrom], track] : [...acc2, track, playlist[iFrom]]
+      }
+      return [...acc2, track]
+    })(playlist)
+  ]])(playlists)
 
 // addHrefToPlaylist :: (String, a, [[String, [String]]]) -> [[String, [String]]]
 export const addHrefToPlaylist = (selectedPlaylist, href, playlists) => f.pipe(
   applyArrayReducerIf(([,,i]) => i === selectedPlaylist),
   f.reduce([]),
-)(([acc, [name, playlist]]) => [ ...acc, [name, [...playlist, href]]])(playlists)
+)(([acc, [name, playlistIndex, playlist]]) => {
+  return [ ...acc, [name, playlistIndex, [...playlist, href]]]
+})(playlists)
 
 // removeTrackFromPlaylist :: (String, a, [[String, [String]]]) -> [[String, [String]]]
 export const removeTrackFromPlaylist = (selectedPlaylist, index, playlists) => f.pipe(
   applyArrayReducerIf(([,,i]) => i === selectedPlaylist),
   f.reduce([]),
-)(([acc, [name, playlist]]) => [ ...acc, [name, f.reduce([])((acc2, track, i) => {
+)(([acc, [name, playlistIndex, playlist]]) => [ ...acc, [name, playlistIndex, f.reduce([])((acc2, track, i) => {
   if (i === index) return acc2
   return [...acc2, track]
 })(playlist)]])(playlists)

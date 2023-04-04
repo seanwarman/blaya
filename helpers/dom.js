@@ -13,8 +13,6 @@ import {
 } from './index.js'
 import * as f from './functional-utils.js'
 
-export const PLAYLISTS_STATE_KEY = 'blaya__playlists'
-
 // addPlayingClassIf :: Element -> Boolean -> Element
 export const addPlayingClassIf = condition => element => {
   if (condition) {
@@ -123,22 +121,6 @@ export const playHead = src => {
   return player
 }
 
-// updateCurrentTrack :: String -> undefined
-export const updateCurrentTrack = nextTrackId => {
-  // TODO: this should all be done in a setter on state.currentTrack
-  // convert the trackId in that setter and keep currentTrack as a plain string
-  const playingEls = document.getElementsByClassName('playing')
-  if (playingEls.length) {
-    for (let el of playingEls) {
-      el.classList.remove('playing')
-    }
-  }
-
-  window.state.currentTrackId = nextTrackId
-  const [track, album] = getTrackAndAlbumFromId(window.state.trackList)(nextTrackId)
-  document.getElementById('current-playing-text').innerHTML = `<div>${track}</div><div>${album}</div>`
-}
-
 // chooseTrackList :: ([[String], [String]]) -> [String]
 export const chooseTrackList = ([stateTrackList, playlistTrackList]) => {
   const track = document.getElementsByClassName('playing')[0]
@@ -153,7 +135,6 @@ export const onAddToPlaylist = e => {
   e.stopPropagation()
   const href = e.currentTarget.parentElement.parentElement.dataset.href
   if (!href) return e
-
   window.state.playlists = addHrefToPlaylist(window.state.selectedPlaylist, href, window.state.playlists)
 }
 
@@ -254,7 +235,7 @@ export const Create = trackString => {
     f.ObjectAssignDataSet({
       href: trackString,
     }),
-    addPlayingClassIf(trackId === window.state.currentTrackId),
+    addPlayingClassIf(trackId === window.state?.currentTrackId),
   )
 
   const trackEl = createTrackElementFromDiv(document.createElement('div'))
@@ -271,7 +252,6 @@ export const Append = (page, newEls) => {
   div.id = 'page-' + page
   div.append(...newEls)
   document.getElementById('track-list-container').append(div)
-  window.state.texts = newEls.map(({ innerText }) => innerText)
   return page + 1
 }
 
@@ -321,6 +301,33 @@ export const removePlaylistEls = () => {
   footer.insertAdjacentElement('beforebegin', playlistContainer)
 }
 
+
+
+
+
+
+
+
+export const arrayFromClassName = f.pipe(
+  document.getElementsByClassName,
+  Array.from,
+)
+
+export const removeClassFromAll = className => {
+  return arrayFromClassName(className)
+    .map(el => el.className.remove(className))
+}
+
+// updateCurrentTrack :: String -> undefined
+export const updateCurrentTrack = nextTrackId => {
+  // TODO: this should all be done in a setter on state.currentTrack
+  // convert the trackId in that setter and keep currentTrack as a plain string
+
+  window.state.currentTrackId = nextTrackId
+  const [track, album] = getTrackAndAlbumFromId(window.state.trackList)(nextTrackId)
+  document.getElementById('current-playing-text').innerHTML = `<div>${track}</div><div>${album}</div>`
+}
+
 // playTrack :: Element -> undefined
 export const playTrack = (element) => {
   document.getElementById('current-track').src = element.getAttribute('data-href')
@@ -328,9 +335,19 @@ export const playTrack = (element) => {
   player.pause()
   player.load()
   updateCurrentTrack(element.id)
+  removeClassFromAll('playing')
   element.classList.add('playing')
   player.play()
 }
+
+
+
+
+
+
+
+
+
 
 
 // afterSearchReset :: undefined -> undefined
