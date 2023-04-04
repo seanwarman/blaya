@@ -31,6 +31,7 @@ export const createTrackInnerHTML = f.pipe(
   createTrackInnerHTMLFromTrackAndAlbum,
 )
 
+// TODO: move these to the events file...
 export const onDragover = e => {
   e.preventDefault()
   e.currentTarget.classList.add('dragover')
@@ -90,7 +91,6 @@ export const createTrackElementForPlaylist = trackList => trackId => {
       playlist: true,
       href: trackString,
     }),
-    addPlayingClassIf(trackId === window.state?.currentTrackId),
   )
 
   const playlistEl = createTrackPlaylistElementFromDiv(document.createElement('div'))
@@ -112,14 +112,6 @@ export const appendTrackElementToPlaylistById = trackList => f.pipe(
   createTrackElementForPlaylist(trackList),
   appendTrackElementToPlaylist,
 )
-
-// playHead :: String -> Element
-export const playHead = src => {
-  const sourcer = document.getElementById('current-track')
-  sourcer.src = src
-  const player = document.getElementById('player')
-  return player
-}
 
 // chooseTrackList :: ([[String], [String]]) -> [String]
 export const chooseTrackList = ([stateTrackList, playlistTrackList]) => {
@@ -178,7 +170,7 @@ export const onAddToPlaylistNewOrIgnore = () => {
 }
 
 // ifFalseOnAddToPlaylist :: fn -> Event -> [Element, Object] | Event
-const ifFalseOnAddToPlaylist = conditionFn => f.breakPipe(
+export const ifFalseOnAddToPlaylist = conditionFn => f.breakPipe(
   f.breakIf(conditionFn),
   onClickOrEnter(onAddToPlaylist),
 )
@@ -235,7 +227,10 @@ export const Create = trackString => {
     f.ObjectAssignDataSet({
       href: trackString,
     }),
-    addPlayingClassIf(trackId === window.state?.currentTrackId),
+    addPlayingClassIf(
+      trackString === window.state?.playModule?.currentTrackSrc
+      && !window.state?.playModule?.isPlaylist
+    ),
   )
 
   const trackEl = createTrackElementFromDiv(document.createElement('div'))
@@ -299,45 +294,6 @@ export const removePlaylistEls = () => {
   const playlistContainer = document.createElement('div')
   playlistContainer.id = 'playlist'
   footer.insertAdjacentElement('beforebegin', playlistContainer)
-}
-
-
-
-
-
-
-
-
-export const arrayFromClassName = f.pipe(
-  document.getElementsByClassName,
-  Array.from,
-)
-
-export const removeClassFromAll = className => {
-  return arrayFromClassName(className)
-    .map(el => el.className.remove(className))
-}
-
-// updateCurrentTrack :: String -> undefined
-export const updateCurrentTrack = nextTrackId => {
-  // TODO: this should all be done in a setter on state.currentTrack
-  // convert the trackId in that setter and keep currentTrack as a plain string
-
-  window.state.currentTrackId = nextTrackId
-  const [track, album] = getTrackAndAlbumFromId(window.state.trackList)(nextTrackId)
-  document.getElementById('current-playing-text').innerHTML = `<div>${track}</div><div>${album}</div>`
-}
-
-// playTrack :: Element -> undefined
-export const playTrack = (element) => {
-  document.getElementById('current-track').src = element.getAttribute('data-href')
-  const player = document.getElementById('player')
-  player.pause()
-  player.load()
-  updateCurrentTrack(element.id)
-  removeClassFromAll('playing')
-  element.classList.add('playing')
-  player.play()
 }
 
 // afterSearchReset :: undefined -> undefined
