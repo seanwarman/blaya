@@ -99,9 +99,9 @@ export const onScrollThisTrack = trackList => () => {
 
   if (window.state.searching) {
     const trackListFiltered = fzfFilter(trackList)(getSearchValue())
-    scrollToTrackByTrackId(window.state.currentTrackId)(trackListFiltered)
+    scrollToTrackByTrackId(window.state.playModule.currentTrackSrc)(trackListFiltered)
   } else {
-    scrollToTrackByTrackId(window.state.currentTrackId)(trackList)
+    scrollToTrackByTrackId(window.state.playModule.currentTrackSrc)(trackList)
   }
 
   setTimeout(() => {

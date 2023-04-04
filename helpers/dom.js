@@ -316,11 +316,11 @@ export const createPageElement = page => {
 }
 
 // scrollToTrackByTrackId :: Number -> [String] -> undefined
-export const scrollToTrackByTrackId = trackId => trackList => {
-  const trackListIndex = trackList.findIndex(track => trackId === simpleHash(track))
+export const scrollToTrackByTrackId = currentTrackSrc => trackList => {
+  const trackListIndex = trackList.findIndex(track => currentTrackSrc === track)
   const [page] = pagesFromIndexRange([trackListIndex, 0])
   window.state.page = replaceAllWithThreePages(trackList)(page)
-  let el = document.getElementById(trackId)
+  let el = document.getElementById(simpleHash(currentTrackSrc))
   el.focus()
 }
 
