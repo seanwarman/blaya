@@ -25,13 +25,14 @@ To add more users just keep adding to this variable.
 # TODO
 
 ### Playlists
-- play tracks in playlist (next button and onnext)
+- ~~play tracks in playlist (next button and onnext)~~
 - ~~have playlist ui follow the data (set get)~~
 - make mobile look good and usable
+- playlists should show as tabs above the playlist name
 - ~~persist playlists in localStorage~~
 
 ## Features
-- Back button should always play the previously played track.
-- The playlists should show as tabs above the playlist name
+- ~~Back button should always play the previously played track.~~
+- make toggle buttons for: playlist mode, download mode, normal
 - Multi select songs to set as offline
 - Have a query param that allows linking to a particular track /?track=q334cX <-- this would be the track's id
