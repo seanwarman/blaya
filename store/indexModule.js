@@ -10,6 +10,14 @@ import { playModule } from './playModule.js'
 export default () => {
   const state = {
     trackList: parseTrackList(RAW_TRACKLIST),
+    playlistModeState: null,
+    set playlistMode(playlistMode) {
+      this.playlistModeState = playlistMode
+      document.body.dataset.playlistMode = playlistMode
+    },
+    get playlistMode() {
+      return this.playlistModeState
+    },
     selectedPlaylist: 0,
     playlistsState: undefined,
     get playlists() {
@@ -46,6 +54,7 @@ export default () => {
 
   // Defaults to trigger the setters
   state.playlists = initStateItem(PLAYLISTS_STATE_KEY, [['', 0, []]])
+  state.playlistMode = false
 
   // BEGIN
   state.page = appendTracksByPage(state.trackList)(1)
