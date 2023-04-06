@@ -57,7 +57,7 @@ export default () => {
   state.playlistMode = false
 
   // BEGIN
-  state.page = appendTracksByPage(state.trackList)(1)
+  state.page = appendTracksByPage(state.trackList)(state.page)
 
   return { state }
 }

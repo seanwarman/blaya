@@ -240,6 +240,10 @@ div#current-playing-text {
     height: 40px;
   }
 
+  body[data-playlist-mode="true"] #mode-button-playlist {
+    background: #5ed0cf;
+  }
+
 	div[role="link"] {
 		padding-left: 1rem;
 		padding-top: .5rem;
