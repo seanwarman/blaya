@@ -71,13 +71,13 @@ export const onDragStart = e => {
 }
 
 // createTrackElementForPlaylist :: [String] -> String -> Element
-export const createTrackElementForPlaylist = trackList => trackId => {
+export const createTrackElementForPlaylist = trackList => playing => trackId => {
   const trackString = getCurrentTrackString(trackList)(trackId)
 
   // createTrackPlaylistElementFromDiv :: Element -> Element
   const createTrackPlaylistElementFromDiv = f.pipe(
     f.AssignObject({
-      className: 'track',
+      className: 'track' + (playing ? ' playing' : ''),
       role: 'link',
       draggable: true,
       tabIndex: '0',
@@ -111,8 +111,8 @@ export const appendTrackElementToPlaylist = element => {
 }
 
 // appendTrackElementToPlaylistById :: trackId -> Element
-export const appendTrackElementToPlaylistById = trackList => f.pipe(
-  createTrackElementForPlaylist(trackList),
+export const appendTrackElementToPlaylistById = trackList => playing => f.pipe(
+  createTrackElementForPlaylist(trackList)(playing),
   appendTrackElementToPlaylist,
 )
 

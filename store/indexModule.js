@@ -20,9 +20,10 @@ export default () => {
       window.localStorage.setItem(PLAYLISTS_STATE_KEY, JSON.stringify(value))
       dom.removePlaylistEls()
       dom.onAddToPlaylistNewOrIgnore()
-      for (const track of this.playlistsState[this.selectedPlaylist][2]) {
-        dom.appendTrackElementToPlaylistById(this.trackList)(utils.simpleHash(track))
-      }
+      const [_, playlistIndex, trackList] = this.playlistsState[this.selectedPlaylist]
+      trackList.forEach((track, i) =>
+        dom.appendTrackElementToPlaylistById(this.trackList)(playlistIndex === i)(utils.simpleHash(track))
+      )
     },
     texts: [],
     throttleId: null,
