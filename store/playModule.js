@@ -1,4 +1,4 @@
-import { getTrackAndAlbumFromTrackString } from '../helpers/index.js'
+import { getTrackAndAlbumFromTrackString, updatePlaylistIndex } from '../helpers/index.js'
 import * as f from '../helpers/functional-utils.js'
 
 export const removeClassFromAll = className => f.pipe(
@@ -32,7 +32,16 @@ export const playModule = {
     if (selectedPlaylist !== null) state.selectedPlaylist = selectedPlaylist
     this.currentTrackSrc = src
     this.isPlaylist = !!isPlaylist
-    if (isPlaylist) state.playlists[state.selectedPlaylist][1] = playlistIndex
+
+    // Update the UI
+    if (isPlaylist) {
+      // The setter on playlists takes care of the 'playing' class...
+      state.playlists = updatePlaylistIndex(state.selectedPlaylist, playlistIndex, state.playlists)
+    } else {
+      removeClassFromAll('playing')
+      const trackListEl = document.querySelector(`[data-href="${src}"]`)
+      if (trackListEl) trackListEl.classList.add('playing')
+    }
 
     // Set the history...
     if (withHistory) {
@@ -44,15 +53,6 @@ export const playModule = {
       })
     }
 
-    // Update the UI...
-    removeClassFromAll('playing')
-    if (isPlaylist) {
-      const playlistEl = document.getElementById('playlist').querySelector(`[data-href="${src}"]`)
-      if (playlistEl) playlistEl.classList.add('playing')
-    } else {
-      const trackListEl = document.querySelector(`[data-href="${src}"]`)
-      if (trackListEl) trackListEl.classList.add('playing')
-    }
   },
   nextTrack() {
     if (this.isPlaylist) {

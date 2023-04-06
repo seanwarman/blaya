@@ -235,6 +235,20 @@ export const removeTrackFromPlaylist = (selectedPlaylist, index, playlists) => f
   return [...acc2, track]
 })(playlist)]])(playlists)
 
+// updatePlaylistIndex :: (Number, Number, [[String, Number, Array]]) -> [[String, Number, Array]]
+export const updatePlaylistIndex = (selectedPlaylist, playlistIndex, playlists) => f.pipe(
+  applyArrayReducerIf(([,[, playlistIndexOld],i]) => i === selectedPlaylist && playlistIndex !== playlistIndexOld),
+  f.reduce([]),
+)(
+  ([acc, [name, _, trackList], i]) => {
+    if (i === state.selectedPlaylist) return [
+      ...acc,
+      [name, playlistIndex, trackList],
+    ]
+    return acc
+  }
+)(playlists)
+
 // arrayFromElements :: Elements -> Number
 export const arrayFromElements = f.pipe(
   Array.from,

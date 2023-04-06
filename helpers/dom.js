@@ -53,11 +53,6 @@ export const onDrop = e => {
     window.state.playlists,
   )
 
-  const droppedTrack = trackEls[iFrom]
-  window.droppedTrack = droppedTrack
-
-  droppedTrack.focus()
-
   e.preventDefault()
   for (const child of document.getElementsByClassName('dragover')) {
     child.classList.remove('dragover')
