@@ -71,6 +71,9 @@ export const select = arr => i => arr[i]
 // slice :: String -> Number -> Number -> String
 export const slice = i => j => str => str.slice(i, j)
 
+// sliceFrom :: Number -> Array | String -> Array | String
+export const sliceFrom = n => arrStr => arrStr.slice(n)
+
 // split :: String -> String -> String
 export const split = by => str => str.split(by)
 
