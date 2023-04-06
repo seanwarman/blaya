@@ -183,6 +183,8 @@ export const applyArrayReducerIf = conditionFn => reducer => f.pipe(
 const setPlaylistIndexBasedOnFromAndToPositions = (playlistIndex, iFrom, iTo) => {
   if (isNaN(Number(playlistIndex))) return 0
 
+  if (iFrom === playlistIndex) return iTo
+
   if (
     iFrom < playlistIndex
     && iTo >= playlistIndex
