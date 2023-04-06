@@ -8,8 +8,8 @@ import {
   replaceAllWithThreePages,
   addHrefToPlaylist,
   removeTrackFromPlaylist,
-  findIndexOfElement,
   rearrangeInPlaylist,
+  arrayFromElements,
 } from './index.js'
 import * as f from './functional-utils.js'
 
@@ -43,17 +43,18 @@ export const onDragLeave = e => {
 }
 
 export const onDrop = e => {
-  const droppedTrack = document.getElementById(e.dataTransfer.getData('Text'))
-  const trackEls = droppedTrack.parentElement.getElementsByClassName('track')
-
-  const fromIndex = findIndexOfElement(droppedTrack)(trackEls)
-  const toIndex = findIndexOfElement(e.currentTarget)(trackEls)
+  const trackEls = arrayFromElements(e.currentTarget.parentElement.getElementsByClassName('track')).reverse()
+  const iFrom = Number(e.dataTransfer.getData('iFrom'))
+  const iTo = trackEls.findIndex(el => el === e.currentTarget)
 
   window.state.playlists = rearrangeInPlaylist(
-    [fromIndex, toIndex],
+    [iFrom, iTo],
     window.state.selectedPlaylist,
-    window.state.playlists
+    window.state.playlists,
   )
+
+  const droppedTrack = trackEls[iFrom]
+  window.droppedTrack = droppedTrack
 
   droppedTrack.focus()
 
@@ -64,7 +65,9 @@ export const onDrop = e => {
 }
 
 export const onDragStart = e => {
-  e.dataTransfer.setData('Text', e.currentTarget.id)
+  const trackEls = arrayFromElements(e.currentTarget.parentElement.getElementsByClassName('track')).reverse()
+  const iFrom = trackEls.findIndex(el => el === e.currentTarget)
+  e.dataTransfer.setData('iFrom', iFrom)
 }
 
 // createTrackElementForPlaylist :: [String] -> String -> Element

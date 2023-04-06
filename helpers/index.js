@@ -181,14 +181,16 @@ export const applyArrayReducerIf = conditionFn => reducer => f.pipe(
 
 //setPlaylistIndexBasedOnFromAndToPositions :: (Number, Number, Number) -> Number
 const setPlaylistIndexBasedOnFromAndToPositions = (playlistIndex, iFrom, iTo) => {
+  if (isNaN(Number(playlistIndex))) return 0
+
   if (
     iFrom < playlistIndex
-    && iTo > playlistIndex
+    && iTo >= playlistIndex
   ) return playlistIndex - 1
 
   if (
     iFrom > playlistIndex
-    && iTo < playlistIndex
+    && iTo <= playlistIndex
   ) return playlistIndex + 1
 
   return playlistIndex
@@ -198,20 +200,20 @@ const setPlaylistIndexBasedOnFromAndToPositions = (playlistIndex, iFrom, iTo) =>
 export const rearrangeInPlaylist = ([iFrom, iTo], selectedPlaylist, playlists) => f.pipe(
   applyArrayReducerIf(([,,i]) => i === selectedPlaylist && iFrom !== iTo),
   f.reduce([]),
-)(([acc, [name, playlistIndex, playlist]]) => [
+)(([acc, [name, playlistIndex, trackList]]) => [
   ...acc,
-  setPlaylistIndexBasedOnFromAndToPositions(playlistIndex, iFrom, iTo),
   [
     name,
+    setPlaylistIndexBasedOnFromAndToPositions(playlistIndex, iFrom, iTo),
     f.reduce([])((acc2, track, i) => {
       if (i === iFrom) return acc2
       if (i === iTo) {
         // If dragging down it feels natural to put the track before, and vise
         // versa if dragging up...
-        return iFrom > iTo ? [...acc2, playlist[iFrom], track] : [...acc2, track, playlist[iFrom]]
+        return iFrom > iTo ? [...acc2, trackList[iFrom], track] : [...acc2, track, trackList[iFrom]]
       }
       return [...acc2, track]
-    })(playlist)
+    })(trackList)
   ]])(playlists)
 
 // addHrefToPlaylist :: (String, a, [[String, [String]]]) -> [[String, [String]]]
@@ -230,6 +232,17 @@ export const removeTrackFromPlaylist = (selectedPlaylist, index, playlists) => f
   if (i === index) return acc2
   return [...acc2, track]
 })(playlist)]])(playlists)
+
+// arrayFromElements :: Elements -> Number
+export const arrayFromElements = f.pipe(
+  Array.from,
+  f.sliceFrom(),
+)
+
+// findIndexByMatching :: [a] -> a -> Number
+export const findIndexByMatching = elements => f.pipe(
+  trackEl => elements.findIndex(el => el === trackEl),
+)
 
 // findIndexOfElement :: Element -> Elements -> Number
 export const findIndexOfElement = trackEl => f.pipe(
