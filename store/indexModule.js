@@ -41,7 +41,10 @@ export default () => {
     targeting: false,
   }
 
+  // Add other modules...
   state.playModule = playModule
+
+  // Defaults to trigger the setters
   state.playlists = initStateItem(PLAYLISTS_STATE_KEY, [['', 0, []]])
 
   // BEGIN
