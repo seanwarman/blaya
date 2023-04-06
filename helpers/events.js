@@ -169,3 +169,7 @@ export const onScroll = ([onUpScroll, onDownScroll]) => (e) => {
 
   window.state.lastScrollTop = st <= 0 ? 0 : st
 }
+
+export const onTogglePlaylistMode = () => {
+  window.state.playModule.isPlaylist = !window.state.playModule.isPlaylist
+}

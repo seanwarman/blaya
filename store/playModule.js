@@ -8,7 +8,14 @@ export const removeClassFromAll = className => f.pipe(
 )(className)
 
 export const playModule = {
-  isPlaylist: false,
+  isPlaylistState: null,
+  set isPlaylist(isPlaylistBool) {
+    this.isPlaylistState = isPlaylistBool
+    document.body.dataset.playlistMode = isPlaylistBool
+  },
+  get isPlaylist() {
+    return this.isPlaylistState
+  },
   currentTrackSrcState: null,
   get currentTrackSrc() {
     return this.currentTrackSrcState
@@ -133,3 +140,6 @@ export const playModule = {
     })
   },
 }
+
+// Defaults to trigger the setters
+playModule.isPlaylist = false

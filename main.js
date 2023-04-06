@@ -10,6 +10,7 @@ import {
   onScroll,
   onUpScroll,
   onDownScroll,
+  onTogglePlaylistMode,
 } from './helpers/events.js'
 import { logger } from './helpers/functional-utils.js'
 
@@ -27,8 +28,8 @@ document.getElementById('next-button').onclick = onClickOrEnter(onNext)
 document.getElementById('next-button').onkeydown = onClickOrEnter(onNext)
 document.getElementById('prev-button').onclick = onClickOrEnter(onPrev)
 document.getElementById('prev-button').onkeydown = onClickOrEnter(onPrev)
-document.getElementById('target-button').onclick = onClickOrEnter(onScrollThisTrack(window.state.trackList))
-document.getElementById('target-button').onkeydown = onClickOrEnter(onScrollThisTrack(window.state.trackList))
+document.getElementById('mode-button-playlist').onclick = onClickOrEnter(onTogglePlaylistMode)
+document.getElementById('mode-button-playlist').onkeydown = onClickOrEnter(onTogglePlaylistMode)
 document.getElementById('current-playing-text').onclick = onClickOrEnter(onScrollThisTrack(window.state.trackList))
 document.getElementById('current-playing-text').onkeydown = onClickOrEnter(onScrollThisTrack(window.state.trackList))
 document.getElementById('search-input').oninput = onSearch(window.state.trackList)

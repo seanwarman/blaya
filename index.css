@@ -85,7 +85,7 @@ input#search-input {
   transition: background .3s;
 }
 
-#target-button {
+#mode-button-playlist {
   box-shadow: 5px 5px 12px 0px #00000024;
   border-radius: 50%;
   border: none;
@@ -95,15 +95,15 @@ input#search-input {
   grid-column: 4 / span 1;
 }
 
-#target-button:hover {
+#mode-button-playlist:hover {
   background: #f0f0f0;
 }
 
-#target-button:active {
+#mode-button-playlist:active {
   background: #e3e2e2
 }
 
-#target-button svg {
+#mode-button-playlist svg {
   width: 1rem;
 }
 
@@ -126,6 +126,10 @@ input#search-input {
 
 .add-to-playlist {
   margin-right: 1rem;
+}
+
+body[data-playlist-mode="false"] .add-to-playlist {
+  display: none;
 }
 
 .track-name {
@@ -231,7 +235,7 @@ div#current-playing-text {
     width: 1rem;
   }
 
-  #target-button {
+  #mode-button-playlist {
     width: 40px;
     height: 40px;
   }
