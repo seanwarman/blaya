@@ -55,6 +55,7 @@ export const playModule = {
 
   },
   nextTrack() {
+    console.log(`@FILTER this.isPlaylist:`, this.isPlaylist)
     if (this.isPlaylist) {
       this.nextTrackPlaylist()
     } else {
