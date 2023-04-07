@@ -14,6 +14,7 @@ exports.gitPullOrigin = (req, res) => {
       res.send(output)
     } else {
       // npm install, then reload
+      // good idea?
     }
   })
 }
