@@ -16,9 +16,9 @@ header {
   display: grid;
   grid-template-columns: auto auto auto auto;
   justify-items: end;
-  padding: 1rem 2rem;
+  padding: 1rem 1rem;
   margin-top: -6rem;
-  grid-gap: 2rem;
+  grid-gap: 0;
 }
 
 .search-container {
@@ -51,17 +51,23 @@ input#search-input {
 }
 
 #playlist {
+  transform: scale(0.6);
+  max-height: 223px;
+  left: -103px;
+  bottom: 74px;
+  right: -103px;
+
   position: fixed;
-  right: 1rem;
-  bottom: 4.5rem;
-  width: 30%;
   background: white;
   box-shadow: 1px 7px 17px 0px #00000024;
   border-radius: 2px;
   overflow-y: auto;
-  max-height: 61vh;
   display: flex;
   flex-direction: column-reverse;
+}
+
+body[data-playlist-mode="false"] #playlist {
+  display: none;
 }
 
 #playlist .track .playlist-placeholder {
@@ -107,6 +113,10 @@ input#search-input {
   width: 1rem;
 }
 
+body[data-playlist-mode="true"] #mode-button-playlist {
+  background: #5ed0cf;
+}
+
 .track {
 	columns: 2;
 }
@@ -148,10 +158,7 @@ body[data-playlist-mode="false"] .add-to-playlist {
 }
 
 div[role="link"] {
-	padding-left: 1rem;
-	padding-right: 1rem;
-	padding-top: 1.5rem;
-	padding-bottom: 1.5rem;
+  padding: 1.5rem 1rem;
 	cursor: pointer;
 }
 
@@ -215,6 +222,8 @@ div#current-playing-text {
 
   header {
     margin-top: -5rem;
+    grid-gap: 2rem;
+    padding: 1rem 2rem;
   }
 
   .search-container {
@@ -240,10 +249,6 @@ div#current-playing-text {
     height: 40px;
   }
 
-  body[data-playlist-mode="true"] #mode-button-playlist {
-    background: #5ed0cf;
-  }
-
 	div[role="link"] {
 		padding-left: 1rem;
 		padding-top: .5rem;
@@ -254,6 +259,24 @@ div#current-playing-text {
 		text-align: start;
     font-size: 1rem;
 	}
+
+  body[data-playlist-mode="false"] #playlist,
+  #playlist {
+    transform: none;
+    max-height: 61vh;
+    left: auto;
+    bottom: 4.5rem;
+    right: 1rem;
+    width: 30%;
+
+    position: fixed;
+    background: white;
+    box-shadow: 1px 7px 17px 0px #00000024;
+    border-radius: 2px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column-reverse;
+  }
 
   #playlist .track-album {
     text-align: right;
