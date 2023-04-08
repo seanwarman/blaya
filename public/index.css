@@ -119,6 +119,9 @@ body[data-playlist-mode="true"] #mode-button-playlist {
 
 .track {
 	columns: 2;
+  height: 4rem;
+  display: grid;
+  grid-template-columns: 50% 50%;
 }
 
 .track:nth-child(even) {
@@ -135,7 +138,6 @@ body[data-playlist-mode="true"] #mode-button-playlist {
 }
 
 .add-to-playlist {
-  margin-right: 1rem;
 }
 
 body[data-playlist-mode="false"] .add-to-playlist {
@@ -143,11 +145,11 @@ body[data-playlist-mode="false"] .add-to-playlist {
 }
 
 .track-name {
-	overflow: auto;
+	overflow: hidden;
 	word-wrap: break-word;
   font-size: 0.9rem;
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 2rem auto;
 }
 
 .track-album {
@@ -281,6 +283,10 @@ div#current-playing-text {
   #playlist .track-album {
     text-align: right;
     font-size: 0.7rem;
+  }
+
+  .track {
+    height: 3rem;
   }
 
   .track-name {
