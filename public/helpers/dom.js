@@ -287,10 +287,10 @@ export const removeTrackEls = (arg) => {
 // removePlaylistEls :: undefined -> undefined
 export const removePlaylistEls = () => {
   document.getElementById('playlist').remove()
-  const footer = document.getElementsByTagName('footer')[0]
-  const playlistContainer = document.createElement('div')
-  playlistContainer.id = 'playlist'
-  footer.insertAdjacentElement('beforebegin', playlistContainer)
+  const container = document.getElementById('playlist-container')
+  const playlist = document.createElement('div')
+  playlist.id = 'playlist'
+  container.append(playlist)
 }
 
 // afterSearchReset :: undefined -> undefined
