@@ -23,7 +23,7 @@ export const addPlayingClassIf = condition => element => {
 
 // createTrackInnerHTMLFromTrackAndAlbum :: [String] -> String
 export const createTrackInnerHTMLFromTrackAndAlbum = ([track, album]) =>
-  '<div class="track-name">' + track + '</div>' + (album ? '<div class="track-album">' + album + '</div>' : '')
+  '<div class="track-name"><div class="name">' + track + '</div></div>' + (album ? '<div class="track-album">' + album + '</div>' : '')
 
 // createTrackInnerHTML :: String -> String
 export const createTrackInnerHTML = f.pipe(
@@ -250,7 +250,6 @@ export const Append = (page, newEls) => {
 
 // Prepend :: (Number, [Element]) -> Number
 export const Prepend = (page, newEls) => {
-  console.error(`prepend @FILTER page:`, page)
   const div = document.createElement('div')
   div.id = 'page-' + page
   div.append(...newEls)
