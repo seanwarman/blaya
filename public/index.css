@@ -231,7 +231,6 @@ button#next-button svg {
 button#prev-button, button#next-button {
   border: none;
   background-color: #f1f3f4;
-  width: 3rem;
 }
 
 button#prev-button:hover, button#next-button:hover {
