@@ -33,7 +33,7 @@ export default () => {
       trackList.forEach((track, i) =>
         dom.appendTrackElementToPlaylistById(this.trackList)(playlistIndex === i)(utils.simpleHash(track))
       )
-      scrollTo(0, previousScrollPositionYPlaylist)
+      document.getElementById('playlist').scrollTo(0, previousScrollPositionYPlaylist)
     },
     texts: [],
     throttleId: null,
