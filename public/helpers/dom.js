@@ -78,7 +78,7 @@ export const createTrackElementForPlaylist = trackList => playing => trackId => 
       tabIndex: '0',
       id: trackId,
       innerHTML: createTrackInnerHTML(trackString),
-      onclick: onClickOrEnter(onPlayPlaylist),
+      onmousedown: onPlayPlaylist,
       onkeydown: onClickOrEnter(onPlayPlaylist),
       ondragover: onDragover,
       ondragleave: onDragLeave,
@@ -220,7 +220,7 @@ export const Create = trackString => {
       tabIndex: '0',
       id: trackId,
       innerHTML: createTrackInnerHTMLFromTrackAndAlbum([track, album]),
-      onclick: onClickOrEnter(onPlay),
+      onmousedown: onPlay,
       onkeydown: onClickOrEnter(onPlay),
     }),
     f.ObjectAssignDataSet({

@@ -76,24 +76,33 @@ export const onPrev = () => {
 
 // onPlayPlaylist :: Event -> undefined
 export const onPlayPlaylist = (e) => {
+  e.preventDefault()
   const ref = e.currentTarget
-  if (ref) {
+  window.ref = ref
+  if (ref === document.activeElement) {
     window.state.playModule.setTrack({ 
       src: ref.dataset.href,
       playlistIndex: findIndexOfElement(ref)(document.getElementById('playlist').getElementsByClassName('track')),
       isPlaylist: true,
     })
-
     document.getElementById('player').play()
+    ref.focus()
+  } else {
+    ref.focus()
   }
 }
 
 // onPlay :: Event -> undefined
 export const onPlay = (e) => {
+  e.preventDefault()
   const ref = e.currentTarget
-  if (ref) {
+  window.ref = ref
+  if (ref === document.activeElement) {
     window.state.playModule.setTrack({ src: ref.dataset.href, isPlaylist: false })
     document.getElementById('player').play()
+    ref.focus()
+  } else {
+    ref.focus()
   }
 }
 
