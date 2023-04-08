@@ -138,6 +138,7 @@ body[data-playlist-mode="true"] #mode-button-playlist {
 }
 
 .add-to-playlist {
+  margin: -0.5rem 0rem -0.5rem -1.5rem;
 }
 
 body[data-playlist-mode="false"] .add-to-playlist {
@@ -149,6 +150,9 @@ body[data-playlist-mode="false"] .add-to-playlist {
 	word-wrap: break-word;
   font-size: 0.9rem;
   display: grid;
+}
+
+body[data-playlist-mode="true"] .track-name {
   grid-template-columns: 2rem auto;
 }
 
