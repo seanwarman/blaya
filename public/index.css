@@ -51,19 +51,24 @@ input#search-input {
 }
 
 #playlist-container {
-  height: 62vh;
+  height: 30vh;
   max-height: 61vh;
-  left: auto;
-  bottom: 4.5rem;
-  right: 1rem;
-  width: 30%;
+  bottom: 6.5rem;
+  width: 100%;
   position: fixed;
   overflow: scroll;
+  box-shadow: 1px 7px 17px 0px #00000024;
+}
+
+#playlist-name-container {
+  position: -webkit-sticky;
+  position: sticky;
+  top: -31px;
+  background: white;
 }
 
 #playlist {
   background: white;
-  box-shadow: 1px 7px 17px 0px #00000024;
   border-radius: 2px;
   display: flex;
   flex-direction: column-reverse;
@@ -284,7 +289,6 @@ div#current-playing-text {
     align-content: center;
 	}
 
-  /* TODO these are the desktop styles, fix them for mob */
   #playlist-container {
     height: 62vh;
     max-height: 61vh;

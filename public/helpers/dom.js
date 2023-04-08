@@ -154,6 +154,7 @@ export const onAddToPlaylistNewOrIgnore = () => {
     return
   }
   const div = document.createElement('div')
+  div.id = 'playlist-name-container'
 
   div.innerHTML = `<input
     placeholder="Playlist name"
