@@ -50,18 +50,21 @@ input#search-input {
   width: 1.4rem;
 }
 
-#playlist {
-  transform: scale(0.6);
-  max-height: 223px;
-  left: -103px;
-  bottom: 74px;
-  right: -103px;
-
+#playlist-container {
+  height: 62vh;
+  max-height: 61vh;
+  left: auto;
+  bottom: 4.5rem;
+  right: 1rem;
+  width: 30%;
   position: fixed;
+  overflow: scroll;
+}
+
+#playlist {
   background: white;
   box-shadow: 1px 7px 17px 0px #00000024;
   border-radius: 2px;
-  overflow-y: auto;
   display: flex;
   flex-direction: column-reverse;
 }
@@ -281,20 +284,23 @@ div#current-playing-text {
     align-content: center;
 	}
 
-  body[data-playlist-mode="false"] #playlist,
-  #playlist {
-    transform: none;
+  /* TODO these are the desktop styles, fix them for mob */
+  #playlist-container {
+    height: 62vh;
     max-height: 61vh;
     left: auto;
     bottom: 4.5rem;
     right: 1rem;
     width: 30%;
-
     position: fixed;
+    overflow: scroll;
+  }
+
+  body[data-playlist-mode="false"] #playlist,
+  #playlist {
     background: white;
     box-shadow: 1px 7px 17px 0px #00000024;
     border-radius: 2px;
-    overflow-y: auto;
     display: flex;
     flex-direction: column-reverse;
   }
