@@ -26,14 +26,12 @@ export default () => {
     set playlists(value) {
       this.playlistsState = value
       window.localStorage.setItem(PLAYLISTS_STATE_KEY, JSON.stringify(value))
-      const previousScrollPositionYPlaylist = 0 - document.getElementById('playlist').scrollTop
       dom.removePlaylistEls()
       dom.onAddToPlaylistNewOrIgnore()
       const [_, playlistIndex, trackList] = this.playlistsState[this.selectedPlaylist]
       trackList.forEach((track, i) =>
         dom.appendTrackElementToPlaylistById(this.trackList)(playlistIndex === i)(utils.simpleHash(track))
       )
-      document.getElementById('playlist').scrollTo(0, previousScrollPositionYPlaylist)
     },
     texts: [],
     throttleId: null,
