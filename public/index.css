@@ -129,10 +129,9 @@ body[data-playlist-mode="true"] #mode-button-playlist {
 }
 
 .track {
-	columns: 2;
   display: grid;
-  grid-template-columns: 50% 50%;
-	overflow: hidden;
+  grid-template-columns: 64% auto;
+  overflow: hidden;
 }
 
 .track:nth-child(even) {
@@ -153,6 +152,11 @@ body[data-playlist-mode="true"] #mode-button-playlist {
   display: flex;
   align-items: center;
   justify-content: center;
+  background: #ffffff4d;
+  margin-right: 0.5rem;
+  margin-left: -1rem;
+  margin-top: -2rem;
+  margin-bottom: -2rem;
 }
 
 body[data-playlist-mode="false"] .add-to-playlist {
@@ -160,7 +164,7 @@ body[data-playlist-mode="false"] .add-to-playlist {
 }
 
 .track-name {
-	word-wrap: break-word;
+  word-wrap: break-word;
   font-size: 0.9rem;
   display: grid;
   padding: 1.5rem 0rem 1.5rem 1rem;
@@ -168,24 +172,24 @@ body[data-playlist-mode="false"] .add-to-playlist {
 }
 
 .track-name .name {
-	overflow: hidden;
+  overflow: hidden;
 }
 
 body[data-playlist-mode="true"] .track-name {
-  grid-template-columns: 2rem auto;
+  grid-template-columns: 3rem auto;
 }
 
 .track-album {
   text-align: end;
   word-wrap: break-word;
-  font-size: 0.9rem;
+  font-size: 0.7rem;
   padding: 1.5rem 1rem 1.5rem 0rem;
   overflow: hidden;
   height: 3.5rem;
 }
 
 div[role="link"] {
-	cursor: pointer;
+  cursor: pointer;
 }
 
 div[role="link"]:active,
@@ -196,22 +200,22 @@ div[role="link"]:focus {
 }
 
 footer {
-	position: fixed;
-	bottom: 0;
-	width: 100%;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
   box-shadow: 0px -5px 12px 0px #00000024;
-	display: grid;
-	background: linear-gradient(to right, #7affff, white);
-	grid-template-areas:
-	'tracktext tracktext prevbutton nextbutton'
-	'playhead playhead playhead playhead';
+  display: grid;
+  background: linear-gradient(to right, #7affff, white);
+  grid-template-areas:
+  'tracktext tracktext prevbutton nextbutton'
+  'playhead playhead playhead playhead';
 }
 
 #player {
-	grid-area: playhead;
-	position: relative;
-	background: #f1f3f4;
-	width: 100%;
+  grid-area: playhead;
+  position: relative;
+  background: #f1f3f4;
+  width: 100%;
 }
 
 button#prev-button { grid-area: prevbutton; }
@@ -225,26 +229,27 @@ button#next-button svg {
 }
 
 button#prev-button, button#next-button {
-	border: none;
-	background-color: #f1f3f4;
+  border: none;
+  background-color: #f1f3f4;
+  width: 3rem;
 }
 
 button#prev-button:hover, button#next-button:hover {
-	background-color: #e2e2e2;
+  background-color: #e2e2e2;
 }
 
 div#current-playing-text {
-	grid-area: tracktext;
-	padding: 0.7rem;
-	font-size: 0.9rem;
-	min-height: 50px;
+  grid-area: tracktext;
+  padding: 0.7rem;
+  font-size: 0.9rem;
+  height: 50px;
 }
 
 @media (min-width: 768px) {
-	body {
-		font-size: 1rem;
+  body {
+    font-size: 1rem;
     padding: 5rem 0;
-	}
+  }
 
   header {
     margin-top: -5rem;
@@ -275,6 +280,18 @@ div#current-playing-text {
     height: 40px;
   }
 
+  .track {
+    grid-template-columns: 50% 50%;
+  }
+
+  body[data-playlist-mode="true"] .track-name {
+    grid-template-columns: 2rem auto;
+  }
+
+  .add-to-playlist {
+    margin-top: -1rem;
+    margin-bottom: -1rem;
+  }
 
   .track-name {
     font-size: 1rem;
@@ -283,14 +300,14 @@ div#current-playing-text {
     align-content: center;
   }
 
-	.track-album {
-		text-align: start;
+  .track-album {
+    text-align: start;
     font-size: 1rem;
     padding: 0.5rem 1rem 0.5rem 0rem;
     height: 3rem;
     display: grid;
     align-content: center;
-	}
+  }
 
   #playlist-container {
     height: 62vh;
@@ -306,7 +323,6 @@ div#current-playing-text {
   body[data-playlist-mode="false"] #playlist,
   #playlist {
     background: white;
-    box-shadow: 1px 7px 17px 0px #00000024;
     border-radius: 2px;
     display: flex;
     flex-direction: column-reverse;
@@ -320,14 +336,14 @@ div#current-playing-text {
 
   #playlist .track-album {
     display: none;
-/*     text-align: right; */
+    /*     text-align: right; */
     /* font-size: 0.7rem; */
   }
 
-	footer {
-		grid-template-areas:
-		'tracktext tracktext tracktext playhead playhead playhead playhead prevbutton nextbutton'
-	}
+  footer {
+    grid-template-areas:
+    'tracktext tracktext tracktext playhead playhead playhead playhead prevbutton nextbutton'
+  }
 
   div#current-playing-text {
     min-height: 30px;
