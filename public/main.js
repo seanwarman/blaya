@@ -28,14 +28,17 @@ document.getElementById('next-button').onclick = onClickOrEnter(onNext)
 document.getElementById('next-button').onkeydown = onClickOrEnter(onNext)
 document.getElementById('prev-button').onclick = onClickOrEnter(onPrev)
 document.getElementById('prev-button').onkeydown = onClickOrEnter(onPrev)
-document.getElementById('mode-button-playlist').onclick = onClickOrEnter(onTogglePlaylistMode)
-document.getElementById('mode-button-playlist').onkeydown = onClickOrEnter(onTogglePlaylistMode)
 document.getElementById('current-playing-text').onclick = onClickOrEnter(onScrollThisTrack(window.state.trackList))
 document.getElementById('current-playing-text').onkeydown = onClickOrEnter(onScrollThisTrack(window.state.trackList))
 document.getElementById('search-input').oninput = onSearch(window.state.trackList)
 document.getElementById('search-input').onkeydown = e => e.stopPropagation()
 document.getElementById('clear-search-button').onclick = onClickOrEnter(onClearSearch)
 document.getElementById('clear-search-button').onkeydown = onClickOrEnter(onClearSearch)
+
+Array.from(document.getElementsByClassName('mode-button-playlist')).forEach(button => {
+  button.onclick = onClickOrEnter(onTogglePlaylistMode)
+  button.onkeydown = onClickOrEnter(onTogglePlaylistMode)
+})
 
 // Key commands...
 const onKey = (...maps) => e => {
