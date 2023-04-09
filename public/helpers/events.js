@@ -76,7 +76,6 @@ export const onPrev = () => {
 
 // onPlayPlaylist :: Event -> undefined
 export const onPlayPlaylist = (e) => {
-  e.preventDefault()
   const ref = e.currentTarget
   window.ref = ref
   if (ref === document.activeElement) {
@@ -94,7 +93,6 @@ export const onPlayPlaylist = (e) => {
 
 // onPlay :: Event -> undefined
 export const onPlay = (e) => {
-  e.preventDefault()
   const ref = e.currentTarget
   window.ref = ref
   if (ref === document.activeElement) {
