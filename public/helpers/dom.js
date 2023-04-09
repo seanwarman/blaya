@@ -25,27 +25,37 @@ export const addPlayingClassIf = condition => element => {
 export const createTrackInnerHTMLFromTrackAndAlbum = ([track, album]) =>
   '<div class="track-name"><div class="name">' + track + '</div></div>' + (album ? '<div class="track-album">' + album + '</div>' : '')
 
+// createPlaylistTrackInnerHtmlFromTrackAndAlbum :: [String] -> String
+export const createPlaylistTrackInnerHtmlFromTrackAndAlbum = ([track, _]) =>
+  '<div class="track-name"><div class="name">' + track + '</div></div><div class="drag-container"><img class="svg" src="icons/grip-vertical-solid.svg" /></div>'
+
 // createTrackInnerHTML :: String -> String
 export const createTrackInnerHTML = f.pipe(
   getTrackAndAlbumFromTrackString,
   createTrackInnerHTMLFromTrackAndAlbum,
 )
 
+// createPlaylistTrackInnerHtml :: String -> String
+export const createPlaylistTrackInnerHtml = f.pipe(
+  getTrackAndAlbumFromTrackString,
+  createPlaylistTrackInnerHtmlFromTrackAndAlbum,
+)
+
 // TODO: move these to the events file...
 export const onDragover = e => {
   e.preventDefault()
-  e.currentTarget.classList.add('dragover')
+  e.currentTarget.parentElement.classList.add('dragover')
 }
 
 export const onDragLeave = e => {
   e.preventDefault()
-  e.currentTarget.classList.remove('dragover')
+  e.currentTarget.parentElement.classList.remove('dragover')
 }
 
 export const onDrop = e => {
-  const trackEls = arrayFromElements(e.currentTarget.parentElement.getElementsByClassName('track')).reverse()
+  const trackEls = arrayFromElements(e.currentTarget.parentElement.parentElement.getElementsByClassName('track')).reverse()
   const iFrom = Number(e.dataTransfer.getData('iFrom'))
-  const iTo = trackEls.findIndex(el => el === e.currentTarget)
+  const iTo = trackEls.findIndex(el => el === e.currentTarget.parentElement)
 
   window.state.playlists = rearrangeInPlaylist(
     [iFrom, iTo],
@@ -60,8 +70,8 @@ export const onDrop = e => {
 }
 
 export const onDragStart = e => {
-  const trackEls = arrayFromElements(e.currentTarget.parentElement.getElementsByClassName('track')).reverse()
-  const iFrom = trackEls.findIndex(el => el === e.currentTarget)
+  const trackEls = arrayFromElements(e.currentTarget.parentElement.parentElement.getElementsByClassName('track')).reverse()
+  const iFrom = trackEls.findIndex(el => el === e.currentTarget.parentElement)
   e.dataTransfer.setData('iFrom', iFrom)
 }
 
@@ -74,16 +84,11 @@ export const createTrackElementForPlaylist = trackList => playing => trackId => 
     f.AssignObject({
       className: 'track' + (playing ? ' playing' : ''),
       role: 'link',
-      draggable: true,
       tabIndex: '0',
       id: trackId,
-      innerHTML: createTrackInnerHTML(trackString),
+      innerHTML: createPlaylistTrackInnerHtml(trackString),
       onmousedown: onPlayPlaylist,
       onkeydown: onClickOrEnter(onPlayPlaylist),
-      ondragover: onDragover,
-      ondragleave: onDragLeave,
-      ondrop: onDrop,
-      ondragstart: onDragStart
     }),
     f.ObjectAssignDataSet({
       playlist: true,
@@ -92,8 +97,16 @@ export const createTrackElementForPlaylist = trackList => playing => trackId => 
   )
 
   const playlistEl = createTrackPlaylistElementFromDiv(document.createElement('div'))
-
   playlistEl.firstChild.prepend(createRemoveFromPlaylistElement(document.createElement('div')))
+
+  Array.from(playlistEl.getElementsByClassName('drag-container')).forEach(dragIconEl => {
+    dragIconEl.draggable = true
+
+    dragIconEl.ondragover = onDragover
+    dragIconEl.ondragleave = onDragLeave
+    dragIconEl.ondrop = onDrop
+    dragIconEl.ondragstart = onDragStart
+  })
 
   return playlistEl
 }
