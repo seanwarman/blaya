@@ -172,7 +172,7 @@ body[data-playlist-mode="true"] .mode-button-playlist {
   background-color: transparent;
   box-shadow: none;
   z-index: 1;
-  right: -0.6rem;
+  right: 0.1rem;
   position: fixed;
   transition: top .6s;
 }
