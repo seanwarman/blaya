@@ -23,7 +23,7 @@ export const addPlayingClassIf = condition => element => {
 
 // createTrackInnerHTMLFromTrackAndAlbum :: [String] -> String
 export const createTrackInnerHTMLFromTrackAndAlbum = ([track, album]) =>
-  '<div class="track-name"><div class="name">' + track + '</div></div>' + (album ? '<div class="track-album">' + album + '</div>' : '')
+  '<div class="track-name"><div class="name">' + track + '</div></div>' + (album ? '<div class="track-album"><div class="album">' + album + '</div></div>' : '')
 
 // createPlaylistTrackInnerHtmlFromTrackAndAlbum :: [String] -> String
 export const createPlaylistTrackInnerHtmlFromTrackAndAlbum = ([track, _]) =>
