@@ -159,10 +159,18 @@ body[data-playlist-mode="true"] .mode-button-playlist {
 #maximise-button-playlist {
   background-color: transparent;
   box-shadow: none;
-  position: absolute;
-  top: -0.8rem;
   z-index: 1;
   right: -0.6rem;
+  position: fixed;
+  transition: top .6s;
+}
+
+#playlist-container[data-playlist-minimised="true"] #maximise-button-playlist {
+  top: 73vh;
+}
+
+#playlist-container[data-playlist-minimised="false"] #maximise-button-playlist {
+  top: -1vh;
 }
 
 .track {
