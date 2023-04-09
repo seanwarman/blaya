@@ -15,7 +15,7 @@ header {
   position: fixed;
   width: 100%;
   display: grid;
-  grid-template-columns: auto auto auto auto;
+  grid-template-columns: 25% 25% 25% 25%;
   justify-items: end;
   padding: 1rem 1rem;
   margin-top: -6rem;
@@ -23,7 +23,7 @@ header {
 }
 
 .search-container {
-  grid-column: 1 / span 3;
+  grid-column: 2 / span 3;
   height: 4rem;
   position: relative;
   width: 100%;
@@ -55,23 +55,22 @@ input#search-input {
   height: 100%;
   width: 100%;
   position: fixed;
-  overflow: scroll;
+  overflow-y: scroll;
+  overflow-x: hidden;
   transition: top .6s, background-color .6s;
   padding-top: 2rem;
+  background-color: white;
+  box-shadow: 0px -4px 17px 0px #00000024;
+  display: flex;
+  align-items: start;
 }
 
 #playlist-container[data-playlist-minimised="true"] {
-  background-color: transparent;
   top: 74.5%;
 }
 
 #playlist-container[data-playlist-minimised="false"] {
-  background-color: white;
   top: 0;
-}
-
-#playlist-container[data-playlist-minimised="true"] #playlist {
-  box-shadow: 0px -4px 17px 0px #00000024;
 }
 
 #playlist-name-container {
@@ -86,6 +85,7 @@ input#search-input {
   border-radius: 2px;
   display: flex;
   flex-direction: column-reverse;
+  width: 100%;
 }
 
 body[data-playlist-mode="false"] #playlist-container,
@@ -104,6 +104,16 @@ body[data-playlist-mode="false"] #playlist {
   background: white;
   font-size: 0.8rem;
   border-bottom: 3px solid #5ed0cf;
+  transition: margin-left .6s;
+}
+
+#playlist-container[data-playlist-minimised="true"] #playlist .playlist-name {
+
+  margin-left: 0;
+}
+
+#playlist-container[data-playlist-minimised="false"] #playlist .playlist-name {
+  margin-left: 6rem;
 }
 
 .dragover {
@@ -125,6 +135,9 @@ button.button-circle {
 
 .mode-button-playlist {
   grid-column: 4 / span 1;
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
 }
 
 .mode-button-playlist:hover {
@@ -147,20 +160,9 @@ body[data-playlist-mode="true"] .mode-button-playlist {
   background-color: transparent;
   box-shadow: none;
   position: absolute;
-  top: -0.9rem;
+  top: -0.8rem;
   z-index: 1;
-  left: -0.2rem;
-}
-
-.mode-button-playlist.in-playlist {
-  position: absolute;
-  z-index: 1;
-  right: 1rem;
-  top: 1rem;
-}
-
-body[data-playlist-mode="false"] .mode-button-playlist.in-playlist {
-  display: none;
+  right: -0.6rem;
 }
 
 .track {
@@ -371,10 +373,6 @@ div#current-playing-text {
 
   #playlist-container[data-playlist-minimised="false"] {
     top: 32%;
-  }
-
-  .mode-button-playlist.in-playlist {
-    display: none;
   }
 
   #playlist-container[data-playlist-minimised="true"] {
