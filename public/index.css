@@ -187,7 +187,7 @@ body[data-playlist-mode="true"] .mode-button-playlist {
 
 .track {
   display: grid;
-  grid-template-columns: 64% auto;
+  grid-template-columns: 83% auto;
   overflow: hidden;
   /* border-bottom: 1px solid #f6f6f6; */
   border-bottom: 1px solid #ededed;
