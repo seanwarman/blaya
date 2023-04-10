@@ -351,6 +351,7 @@ export const scrollToTrackByTrackId = currentTrackSrc => trackList => {
   if (page - 1) pageRange.push(page - 1)
   if (page) pageRange.push(page)
   if (page + 1) pageRange.push(page + 1)
+  removeTrackEls()
   window.state.page = appendTracksByPageRange(trackList)(pageRange)
   let el = document.getElementById(simpleHash(currentTrackSrc))
   el.focus()
