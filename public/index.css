@@ -68,7 +68,6 @@ input#search-input {
   overflow-y: scroll;
   overflow-x: hidden;
   transition: height .6s, background-color .6s;
-  padding-top: 2rem;
   background-color: white;
   box-shadow: 0px -4px 17px 0px #00000024;
   display: flex;
@@ -91,8 +90,9 @@ input#search-input {
 #playlist-name-container {
   position: -webkit-sticky;
   position: sticky;
-  top: -63px;
+  top: 0;
   background: white;
+  padding-top: 2rem;
 }
 
 #playlist {
@@ -176,8 +176,8 @@ body[data-playlist-mode="true"] .mode-button-playlist {
   box-shadow: none;
   z-index: 1;
   right: 0.1rem;
-  position: absolute;
-  top: 0;
+  position: fixed;
+  transition: bottom .6s;
 }
 
 .track {
