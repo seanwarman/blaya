@@ -45,7 +45,7 @@ export default () => {
     pageSize: 300,
     previousTrackListContainer: null,
     lastScrollTop: 0,
-    offset: 3000,
+    offset: 5000,
     targeting: false,
   }
 
