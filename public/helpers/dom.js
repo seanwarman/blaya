@@ -6,6 +6,7 @@ import {
   findIndexOfElement,
   pagesFromIndexRange,
   appendTracksByPageRange,
+  appendTracksByPage,
   addHrefToPlaylist,
   removeTrackFromPlaylist,
   rearrangeInPlaylist,
