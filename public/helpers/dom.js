@@ -5,7 +5,7 @@ import {
   getTrackAndAlbumFromTrackString,
   findIndexOfElement,
   pagesFromIndexRange,
-  replaceAllWithThreePages,
+  appendTracksByPageRange,
   addHrefToPlaylist,
   removeTrackFromPlaylist,
   rearrangeInPlaylist,
@@ -346,7 +346,11 @@ export const createPageElement = page => {
 export const scrollToTrackByTrackId = currentTrackSrc => trackList => {
   const trackListIndex = trackList.findIndex(track => currentTrackSrc === track)
   const [page] = pagesFromIndexRange([trackListIndex, 0])
-  window.state.page = replaceAllWithThreePages(trackList)(page)
+  let pageRange = []
+  if (page - 1) pageRange.push(page - 1)
+  if (page) pageRange.push(page)
+  if (page + 1) pageRange.push(page + 1)
+  window.state.page = appendTracksByPageRange(trackList)(pageRange)
   let el = document.getElementById(simpleHash(currentTrackSrc))
   el.focus()
 }

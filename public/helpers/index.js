@@ -56,6 +56,9 @@ export const indexRangeFromPages = (pageRange) => {
 // appendTracksAndReturnPage :: [Number, [String]] -> Number
 export const appendTracksAndReturnPage = ([page, trackList]) => appendTracks(page, trackList)
 
+// sliceTrackListByPageRange :: [String] -> Number -> [Number [String]]
+export const sliceTrackListByPageRange = trackList => pages => pages.map(page => [page, trackList.slice(...indexRangeFromPages([page - 1, page]))])
+
 // sliceTrackListByPage :: [String] -> Number -> [Number [String]]
 export const sliceTrackListByPage = trackList => page => [page, trackList.slice(...indexRangeFromPages([page - 1, page]))]
 
@@ -123,6 +126,15 @@ export const appendTracksByPage = trackList => pipe(
   sliceTrackListByPage(trackList),
   appendTracksAndReturnPage,
 )
+
+// appendTracksByPageRange
+export const appendTracksByPageRange = trackList => pages => {
+  const trackLists = sliceTrackListByPageRange(trackList)(pages)
+  return trackLists.reduce((_, [page, trackList]) => {
+    appendTracks(page, trackList)
+    return page
+  }, 0)
+}
 
 // replaceAllWithThreePages :: [String] -> Number -> Number
 export const replaceAllWithThreePages = trackList => pipe(
