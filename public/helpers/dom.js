@@ -139,6 +139,9 @@ export const onAddToPlaylist = e => {
   const href = e.currentTarget.parentElement.dataset.href
   if (!href) return e
   window.state.playlists = addHrefToPlaylist(window.state.selectedPlaylist, href, window.state.playlists)
+  // Scroll playlist to bottom to keep track of everything...
+  const el = document.getElementById('playlist-container')
+  el.scrollTop = el.scrollHeight
 }
 
 // onRemoveFromPlaylist :: Event -> Element

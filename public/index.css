@@ -391,6 +391,7 @@ div#current-playing-text {
     margin-left: 0;
     bottom: 4.3rem;
     top: unset;
+    padding-bottom: 5rem;
   }
 
   #maximise-button-playlist {
