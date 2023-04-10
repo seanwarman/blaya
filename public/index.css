@@ -405,6 +405,10 @@ div#current-playing-text {
     height: 70%;
   }
 
+  #playlist-container[data-playlist-minimised="false"] #playlist .playlist-name {
+    margin-left: 0;
+  }
+
   body[data-playlist-mode="false"] #playlist,
   #playlist {
     background: white;
