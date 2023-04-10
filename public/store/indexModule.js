@@ -1,6 +1,6 @@
 import { trackList as RAW_TRACKLIST } from '../track-list.js'
 import { appendTracksByPage, parseTrackList } from '../helpers/index.js'
-import { PLAYLISTS_STATE_KEY } from '../constants.js'
+import { PLAYLISTS_STATE_KEY, INITIAL_PLAYLISTS_STATE } from '../constants.js'
 
 import * as dom from '../helpers/dom.js'
 import * as utils from '../helpers/utils.js'
@@ -24,14 +24,20 @@ export default () => {
       return this.playlistsState
     },
     set playlists(value) {
-      this.playlistsState = value
-      window.localStorage.setItem(PLAYLISTS_STATE_KEY, JSON.stringify(value))
       dom.removePlaylistEls()
-      dom.onAddToPlaylistNewOrIgnore()
-      const [_, playlistIndex, trackList] = this.playlistsState[this.selectedPlaylist]
-      trackList.forEach((track, i) =>
-        dom.appendTrackElementToPlaylistById(this.trackList)(playlistIndex === i)(utils.simpleHash(track))
-      )
+      if (!value) {
+        this.playlistsState = INITIAL_PLAYLISTS_STATE
+        window.localStorage.setItem(PLAYLISTS_STATE_KEY, JSON.stringify(INITIAL_PLAYLISTS_STATE))
+        dom.onAddToPlaylistNewOrIgnore()
+      } else {
+        this.playlistsState = value
+        window.localStorage.setItem(PLAYLISTS_STATE_KEY, JSON.stringify(value))
+        dom.onAddToPlaylistNewOrIgnore()
+        const [_, playlistIndex, trackList] = this.playlistsState[this.selectedPlaylist]
+        trackList.forEach((track, i) =>
+          dom.appendTrackElementToPlaylistById(this.trackList)(playlistIndex === i)(utils.simpleHash(track))
+        )
+      }
     },
     texts: [],
     throttleId: null,
@@ -53,7 +59,7 @@ export default () => {
   state.playModule = playModule
 
   // Defaults to trigger the setters
-  state.playlists = initStateItem(PLAYLISTS_STATE_KEY, [['', 0, []]])
+  state.playlists = initStateItem(PLAYLISTS_STATE_KEY, INITIAL_PLAYLISTS_STATE)
   state.playlistMode = false
 
   // BEGIN

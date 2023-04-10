@@ -53,15 +53,6 @@ export const onSearch = trackList => (e) => {
   }, 100)
 }
 
-// onPlaylistName :: Event -> undefined
-export const onPlaylistName = e => {
-  e.stopPropagation()
-  if (window.state.throttleId) clearTimeout(window.state.throttleId)
-  window.state.throttleId = setTimeout(() => {
-    window.state.playlists[window.state.selectedPlaylist][0] = e.target.value
-  }, 100)
-}
-
 export const onEndNext = () => {
   window.state.playModule.nextTrack()
   document.getElementById('player').play()
@@ -184,4 +175,8 @@ export const onScroll = ([onUpScroll, onDownScroll]) => (e) => {
 
 export const onTogglePlaylistMode = () => {
   window.state.playlistMode = !window.state.playlistMode
+}
+
+export const onClearPlaylist = () => {
+  window.state.playlists = null
 }

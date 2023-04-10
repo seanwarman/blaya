@@ -11,6 +11,7 @@ import {
   onUpScroll,
   onDownScroll,
   onTogglePlaylistMode,
+  onClearPlaylist,
 } from './helpers/events.js'
 import { logger } from './helpers/functional-utils.js'
 
@@ -43,6 +44,8 @@ const onTogglePlaylistMinimised = () => {
 }
 document.getElementById('maximise-button-playlist').onclick = onClickOrEnter(onTogglePlaylistMinimised)
 document.getElementById('maximise-button-playlist').onkeydown = onClickOrEnter(onTogglePlaylistMinimised)
+document.getElementById('clear-button-playlist').onclick = onClickOrEnter(onClearPlaylist)
+document.getElementById('clear-button-playlist').onkeydown = onClickOrEnter(onClearPlaylist)
 
 Array.from(document.getElementsByClassName('mode-button-playlist')).forEach(button => {
   button.onclick = onClickOrEnter(onTogglePlaylistMode)

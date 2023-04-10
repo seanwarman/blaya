@@ -1,5 +1,5 @@
 import { simpleHash } from './utils.js'
-import { onPlaylistName, onClickOrEnter, onPlay, onPlayPlaylist } from './events.js'
+import { onClickOrEnter, onPlay, onPlayPlaylist } from './events.js'
 import {
   getCurrentTrackString,
   getTrackAndAlbumFromTrackString,
@@ -173,16 +173,15 @@ export const onAddToPlaylistNewOrIgnore = () => {
   const div = document.createElement('div')
   div.id = 'playlist-name-container'
 
-  div.innerHTML = `<input
+  div.innerHTML = `<div
     placeholder="Playlist name"
     class="playlist-name"
     aria-label="Playlist name"
     type="text"
-  />`
+  ></div>`
 
   playlistEl.append(div)
   playlistEl.ondrop = e => e.preventDefault()
-  playlistEl.firstChild.addEventListener('keydown', onPlaylistName)
 }
 
 // ifFalseOnAddToPlaylist :: fn -> Event -> [Element, Object] | Event
@@ -349,7 +348,7 @@ export const scrollToTrackByTrackId = currentTrackSrc => trackList => {
   const [page] = pagesFromIndexRange([trackListIndex, 0])
   let pageRange = []
   if (page - 1) pageRange.push(page - 1)
-  if (page) pageRange.push(page)
+  pageRange.push(page)
   if (page + 1) pageRange.push(page + 1)
   removeTrackEls()
   window.state.page = appendTracksByPageRange(trackList)(pageRange)
