@@ -64,28 +64,28 @@ input#search-input {
 }
 
 #playlist-container {
-  height: 100%;
   position: fixed;
   overflow-y: scroll;
   overflow-x: hidden;
-  transition: top .6s, background-color .6s;
+  transition: height .6s, background-color .6s;
   padding-top: 2rem;
   background-color: white;
   box-shadow: 0px -4px 17px 0px #00000024;
   display: flex;
   align-items: start;
-  padding-bottom: 9rem;
+  padding-bottom: 8rem;
+  bottom: 0;
 
   /* This setting prevents the drag polyfill from making this container any wider */
   width: 100vw;
 }
 
 #playlist-container[data-playlist-minimised="true"] {
-  top: 74.5%;
+  height: 170px;
 }
 
 #playlist-container[data-playlist-minimised="false"] {
-  top: 0;
+  height: 100%;
 }
 
 #playlist-name-container {
@@ -177,15 +177,7 @@ body[data-playlist-mode="true"] .mode-button-playlist {
   z-index: 1;
   right: 0.1rem;
   position: absolute;
-  transition: top .6s;
-}
-
-#playlist-container[data-playlist-minimised="true"] #maximise-button-playlist {
   top: 0;
-}
-
-#playlist-container[data-playlist-minimised="false"] #maximise-button-playlist {
-  top: -1vh;
 }
 
 .track {
