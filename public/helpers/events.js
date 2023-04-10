@@ -107,6 +107,10 @@ export const onPlay = (e) => {
 
 // onScrollThisTrack :: [String] -> undefined -> undefined
 export const onScrollThisTrack = trackList => () => {
+  if (window.state.targeting) {
+    return
+  }
+
   window.state.targeting = true
 
   if (window.state.searching) {
