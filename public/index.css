@@ -397,8 +397,12 @@ div#current-playing-text {
     display: none;
   }
 
+  #playlist-container[data-playlist-minimised="false"] {
+    height: 70%;
+  }
+
   #playlist-container[data-playlist-minimised="true"] {
-    top: unset;
+    height: 70%;
   }
 
   body[data-playlist-mode="false"] #playlist,
