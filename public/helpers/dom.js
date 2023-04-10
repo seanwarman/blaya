@@ -97,7 +97,7 @@ export const createTrackElementForPlaylist = trackList => playing => trackId => 
   )
 
   const playlistEl = createTrackPlaylistElementFromDiv(document.createElement('div'))
-  playlistEl.firstChild.prepend(createRemoveFromPlaylistElement(document.createElement('div')))
+  playlistEl.prepend(createRemoveFromPlaylistElement(document.createElement('div')))
 
   Array.from(playlistEl.getElementsByClassName('drag-container')).forEach(dragIconEl => {
     dragIconEl.draggable = true
@@ -136,7 +136,7 @@ export const chooseTrackList = ([stateTrackList, playlistTrackList]) => {
 // onAddToPlaylist :: Event -> void
 export const onAddToPlaylist = e => {
   e.stopPropagation()
-  const href = e.currentTarget.parentElement.parentElement.dataset.href
+  const href = e.currentTarget.parentElement.dataset.href
   if (!href) return e
   window.state.playlists = addHrefToPlaylist(window.state.selectedPlaylist, href, window.state.playlists)
 }
@@ -145,7 +145,7 @@ export const onAddToPlaylist = e => {
 export const onRemoveFromPlaylist = e => {
   e.stopPropagation()
 
-  const trackEl = e.currentTarget.parentElement.parentElement
+  const trackEl = e.currentTarget.parentElement
   if (!trackEl) return
 
   const trackElIndex = findIndexOfElement(
@@ -232,9 +232,6 @@ export const Create = trackString => {
       role: 'link',
       tabIndex: '0',
       id: trackId,
-      innerHTML: createTrackInnerHTMLFromTrackAndAlbum([track, album]),
-      onmousedown: onPlay,
-      onkeydown: onClickOrEnter(onPlay),
     }),
     f.ObjectAssignDataSet({
       href: trackString,
@@ -245,9 +242,25 @@ export const Create = trackString => {
     ),
   )
 
+  const trackName = f.AssignObject({
+    className: 'track-name',
+    innerHTML: '<div class="name">' + track + '</div>',
+    onmousedown: onPlay,
+    onkeydown: onClickOrEnter(onPlay),
+  })(document.createElement('div'))
+
+  const trackAlbum = f.AssignObject({
+    className: 'track-album',
+    innerHTML: '<div class="album">' + (album || '') + '</div>',
+    onmousedown: onPlay,
+    onkeydown: onClickOrEnter(onPlay),
+  })(document.createElement('div'))
+
   const trackEl = createTrackElementFromDiv(document.createElement('div'))
 
-  trackEl.firstChild.prepend(createAddToPlaylistElement(trackId))
+  trackEl.append(createAddToPlaylistElement(trackId))
+  trackEl.append(trackName)
+  trackEl.append(trackAlbum)
 
   return trackEl
 }
