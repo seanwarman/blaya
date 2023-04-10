@@ -188,11 +188,13 @@ body[data-playlist-mode="true"] .mode-button-playlist {
   background-color: white;
 }
 
+#offline-button-playlist,
 #clear-button-playlist,
 #maximise-button-playlist {
   background-color: transparent;
   box-shadow: none;
   height: unset;
+  border-radius: unset;
 }
 
 #clear-button-playlist {
@@ -206,6 +208,14 @@ body[data-playlist-mode="true"] .mode-button-playlist {
 
 #playlist-container[data-playlist-minimised="true"] #clear-button-playlist {
   opacity: 0;
+}
+
+#offline-button-playlist {
+  background-color: #00aeff;
+  padding: 2px 0px;
+  border-radius: 2px;
+  color: white;
+  margin: 0 1rem;
 }
 
 .track {
