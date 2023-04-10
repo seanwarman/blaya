@@ -14,11 +14,7 @@ let io;
 let http;
 let https;
 
-console.log(`@FILTER PORT:`, PORT)
-
 const production = PORT === '443'
-
-console.log(`@FILTER production:`, production)
 
 if (production) {
   const priv = fs.readFileSync(PRIV_KEY)
