@@ -8,13 +8,17 @@ const instantiateIO = require('socket.io')
 require('dotenv').config()
 const router = require('./router')
 
-const { PRIV_KEY, CERTIFICATE, ENVIRONMENT, BASIC_AUTH_USERS, PORT = 80 } = process.env
+const { PRIV_KEY, CERTIFICATE, BASIC_AUTH_USERS, PORT = 80 } = process.env
 
 let io;
 let http;
 let https;
 
-const production = (!ENVIRONMENT || ENVIRONMENT === 'production') && PORT === 443
+console.log(`@FILTER PORT:`, PORT)
+
+const production = PORT === '443'
+
+console.log(`@FILTER production:`, production)
 
 if (production) {
   const priv = fs.readFileSync(PRIV_KEY)
