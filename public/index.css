@@ -195,19 +195,21 @@ body[data-playlist-mode="true"] .mode-button-playlist {
   box-shadow: none;
   height: unset;
   border-radius: unset;
+  transition: opacity .6s;
+}
+
+#playlist-container[data-playlist-minimised="true"] #offline-button-playlist,
+#playlist-container[data-playlist-minimised="true"] #clear-button-playlist {
+  opacity: 0;
+}
+
+#playlist-container[data-playlist-minimised="false"] #offline-button-playlist,
+#playlist-container[data-playlist-minimised="false"] #clear-button-playlist {
+  opacity: 1;
 }
 
 #clear-button-playlist {
   text-decoration: underline;
-  transition: opacity .6s;
-}
-
-#playlist-container[data-playlist-minimised="true"] #clear-button-playlist {
-  opacity: 1;
-}
-
-#playlist-container[data-playlist-minimised="true"] #clear-button-playlist {
-  opacity: 0;
 }
 
 #offline-button-playlist {

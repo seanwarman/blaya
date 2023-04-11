@@ -19,6 +19,19 @@ import io from './node_modules/socket.io/client-dist/socket.io.esm.min.js'
 
 // io().on('reload', () => location.reload())
 
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/worker-offline.js").then(
+  (registration) => {
+    console.log("Service worker registration succeeded:", registration);
+  },
+    (error) => {
+      console.error(`Service worker registration failed: ${error}`);
+    }
+  );
+} else {
+  console.error("Service workers are not supported.");
+}
+
 window.logger = logger
 
 window.state = store().state
