@@ -67,12 +67,9 @@ input#search-input {
   position: fixed;
   overflow-y: scroll;
   overflow-x: hidden;
-  transition: height .6s, background-color .6s;
-  background-color: white;
-  box-shadow: 0px -4px 17px 0px #00000024;
+  transition: height .6s, padding .6s, box-shadow .6s, background .6s;
   display: flex;
   align-items: start;
-  padding-bottom: 104px;
   bottom: 0;
 
   /* This setting prevents the drag polyfill from making this container any wider */
@@ -80,19 +77,25 @@ input#search-input {
 }
 
 #playlist-container[data-playlist-minimised="true"] {
-  height: 154px;
+  background-color: transparent;
+  height: 152px;
+  overflow-y: hidden;
+  padding-bottom: 0;
+  box-shadow: 1px 7px 17px 0px #00000000;
 }
 
 #playlist-container[data-playlist-minimised="false"] {
+  background-color: white;
   height: 100%;
+  /* padding-bottom: 5rem; */
+  box-shadow: 1px 7px 17px 0px #00000024;
 }
 
 #playlist-name-container {
   position: -webkit-sticky;
   position: sticky;
-  top: 0;
-  background: white;
-  padding-top: 1rem;
+  top: 45px;
+  display: none;
 }
 
 #playlist {
@@ -100,6 +103,9 @@ input#search-input {
   border-radius: 2px;
   display: flex;
   flex-direction: column-reverse;
+  margin-top: 45px;
+  /* height: 100%; */
+  justify-content: flex-end;
   width: 100%;
 }
 
@@ -110,16 +116,13 @@ input#search-input {
 #playlist .playlist-name {
   width: 100%;
   border: none;
-  padding: 0.5rem;
-  background: white;
   font-size: 0.8rem;
   border-bottom: 3px solid #5ed0cf;
   transition: margin-left .6s;
-  height: 2.1rem;
+  /* height: 2.1rem; */
 }
 
 #playlist-container[data-playlist-minimised="true"] #playlist .playlist-name {
-
   margin-left: 0;
 }
 
@@ -168,13 +171,24 @@ body[data-playlist-mode="true"] .mode-button-playlist {
 }
 
 .button-playlist-container {
+  border-bottom: 3px solid #5ed0cf;
   z-index: 1;
-  right: 0.1rem;
   position: fixed;
   transition: bottom .6s;
   height: 3rem;
   display: flex;
   align-items: center;
+  transition: background .6s;
+  justify-content: end;
+  width: 100%;
+}
+
+#playlist-container[data-playlist-minimised="true"] .button-playlist-container {
+  background-color: transparent;
+}
+
+#playlist-container[data-playlist-minimised="false"] .button-playlist-container {
+  background-color: white;
 }
 
 #clear-button-playlist,
@@ -186,6 +200,15 @@ body[data-playlist-mode="true"] .mode-button-playlist {
 
 #clear-button-playlist {
   text-decoration: underline;
+  transition: opacity .6s;
+}
+
+#playlist-container[data-playlist-minimised="true"] #clear-button-playlist {
+  opacity: 1;
+}
+
+#playlist-container[data-playlist-minimised="true"] #clear-button-playlist {
+  opacity: 0;
 }
 
 .track {
@@ -345,10 +368,6 @@ div#current-playing-text {
     height: 50px;
   }
 
-  #maximise-button-playlist {
-    top: -0.5rem;
-  }
-
   input#search-input {
     font-size: 1rem;
   }
@@ -391,31 +410,31 @@ div#current-playing-text {
   }
 
   #playlist-container {
-    height: 62vh;
     left: auto;
     bottom: 4.5rem;
     right: 1rem;
     width: 30%;
     position: fixed;
     overflow: scroll;
-    box-shadow: 1px 7px 17px 0px #00000024;
-    transition: bottom .6s;
+    transition: height .6s, padding .6s, box-shadow .6s, background .6s;
     margin-left: 0;
     bottom: 4.3rem;
+    box-shadow: 1px 7px 17px 0px #00000024;
     top: unset;
-    padding-bottom: 5rem;
-  }
-
-  #maximise-button-playlist {
-    display: none;
-  }
-
-  #playlist-container[data-playlist-minimised="false"] {
-    height: 70%;
   }
 
   #playlist-container[data-playlist-minimised="true"] {
+    background-color: transparent;
+    height: 33px;
+    padding-bottom: 0;
+    box-shadow: 1px 7px 17px 0px #00000000;
+  }
+
+  #playlist-container[data-playlist-minimised="false"] {
+    background-color: white;
     height: 70%;
+    /* padding-bottom: 5rem; */
+    box-shadow: 1px 7px 17px 0px #00000024;
   }
 
   #playlist-container[data-playlist-minimised="false"] #playlist .playlist-name {
@@ -424,7 +443,6 @@ div#current-playing-text {
 
   body[data-playlist-mode="false"] #playlist,
   #playlist {
-    background: white;
     border-radius: 2px;
     display: flex;
     flex-direction: column-reverse;
@@ -439,6 +457,26 @@ div#current-playing-text {
     display: none;
     /*     text-align: right; */
     /* font-size: 0.7rem; */
+  }
+
+  .button-playlist-container {
+    z-index: 1;
+    right: 1rem;
+    position: fixed;
+    transition: bottom .6s;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    width: 30%;
+  }
+
+  #maximise-button-playlist {
+    background-color: transparent;
+    box-shadow: none;
+    height: unset;
+
+    top: -0.5rem;
   }
 
   footer {
