@@ -218,11 +218,11 @@ body[data-playlist-mode="true"] .mode-button-playlist {
 }
 
 body[data-playlist-mode="false"] .track {
-  grid-template-columns: 65% auto;
+  grid-template-columns: auto 50%;
 }
 
 body[data-playlist-mode="true"] .track {
-  grid-template-columns: 4rem 60% auto;
+  grid-template-columns: 4rem auto 50%;
 }
 
 .playing.track {
