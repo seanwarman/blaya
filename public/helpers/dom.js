@@ -80,6 +80,8 @@ export const onDragStart = e => {
 export const createTrackElementForPlaylist = trackList => playing => trackId => {
   const trackString = getCurrentTrackString(trackList)(trackId)
 
+  const trackStringWithQueryIfOffline = trackString + (window.state?.offline ? '?cacheme=true' : '')
+
   // createTrackPlaylistElementFromDiv :: Element -> Element
   const createTrackPlaylistElementFromDiv = f.pipe(
     f.AssignObject({
@@ -93,9 +95,13 @@ export const createTrackElementForPlaylist = trackList => playing => trackId => 
     }),
     f.ObjectAssignDataSet({
       playlist: true,
-      href: trackString,
+      href: trackStringWithQueryIfOffline,
     }),
   )
+
+  if (window.state?.offline) {
+    fetch(trackStringWithQueryIfOffline)
+  }
 
   const playlistEl = createTrackPlaylistElementFromDiv(document.createElement('div'))
   playlistEl.prepend(createRemoveFromPlaylistElement(document.createElement('div')))

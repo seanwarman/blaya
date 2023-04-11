@@ -51,6 +51,14 @@ export default () => {
     lastScrollTop: 0,
     offset: 5000,
     targeting: false,
+    offlineState: false,
+    set offline(offline) {
+      this.offlineState = offline
+      this.playlists = this.playlists
+    },
+    get offline() {
+      return this.offlineState
+    },
   }
 
   // Add other modules...

@@ -17,7 +17,7 @@ import { logger } from './helpers/functional-utils.js'
 
 import io from './node_modules/socket.io/client-dist/socket.io.esm.min.js'
 
-io().on('reload', () => location.reload())
+// io().on('reload', () => location.reload())
 
 window.logger = logger
 
@@ -46,6 +46,12 @@ document.getElementById('maximise-button-playlist').onclick = onClickOrEnter(onT
 document.getElementById('maximise-button-playlist').onkeydown = onClickOrEnter(onTogglePlaylistMinimised)
 document.getElementById('clear-button-playlist').onclick = onClickOrEnter(onClearPlaylist)
 document.getElementById('clear-button-playlist').onkeydown = onClickOrEnter(onClearPlaylist)
+document.getElementById('offline-button-playlist').onclick = onClickOrEnter(onOffline) 
+document.getElementById('offline-button-playlist').onkeydown = onClickOrEnter(onOffline) 
+
+function onOffline() {
+  window.state.offline = !window.state.offline
+}
 
 Array.from(document.getElementsByClassName('mode-button-playlist')).forEach(button => {
   button.onclick = onClickOrEnter(onTogglePlaylistMode)

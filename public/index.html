@@ -44,6 +44,22 @@
       </button>
 		</footer>
 	</body>
+  <script>
+    // Register a service worker hosted at the root of the
+    // site using the default scope.
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/worker-offline.js").then(
+      (registration) => {
+        console.log("Service worker registration succeeded:", registration);
+      },
+      (error) => {
+        console.error(`Service worker registration failed: ${error}`);
+      }
+    );
+  } else {
+    console.error("Service workers are not supported.");
+  }
+  </script>
 	<script type="module" src="./main.js"></script>
 	<script src="./DragDropTouch.js"></script>
 <html>
