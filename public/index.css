@@ -453,6 +453,10 @@ div#current-playing-text {
     height: 3rem;
   }
 
+  #playlist-container[data-playlist-minimised="true"] #playlist {
+    display: none;
+  }
+
   #playlist .track-album {
     display: none;
     /*     text-align: right; */
