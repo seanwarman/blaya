@@ -36,7 +36,7 @@ export const onSearch = trackList => (e) => {
   // If this is the first search, remember the scroll position...
   if (!window.state.searching) {
     window.state.previousScrollPositionY = window.scrollY
-    window.state.previousTrackListContainer = document.getElementById('track-list-container').cloneNode(true)
+    window.state.previousTrackListContainer = document.getElementById('track-list-container')
   }
   window.state.searchingPage = 1
   window.state.searching = true
