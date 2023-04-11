@@ -14,8 +14,8 @@ export const simpleHash = str => {
 
 // fzfFilter :: [String] -> String -> [String]
 export const fzfFilter = trackList => value => {
-  const fzf = new Fzf(trackList)
-  const fzfFast = new Fzf(trackList, { fuzzy: 'v1' })
+  const fzf = new Fzf(trackList, { casing: 'case-insensitive' })
+  const fzfFast = new Fzf(trackList, { casing: 'case-insensitive', fuzzy: 'v1' })
   if (value.length <= 3) return fzfFast.find(value).map(({ item }) => item)
   return fzf.find(value).map(({ item }) => item)
 }
