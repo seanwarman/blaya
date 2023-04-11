@@ -28,11 +28,9 @@ export default () => {
       if (!value) {
         this.playlistsState = INITIAL_PLAYLISTS_STATE
         window.localStorage.setItem(PLAYLISTS_STATE_KEY, JSON.stringify(INITIAL_PLAYLISTS_STATE))
-        dom.onAddToPlaylistNewOrIgnore()
       } else {
         this.playlistsState = value
         window.localStorage.setItem(PLAYLISTS_STATE_KEY, JSON.stringify(value))
-        dom.onAddToPlaylistNewOrIgnore()
         const [_, playlistIndex, trackList] = this.playlistsState[this.selectedPlaylist]
         trackList.forEach((track, i) =>
           dom.appendTrackElementToPlaylistById(this.trackList)(playlistIndex === i)(utils.simpleHash(track))

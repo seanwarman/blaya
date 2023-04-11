@@ -165,25 +165,6 @@ export const onRemoveFromPlaylist = e => {
   )
 }
 
-export const onAddToPlaylistNewOrIgnore = () => {
-  const playlistEl = document.getElementById('playlist')
-  if (playlistEl.getElementsByClassName('playlist-name').length) {
-    return
-  }
-  const div = document.createElement('div')
-  div.id = 'playlist-name-container'
-
-  div.innerHTML = `<div
-    placeholder="Playlist name"
-    class="playlist-name"
-    aria-label="Playlist name"
-    type="text"
-  ></div>`
-
-  playlistEl.append(div)
-  playlistEl.ondrop = e => e.preventDefault()
-}
-
 // ifFalseOnAddToPlaylist :: fn -> Event -> [Element, Object] | Event
 export const ifFalseOnAddToPlaylist = conditionFn => f.breakPipe(
   f.breakIf(conditionFn),
