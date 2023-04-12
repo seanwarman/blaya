@@ -1,5 +1,7 @@
 const CACHE_VERSION = 2
-const CURRENT_CACHES = 'blaya__filescachev' + CACHE_VERSION
+const CURRENT_CACHES = {
+  applicationFilesCache: 'blaya__APPLICATION_FILES_CACHE' + CACHE_VERSION
+}
 
 const clientApplicationFiles = [
   '/',
@@ -22,24 +24,24 @@ const clientApplicationFiles = [
   '/node_modules/socket.io/client-dist/socket.io.esm.min.js',
 ]
 
-async function cacheFirst(request) {
-  const cachedResponse = await caches.match(request)
-  if (cachedResponse) return cachedResponse
-
+async function cacheSecond(request) {
   try {
     const response = await fetch(request)
     return response
   } catch (error) {
-    return new Response('Ignored online file', {
-      status: 200,
-    })
+    try {
+      const cachedResponse = await caches.match(request)
+      if (cachedResponse) return cachedResponse
+    } catch (cacheError) {
+      return new Response(cacheError, { status: 400 })
+    }
+    return new Response(error, { status: 404 })
   }
-
 }
 
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CURRENT_CACHES)
+    caches.open(CURRENT_CACHES.applicationFilesCache)
     .then(cache =>
       Promise.all([
         cache.matchAll(clientApplicationFiles).then(responses => Array.from(responses).map(cache.delete)),
@@ -50,6 +52,6 @@ self.addEventListener('install', event => {
 
 self.addEventListener('fetch', event => {
   event.respondWith(
-    cacheFirst(event.request)
+    cacheSecond(event.request)
   )
 })
