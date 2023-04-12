@@ -213,11 +213,19 @@ body[data-playlist-mode="true"] .mode-button-playlist {
 }
 
 #offline-button-playlist {
-  background-color: #00aeff;
   padding: 2px 0px;
   border-radius: 2px;
   color: white;
   margin: 0 1rem;
+  transition: background .6s;
+}
+
+body[data-offline-mode="true"] #offline-button-playlist {
+  background-color: #36b403;
+}
+
+body[data-offline-mode="false"] #offline-button-playlist {
+  background-color: #00aeff;
 }
 
 .track {

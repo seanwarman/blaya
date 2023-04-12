@@ -54,7 +54,7 @@ export default () => {
     offlineState: false,
     set offline(offline) {
       this.offlineState = offline
-      this.playlists = this.playlists
+      document.body.dataset.offlineMode = offline
     },
     get offline() {
       return this.offlineState
