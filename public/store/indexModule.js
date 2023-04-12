@@ -7,7 +7,7 @@ import * as utils from '../helpers/utils.js'
 
 import { playModule } from './playModule.js'
 
-export default () => {
+export default (registration) => {
   const state = {
     trackList: parseTrackList(RAW_TRACKLIST),
     playlistModeState: null,
@@ -55,6 +55,15 @@ export default () => {
     set offline(offline) {
       this.offlineState = offline
       document.body.dataset.offlineMode = offline
+      if (registration) {
+        registration.active.postMessage({
+          type: 'OFFLINE_MODE',
+          payload: {
+            offline,
+            playlists: this.playlists
+          }
+        })
+      }
     },
     get offline() {
       return this.offlineState
