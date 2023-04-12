@@ -424,7 +424,7 @@ div#current-playing-text {
     right: 1rem;
     width: 30%;
     position: fixed;
-    overflow: scroll;
+    overflow-y: auto;
     transition: height .6s, padding .6s, box-shadow .6s, background .6s;
     margin-left: 0;
     bottom: 4.3rem;
