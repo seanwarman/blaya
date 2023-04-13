@@ -59,6 +59,17 @@ export default (registration) => {
     get downloading() {
       return this.downloadingState
     },
+    offlineTracksState: [],
+    set offlineTracks(tracks) {
+      this.offlineTracksState = tracks
+      Array.from(document.getElementsByClassName('downloaded')).forEach(el => el.classList.remove('downloaded'))
+      tracks.forEach(track => {
+        Array.from(document.querySelectorAll(`[data-href="${track}"]`)).forEach(el => el.classList.add('downloaded'))
+      })
+    },
+    get offlineTracks() {
+      return this.offlineTracksState
+    },
   }
 
   // Add other modules...

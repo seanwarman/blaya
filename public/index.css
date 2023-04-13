@@ -213,25 +213,73 @@ body[data-playlist-mode="true"] .mode-button-playlist {
 }
 
 #download-button-playlist {
-  padding: 2px 0px;
+  padding: 7px 0px;
   border-radius: 2px;
   color: white;
   margin: 0 1rem;
   transition: background .6s;
+  width: 5rem;
 }
 
 body[data-downloading="true"] #download-button-playlist {
-  background-color: #36b403;
+  background-color: #d2d2d2;
 }
 
 body[data-downloading="false"] #download-button-playlist {
   background-color: #00aeff;
 }
 
+body[data-downloading="true"] #download {
+  display: none;
+}
+
+body[data-downloading="false"] #downloading {
+  display: none;
+}
+
+#downloading img {
+  height: 1rem;
+  animation-name: spin;
+  animation-duration: 1600ms;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-name: spin;
+  -webkit-animation-duration: 1600ms;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-timing-function: linear;
+  -moz-animation-name: spin;
+  -moz-animation-duration: 1600ms;
+  -moz-animation-iteration-count: infinite;
+  -moz-animation-timing-function: linear;
+  -ms-animation-name: spin;
+  -ms-animation-duration: 1600ms;
+  -ms-animation-iteration-count: infinite;
+  -ms-animation-timing-function: linear;
+  -o-transition: rotate(3600deg);
+  transition: rotate(3600deg);
+}
+
+@-moz-keyframes spin {
+    from { -moz-transform: rotate(0deg); }
+    to { -moz-transform: rotate(360deg); }
+}
+@-webkit-keyframes spin {
+    from { -webkit-transform: rotate(0deg); }
+    to { -webkit-transform: rotate(360deg); }
+}
+@keyframes spin {
+    from {transform:rotate(0deg);}
+    to {transform:rotate(360deg);}
+}
+
 .track {
   display: grid;
   overflow: hidden;
   border-bottom: 1px solid #ededed;
+}
+
+.downloaded {
+  background-color: #b6e0ff;
 }
 
 body[data-playlist-mode="false"] .track {

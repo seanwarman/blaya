@@ -25,21 +25,6 @@ const clientApplicationFiles = [
   '/node_modules/socket.io/client-dist/socket.io.esm.min.js',
 ]
 
-async function cacheOffline(payload) {
-  const { playlist } = payload
-
-  console.log(`@FILTER Downloading playlist: `, playlist)
-  const cache = await caches.open(CURRENT_CACHES.offlineTracksCache)
-  cache.addAll(
-    playlist[2].reduce((acc, track) => {
-      if (acc.includes(track)) return acc
-      return [...acc, track]
-    }, [])
-  ).then(() => {
-    console.log(`@FILTER Download done!`)
-  })
-}
-
 async function cacheHandler(request) {
   // TODO: get tracks cache...
   try {
@@ -73,8 +58,29 @@ self.addEventListener('fetch', event => {
   )
 })
 
-self.addEventListener('message', event => {
+self.addEventListener('message', async event => {
   const { data } = event
-  const { type, payload } = data
-  if (type === 'DOWNLOAD_PLAYLIST') cacheOffline(payload)
+  const { type } = data
+  if (type === 'DOWNLOAD_PLAYLIST') cacheOffline(event)
 })
+
+async function cacheOffline(event) {
+  const { data, source } = event
+  const { payload } = data
+  const { playlist } = payload
+
+  const tracks = playlist[2]
+    .reduce((acc, track) => {
+      if (acc.includes(track)) return acc
+      return [...acc, track]
+    }, [])
+
+  await caches.delete(CURRENT_CACHES.offlineTracksCache)
+  const cache = await caches.open(CURRENT_CACHES.offlineTracksCache)
+  await cache.addAll(tracks)
+
+  source.postMessage({
+    type: 'DOWNLOAD_COMPLETE',
+    payload: { tracks },
+  })
+}

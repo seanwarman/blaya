@@ -101,16 +101,13 @@ export const onScrollThisTrack = trackList => () => {
   if (window.state.targeting) {
     return
   }
-
   window.state.targeting = true
-
   if (window.state.searching) {
     const trackListFiltered = fzfFilter(trackList)(getSearchValue())
     scrollToTrackByTrackId(window.state.playModule.currentTrackSrc)(trackListFiltered)
   } else {
     scrollToTrackByTrackId(window.state.playModule.currentTrackSrc)(trackList)
   }
-
   setTimeout(() => {
     window.state.targeting = false
   }, 100)
@@ -120,7 +117,6 @@ export const onUpScroll = trackList => () => {
   if (window.state.lazyLoadDebounce) {
     return
   }
-
   if (
     !window.state.searching
     && window.state.page > window.state.numberOfPages + 1
@@ -129,7 +125,6 @@ export const onUpScroll = trackList => () => {
     window.state.page = prependTracksByPageLazy(trackList)(window.state.page)
     return setDebounce()
   }
-
   if (
     window.state.searching
     && window.state.searchingPage > window.state.numberOfPages + 1
@@ -145,7 +140,6 @@ export const onDownScroll = trackList => () => {
   if (window.state.lazyLoadDebounce) {
     return
   }
-
   if ((window.innerHeight + window.scrollY + window.state.offset) >= document.body.offsetHeight) {
     if (window.state.searching) {
       if (getSearchValue().length > 0) {
@@ -169,7 +163,6 @@ export const onScroll = ([onUpScroll, onDownScroll]) => (e) => {
   } else if (st < window.state.lastScrollTop) {
     onUpScroll(e)
   }
-
   window.state.lastScrollTop = st <= 0 ? 0 : st
 }
 
@@ -179,4 +172,18 @@ export const onTogglePlaylistMode = () => {
 
 export const onClearPlaylist = () => {
   window.state.playlists = null
+}
+
+export function onDownload(registration) {
+  return () => {
+    window.state.downloading = true
+    if (registration) {
+      registration.active.postMessage({
+        type: 'DOWNLOAD_PLAYLIST',
+        payload: {
+          playlist: window.state.playlists[window.state.selectedPlaylist]
+        },
+      })
+    }
+  }
 }

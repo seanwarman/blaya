@@ -12,6 +12,7 @@ import {
   onDownScroll,
   onTogglePlaylistMode,
   onClearPlaylist,
+  onDownload,
 } from './helpers/events.js'
 import { logger } from './helpers/functional-utils.js'
 
@@ -23,6 +24,7 @@ if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("/worker-offline.js").then(
   (registration) => {
     console.log("Service worker registration succeeded:", registration);
+
     window.logger = logger
 
     window.state = store(registration).state
@@ -52,20 +54,6 @@ if ("serviceWorker" in navigator) {
     document.getElementById('clear-button-playlist').onkeydown = onClickOrEnter(onClearPlaylist)
     document.getElementById('download-button-playlist').onclick = onClickOrEnter(onDownload(registration)) 
     document.getElementById('download-button-playlist').onkeydown = onClickOrEnter(onDownload(registration)) 
-
-    function onDownload(registration) {
-      return () => {
-        window.state.downloading = true
-        if (registration) {
-          registration.active.postMessage({
-            type: 'DOWNLOAD_PLAYLIST',
-            payload: {
-              playlist: window.state.playlists[window.state.selectedPlaylist]
-            },
-          })
-        }
-      }
-    }
 
     Array.from(document.getElementsByClassName('mode-button-playlist')).forEach(button => {
       button.onclick = onClickOrEnter(onTogglePlaylistMode)
@@ -101,6 +89,18 @@ if ("serviceWorker" in navigator) {
       [{ key: 'k', metaKey: true }, () => document.getElementById('search-input').focus()],
       ['Escape', () => document.getElementById('search-input').blur()],
     )
+
+    // Worker events...
+    navigator.serviceWorker.addEventListener('message', event => {
+      const { data } = event
+      const { type, payload } = data
+
+      if (type === 'DOWNLOAD_COMPLETE') {
+        window.state.downloading = false
+        const { tracks } = payload
+        window.state.offlineTracks = tracks
+      }
+    })
   },
     (error) => {
       console.error(`Service worker registration failed: ${error}`);
