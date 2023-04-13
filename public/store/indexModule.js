@@ -1,6 +1,6 @@
 import { trackList as RAW_TRACKLIST } from '../track-list.js'
 import { appendTracksByPage, parseTrackList } from '../helpers/index.js'
-import { PLAYLISTS_STATE_KEY, INITIAL_PLAYLISTS_STATE } from '../constants.js'
+import { OFFLINE_TRACKS_KEY, PLAYLISTS_STATE_KEY, INITIAL_PLAYLISTS_STATE } from '../constants.js'
 
 import * as dom from '../helpers/dom.js'
 import * as utils from '../helpers/utils.js'
@@ -13,7 +13,7 @@ function setDownloadedClassToOfflineTracks(offlineTracks) {
   })
 }
 
-export default (registration) => {
+export default () => {
   const state = {
     trackList: parseTrackList(RAW_TRACKLIST),
     playlistModeState: null,
@@ -38,8 +38,9 @@ export default (registration) => {
         this.playlistsState = value
         window.localStorage.setItem(PLAYLISTS_STATE_KEY, JSON.stringify(value))
         const [_, playlistIndex, trackList] = this.playlistsState[this.selectedPlaylist]
+        const player = document.getElementById('player')
         trackList.forEach((track, i) =>
-          dom.appendTrackElementToPlaylistById(this.trackList)(playlistIndex === i)(utils.simpleHash(track))
+          dom.appendTrackElementToPlaylistById(this.trackList)(playlistIndex === i && !player.paused)(utils.simpleHash(track))
         )
         if (this.offlineTracks.length) {
           setDownloadedClassToOfflineTracks(this.offlineTracks)
@@ -71,8 +72,9 @@ export default (registration) => {
     offlineTracksState: [],
     set offlineTracks(tracks) {
       this.offlineTracksState = tracks
+      window.localStorage.setItem(OFFLINE_TRACKS_KEY, JSON.stringify(tracks))
       Array.from(document.getElementsByClassName('downloaded')).forEach(el => el.classList.remove('downloaded'))
-      setDownloadedClassToOfflineTracks(this.offlineTracks)
+      setDownloadedClassToOfflineTracks(tracks)
     },
     get offlineTracks() {
       return this.offlineTracksState
@@ -82,12 +84,12 @@ export default (registration) => {
   // Add other modules...
   state.playModule = playModule
 
-  // Defaults to trigger the setters
-  state.playlists = initStateItem(PLAYLISTS_STATE_KEY, INITIAL_PLAYLISTS_STATE)
-  state.playlistMode = false
-
   // BEGIN
   state.page = appendTracksByPage(state.trackList)(state.page)
+  // Defaults to trigger the setters
+  state.offlineTracks = initStateItem(OFFLINE_TRACKS_KEY, [])
+  state.playlists = initStateItem(PLAYLISTS_STATE_KEY, INITIAL_PLAYLISTS_STATE)
+  state.playlistMode = false
 
   return { state }
 }

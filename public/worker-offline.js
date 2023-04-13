@@ -26,18 +26,29 @@ const clientApplicationFiles = [
 ]
 
 async function cacheHandler(request) {
-  // TODO: get tracks cache...
+
+  // If it's a track try to get the cached one first...
+  if (/\.mp3$/.test(request.url)) {
+    const cachedTrackResponse = await caches.match(request)
+    if (cachedTrackResponse) return cachedTrackResponse
+  }
+
+  // Normal files can be requested normally...
   try {
     const response = await fetch(request)
+
+    // Replace with the newest version of the file...
+    if (clientApplicationFiles.includes(request.url)) {
+      const applicationFilesCache = await caches.open(CURRENT_CACHES.applicationFilesCache)
+      applicationFilesCache.delete(request)
+      applicationFilesCache.put(request, response.clone())
+    }
+
     return response
   } catch (error) {
-    try {
-      const cachedResponse = await caches.match(request)
-      if (cachedResponse) return cachedResponse
-    } catch (cacheError) {
-      return new Response(cacheError, { status: 400 })
-    }
-    return new Response(error, { status: 404 })
+    // If the user's offline, try the cache...
+    const cachedResponse = await caches.match(request)
+    return cachedResponse
   }
 }
 
