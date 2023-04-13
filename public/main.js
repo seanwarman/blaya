@@ -50,11 +50,21 @@ if ("serviceWorker" in navigator) {
     document.getElementById('maximise-button-playlist').onkeydown = onClickOrEnter(onTogglePlaylistMinimised)
     document.getElementById('clear-button-playlist').onclick = onClickOrEnter(onClearPlaylist)
     document.getElementById('clear-button-playlist').onkeydown = onClickOrEnter(onClearPlaylist)
-    document.getElementById('offline-button-playlist').onclick = onClickOrEnter(onOffline) 
-    document.getElementById('offline-button-playlist').onkeydown = onClickOrEnter(onOffline) 
+    document.getElementById('download-button-playlist').onclick = onClickOrEnter(onDownload(registration)) 
+    document.getElementById('download-button-playlist').onkeydown = onClickOrEnter(onDownload(registration)) 
 
-    function onOffline() {
-      window.state.offline = !window.state.offline
+    function onDownload(registration) {
+      return () => {
+        window.state.downloading = true
+        if (registration) {
+          registration.active.postMessage({
+            type: 'DOWNLOAD_PLAYLIST',
+            payload: {
+              playlist: window.state.playlists[window.state.selectedPlaylist]
+            },
+          })
+        }
+      }
     }
 
     Array.from(document.getElementsByClassName('mode-button-playlist')).forEach(button => {

@@ -188,7 +188,7 @@ body[data-playlist-mode="true"] .mode-button-playlist {
   background-color: white;
 }
 
-#offline-button-playlist,
+#download-button-playlist,
 #clear-button-playlist,
 #maximise-button-playlist {
   background-color: transparent;
@@ -198,12 +198,12 @@ body[data-playlist-mode="true"] .mode-button-playlist {
   transition: opacity .6s;
 }
 
-#playlist-container[data-playlist-minimised="true"] #offline-button-playlist,
+#playlist-container[data-playlist-minimised="true"] #download-button-playlist,
 #playlist-container[data-playlist-minimised="true"] #clear-button-playlist {
   opacity: 0;
 }
 
-#playlist-container[data-playlist-minimised="false"] #offline-button-playlist,
+#playlist-container[data-playlist-minimised="false"] #download-button-playlist,
 #playlist-container[data-playlist-minimised="false"] #clear-button-playlist {
   opacity: 1;
 }
@@ -212,7 +212,7 @@ body[data-playlist-mode="true"] .mode-button-playlist {
   text-decoration: underline;
 }
 
-#offline-button-playlist {
+#download-button-playlist {
   padding: 2px 0px;
   border-radius: 2px;
   color: white;
@@ -220,11 +220,11 @@ body[data-playlist-mode="true"] .mode-button-playlist {
   transition: background .6s;
 }
 
-body[data-offline-mode="true"] #offline-button-playlist {
+body[data-downloading="true"] #download-button-playlist {
   background-color: #36b403;
 }
 
-body[data-offline-mode="false"] #offline-button-playlist {
+body[data-downloading="false"] #download-button-playlist {
   background-color: #00aeff;
 }
 

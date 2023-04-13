@@ -26,16 +26,18 @@ const clientApplicationFiles = [
 ]
 
 async function cacheOffline(payload) {
-  const { playlists } = payload
+  const { playlist } = payload
 
-  console.log(`@FILTER Adding all playlist tracks`, playlists[0])
+  console.log(`@FILTER Downloading playlist: `, playlist)
   const cache = await caches.open(CURRENT_CACHES.offlineTracksCache)
   cache.addAll(
-    playlists[0][2].reduce((acc, track) => {
+    playlist[2].reduce((acc, track) => {
       if (acc.includes(track)) return acc
       return [...acc, track]
     }, [])
-  )
+  ).then(() => {
+    console.log(`@FILTER Download done!`)
+  })
 }
 
 async function cacheHandler(request) {
@@ -74,5 +76,5 @@ self.addEventListener('fetch', event => {
 self.addEventListener('message', event => {
   const { data } = event
   const { type, payload } = data
-  if (type === 'OFFLINE_MODE') cacheOffline(payload)
+  if (type === 'DOWNLOAD_PLAYLIST') cacheOffline(payload)
 })

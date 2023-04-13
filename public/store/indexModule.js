@@ -51,22 +51,13 @@ export default (registration) => {
     lastScrollTop: 0,
     offset: 5000,
     targeting: false,
-    offlineState: false,
-    set offline(offline) {
-      this.offlineState = offline
-      document.body.dataset.offlineMode = offline
-      if (registration) {
-        registration.active.postMessage({
-          type: 'OFFLINE_MODE',
-          payload: {
-            offline,
-            playlists: this.playlists
-          }
-        })
-      }
+    downloadingState: false,
+    set downloading(downloading) {
+      this.downloading = downloading
+      document.body.dataset.downloading = downloading
     },
-    get offline() {
-      return this.offlineState
+    get downloading() {
+      return this.downloadingState
     },
   }
 
