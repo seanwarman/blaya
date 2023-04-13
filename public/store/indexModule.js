@@ -53,7 +53,7 @@ export default (registration) => {
     targeting: false,
     downloadingState: false,
     set downloading(downloading) {
-      this.downloading = downloading
+      this.downloadingState = downloading
       document.body.dataset.downloading = downloading
     },
     get downloading() {
