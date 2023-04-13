@@ -7,6 +7,12 @@ import * as utils from '../helpers/utils.js'
 
 import { playModule } from './playModule.js'
 
+function setDownloadedClassToOfflineTracks(offlineTracks) {
+  offlineTracks.forEach(track => {
+    Array.from(document.querySelectorAll(`[data-href="${track}"]`)).forEach(el => el.classList.add('downloaded'))
+  })
+}
+
 export default (registration) => {
   const state = {
     trackList: parseTrackList(RAW_TRACKLIST),
@@ -35,6 +41,9 @@ export default (registration) => {
         trackList.forEach((track, i) =>
           dom.appendTrackElementToPlaylistById(this.trackList)(playlistIndex === i)(utils.simpleHash(track))
         )
+        if (this.offlineTracks.length) {
+          setDownloadedClassToOfflineTracks(this.offlineTracks)
+        }
       }
     },
     texts: [],
@@ -63,9 +72,7 @@ export default (registration) => {
     set offlineTracks(tracks) {
       this.offlineTracksState = tracks
       Array.from(document.getElementsByClassName('downloaded')).forEach(el => el.classList.remove('downloaded'))
-      tracks.forEach(track => {
-        Array.from(document.querySelectorAll(`[data-href="${track}"]`)).forEach(el => el.classList.add('downloaded'))
-      })
+      setDownloadedClassToOfflineTracks(this.offlineTracks)
     },
     get offlineTracks() {
       return this.offlineTracksState

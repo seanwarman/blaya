@@ -290,8 +290,10 @@ body[data-playlist-mode="true"] .track {
   grid-template-columns: 4rem auto 50%;
 }
 
-.playing.track {
-  background-color: #ededed;
+.playing .track-name::before {
+  content: url(./icons/play-solid.svg);
+  width: 11px;
+  margin-right: 0.7rem;
 }
 
 body[data-playlist-mode="false"] #playlist .track {

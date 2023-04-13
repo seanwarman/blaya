@@ -33,12 +33,13 @@ export const playModule = {
     this.currentTrackSrc = src
     this.isPlaylist = !!isPlaylist
 
+    removeClassFromAll('playing')
+
     // Update the UI
     if (isPlaylist) {
       // The setter on playlists takes care of the 'playing' class...
       state.playlists = updatePlaylistIndex(state.selectedPlaylist, playlistIndex, state.playlists)
     } else {
-      removeClassFromAll('playing')
       const trackListEl = document.querySelector(`[data-href="${src}"]`)
       if (trackListEl) trackListEl.classList.add('playing')
     }
