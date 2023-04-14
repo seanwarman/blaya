@@ -101,12 +101,14 @@ async function cacheOffline(event) {
       return [...acc, track]
     }, [])
 
-  await caches.delete(CURRENT_CACHES.offlineTracksCache)
   const cache = await caches.open(CURRENT_CACHES.offlineTracksCache)
   const completedTracks = []
   for (const track of tracks) {
     try {
-      await cache.add(track)
+      const response = await cache.match(track)
+      if (!response) {
+        await cache.add(track)
+      }
       completedTracks.push(track)
       if (completedTracks.length === tracks.length) break
       source.postMessage({
