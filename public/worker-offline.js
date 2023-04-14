@@ -1,9 +1,3 @@
-const CACHE_VERSION = 2
-const CURRENT_CACHES = {
-  applicationFilesCache: 'blaya__APPLICATION_FILES_CACHE' + CACHE_VERSION,
-  offlineTracksCache: 'blaya__OFFLINE_TRACKS_CACHE' + CACHE_VERSION,
-}
-
 const clientApplicationFiles = [
   '/',
   '/DragDropTouch.js',
@@ -25,31 +19,10 @@ const clientApplicationFiles = [
   '/node_modules/socket.io/client-dist/socket.io.esm.min.js',
 ]
 
-async function cacheHandler(request) {
-
-  // If it's a track try to get the cached one first...
-  if (/\.mp3$/.test(request.url)) {
-    const cachedTrackResponse = await caches.match(request)
-    if (cachedTrackResponse) return cachedTrackResponse
-  }
-
-  // Normal files can be requested normally...
-  try {
-    const response = await fetch(request)
-
-    // Replace with the newest version of the file...
-    if (clientApplicationFiles.includes(request.url)) {
-      const applicationFilesCache = await caches.open(CURRENT_CACHES.applicationFilesCache)
-      applicationFilesCache.delete(request)
-      applicationFilesCache.put(request, response.clone())
-    }
-
-    return response
-  } catch (error) {
-    // If the user's offline, try the cache...
-    const cachedResponse = await caches.match(request)
-    return cachedResponse
-  }
+const CACHE_VERSION = 2
+const CURRENT_CACHES = {
+  applicationFilesCache: 'blaya__APPLICATION_FILES_CACHE_V' + CACHE_VERSION,
+  offlineTracksCache: 'blaya__OFFLINE_TRACKS_CACHE_V' + CACHE_VERSION,
 }
 
 self.addEventListener('install', event => {
@@ -63,11 +36,53 @@ self.addEventListener('install', event => {
   )
 })
 
+self.addEventListener('activate', event => {
+  const expectedCacheNamesSet = new Set(Object.values(CURRENT_CACHES))
+  event.waitUntil(
+    caches.keys().then(cacheKeys => {
+      return Promise.all(
+        cacheKeys.map(key => !expectedCacheNamesSet.has(key) && caches.delete(key))
+      )
+    })
+  )
+})
+
 self.addEventListener('fetch', event => {
   event.respondWith(
     cacheHandler(event.request)
   )
 })
+
+async function cacheHandler(request) {
+
+  // If it's a track try to get the cached one first...
+  if (/\.mp3$/.test(request.url)) {
+    const cachedTrackResponse = await caches.match(request)
+    if (cachedTrackResponse) return cachedTrackResponse
+  }
+
+  // Normal files can be requested normally...
+  try {
+    // fetch "consumes" the request so we should clone it because we might use
+    // it later in cache.put
+    const response = await fetch(request.clone())
+
+    // Replace with the newest version of the file...
+    if (clientApplicationFiles.includes(request.url)) {
+      const applicationFilesCache = await caches.open(CURRENT_CACHES.applicationFilesCache)
+      applicationFilesCache.delete(request)
+      // cache.put also consumes the req/res, we want to return the original
+      // response after this...
+      applicationFilesCache.put(request, response.clone())
+    }
+
+    return response
+  } catch (error) {
+    // If the user's offline, try the cache...
+    const cachedResponse = await caches.match(request)
+    return cachedResponse
+  }
+}
 
 self.addEventListener('message', async event => {
   const { data } = event
