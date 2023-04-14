@@ -56,7 +56,6 @@ export default () => {
     searching: false,
     searchingPage: 1,
     previousScrollPositionY: 0,
-    pageSize: 100,
     previousTrackListContainer: null,
     lastScrollTop: 0,
     offset: 5000,

@@ -41,7 +41,7 @@ export const trackListElements = pipe(
 // pagesFromIndexRange :: [Number, Number] -> [Number, Number]
 export const pagesFromIndexRange = (indexRange) => {
   const [startIndex, endIndex] = indexRange
-  const pageFromIndex = i => Math.max(1, Math.floor(i / window.state.pageSize))
+  const pageFromIndex = i => Math.max(1, Math.floor(i / PAGE_SIZE))
   return [pageFromIndex(startIndex), pageFromIndex(endIndex)]
 }
 
