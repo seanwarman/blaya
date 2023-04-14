@@ -32,7 +32,13 @@ if ("serviceWorker" in navigator) {
       const { data } = event
       const { type, payload } = data
 
-      if (type === 'DOWNLOAD_COMPLETE') {
+      if (type === 'DOWNLOADS_PROGRESS') {
+        window.state.downloading = true
+        const { tracks } = payload
+        window.state.offlineTracks = tracks
+      }
+
+      if (type === 'DOWNLOADS_COMPLETE') {
         window.state.downloading = false
         const { tracks } = payload
         window.state.offlineTracks = tracks

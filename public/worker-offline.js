@@ -19,7 +19,7 @@ const clientApplicationFiles = [
   '/node_modules/socket.io/client-dist/socket.io.esm.min.js',
 ]
 
-const CACHE_VERSION = 2
+const CACHE_VERSION = 3
 const CURRENT_CACHES = {
   applicationFilesCache: 'blaya__APPLICATION_FILES_CACHE_V' + CACHE_VERSION,
   offlineTracksCache: 'blaya__OFFLINE_TRACKS_CACHE_V' + CACHE_VERSION,
@@ -103,10 +103,23 @@ async function cacheOffline(event) {
 
   await caches.delete(CURRENT_CACHES.offlineTracksCache)
   const cache = await caches.open(CURRENT_CACHES.offlineTracksCache)
-  await cache.addAll(tracks)
+  const completedTracks = []
+  for (const track of tracks) {
+    try {
+      await cache.add(track)
+      completedTracks.push(track)
+      if (completedTracks.length === tracks.length) break
+      source.postMessage({
+        type: 'DOWNLOADS_PROGRESS',
+        payload: { tracks: completedTracks },
+      })
+    } catch (error) {
+      console.log(`Error caching ${track}: `, error)
+    }
+  }
 
   source.postMessage({
-    type: 'DOWNLOAD_COMPLETE',
+    type: 'DOWNLOADS_COMPLETE',
     payload: { tracks },
   })
 }
