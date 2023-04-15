@@ -292,7 +292,7 @@ body[data-playlist-mode="true"] .track {
 
 .playing .track-name::before {
   content: url(./icons/play-solid.svg);
-  width: 9px;
+  min-width: 9px;
   margin-right: 0.7rem;
 }
 
