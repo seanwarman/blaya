@@ -40,7 +40,11 @@ export default () => {
         const [_, playlistIndex, trackList] = this.playlistsState[this.selectedPlaylist]
         const player = document.getElementById('player')
         trackList.forEach((track, i) =>
-          dom.appendTrackElementToPlaylistById(this.trackList)(playlistIndex === i && !player.paused)(utils.simpleHash(track))
+          dom.appendTrackElementToPlaylistById(this.trackList)(
+            trackName =>
+              this.currentTrackSrc === trackName
+              && !player.paused
+          )(utils.simpleHash(track))
         )
         if (this.offlineTracks.length) {
           setDownloadedClassToOfflineTracks(this.offlineTracks)

@@ -77,13 +77,13 @@ export const onDragStart = e => {
 }
 
 // createTrackElementForPlaylist :: [String] -> String -> Element
-export const createTrackElementForPlaylist = trackList => playing => trackId => {
+export const createTrackElementForPlaylist = trackList => playingFn => trackId => {
   const trackString = getCurrentTrackString(trackList)(trackId)
 
   // createTrackPlaylistElementFromDiv :: Element -> Element
   const createTrackPlaylistElementFromDiv = f.pipe(
     f.AssignObject({
-      className: 'track' + (playing ? ' playing' : ''),
+      className: 'track' + (playingFn(trackString) ? ' playing' : ''),
       role: 'link',
       tabIndex: '0',
       id: trackId,
@@ -120,8 +120,8 @@ export const appendTrackElementToPlaylist = element => {
 }
 
 // appendTrackElementToPlaylistById :: trackId -> Element
-export const appendTrackElementToPlaylistById = trackList => playing => f.pipe(
-  createTrackElementForPlaylist(trackList)(playing),
+export const appendTrackElementToPlaylistById = trackList => playingFn => f.pipe(
+  createTrackElementForPlaylist(trackList)(playingFn),
   appendTrackElementToPlaylist,
 )
 
