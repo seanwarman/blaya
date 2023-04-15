@@ -5,6 +5,8 @@ const clientApplicationFiles = [
   '/icons/grip-vertical-solid.svg',
   '/icons/minus-solid.svg',
   '/icons/plus-solid.svg',
+  '/icons/play-solid.svg',
+  '/icons/spinner-solid.svg',
   '/helpers/dom.js',
   '/helpers/events.js',
   '/helpers/functional-utils.js',
