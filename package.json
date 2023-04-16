@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon -e js,css,html,svg index.js"
+    "start": "nodemon -e js,css,html,svg --ignore node_modules/ index.js",
+    "update": "git pull origin master && npm i"
   },
   "keywords": [],
   "author": "",
