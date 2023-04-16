@@ -38,12 +38,11 @@ export default () => {
         this.playlistsState = value
         window.localStorage.setItem(PLAYLISTS_STATE_KEY, JSON.stringify(value))
         const [_, playlistIndex, trackList] = this.playlistsState[this.selectedPlaylist]
-        const player = document.getElementById('player')
         trackList.forEach((track, i) =>
           dom.appendTrackElementToPlaylistById(this.trackList)(
-            trackName =>
-              this.currentTrackSrc === trackName
-              && !player.paused
+            () =>
+              this.playModule.currentTrackSrc === track
+              && i === playlistIndex
           )(utils.simpleHash(track))
         )
         if (this.offlineTracks.length) {

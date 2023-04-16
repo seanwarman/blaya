@@ -83,7 +83,7 @@ export const createTrackElementForPlaylist = trackList => playingFn => trackId =
   // createTrackPlaylistElementFromDiv :: Element -> Element
   const createTrackPlaylistElementFromDiv = f.pipe(
     f.AssignObject({
-      className: 'track' + (playingFn(trackString) ? ' playing' : ''),
+      className: 'track' + (playingFn() ? ' playing' : ''),
       role: 'link',
       tabIndex: '0',
       id: trackId,
