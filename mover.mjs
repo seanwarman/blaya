@@ -7,28 +7,34 @@ const bucket = 's3://everest-files/'
 const local = 'workspace/'
 
 function copy(i = 0) {
-  const track = dirlist[i]
-  const cp = spawn('aws', ['s3', 'cp', '--recursive', bucket + 'complete/' + track, local + track])
-  let data;
+  const dir = dirlist[i]
+  console.log(`@FILTER dir:`, dir)
+  const cp = spawn('aws', ['s3', 'cp', '--recursive', bucket + 'complete/' + dir, local + dir])
 
-  cp.on('error', e => {
-    console.log(`@FILTER cp error:`, e)
+  cp.stdout.on('data', d => {
+    console.log(`@FILTER d.toString():`, d.toString())
+  })
+
+  cp.on('exit', () => {
+    console.log(`@FILTER exit called`)
   })
 
   cp.on('close', () => {
+    console.log(`@FILTER copied: `, dir)
     readDir(i)
   })
 }
 
 async function readDir(i) {
   const dir = dirlist[i]
+  console.log(`@FILTER dir:`, dir)
 
   try {
     const files = await readdir(local + dir)
     if (!files.length) {
       console.log(`@FILTER no files for dir: `, dir)
       // next dir
-      // copy(i + 1)
+      remove(() => copy(i + 1))
       return
     }
 
@@ -39,6 +45,14 @@ async function readDir(i) {
     // next dir
     // copy(i + 1)
   }
+}
+
+function remove(then) {
+  const rm = spawn('rm', ['-rf', 'workspace'])
+  rm.on('close', () => {
+    const mkdir = spawn('mkdir', ['workspace'])
+    mkdir.on('close', then)
+  })
 }
 
 async function mover(dirI, i = 0, files) {
@@ -70,10 +84,15 @@ async function mover(dirI, i = 0, files) {
     // next dir
     // copy(dirI + 1)
     if (files[i + 1]) {
+      console.log(`@FILTER next file...`)
       mover(dirI, i + 1, files)
-    } else {
+    } else if (dirlist[dirI + 1]) {
+      console.log(`@FILTER next dir`)
       // next dir
-      copy(dirI + 1)
+      remove(() => copy(dirI + 1))
+    } else {
+      console.log(`@FILTER can't move on (shrug)`)
+      console.log(`@FILTER dirI:`, dirI)
     }
   }
 }
