@@ -216,6 +216,8 @@ export const Create = trackString => {
       role: 'link',
       tabIndex: '0',
       id: trackId,
+      onmousedown: onPlay,
+      onkeydown: onClickOrEnter(onPlay),
     }),
     f.ObjectAssignDataSet({
       href: trackString,
@@ -229,15 +231,11 @@ export const Create = trackString => {
   const trackName = f.AssignObject({
     className: 'track-name',
     innerHTML: '<div class="name">' + track + '</div>',
-    onmousedown: onPlay,
-    onkeydown: onClickOrEnter(onPlay),
   })(document.createElement('div'))
 
   const trackAlbum = f.AssignObject({
     className: 'track-album',
     innerHTML: '<div class="album">' + (album || '') + '</div>',
-    onmousedown: onPlay,
-    onkeydown: onClickOrEnter(onPlay),
   })(document.createElement('div'))
 
   const trackEl = createTrackElementFromDiv(document.createElement('div'))

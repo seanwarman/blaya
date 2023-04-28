@@ -85,7 +85,7 @@ export const onPlayPlaylist = (e) => {
 
 // onPlay :: Event -> undefined
 export const onPlay = (e) => {
-  const ref = e.currentTarget.parentElement
+  const ref = e.currentTarget
   window.ref = ref
   if (ref === document.activeElement) {
     window.state.playModule.setTrack({ src: ref.dataset.href, isPlaylist: false })
