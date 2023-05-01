@@ -114,4 +114,6 @@ document.onkeydown = onKey(
   [{ key: 'k', ctrlKey: true }, () => document.getElementById('search-input').focus()],
   [{ key: 'k', metaKey: true }, () => document.getElementById('search-input').focus()],
   ['Escape', () => document.getElementById('search-input').blur()],
+  ['e', onTogglePlaylistMode],
+  ["'", onTogglePlaylistMinimised],
 )
