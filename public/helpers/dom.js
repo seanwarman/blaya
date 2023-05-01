@@ -176,6 +176,7 @@ export const createAddToPlaylistElement = trackId => f.pipe(
   f.AssignObject({
     id: 'add-to-playlist__' + trackId,
     className: 'add-to-playlist',
+    role: 'link',
     tabIndex: '0',
     innerHTML: '<img style="height:1rem;" src="public/icons/plus-solid.svg" />',
     onclick: ifFalseOnAddToPlaylist(() => window.state.selectedPlaylist === undefined),
@@ -213,11 +214,8 @@ export const Create = trackString => {
   const createTrackElementFromDiv = f.pipe(
     f.AssignObject({
       className: 'track',
-      role: 'link',
-      tabIndex: '0',
+      tabIndex: '-1',
       id: trackId,
-      onmousedown: onPlay,
-      onkeydown: onClickOrEnter(onPlay),
     }),
     f.ObjectAssignDataSet({
       href: trackString,
@@ -228,6 +226,14 @@ export const Create = trackString => {
     ),
   )
 
+  const trackNameAlbumContainer = f.AssignObject({
+    className: 'track-name-album-container',
+    tabIndex: '0',
+    role: 'link',
+    onmousedown: onPlay,
+    onkeydown: onClickOrEnter(onPlay),
+  })(document.createElement('div'))
+
   const trackName = f.AssignObject({
     className: 'track-name',
     innerHTML: '<div class="name">' + track + '</div>',
@@ -236,13 +242,16 @@ export const Create = trackString => {
   const trackAlbum = f.AssignObject({
     className: 'track-album',
     innerHTML: '<div class="album">' + (album || '') + '</div>',
+    onmousedown: onPlay,
+    onkeydown: onClickOrEnter(onPlay),
   })(document.createElement('div'))
 
   const trackEl = createTrackElementFromDiv(document.createElement('div'))
 
   trackEl.append(createAddToPlaylistElement(trackId))
-  trackEl.append(trackName)
-  trackEl.append(trackAlbum)
+  trackNameAlbumContainer.append(trackName)
+  trackNameAlbumContainer.append(trackAlbum)
+  trackEl.append(trackNameAlbumContainer)
 
   return trackEl
 }

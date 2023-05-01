@@ -86,9 +86,10 @@ export const onPlayPlaylist = (e) => {
 // onPlay :: Event -> undefined
 export const onPlay = (e) => {
   const ref = e.currentTarget
+  console.log(`@FILTER ref:`, ref)
   window.ref = ref
   if (ref === document.activeElement) {
-    window.state.playModule.setTrack({ src: ref.dataset.href, isPlaylist: false })
+    window.state.playModule.setTrack({ src: ref.parentElement.dataset.href, isPlaylist: false })
     document.getElementById('player').play()
     ref.focus()
   } else {
