@@ -21,7 +21,7 @@ const clientApplicationFiles = [
   '/node_modules/socket.io/client-dist/socket.io.esm.min.js',
 ]
 
-const CACHE_VERSION = 3
+const CACHE_VERSION = 4
 const CURRENT_CACHES = {
   applicationFilesCache: 'blaya__APPLICATION_FILES_CACHE_V' + CACHE_VERSION,
   offlineTracksCache: 'blaya__OFFLINE_TRACKS_CACHE_V' + CACHE_VERSION,
