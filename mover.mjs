@@ -25,18 +25,23 @@ function copy(i = 0) {
 }
 
 function remove(then) {
-  then()
-  // const rm = spawn('rm', ['-rf', 'workspace'])
-  // rm.on('close', () => {
-  //   const mkdir = spawn('mkdir', ['workspace'])
-  //   mkdir.on('close', then)
-  // })
+  const rm = spawn('rm', ['-rf', 'workspace'])
+  rm.on('close', () => {
+    const mkdir = spawn('mkdir', ['workspace'])
+    mkdir.on('close', then)
+  })
 }
 
-function newPath({ artist, album, year, title, file }) {
-  if (artist && album && year && title) return bucket + 'music/' + artist + ' - ' + album + ' - ' + year + '/' + title + '.mp3'
-  if (artist && album && title) return bucket + 'music/' + artist + ' - ' + album + '/' + title + '.mp3'
-  if (artist && title) return bucket + 'music/' + artist +  '/' + title + '.mp3'
+function newPath({ track, artist, album, year, title, file }) {
+  let trackNo = track?.no?.toString() || ''
+  if (trackNo.length === 1) trackNo = '0' + trackNo
+  let trackNoTitle = title
+  if (trackNo.length) trackNoTitle = trackNo + ' - ' + title
+
+  if (artist && album && year && trackNoTitle) return bucket + 'music/' + artist + ' - ' + album + ' - ' + year + '/' + trackNoTitle + '.mp3'
+  if (artist && album && year && trackNoTitle) return bucket + 'music/' + artist + ' - ' + album + ' - ' + year + '/' + trackNoTitle + '.mp3'
+  if (artist && album && trackNoTitle) return bucket + 'music/' + artist + ' - ' + album + '/' + trackNoTitle + '.mp3'
+  if (artist && trackNoTitle) return bucket + 'music/' + artist +  '/' + trackNoTitle + '.mp3'
   if (artist) return bucket + 'music/' + artist +  '/' + file.slice(8)
   return bucket + 'music/' + file.slice(8)
 }
@@ -45,14 +50,15 @@ async function parser(i) {
   const file = tracklist[i]
   try {
     const { common } = await parseFile(local + file)
-    const { title, year, album, artist } = common
+    const { track, title, year, album, artist } = common
+    console.log(`track?.no:`, track?.no)
     console.log(`title:`, title)
     console.log(`year:`, year)
     console.log(`album:`, album)
     console.log(`artist:`, artist)
 
     const mv = spawn('aws', ['s3', 'mv', bucket + file,
-      newPath({ title, album, artist, year, file })
+      newPath({ track, album, artist, year, file })
     ])
 
     mv.on('error', e => {
