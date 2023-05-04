@@ -1,7 +1,7 @@
-const { readdir, access, constants } = require('fs')
-const { spawn } = require('child_process')
+import { readdir, access, constants } from 'fs'
+import { spawn } from 'child_process'
 
-exports.cleanDir = (req, res, next) => {
+export const cleanDir = (req, res, next) => {
 	readdir(__dirname + '/../music', (error, files) => {
 		if(error) {
       console.log('@FILTER error:', error)
@@ -25,7 +25,7 @@ exports.cleanDir = (req, res, next) => {
 	})
 }
 
-exports.copySendFile = (req, res) => {
+export const copySendFile = (req, res) => {
 	const filePath = req.params[0]
 	access(__dirname + filePath, constants.F_OK, (err) => {
 		if (!err) return res.sendFile(__dirname + filePath)
@@ -40,7 +40,7 @@ exports.copySendFile = (req, res) => {
 	})
 }
 
-exports.streamFile = (req, res) => {
+export const streamFile = (req, res) => {
 	const filePath = req.params[0]
 	const cp = spawn('aws', ['s3', 'cp', 's3://everest-files/music/' + filePath, '-'])
 	cp.stdout.pipe(res)

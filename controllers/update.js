@@ -1,6 +1,6 @@
-const { spawn } = require('child_process')
+import { spawn } from 'child_process'
 
-exports.gitPullOrigin = (req, res) => {
+export const gitPullOrigin = (req, res) => {
   const git = spawn('npm', ['run', 'update'])
   let output = ''
   git.on('error', e => {

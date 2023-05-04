@@ -1,12 +1,14 @@
-const fs = require('fs')
-const express = require('express')
-const basicAuth = require('express-basic-auth')
+import fs from 'fs'
+import express from 'express'
+import basicAuth from 'express-basic-auth'
 const app = express()
-const instantiateHttp = require('http')
-const instantiateHttps = require('https')
-const instantiateIO = require('socket.io')
-require('dotenv').config()
-const router = require('./router')
+import instantiateHttp from 'http'
+import instantiateHttps from 'https'
+import { Server } from 'socket.io'
+import * as dotenv from 'dotenv'
+import router from './router.js'
+
+dotenv.config()
 
 const { PRIV_KEY, CERTIFICATE, BASIC_AUTH_USERS, PORT = 80 } = process.env
 
@@ -23,10 +25,10 @@ if (production) {
     key: priv,
     cert: cert,
   }, app)
-  io = instantiateIO(https)
+  io = new Server(https)
 } else {
   http = instantiateHttp.Server(app)
-  io = instantiateIO(http)
+  io = new Server(http)
 }
 
 let reloaded = false

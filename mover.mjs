@@ -1,11 +1,10 @@
 import { spawn } from 'child_process'
 import { parseFile } from 'music-metadata'
-import { tracklist } from './track-list.js'
 
 const bucket = 's3://everest-files/'
 const local = 'workspace/'
 
-function copy(i = 0) {
+export function copy(i = 0, tracklist) {
   const file = tracklist[i]
   console.log(`@FILTER file:`, file)
   const cp = spawn('aws', ['s3', 'cp', bucket + file, local + file])
@@ -20,7 +19,7 @@ function copy(i = 0) {
 
   cp.on('close', () => {
     console.log(`@FILTER copied: `, file)
-    parser(i)
+    parser(i, tracklist)
   })
 }
 
@@ -46,7 +45,7 @@ function newPath({ track, artist, album, year, title, file }) {
   return bucket + 'music/' + file.slice(8)
 }
 
-async function parser(i) {
+async function parser(i, tracklist) {
   const file = tracklist[i]
   try {
     const { common } = await parseFile(local + file)
@@ -69,13 +68,13 @@ async function parser(i) {
       console.log(`file:`, file)
       console.log(`title:`, title)
 
-      remove(() => copy(i + 1))
+      remove(() => copy(i + 1, tracklist))
     })
 
   } catch (error) {
     console.log(`Parsing error: `, error)
-    copy(i + 1)
+    copy(i + 1, tracklist)
   }
 }
 
-copy(0)
+// copy(0, tracklist)
