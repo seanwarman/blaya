@@ -27,7 +27,7 @@ header {
   justify-content: end;
 }
 
-.open-upload-modal-button {
+#open-upload-modal-button {
   display: none;
 }
 
@@ -497,7 +497,7 @@ div#current-playing-text {
     height: 50px;
   }
 
-  .open-upload-modal-button {
+  #open-upload-modal-button {
     display: block;
   }
 

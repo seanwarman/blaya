@@ -83,6 +83,11 @@ export const onPlayPlaylist = (e) => {
   }
 }
 
+export const onOpenUploadModal = () => {
+  const uploadModal = document.getElementById('upload-modal')
+  uploadModal.dataset.visible = `${uploadModal.dataset.visible === 'false'}`
+}
+
 // onPlay :: Event -> undefined
 export const onPlay = (e) => {
   const ref = e.currentTarget
