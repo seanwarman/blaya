@@ -16,10 +16,19 @@ header {
   width: 100%;
   display: grid;
   grid-template-columns: 25% 25% 25% 25%;
-  justify-items: end;
   padding: 1rem 1rem;
   margin-top: -6rem;
   grid-gap: 0;
+  align-items: center;
+}
+
+.open-upload-modal-button-container {
+  display: flex;
+  justify-content: end;
+}
+
+.open-upload-modal-button {
+  display: none;
 }
 
 .drag-container {
@@ -143,13 +152,6 @@ button.button-circle {
   width: 60px;
   height: 60px;
   background: whitesmoke;
-}
-
-.mode-button-playlist {
-  grid-column: 4 / span 1;
-  position: fixed;
-  top: 1rem;
-  left: 1rem;
 }
 
 .mode-button-playlist:hover {
@@ -482,7 +484,6 @@ div#current-playing-text {
 
   header {
     margin-top: -5rem;
-    grid-gap: 2rem;
     padding: 1rem 2rem;
   }
 
@@ -494,6 +495,10 @@ div#current-playing-text {
   button.button-circle {
     width: 50px;
     height: 50px;
+  }
+
+  .open-upload-modal-button {
+    display: block;
   }
 
   input#search-input {
