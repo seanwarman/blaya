@@ -154,6 +154,11 @@ button.button-circle {
   background: whitesmoke;
 }
 
+button.button-circle-transparent {
+  background-color: transparent;
+  box-shadow: none;
+}
+
 .mode-button-playlist:hover {
   background: #f0f0f0;
 }
@@ -444,6 +449,13 @@ div#current-playing-text {
   padding: 2rem;
   background-color: white;
   margin: 0;
+  position: relative;
+}
+
+#close-modal-button {
+  position: absolute;
+  right: 0;
+  top: 0;
 }
 
 #upload-modal input[type="submit"] {

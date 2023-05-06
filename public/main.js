@@ -83,6 +83,8 @@ document.getElementById('clear-button-playlist').onclick = onClickOrEnter(onClea
 document.getElementById('clear-button-playlist').onkeydown = onClickOrEnter(onClearPlaylist)
 document.getElementById('open-upload-modal-button').onclick = onClickOrEnter(onOpenUploadModal)
 document.getElementById('open-upload-modal-button').onkeydown = onClickOrEnter(onOpenUploadModal)
+document.getElementById('close-modal-button').onclick = onClickOrEnter(onOpenUploadModal)
+document.getElementById('close-modal-button').onkeydown = onClickOrEnter(onOpenUploadModal)
 
 Array.from(document.getElementsByClassName('mode-button-playlist')).forEach(button => {
   button.onclick = onClickOrEnter(onTogglePlaylistMode)

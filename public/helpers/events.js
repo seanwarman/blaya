@@ -83,7 +83,8 @@ export const onPlayPlaylist = (e) => {
   }
 }
 
-export const onOpenUploadModal = () => {
+export const onOpenUploadModal = e => {
+  e.preventDefault()
   const uploadModal = document.getElementById('upload-modal')
   uploadModal.dataset.visible = `${uploadModal.dataset.visible === 'false'}`
 }
