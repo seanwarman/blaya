@@ -13,7 +13,7 @@ const upload = multer({
 export default app => {
   app.get('/api/update', gitPullOrigin)
   app.get('/music/*', cleanDir, copySendFile)
-  app.post('/upload', cleanDir, upload.array('files'), (req, res) => {
+  app.post('/api/upload', cleanDir, upload.array('files'), (req, res) => {
     const { files } = req
     console.log(`@FILTER files:`, files)
     console.log(`@FILTER copy:`, copy)

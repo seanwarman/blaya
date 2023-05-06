@@ -6,9 +6,9 @@
 	<body data-downloading="false">
     <header>
       <iframe name="dummyframe" width="0" height="0" border="0" style="display: none;"></iframe>
-      <form action="/upload" method="post" enctype="multipart/form-data" class="upload" target="dummyframe">
+      <form action="api/upload" method="post" enctype="multipart/form-data" class="upload" target="dummyframe">
         <input type="file" name="files" multiple />
-        <input type="submit" />
+        <input type="submit" value="Upload" />
       </form>
       <div class="search-container">
         <label hidden for="search-input">Search</label>
