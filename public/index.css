@@ -27,9 +27,9 @@ header {
   justify-content: end;
 }
 
-#open-upload-modal-button {
-  display: none;
-}
+/* .open-upload-modal-button { */
+/*   display: none; */
+/* } */
 
 .drag-container {
   width: 100%;
@@ -206,11 +206,13 @@ body[data-playlist-mode="true"] .mode-button-playlist {
   transition: opacity .6s;
 }
 
+#playlist-container[data-playlist-minimised="true"] #open-upload-modal-button-playlist,
 #playlist-container[data-playlist-minimised="true"] #download-button-playlist,
 #playlist-container[data-playlist-minimised="true"] #clear-button-playlist {
   opacity: 0;
 }
 
+#playlist-container[data-playlist-minimised="false"] #open-upload-modal-button-playlist,
 #playlist-container[data-playlist-minimised="false"] #download-button-playlist,
 #playlist-container[data-playlist-minimised="false"] #clear-button-playlist {
   opacity: 1;
@@ -509,7 +511,7 @@ div#current-playing-text {
     height: 50px;
   }
 
-  #open-upload-modal-button {
+  .open-upload-modal-button {
     display: block;
   }
 

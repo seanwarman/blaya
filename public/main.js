@@ -81,10 +81,13 @@ document.getElementById('maximise-button-playlist').onclick = onClickOrEnter(onT
 document.getElementById('maximise-button-playlist').onkeydown = onClickOrEnter(onTogglePlaylistMinimised)
 document.getElementById('clear-button-playlist').onclick = onClickOrEnter(onClearPlaylist)
 document.getElementById('clear-button-playlist').onkeydown = onClickOrEnter(onClearPlaylist)
-document.getElementById('open-upload-modal-button').onclick = onClickOrEnter(onOpenUploadModal)
-document.getElementById('open-upload-modal-button').onkeydown = onClickOrEnter(onOpenUploadModal)
 document.getElementById('close-modal-button').onclick = onClickOrEnter(onOpenUploadModal)
 document.getElementById('close-modal-button').onkeydown = onClickOrEnter(onOpenUploadModal)
+
+Array.from(document.getElementsByClassName('open-upload-modal-button')).forEach(button => {
+  button.onclick = onClickOrEnter(onOpenUploadModal)
+  button.onkeydown = onClickOrEnter(onOpenUploadModal)
+})
 
 Array.from(document.getElementsByClassName('mode-button-playlist')).forEach(button => {
   button.onclick = onClickOrEnter(onTogglePlaylistMode)
