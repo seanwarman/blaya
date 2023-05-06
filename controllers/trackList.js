@@ -1,5 +1,9 @@
 import { readdir, access, constants } from 'fs'
 import { spawn } from 'child_process'
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export const cleanDir = (req, res, next) => {
 	readdir(__dirname + '/../music', (error, files) => {
