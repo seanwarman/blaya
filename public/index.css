@@ -432,7 +432,7 @@ div#current-playing-text {
   display: flex;
   justify-content: center;
   align-items: center;
-  position: absolute;
+  position: fixed;
   z-index: 1;
   top: 0;
   left: 0;
