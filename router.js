@@ -14,9 +14,13 @@ export default app => {
   app.get('/api/update', gitPullOrigin)
   app.get('/music/*', cleanDir, copySendFile)
   app.post('/api/upload', cleanDir, upload.array('files'), (req, res) => {
-    const { files } = req
+    const { files, context } = req
+    const { io } = context
     console.log(`@FILTER files:`, files)
     console.log(`@FILTER copy:`, copy)
+
+    io.emit('PROCESSING_FILES')
+
     copy(0, files.map(({ originalname }) => originalname), () => {
       console.log('Refreshing track list...')
 

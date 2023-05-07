@@ -51,6 +51,12 @@ app.use(basicAuth({
 app.use(express.static('public'))
 app.use('/public', express.static('public'))
 app.use('/node_modules', express.static('node_modules'))
+app.use((req, _, next) => {
+  req.context = {
+    io,
+  }
+  next()
+})
 
 router(app)
 
