@@ -100,17 +100,14 @@ async function uploadFiles(event) {
 
   const filenames = Array.from(files).map(({ name: filename }) => filename)
 
-  console.log(`@FILTER worker files:`, files)
-
   for (const [index, file] of Object.entries(Array.from(files))) {
-    const formData = new FormData()
-    formData.append('files', file)
+    const body = new FormData()
+    body.append('files', file)
     try {
-      const res = await fetch('api/upload', {
+      await fetch('api/upload', {
         method: 'POST',
-        body: formData,
+        body,
       })
-      console.log(`@FILTER res:`, res)
       source.postMessage({
         type: 'UPLOADS_PROGRESS',
         payload: { filenames, index: Number(index) },

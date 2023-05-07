@@ -1,5 +1,4 @@
 import { trackList as RAW_TRACKLIST } from '../track-list.js'
-import { trackList as RAW_SORTED_TRACKLIST } from '../track-list-sorted.js'
 import { appendTracksByPage, parseTrackList } from '../helpers/index.js'
 import { OFFLINE_TRACKS_KEY, PLAYLISTS_STATE_KEY, INITIAL_PLAYLISTS_STATE } from '../constants.js'
 
@@ -16,7 +15,7 @@ function setDownloadedClassToOfflineTracks(offlineTracks) {
 
 export default () => {
   const state = {
-    trackList: parseTrackList(RAW_SORTED_TRACKLIST),
+    trackList: parseTrackList(RAW_TRACKLIST),
     playlistModeState: null,
     set playlistMode(playlistMode) {
       this.playlistModeState = playlistMode

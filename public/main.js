@@ -28,7 +28,6 @@ if ("serviceWorker" in navigator) {
     document.getElementById('download-button-playlist').onkeydown = onClickOrEnter(onDownload(registration)) 
     document.getElementById('upload-form').onsubmit = () => {
       const files = document.getElementById('upload').files
-      console.log(`@FILTER files:`, files)
       window.state.uploading = true
       registration.active.postMessage({
         type: 'UPLOAD_FILES',
@@ -62,12 +61,18 @@ if ("serviceWorker" in navigator) {
         if (filenames.length !== index + 1) {
           window.state.uploading = true
         } else {
-          window.state.uploading = false
-          setTimeout(() => {
-            if (confirm('Uploads done. Refresh track list?')) {
-              window.location.reload()
-            }
-          }, 500)
+          fetch('api/refresh')
+            .then(() => {
+              window.state.uploading = false
+              if (confirm('Uploads done. Refresh track list?')) {
+                window.location.reload()
+              }
+            })
+            .catch(error => {
+              console.error(error)
+              window.state.uploading = false
+              alert('Error uploading tracks')
+            })
         }
       }
     })
