@@ -23,8 +23,7 @@ header {
 }
 
 .open-upload-modal-button-container {
-  display: flex;
-  justify-content: end;
+  display: none;
 }
 
 /* .open-upload-modal-button { */
@@ -443,7 +442,7 @@ div#current-playing-text {
 
 #upload-modal form {
   display: grid;
-  grid-template-rows: auto 2rem 2rem;
+  grid-template-rows: 4rem 67% 2rem 2rem;
   width: 100%;
   height: 100%;
   grid-gap: 1rem;
@@ -454,10 +453,36 @@ div#current-playing-text {
   position: relative;
 }
 
+#upload-files-list {
+  overflow: auto;
+  line-height: 1.5rem;
+  font-weight: 600;
+  border: 1px solid #ededed;
+  border-radius: 5px;
+}
+
+#upload-files-list ol {
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+  line-height: 3rem;
+}
+
+#upload-files-list ol li {
+  border-bottom: 1px solid #ededed;
+  list-style: none;
+  padding-left: 1rem;
+  font-size: 0.8rem;
+}
+
 #close-modal-button {
   position: absolute;
   right: 0;
   top: 0;
+}
+
+#close-modal-button svg {
+  width: 0.7rem;
 }
 
 #upload-modal input[type="submit"] {
@@ -509,6 +534,15 @@ div#current-playing-text {
   button.button-circle {
     width: 50px;
     height: 50px;
+  }
+
+  .open-upload-modal-button-container {
+    display: flex;
+    justify-content: end;
+  }
+
+  #upload-modal form {
+    grid-template-rows: 4rem 57% 2rem 2rem;
   }
 
   .open-upload-modal-button {
@@ -633,7 +667,7 @@ div#current-playing-text {
 
   #upload-modal form {
     width: 50%;
-    height: unset;
+    max-height: 436px;
     margin: unset;
   }
 }

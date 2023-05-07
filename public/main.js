@@ -87,6 +87,10 @@ document.getElementById('clear-button-playlist').onclick = onClickOrEnter(onClea
 document.getElementById('clear-button-playlist').onkeydown = onClickOrEnter(onClearPlaylist)
 document.getElementById('close-modal-button').onclick = onClickOrEnter(onOpenUploadModal)
 document.getElementById('close-modal-button').onkeydown = onClickOrEnter(onOpenUploadModal)
+document.getElementById('upload').onchange = () => {
+  const files = Array.from(document.getElementById('upload').files)
+  document.getElementById('upload-files-list').innerHTML = `<ol><li>${ files.map(fileItem => fileItem.name).join('</li><li>') }</li></ol>`
+}
 Array.from(document.getElementsByClassName('open-upload-modal-button')).forEach(button => {
   button.onclick = onClickOrEnter(onOpenUploadModal)
   button.onkeydown = onClickOrEnter(onOpenUploadModal)
