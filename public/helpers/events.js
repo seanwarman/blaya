@@ -193,3 +193,15 @@ export function onDownload(registration) {
     }
   }
 }
+
+export function onUpload(registration) {
+  return () => {
+    const files = document.getElementById('upload').files
+    if (!files.length) return
+    window.state.uploading = true
+    registration.active.postMessage({
+      type: 'UPLOAD_FILES',
+      payload: { files },
+    })
+  }
+}

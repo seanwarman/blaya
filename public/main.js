@@ -14,6 +14,7 @@ import {
   onClearPlaylist,
   onDownload,
   onOpenUploadModal,
+  onUpload,
 } from './helpers/events.js'
 import { logger } from './helpers/functional-utils.js'
 
@@ -26,14 +27,7 @@ if ("serviceWorker" in navigator) {
 
     document.getElementById('download-button-playlist').onclick = onClickOrEnter(onDownload(registration)) 
     document.getElementById('download-button-playlist').onkeydown = onClickOrEnter(onDownload(registration)) 
-    document.getElementById('upload-form').onsubmit = () => {
-      const files = document.getElementById('upload').files
-      window.state.uploading = true
-      registration.active.postMessage({
-        type: 'UPLOAD_FILES',
-        payload: { files },
-      })
-    }
+    document.getElementById('upload-form').onsubmit = onUpload(registration)
 
     // Worker events...
     navigator.serviceWorker.addEventListener('message', event => {
