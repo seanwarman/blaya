@@ -103,10 +103,12 @@ async function uploadFiles(event) {
   console.log(`@FILTER worker files:`, files)
 
   for (const [index, file] of Object.entries(Array.from(files))) {
+    const formData = new FormData()
+    formData.append('files', file)
     try {
       const res = await fetch('api/upload', {
         method: 'POST',
-        files: [file],
+        body: formData,
       })
       console.log(`@FILTER res:`, res)
       source.postMessage({
