@@ -90,7 +90,32 @@ self.addEventListener('message', async event => {
   const { data } = event
   const { type } = data
   if (type === 'DOWNLOAD_PLAYLIST') cacheOffline(event)
+  if (type === 'UPLOAD_FILES') uploadFiles(event)
 })
+
+async function uploadFiles(event) {
+  const { data, source } = event
+  const { payload } = data
+  const { files } = payload
+  console.log(`@FILTER worker files:`, files)
+  for (const [index, file] of Object.entries(files)) {
+    try {
+      // const res = await fetch('api/upload', {
+      //   method: 'POST',
+      //   files: [file],
+      // })
+      // console.log(`@FILTER res:`, res)
+      setTimeout(() => {
+        source.postMessage({
+          type: 'UPLOADS_PROGRESS',
+          payload: { files, index: Number(index) },
+        })
+      }, 3000)
+    } catch (error) {
+      throw error
+    }
+  }
+}
 
 async function cacheOffline(event) {
   const { data, source } = event

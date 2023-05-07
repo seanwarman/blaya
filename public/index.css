@@ -238,15 +238,18 @@ body[data-downloading="false"] #download-button-playlist {
   background-color: #00aeff;
 }
 
+body[data-uploading="true"] .open-upload-modal-button svg,
 body[data-downloading="true"] #download {
   display: none;
 }
 
-body[data-downloading="false"] #downloading {
+body[data-uploading="false"] .upload-progress,
+body[data-downloading="false"] .download-progress {
   display: none;
 }
 
-#downloading img {
+.upload-progress img,
+.download-progress img {
   height: 1rem;
   animation-name: spin;
   animation-duration: 1600ms;

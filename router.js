@@ -19,18 +19,21 @@ export default app => {
     console.log(`@FILTER files:`, files)
     console.log(`@FILTER copy:`, copy)
 
-    io.emit('PROCESSING_FILES')
-
     copy(0, files.map(({ originalname }) => originalname), () => {
       console.log('Refreshing track list...')
+      res.send('Uploaded')
+    })
+  }),
+  app.get('/api/refresh', () => {
+    const script = spawn('./ls_s3.sh')
 
-      const script = spawn('./ls_s3.sh')
+    script.on('close', () => {
+      res.send('Ok')
+    })
 
-      script.on('close', () => {
-        console.log(`@FILTER Tracks refreshed`)
-        io.emit('UPLOADS_COMPLETE')
-        res.send('Uploaded')
-      })
+    script.on('error', error => {
+      console.log(`@FILTER error:`, error)
+      res.status(404).send(error)
     })
   })
 }

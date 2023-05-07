@@ -26,6 +26,16 @@ if ("serviceWorker" in navigator) {
 
     document.getElementById('download-button-playlist').onclick = onClickOrEnter(onDownload(registration)) 
     document.getElementById('download-button-playlist').onkeydown = onClickOrEnter(onDownload(registration)) 
+    document.getElementById('upload-form').onsubmit = () => {
+      const files = Array.from(document.getElementById('upload').files).map(({ name: file }) => file)
+      console.log(`@FILTER files:`, files)
+      window.state.uploading = true
+      registration.active.postMessage({
+        type: 'UPLOAD_FILES',
+        payload: { files },
+      })
+    }
+
     // Worker events...
     navigator.serviceWorker.addEventListener('message', event => {
       const { data } = event
@@ -41,6 +51,24 @@ if ("serviceWorker" in navigator) {
         window.state.downloading = false
         const { tracks } = payload
         window.state.offlineTracks = tracks
+      }
+
+      if (type === 'UPLOADS_PROGRESS') {
+        const { files, index } = payload
+
+        const lis = Array.from(document.getElementById('upload-files-list')?.getElementsByTagName('li') || [])
+        lis.forEach((li, i) => i === index && li.classList.add('downloaded'))
+
+        if (files.length !== index + 1) {
+          window.state.uploading = true
+        } else {
+          window.state.uploading = false
+          setTimeout(() => {
+            if (confirm('Uploads done. Refresh track list?')) {
+              window.location.reload()
+            }
+          }, 500)
+        }
       }
     })
   },
@@ -58,8 +86,6 @@ window.state = store().state
 
 // Socket events
 io().on('RELOAD', () => location.reload())
-io().on('UPLOADS_COMPLETE', () => confirm('Uploads complete, choose Ok to reload and refresh your track list') && location.reload())
-io().on('PROCESSING_FILES', () => console.log('files uploaded, now processing...'))
 
 // DOM events
 window.addEventListener('scroll', onScroll([onUpScroll(window.state.trackList), onDownScroll(window.state.trackList)]), false)
