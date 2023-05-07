@@ -20,7 +20,7 @@ import { logger } from './helpers/functional-utils.js'
 import io from './node_modules/socket.io/client-dist/socket.io.esm.min.js'
 
 io().on('reload', () => location.reload())
-io().on('PROCESSING_FILES', () => console.log('files uploaded, now processing...')
+io().on('PROCESSING_FILES', () => console.log('files uploaded, now processing...'))
 
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("/worker-offline.js").then(
