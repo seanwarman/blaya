@@ -32,18 +32,16 @@ function remove(then) {
   })
 }
 
-function newPath({ track, artist, album, year, title, file }) {
+function newPath({ track, artist, album, year, title }) {
   let trackNo = track?.no?.toString() || ''
   if (trackNo.length === 1) trackNo = '0' + trackNo
-  let trackNoTitle = title
-  if (trackNo.length) trackNoTitle = trackNo + ' - ' + title
+  let trackNoAndTitle = title
+  if (trackNo.length) trackNoAndTitle = trackNo + ' - ' + title
 
-  if (artist && album && year && trackNoTitle) return bucket + 'music/' + artist + ' - ' + album + ' - ' + year + '/' + trackNoTitle + '.mp3'
-  if (artist && album && year && trackNoTitle) return bucket + 'music/' + artist + ' - ' + album + ' - ' + year + '/' + trackNoTitle + '.mp3'
-  if (artist && album && trackNoTitle) return bucket + 'music/' + artist + ' - ' + album + '/' + trackNoTitle + '.mp3'
-  if (artist && trackNoTitle) return bucket + 'music/' + artist +  '/' + trackNoTitle + '.mp3'
-  if (artist) return bucket + 'music/' + artist +  '/' + file
-  return bucket + 'music/' + file
+  if (artist && album && year && trackNoAndTitle) return bucket + 'music/' + artist + ' - ' + album + ' - ' + year + '/' + trackNoAndTitle
+  if (artist && album && trackNoAndTitle) return bucket + 'music/' + artist + ' - ' + album + '/' + trackNoAndTitle
+  if (artist && trackNoAndTitle) return bucket + 'music/' + artist +  '/' + trackNoAndTitle
+  return bucket + 'music/' + trackNoAndTitle
 }
 
 async function parser(i, tracklist, then) {
@@ -58,7 +56,7 @@ async function parser(i, tracklist, then) {
     console.log(`artist:`, artist)
 
     const cp = spawn('aws', ['s3', 'cp', local + file,
-      newPath({ track, album, artist, year, file })
+      newPath({ track, album, artist, year, title: title || file.slice(0, -4) })
     ])
 
     cp.on('error', e => {
