@@ -19,7 +19,7 @@ export default app => {
       res.send('Uploaded')
     })
   }),
-  app.get('/api/refresh', () => {
+  app.get('/api/refresh', (req, res) => {
     const script = spawn('./ls_s3.sh')
 
     script.on('close', () => {
