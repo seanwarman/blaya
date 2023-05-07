@@ -67,11 +67,13 @@ async function parser(i, tracklist, then) {
       console.log(`file:`, file)
       console.log(`title:`, title)
 
-      remove(() => copy(i + 1, tracklist, then))
+      if (!tracklist[i+1]) return remove(then)
+      copy(i + 1, tracklist, then)
     })
 
   } catch (error) {
     console.log(`Parsing error: `, error)
+    if (!tracklist[i+1]) return remove(then)
     copy(i + 1, tracklist, then)
   }
 }
