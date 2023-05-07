@@ -27,7 +27,7 @@ if ("serviceWorker" in navigator) {
     document.getElementById('download-button-playlist').onclick = onClickOrEnter(onDownload(registration)) 
     document.getElementById('download-button-playlist').onkeydown = onClickOrEnter(onDownload(registration)) 
     document.getElementById('upload-form').onsubmit = () => {
-      const files = Array.from(document.getElementById('upload').files).map(({ name: file }) => file)
+      const files = document.getElementById('upload').files
       console.log(`@FILTER files:`, files)
       window.state.uploading = true
       registration.active.postMessage({
@@ -54,12 +54,12 @@ if ("serviceWorker" in navigator) {
       }
 
       if (type === 'UPLOADS_PROGRESS') {
-        const { files, index } = payload
+        const { filenames, index } = payload
 
         const lis = Array.from(document.getElementById('upload-files-list')?.getElementsByTagName('li') || [])
         lis.forEach((li, i) => i === index && li.classList.add('downloaded'))
 
-        if (files.length !== index + 1) {
+        if (filenames.length !== index + 1) {
           window.state.uploading = true
         } else {
           window.state.uploading = false

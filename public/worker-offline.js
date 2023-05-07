@@ -97,8 +97,12 @@ async function uploadFiles(event) {
   const { data, source } = event
   const { payload } = data
   const { files } = payload
+
+  const filenames = Array.from(files).map(({ name: filename }) => filename)
+
   console.log(`@FILTER worker files:`, files)
-  for (const [index, file] of Object.entries(files)) {
+
+  for (const [index, file] of Object.entries(Array.from(files))) {
     try {
       const res = await fetch('api/upload', {
         method: 'POST',
@@ -107,7 +111,7 @@ async function uploadFiles(event) {
       console.log(`@FILTER res:`, res)
       source.postMessage({
         type: 'UPLOADS_PROGRESS',
-        payload: { files, index: Number(index) },
+        payload: { filenames, index: Number(index) },
       })
     } catch (error) {
       throw error
