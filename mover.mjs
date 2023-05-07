@@ -38,10 +38,10 @@ function newPath({ track, artist, album, year, title }) {
   let trackNoAndTitle = title
   if (trackNo.length) trackNoAndTitle = trackNo + ' - ' + title
 
-  if (artist && album && year && trackNoAndTitle) return bucket + 'music/' + artist + ' - ' + album + ' - ' + year + '/' + trackNoAndTitle
-  if (artist && album && trackNoAndTitle) return bucket + 'music/' + artist + ' - ' + album + '/' + trackNoAndTitle
-  if (artist && trackNoAndTitle) return bucket + 'music/' + artist +  '/' + trackNoAndTitle
-  return bucket + 'music/' + trackNoAndTitle
+  if (artist && album && year && trackNoAndTitle) return bucket + 'music/' + artist + ' - ' + album + ' - ' + year + '/' + trackNoAndTitle + '.mp3'
+  if (artist && album && trackNoAndTitle) return bucket + 'music/' + artist + ' - ' + album + '/' + trackNoAndTitle + '.mp3'
+  if (artist && trackNoAndTitle) return bucket + 'music/' + artist +  '/' + trackNoAndTitle + '.mp3'
+  return bucket + 'music/' + trackNoAndTitle + '.mp3'
 }
 
 async function parser(i, tracklist, then) {
@@ -55,9 +55,9 @@ async function parser(i, tracklist, then) {
     console.log(`album:`, album)
     console.log(`artist:`, artist)
 
-    const cp = spawn('aws', ['s3', 'cp', local + file,
-      newPath({ track, album, artist, year, title: title || file.slice(0, -4) })
-    ])
+    const trackpath = newPath({ track, album, artist, year, title: title || file.slice(0, -4) })
+
+    const cp = spawn('aws', ['s3', 'cp', local + file, trackpath])
 
     cp.on('error', e => {
       console.log(`cp error:`, e)
