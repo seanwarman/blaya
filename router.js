@@ -28,8 +28,9 @@ export default app => {
 
       script.on('close', () => {
         console.log(`@FILTER Tracks refreshed`)
-        res.send('Uploaded')
+        io.emit('UPLOADS_COMPLETE')
       })
     })
+    res.send('Uploaded')
   })
 }

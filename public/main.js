@@ -19,9 +19,6 @@ import { logger } from './helpers/functional-utils.js'
 
 import io from './node_modules/socket.io/client-dist/socket.io.esm.min.js'
 
-io().on('reload', () => location.reload())
-io().on('PROCESSING_FILES', () => console.log('files uploaded, now processing...'))
-
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("/worker-offline.js").then(
   (registration) => {
@@ -59,6 +56,12 @@ window.logger = logger
 
 window.state = store().state
 
+// Socket events
+io().on('RELOAD', () => location.reload())
+io().on('UPLOADS_COMPLETE', () => confirm('Uploads complete, choose Ok to reload and refresh your track list') && location.reload())
+io().on('PROCESSING_FILES', () => console.log('files uploaded, now processing...'))
+
+// DOM events
 window.addEventListener('scroll', onScroll([onUpScroll(window.state.trackList), onDownScroll(window.state.trackList)]), false)
 document.getElementById('player').onended = onEndNext
 document.getElementById('next-button').onclick = onClickOrEnter(onNext)
@@ -84,12 +87,10 @@ document.getElementById('clear-button-playlist').onclick = onClickOrEnter(onClea
 document.getElementById('clear-button-playlist').onkeydown = onClickOrEnter(onClearPlaylist)
 document.getElementById('close-modal-button').onclick = onClickOrEnter(onOpenUploadModal)
 document.getElementById('close-modal-button').onkeydown = onClickOrEnter(onOpenUploadModal)
-
 Array.from(document.getElementsByClassName('open-upload-modal-button')).forEach(button => {
   button.onclick = onClickOrEnter(onOpenUploadModal)
   button.onkeydown = onClickOrEnter(onOpenUploadModal)
 })
-
 Array.from(document.getElementsByClassName('mode-button-playlist')).forEach(button => {
   button.onclick = onClickOrEnter(onTogglePlaylistMode)
   button.onkeydown = onClickOrEnter(onTogglePlaylistMode)

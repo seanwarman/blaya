@@ -33,7 +33,7 @@ if (production) {
 
 let reloaded = false
 io.on('connection', () => {
-  if (!reloaded) io.emit('reload')
+  if (!reloaded) io.emit('RELOAD')
   reloaded = true
 })
 
