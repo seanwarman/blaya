@@ -13,7 +13,7 @@ function setDownloadedClassToOfflineTracks(offlineTracks) {
   })
 }
 
-export default () => {
+export default (postHook) => {
   const state = {
     trackList: parseTrackList(RAW_TRACKLIST),
     playlistModeState: null,
@@ -104,7 +104,7 @@ export default () => {
   state.playlists = initStateItem(PLAYLISTS_STATE_KEY, INITIAL_PLAYLISTS_STATE)
   state.playlistMode = false
 
-  return { state }
+  return postHook(state)
 }
 
 function initStateItem(key, defaultInitiliser) {

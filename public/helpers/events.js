@@ -100,19 +100,20 @@ export const onPlay = (e) => {
   } else {
     ref.focus()
   }
+  window.state.playModule.focussedTrackId = ref.parentElement.id
 }
 
 // onScrollThisTrack :: [String] -> undefined -> undefined
-export const onScrollThisTrack = trackList => () => {
+export const onScrollThisTrack = (trackList, id) => () => {
   if (window.state.targeting) {
     return
   }
   window.state.targeting = true
   if (window.state.searching) {
     const trackListFiltered = fzfFilter(trackList)(getSearchValue())
-    scrollToTrackByTrackId(window.state.playModule.currentTrackSrc)(trackListFiltered)
+    scrollToTrackByTrackId(id || window.state.playModule.currentTrackId)(trackListFiltered)
   } else {
-    scrollToTrackByTrackId(window.state.playModule.currentTrackSrc)(trackList)
+    scrollToTrackByTrackId(id || window.state.playModule.currentTrackId)(trackList)
   }
   setTimeout(() => {
     window.state.targeting = false

@@ -9,6 +9,15 @@ export const removeClassFromAll = className => f.pipe(
 
 export const playModule = {
   isPlaylist: false,
+  focussedTrackIdState: null,
+  get focussedTrackId() {
+    return this.focussedTrackIdState
+  },
+  set focussedTrackId(focussedTrackId) {
+    this.focussedTrackIdState = focussedTrackId
+    window.history.replaceState(null, null, '?track-id=' + focussedTrackId)
+  },
+  currentTrackId: null,
   currentTrackSrcState: null,
   get currentTrackSrc() {
     return this.currentTrackSrcState
@@ -26,6 +35,7 @@ export const playModule = {
     }
     const [track, album] = getTrackAndAlbumFromTrackString(src)
     document.getElementById('current-playing-text').innerHTML = `<div>${track}</div><div>${album}</div>`
+    this.currentTrackId = f.simpleHash(src)
   },
   setTrack({ src, isPlaylist = false, playlistIndex = null, selectedPlaylist = null, withHistory = true }) {
     // Manage the state items...

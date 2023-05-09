@@ -331,8 +331,8 @@ export const createPageElement = page => {
 }
 
 // scrollToTrackByTrackId :: Number -> [String] -> undefined
-export const scrollToTrackByTrackId = currentTrackSrc => trackList => {
-  const trackListIndex = trackList.findIndex(track => currentTrackSrc === track)
+export const scrollToTrackByTrackId = trackId => trackList => {
+  const trackListIndex = trackList.findIndex(track => trackId === simpleHash(track))
   const [page] = pagesFromIndexRange([trackListIndex, 0])
   let pageRange = []
   if (page - 1) pageRange.push(page - 1)
@@ -340,11 +340,22 @@ export const scrollToTrackByTrackId = currentTrackSrc => trackList => {
   if (page + 1) pageRange.push(page + 1)
   removeTrackEls()
   window.state.page = appendTracksByPageRange(trackList)(pageRange)
-  let el = document.getElementById(simpleHash(currentTrackSrc))
+  let el = document.getElementById(trackId)
   el.focus()
+  window.state.playModule.focussedTrackId = trackId
 }
 
 // getSearchValue :: undefined -> String
 export const getSearchValue = () => {
   return document.getElementById('search-input').value
+}
+
+// getTrackSearchQuery :: String -> String | null
+export const getTrackSearchQuery = (search) => {
+  if (!search.length) return null
+  return search.slice(1).split('&').reduce((value, query) => {
+    const [key, val] = query.split('=')
+    if (key === 'track-id') return val
+    return value
+  }, null)
 }
