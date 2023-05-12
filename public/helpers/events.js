@@ -108,6 +108,7 @@ export const onScrollThisTrack = (trackList, id) => () => {
   if (window.state.targeting) {
     return
   }
+  if (!id || !id.length) return
   window.state.targeting = true
   if (window.state.searching) {
     const trackListFiltered = fzfFilter(trackList)(getSearchValue())
