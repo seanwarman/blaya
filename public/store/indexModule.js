@@ -1,6 +1,6 @@
 import { trackList as RAW_TRACKLIST } from '../track-list.js'
 import { appendTracksByPage, parseTrackList } from '../helpers/index.js'
-import { OFFLINE_TRACKS_KEY, PLAYLISTS_STATE_KEY, INITIAL_PLAYLISTS_STATE } from '../constants.js'
+import { OFFLINE_TRACKS_KEY, PLAYLISTS_STATE_KEY, INITIAL_PLAYLISTS_STATE, INITIAL_PLAYLIST } from '../constants.js'
 
 import * as dom from '../helpers/dom.js'
 import * as utils from '../helpers/utils.js'
@@ -25,7 +25,14 @@ export default (postHook) => {
     get playlistMode() {
       return this.playlistModeState
     },
-    selectedPlaylist: 0,
+    selectedPlaylistState: 0,
+    get selectedPlaylist() {
+      return this.selectedPlaylistState
+    },
+    set selectedPlaylist(i) {
+      this.selectedPlaylistState = i
+      this.playlists = this.playlistsState
+    },
     playlistsState: undefined,
     get playlists() {
       return this.playlistsState
@@ -38,6 +45,14 @@ export default (postHook) => {
       } else {
         this.playlistsState = value
         window.localStorage.setItem(PLAYLISTS_STATE_KEY, JSON.stringify(value))
+        if (
+          !this.playlistsState[this.selectedPlaylist]
+          || typeof this.playlistsState[this.selectedPlaylist][0] !== 'string'
+          || typeof this.playlistsState[this.selectedPlaylist][1] !== 'number'
+          || typeof this.playlistsState[this.selectedPlaylist][2]?.length !== 'number'
+        ) {
+          this.playlistsState[this.selectedPlaylist] = INITIAL_PLAYLIST
+        }
         const [_, playlistIndex, trackList] = this.playlistsState[this.selectedPlaylist]
         trackList.forEach((track, i) =>
           dom.appendTrackElementToPlaylistById(this.trackList)(
