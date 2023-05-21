@@ -119,6 +119,11 @@ export default (postHook) => {
   state.playlists = initStateItem(PLAYLISTS_STATE_KEY, INITIAL_PLAYLISTS_STATE)
   state.playlistMode = false
 
+  const input = document.getElementById('selected-playlist')
+  if (input && input.defaultValue?.length === 0) {
+    input.defaultValue = 0
+  }
+
   return postHook(state)
 }
 

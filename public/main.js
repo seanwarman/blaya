@@ -114,6 +114,10 @@ build(state => {
   }
   document.getElementById('maximise-button-playlist').onclick = onClickOrEnter(onTogglePlaylistMinimised)
   document.getElementById('maximise-button-playlist').onkeydown = onClickOrEnter(onTogglePlaylistMinimised)
+  document.getElementById('selected-playlist').onchange = ({ target }) => {
+    const { value } = target
+    window.state.selectedPlaylist = value
+  }
   document.getElementById('clear-button-playlist').onclick = onClickOrEnter(onClearPlaylist)
   document.getElementById('clear-button-playlist').onkeydown = onClickOrEnter(onClearPlaylist)
   document.getElementById('close-modal-button').onclick = onClickOrEnter(onOpenUploadModal)
