@@ -39,7 +39,7 @@ export const playModule = {
   },
   setTrack({ src, isPlaylist = false, playlistIndex = null, selectedPlaylist = null, withHistory = true }) {
     // Manage the state items...
-    if (selectedPlaylist !== null) state.selectedPlaylist = selectedPlaylist
+    if (selectedPlaylist !== null) window.state.selectedPlaylist = selectedPlaylist
     this.currentTrackSrc = src
     this.isPlaylist = !!isPlaylist
 
@@ -48,7 +48,7 @@ export const playModule = {
     // Update the UI
     if (isPlaylist) {
       // The setter on playlists takes care of the 'playing' class...
-      state.playlists = updatePlaylistIndex(state.selectedPlaylist, playlistIndex, state.playlists)
+      window.state.playlists = updatePlaylistIndex(window.state.selectedPlaylist, playlistIndex, window.state.playlists)
     } else {
       const trackListEl = document.querySelector(`[data-href="${src}"]`)
       if (trackListEl) trackListEl.classList.add('playing')
@@ -60,7 +60,7 @@ export const playModule = {
         src,
         isPlaylist,
         playlistIndex: playlistIndex,
-        selectedPlaylist: state.selectedPlaylist,
+        selectedPlaylist: window.state.selectedPlaylist,
       })
     }
 
@@ -74,14 +74,14 @@ export const playModule = {
     }
   },
   nextTrackTrackList() {
-    const trackList = state.trackList
+    const trackList = window.state.trackList
     const i = trackList.findIndex(t => t === this.currentTrackSrc)
     if (trackList[i+1]) {
       this.setTrack({ src: trackList[i+1], isPlaylist: false })
     }
   },
   nextTrackPlaylist() {
-    const [_, playlistIndex, playlist] = state.playlists[state.selectedPlaylist]
+    const [_, playlistIndex, playlist] = window.state.playlists[window.state.selectedPlaylist]
     const i = playlistIndex
     if (playlist[i+1]) {
       this.setTrack({ src: playlist[i+1], playlistIndex: i+1, isPlaylist: true })
@@ -107,7 +107,7 @@ export const playModule = {
     }
   },
   prevTrackPlaylist() {
-    const [_, playlistIndex, playlist] = state.playlists[state.selectedPlaylist]
+    const [_, playlistIndex, playlist] = window.state.playlists[window.state.selectedPlaylist]
     const i = playlistIndex
     if (playlist[i-1]) {
       this.setTrack({
@@ -119,7 +119,7 @@ export const playModule = {
     }
   },
   prevTrackTrackList() {
-    const trackList = state.trackList
+    const trackList = window.state.trackList
     const i = trackList.findIndex(t => t === this.currentTrackSrc)
     if (trackList[i-1]) {
       this.setTrack({ src: trackList[i-1], withHistory: false })
