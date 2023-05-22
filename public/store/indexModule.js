@@ -30,7 +30,10 @@ export default (postHook) => {
       return this.selectedPlaylistState
     },
     set selectedPlaylist(i) {
-      this.selectedPlaylistState = i
+      if (isNaN(Number(i))) {
+        return
+      }
+      this.selectedPlaylistState = Number(i)
       this.playlists = this.playlistsState
     },
     playlistsState: undefined,
