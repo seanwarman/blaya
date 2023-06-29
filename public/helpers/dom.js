@@ -316,8 +316,11 @@ export const afterSearchReset = () => {
   document.getElementById('track-list-container').remove()
   const footer = document.getElementsByTagName('footer')[0]
   if (window.state.previousTrackListContainer) {
+    // window.state.targeting pauses the onScroll functionality...
+    window.state.targeting = true;
     document.body.insertBefore(window.state.previousTrackListContainer, footer)
     scrollTo(0, window.state.previousScrollPositionY)
+    window.state.targeting = false;
   } else {
     appendTracksByPage(window.state.trackList)(1)
   }
