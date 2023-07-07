@@ -179,7 +179,12 @@ export const onTogglePlaylistMode = () => {
 }
 
 export const onClearPlaylist = () => {
-  window.state.playlists = null
+  if(confirm('Are you sure?')) {
+    window.state.playlists = window.state.playlists.map((playlist, i) => {
+      if (i === window.state.selectedPlaylist) return ['', 0, []]
+      return playlist
+    });
+  }
 }
 
 export function onDownload(registration) {
