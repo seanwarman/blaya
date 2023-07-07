@@ -380,7 +380,7 @@ div[role="link"]:focus {
   outline: 1px;
   outline-style: auto;
   outline-color: #00aeff;
-  font-weight: 600;
+  /* font-weight: 600; */
   text-indent: -1;
 }
 
