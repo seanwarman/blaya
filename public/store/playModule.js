@@ -15,7 +15,7 @@ export const playModule = {
   },
   set focussedTrackId(focussedTrackId) {
     this.focussedTrackIdState = focussedTrackId
-    window.history.replaceState(null, null, '?track-id=' + focussedTrackId)
+    // window.history.replaceState(null, null, '?track-id=' + focussedTrackId)
   },
   currentTrackId: null,
   currentTrackSrcState: null,
