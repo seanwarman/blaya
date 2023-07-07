@@ -20,7 +20,7 @@ export default (postHook) => {
     set playlistMode(playlistMode) {
       this.playlistModeState = playlistMode
       document.body.dataset.playlistMode = playlistMode
-      if (playlistMode) document.getElementById('playlist-container').dataset.playlistMinimised = false
+      if (playlistMode && window.innerWidth > 768) document.getElementById('playlist-container').dataset.playlistMinimised = false
     },
     get playlistMode() {
       return this.playlistModeState
