@@ -601,6 +601,7 @@ div#current-playing-text {
     bottom: 4.5rem;
     right: 1rem;
     width: 30%;
+    min-width: 368px;
     position: fixed;
     overflow-y: auto;
     transition: height .6s, padding .6s, box-shadow .6s, background .6s;
@@ -656,6 +657,7 @@ div#current-playing-text {
     align-items: center;
     justify-content: end;
     width: 30%;
+    min-width: 368px;
   }
 
   #maximise-button-playlist {
