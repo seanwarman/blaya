@@ -293,7 +293,10 @@ body[data-downloading="false"] .download-progress {
 }
 
 .downloaded {
-  background-color: #b6e0ff;
+  background-color: #00aeff;
+  color: white;
+  font-weight: 600;
+  text-indent: -1;
 }
 
 body[data-playlist-mode="true"] .track {
@@ -312,7 +315,7 @@ body[data-playlist-mode="true"] .track {
 }
 
 body[data-playlist-mode="false"] #playlist .track {
-  grid-template-columns: auto 3rem;
+  grid-template-columns: auto;
 }
 
 body[data-playlist-mode="true"] #playlist .track {
@@ -369,14 +372,16 @@ body[data-playlist-mode="true"] .track-name {
 
 div[role="link"] {
   cursor: pointer;
+  margin: 1px;
 }
 
 div[role="link"]:active,
 div[role="link"]:focus {
-  /* outline: 1px; */
-  /* outline-style: dashed; */
-  /* outline-color: #444444; */
-  /* z-index: 1; */
+  outline: 1px;
+  outline-style: auto;
+  outline-color: #00aeff;
+  font-weight: 600;
+  text-indent: -1;
 }
 
 footer {

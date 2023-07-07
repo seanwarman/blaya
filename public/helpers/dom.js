@@ -76,6 +76,12 @@ export const onDragStart = e => {
   e.dataTransfer.setData('iFrom', iFrom)
 }
 
+// createTrackName :: String -> Element
+const createTrackName = trackString => f.AssignObject({
+  className: 'track-name',
+  innerHTML: '<div class="name">' + trackString + '</div>',
+})(document.createElement('div'))
+
 // createTrackElementForPlaylist :: [String] -> String -> Element
 export const createTrackElementForPlaylist = trackList => playingFn => trackId => {
   const trackString = getCurrentTrackString(trackList)(trackId)
@@ -85,9 +91,8 @@ export const createTrackElementForPlaylist = trackList => playingFn => trackId =
     f.AssignObject({
       className: 'track' + (playingFn() ? ' playing' : ''),
       role: 'link',
-      tabIndex: '0',
       id: trackId,
-      innerHTML: createPlaylistTrackInnerHtml(trackString),
+      // TODO: maybe put this on trckName...
       onmousedown: onPlayPlaylist,
       onkeydown: onClickOrEnter(onPlayPlaylist),
     }),
@@ -97,8 +102,16 @@ export const createTrackElementForPlaylist = trackList => playingFn => trackId =
     }),
   )
 
+  const trackNameAlbumContainer =
+    createTrackNameAlbumContainer(document.createElement('div'))
+
+  const trackName = createTrackName(trackString)
+
   const playlistEl = createTrackPlaylistElementFromDiv(document.createElement('div'))
-  playlistEl.prepend(createRemoveFromPlaylistElement(document.createElement('div')))
+
+  playlistEl.append(createRemoveFromPlaylistElement(document.createElement('div')))
+  trackNameAlbumContainer.append(trackName)
+  playlistEl.append(trackNameAlbumContainer)
 
   Array.from(playlistEl.getElementsByClassName('drag-container')).forEach(dragIconEl => {
     dragIconEl.draggable = true
@@ -202,6 +215,15 @@ export const createRemoveFromPlaylistElement = trackId => f.pipe(
   }),
 )(document.createElement('div'))
 
+// createTrackNameAlbumContainer :: Element -> Element
+export const createTrackNameAlbumContainer = f.AssignObject({
+  className: 'track-name-album-container',
+  tabIndex: '0',
+  role: 'link',
+  onmousedown: onPlay,
+  onkeydown: onClickOrEnter(onPlay),
+})
+
 // Create :: (String, String, String, Number) -> Element
 export const Create = trackString => {
   const trackId = simpleHash(trackString)
@@ -214,7 +236,6 @@ export const Create = trackString => {
   const createTrackElementFromDiv = f.pipe(
     f.AssignObject({
       className: 'track',
-      tabIndex: '-1',
       id: trackId,
     }),
     f.ObjectAssignDataSet({
@@ -226,18 +247,10 @@ export const Create = trackString => {
     ),
   )
 
-  const trackNameAlbumContainer = f.AssignObject({
-    className: 'track-name-album-container',
-    tabIndex: '0',
-    role: 'link',
-    onmousedown: onPlay,
-    onkeydown: onClickOrEnter(onPlay),
-  })(document.createElement('div'))
+  const trackNameAlbumContainer =
+    createTrackNameAlbumContainer(document.createElement('div'))
 
-  const trackName = f.AssignObject({
-    className: 'track-name',
-    innerHTML: '<div class="name">' + track + '</div>',
-  })(document.createElement('div'))
+  const trackName = createTrackName(track)
 
   const trackAlbum = f.AssignObject({
     className: 'track-album',
