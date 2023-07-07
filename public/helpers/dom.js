@@ -104,7 +104,8 @@ export const createTrackElementForPlaylist = trackList => playingFn => trackId =
   const trackNameAlbumContainer =
     createTrackNameAlbumContainer(document.createElement('div'))
 
-  const trackName = createTrackName(trackString)
+  const [track, album] = getTrackAndAlbumFromTrackString(trackString)
+  const trackName = createTrackName(track + ' - ' + album)
 
   const playlistEl = createTrackPlaylistElementFromDiv(document.createElement('div'))
 

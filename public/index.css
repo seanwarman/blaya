@@ -307,6 +307,10 @@ body[data-playlist-mode="true"] .track {
   grid-template-columns: auto 50%;
 }
 
+div[data-playlist="true"] .track-name-album-container {
+  grid-template-columns: auto;
+}
+
 .playing .track-name::before {
   content: url(./icons/play-solid.svg);
   min-width: 9px;
