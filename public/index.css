@@ -296,7 +296,6 @@ body[data-downloading="false"] .download-progress {
   background-color: #00aeff;
   color: white;
   font-weight: 600;
-  text-indent: -1;
 }
 
 body[data-playlist-mode="true"] .track {
