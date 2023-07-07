@@ -114,9 +114,11 @@ build(state => {
   }
   document.getElementById('maximise-button-playlist').onclick = onClickOrEnter(onTogglePlaylistMinimised)
   document.getElementById('maximise-button-playlist').onkeydown = onClickOrEnter(onTogglePlaylistMinimised)
-  document.getElementById('selected-playlist').onchange = ({ target }) => {
+  document.getElementById('selected-playlist').oninput = ({ target }) => {
     const { value } = target
-    window.state.selectedPlaylist = value
+    if (value) {
+      window.state.selectedPlaylist = value
+    }
   }
   document.getElementById('clear-button-playlist').onclick = onClickOrEnter(onClearPlaylist)
   document.getElementById('clear-button-playlist').onkeydown = onClickOrEnter(onClearPlaylist)
