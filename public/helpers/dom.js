@@ -90,7 +90,6 @@ export const createTrackElementForPlaylist = trackList => playingFn => trackId =
   const createTrackPlaylistElementFromDiv = f.pipe(
     f.AssignObject({
       className: 'track' + (playingFn() ? ' playing' : ''),
-      role: 'link',
       id: trackId,
       // TODO: maybe put this on trckName...
       onmousedown: onPlayPlaylist,
@@ -206,6 +205,7 @@ export const createRemoveFromPlaylistElement = trackId => f.pipe(
     id: 'add-to-playlist__' + trackId,
     className: 'add-to-playlist',
     tabIndex: '0',
+    role: 'link',
     innerHTML: '<img style="height:0.8rem;" src="public/icons/minus-solid.svg" />',
     onclick: onClickOrEnter(onRemoveFromPlaylist),
     onkeydown: onClickOrEnter(onRemoveFromPlaylist),

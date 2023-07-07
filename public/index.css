@@ -319,7 +319,7 @@ body[data-playlist-mode="false"] #playlist .track {
 }
 
 body[data-playlist-mode="true"] #playlist .track {
-  grid-template-columns: 4rem auto 3rem;
+  grid-template-columns: 4rem auto;
 }
 
 .add-to-playlist {
