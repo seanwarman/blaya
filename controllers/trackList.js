@@ -32,6 +32,12 @@ export const cleanDir = (req, res, next) => {
 
 function copyFromBucketToMusicDir(filePath, then) {
   const cp = spawn('aws', ['s3', 'cp', 's3://everest-files/music/' + filePath, __dirname + '/../music/' + filePath])
+  cp.stderr.on('data', data => {
+    console.log(`${data}`)
+  })
+  cp.stdout.on('data', data => {
+    console.log(`${data}`)
+  })
   cp.on('error', error => {
     console.log(error)
     res.send(error)
@@ -59,12 +65,12 @@ export const mvFile = (req, res) => {
       // Get file's meta data, then do an aws mv
       const trackpath = await parseTrack(__dirname + '/../music', filePath)
       mvBucketFile(['/music/' + filePath, '/music/' + trackpath], (error, code) => {
-        if (error) res.status(400).send()
+        if (error) res.sendStatus(500)
         res.send(code)
       })
     } catch (error) {
       console.log(`@FILTER error:`, error)
-      res.status(400).send(404)
+      res.sendStatus(500)
     }
   })
 }
