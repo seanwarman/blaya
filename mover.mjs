@@ -50,7 +50,7 @@ function newPath({ track, artist, album, year, title }) {
 
 export async function parseTrack(local, file) {
   try {
-    const { common } = await parseFile(local + file)
+    const { common } = await parseFile(local + '/' + file)
     const { track, title, year, album, artist } = common
     console.log(`track?.no:`, track?.no)
     console.log(`title:`, title)
