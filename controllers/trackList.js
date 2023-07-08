@@ -55,12 +55,17 @@ function mvBucketFile([from, to], then) {
 export const mvFile = (req, res) => {
 	const filePath = req.params[0]
   copyFromBucketToMusicDir(filePath, async () => {
-    // Get file's meta data, then do an aws mv
-    const trackpath = await parseTrack(__dirname + '/../music', filePath)
-    mvBucketFile(['/music/' + filePath, '/music/' + trackpath], (error, code) => {
-      if (error) res.status(400).send()
-      res.send(code)
-    })
+    try {
+      // Get file's meta data, then do an aws mv
+      const trackpath = await parseTrack(__dirname + '/../music', filePath)
+      mvBucketFile(['/music/' + filePath, '/music/' + trackpath], (error, code) => {
+        if (error) res.status(400).send()
+        res.send(code)
+      })
+    } catch (error) {
+      console.log(`@FILTER error:`, error)
+      res.status(400).send(404)
+    }
   })
 }
 
