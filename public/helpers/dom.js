@@ -91,9 +91,11 @@ export const createTrackElementForPlaylist = trackList => playingFn => trackId =
     f.AssignObject({
       className: 'track' + (playingFn() ? ' playing' : ''),
       id: trackId,
-      // TODO: maybe put this on trckName...
       onmousedown: onPlayPlaylist,
       onkeydown: onClickOrEnter(onPlayPlaylist),
+      role: 'link',
+      tabIndex: '0',
+      innerHTML: createPlaylistTrackInnerHtml(trackString),
     }),
     f.ObjectAssignDataSet({
       playlist: true,
@@ -101,21 +103,11 @@ export const createTrackElementForPlaylist = trackList => playingFn => trackId =
     }),
   )
 
-  const trackNameAlbumContainer =
-    createTrackNameAlbumContainer(document.createElement('div'))
-
-  const [track, album] = getTrackAndAlbumFromTrackString(trackString)
-  const trackName = createTrackName(track + ' - ' + album)
-
   const playlistEl = createTrackPlaylistElementFromDiv(document.createElement('div'))
-
-  playlistEl.append(createRemoveFromPlaylistElement(document.createElement('div')))
-  trackNameAlbumContainer.append(trackName)
-  playlistEl.append(trackNameAlbumContainer)
+  playlistEl.prepend(createRemoveFromPlaylistElement(document.createElement('div')))
 
   Array.from(playlistEl.getElementsByClassName('drag-container')).forEach(dragIconEl => {
     dragIconEl.draggable = true
-
     dragIconEl.ondragover = onDragover
     dragIconEl.ondragleave = onDragLeave
     dragIconEl.ondrop = onDrop
