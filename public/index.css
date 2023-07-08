@@ -237,7 +237,7 @@ body[data-downloading="true"] #download-button-playlist {
 }
 
 body[data-downloading="false"] #download-button-playlist {
-  background-color: #00aeff;
+  background-color: #000000c2;
 }
 
 body[data-uploading="true"] .open-upload-modal-button svg,
@@ -293,7 +293,7 @@ body[data-downloading="false"] .download-progress {
 }
 
 .downloaded {
-  background-color: #00aeff;
+  background-color: #0008ff85;
   color: white;
   font-weight: 600;
 }
@@ -315,6 +315,10 @@ div[data-playlist="true"] .track-name-album-container {
   content: url(./icons/play-solid.svg);
   min-width: 9px;
   margin-right: 0.7rem;
+}
+
+.downloaded .playing .track-name::before {
+  content: url(./icons/play-solid-white.svg);
 }
 
 body[data-playlist-mode="false"] #playlist .track {
@@ -382,7 +386,7 @@ div[role="link"]:active,
 div[role="link"]:focus {
   outline: 1px;
   outline-style: auto;
-  outline-color: #00aeff;
+  outline-color: #000000c2;
 }
 
 footer {
