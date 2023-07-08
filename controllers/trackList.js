@@ -66,7 +66,7 @@ export const mvFile = (req, res) => {
       const trackpath = await parseTrack(__dirname + '/../music', filePath)
       mvBucketFile(['/music/' + filePath, '/music/' + trackpath], (error, code) => {
         if (error) res.sendStatus(500)
-        res.send(code)
+        res.sendStatus(200)
       })
     } catch (error) {
       console.log(`@FILTER error:`, error)
