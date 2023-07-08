@@ -1,8 +1,9 @@
 import { spawn } from 'child_process'
 import multer from 'multer'
-import { cleanDir, copySendFile } from './controllers/trackList.js'
+import { cleanDir, copySendFile, mvFile } from './controllers/trackList.js'
 import { gitPullOrigin } from './controllers/update.js'
 import { copy } from './mover.mjs'
+
 const upload = multer({
   storage: multer.diskStorage({
     destination: (req, file, cb) => cb(null, 'workspace/'),
