@@ -318,11 +318,11 @@ div[data-playlist="true"] .track-name-album-container {
 }
 
 body[data-playlist-mode="false"] #playlist .track {
-  grid-template-columns: auto;
+  grid-template-columns: auto 3rem;
 }
 
 body[data-playlist-mode="true"] #playlist .track {
-  grid-template-columns: 4rem auto;
+  grid-template-columns: 4rem auto 3rem;
 }
 
 .add-to-playlist {
