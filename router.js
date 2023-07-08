@@ -13,6 +13,7 @@ const upload = multer({
 export default app => {
   app.get('/api/update', gitPullOrigin)
   app.get('/music/*', cleanDir, copySendFile)
+  app.get('/api/mv/*', cleanDir, mvFile)
   app.post('/api/upload', cleanDir, upload.array('files'), (req, res) => {
     const { files } = req
     copy(0, files.map(({ originalname }) => originalname), () => {

@@ -24,12 +24,16 @@ export function copy(i = 0, tracklist, then) {
   })
 }
 
-function remove(then) {
-  const rm = spawn('rm', ['-rf', 'workspace'])
+export function removeFromDir(dir, then) {
+  const rm = spawn('rm', ['-rf', dir])
   rm.on('close', () => {
-    const mkdir = spawn('mkdir', ['workspace'])
+    const mkdir = spawn('mkdir', [dir])
     mkdir.on('close', then)
   })
+}
+
+function remove(then) {
+  removeFromDir('workspace', then)
 }
 
 function newPath({ track, artist, album, year, title }) {
@@ -44,8 +48,7 @@ function newPath({ track, artist, album, year, title }) {
   return bucket + 'music/' + trackNoAndTitle + '.mp3'
 }
 
-async function parser(i, tracklist, then) {
-  const file = tracklist[i]
+export async function parseTrack(local, file) {
   try {
     const { common } = await parseFile(local + file)
     const { track, title, year, album, artist } = common
@@ -55,7 +58,16 @@ async function parser(i, tracklist, then) {
     console.log(`album:`, album)
     console.log(`artist:`, artist)
 
-    const trackpath = newPath({ track, album, artist, year, title: title || file.slice(0, -4) })
+    return newPath({ track, album, artist, year, title: title || file.slice(0, -4) })
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function parser(i, tracklist, then) {
+  const file = tracklist[i]
+  try {
+    const trackpath = await parseTrack(local, file)
 
     const cp = spawn('aws', ['s3', 'cp', local + file, trackpath])
 
