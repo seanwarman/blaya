@@ -49,6 +49,12 @@ function copyFromBucketToMusicDir(filePath, then) {
 
 function mvBucketFile([from, to], then) {
   const mv = spawn('aws', ['s3', 'mv', 's3://everest-files' + from, 's3://everest-files' + to])
+  mv.stderr.on('data', data => {
+    console.log(`${data}`)
+  });
+  mv.stdout.on('data', data => {
+    console.log(`${data}`)
+  });
   mv.on('error', error => {
     console.log(error)
     then(error)
