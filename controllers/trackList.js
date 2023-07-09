@@ -72,6 +72,7 @@ function mvBucketFile([from, to], then) {
     console.log(`${data}`)
   });
   mv.on('error', error => {
+    mv.kill()
     console.log(error)
     then(error)
   })
