@@ -14,7 +14,7 @@ const upload = multer({
 export default app => {
   app.get('/api/update', gitPullOrigin)
   app.get('/music/*', cleanDir, copySendFile)
-  app.get('/api/mv/*', cleanDir, mvFile)
+  app.get('/api/mv/*', rmDir, mvFile)
   app.post('/api/upload', cleanDir, upload.array('files'), (req, res) => {
     const { files } = req
     copy(0, files.map(({ originalname }) => originalname), () => {
@@ -23,11 +23,9 @@ export default app => {
   }),
   app.get('/api/refresh', (req, res) => {
     const script = spawn('./ls_s3.sh')
-
     script.on('close', () => {
       res.send('Ok')
     })
-
     script.on('error', error => {
       res.status(404).send(error)
     })

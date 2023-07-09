@@ -6,6 +6,22 @@ import { parseTrack, removeFromDir } from '../mover.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
+export const rmDir = (req, res, next) => {
+  const rm = spawn('rm', ['-rf', __dirname + '/../music'])
+  rm.on('error', (error) => {
+    console.log(error)
+    res.sendStatus(500)
+  })
+  rm.on('close', () => {
+    const mkdir = spawn('mkdir', [__dirname + '/../music'])
+    mkdir.on('error', (error) => {
+      console.log(error)
+      res.sendStatus(500)
+    })
+    mkdir.on('close', () => next())
+	})
+}
+
 export const cleanDir = (req, res, next) => {
 	readdir(__dirname + '/../music', (error, files) => {
 		if(error) {
