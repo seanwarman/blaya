@@ -118,8 +118,13 @@ export default (postHook) => {
   // BEGIN
   state.page = appendTracksByPage(state.trackList)(state.page)
   // Defaults to trigger the setters
-  state.offlineTracks = initStateItem(OFFLINE_TRACKS_KEY, [])
+  state.offlineTracks = initStateItem(OFFLINE_TRACKS_KEY, []).filter(track => state.trackList.includes(track))
   state.playlists = initStateItem(PLAYLISTS_STATE_KEY, INITIAL_PLAYLISTS_STATE)
+    .map((playlistItem) => !playlistItem ? INITIAL_PLAYLIST : [
+      playlistItem?.[0] || '',
+      playlistItem?.[1] || 0,
+      playlistItem?.[2]?.filter(track => state.trackList.includes(track)) || [],
+    ])
   state.playlistMode = false
 
   const input = document.getElementById('selected-playlist')
