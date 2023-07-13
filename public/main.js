@@ -40,13 +40,17 @@ if ("serviceWorker" in navigator) {
       if (type === 'DOWNLOADS_PROGRESS') {
         window.state.downloading = true
         const { tracks } = payload
-        window.state.offlineTracks = tracks
+        window.state.offlineTracks = [
+          ...window.state.offlineTracks,
+          ...tracks.filter(track => !window.state.offlineTracks.includes(track)),
+        ]
       }
 
       if (type === 'DOWNLOADS_COMPLETE') {
         window.state.downloading = false
-        const { tracks } = payload
-        window.state.offlineTracks = tracks
+        registration.active.postMessage({
+          type: 'SYNC_OFFLINE_TRACKS',
+        })
       }
 
       if (type === 'UPLOADS_PROGRESS') {
