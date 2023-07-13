@@ -25,7 +25,7 @@ const clientApplicationFiles = [
   '/node_modules/socket.io/client-dist/socket.io.esm.min.js',
 ]
 
-const CACHE_VERSION = 6
+const CACHE_VERSION = 8
 const CURRENT_CACHES = {
   applicationFilesCache: 'blaya__APPLICATION_FILES_CACHE_V' + CACHE_VERSION,
   offlineTracksCache: 'blaya__OFFLINE_TRACKS_CACHE_V' + CACHE_VERSION,
@@ -95,7 +95,48 @@ self.addEventListener('message', async event => {
   const { type } = data
   if (type === 'DOWNLOAD_PLAYLIST') cacheOffline(event)
   if (type === 'UPLOAD_FILES') uploadFiles(event)
+  if (type === 'DELETE_PLAYLIST_TRACKS') deletePlaylistTracks(event)
+  if (type === 'SYNC_OFFLINE_TRACKS') syncOfflineTracks(event)
 })
+
+async function syncOfflineTracks(event) {
+  const { source } = event
+  try {
+    const cache = await caches.open(CURRENT_CACHES.offlineTracksCache)
+    const responses = await cache.keys()
+    const tracks = responses.map(({ url }) => url.replace(location.origin + '/', ''))
+    source.postMessage({
+      type: 'SYNC_OFFLINE_TRACKS_SUCCESS',
+      payload: { tracks },
+    })
+  } catch (error) {
+    source.postMessage({
+      type: 'SYNC_OFFLINE_TRACKS_ERROR',
+      payload: { error },
+    })
+  }
+}
+
+async function deletePlaylistTracks(event) {
+  const { data, source } = event
+  const { payload } = data
+  const { playlist } = payload
+  const [s, n, tracks] = playlist
+  try {
+    const cache = await caches.open(CURRENT_CACHES.offlineTracksCache)
+    const responses = await cache.matchAll(tracks)
+    Array.from(responses).map(cache.delete)
+    source.postMessage({
+      type: 'DELETE_PLAYLIST_TRACKS_SUCCESS',
+      playload: { playlist },
+    })
+  } catch (error) {
+    source.postMessage({
+      type: 'DELETE_PLAYLIST_TRACKS_ERROR',
+      playload: { playlist, error },
+    })
+  }
+}
 
 async function uploadFiles(event) {
   const { data, source } = event

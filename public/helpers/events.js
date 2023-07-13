@@ -178,8 +178,16 @@ export const onTogglePlaylistMode = () => {
   window.state.playlistMode = !window.state.playlistMode
 }
 
-export const onClearPlaylist = () => {
+export const onClearPlaylist = registration => () => {
   if(confirm('Are you sure?')) {
+    if (registration) {
+      registration.active.postMessage({
+        type: 'DELETE_PLAYLIST_TRACKS',
+        payload: {
+          playlist: window.state.playlists[window.state.selectedPlaylist],
+        },
+      })
+    }
     window.state.playlists = window.state.playlists.map((playlist, i) => {
       if (i === window.state.selectedPlaylist) return ['', 0, []]
       return playlist

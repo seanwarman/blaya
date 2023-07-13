@@ -24,13 +24,15 @@ import io from './node_modules/socket.io/client-dist/socket.io.esm.min.js'
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("/worker-offline.js").then(
   (registration) => {
-    console.log("Service worker registration succeeded:", registration);
 
+    // Dom events that need the worker...
     document.getElementById('download-button-playlist').onclick = onClickOrEnter(onDownload(registration)) 
     document.getElementById('download-button-playlist').onkeydown = onClickOrEnter(onDownload(registration)) 
     document.getElementById('upload-form').onsubmit = onUpload(registration)
+    document.getElementById('clear-button-playlist').onclick = onClickOrEnter(onClearPlaylist(registration))
+    document.getElementById('clear-button-playlist').onkeydown = onClickOrEnter(onClearPlaylist(registration))
 
-    // Worker events...
+    // Worker event responses...
     navigator.serviceWorker.addEventListener('message', event => {
       const { data } = event
       const { type, payload } = data
@@ -49,10 +51,8 @@ if ("serviceWorker" in navigator) {
 
       if (type === 'UPLOADS_PROGRESS') {
         const { filenames, index } = payload
-
         const lis = Array.from(document.getElementById('upload-files-list')?.getElementsByTagName('li') || [])
         lis.forEach((li, i) => i === index && li.classList.add('downloaded'))
-
         if (filenames.length !== index + 1) {
           window.state.uploading = true
         } else {
@@ -70,7 +70,19 @@ if ("serviceWorker" in navigator) {
             })
         }
       }
+
+      if (type === 'SYNC_OFFLINE_TRACKS_SUCCESS') {
+        const { tracks } = payload
+        window.state.offlineTracks = tracks
+      }
+
     })
+
+    // Worker events to run on page load...
+    registration.active.postMessage({
+      type: 'SYNC_OFFLINE_TRACKS',
+    })
+
   },
     (error) => {
       console.error(`Service worker registration failed: ${error}`);
@@ -120,8 +132,6 @@ build(state => {
       window.state.selectedPlaylist = value
     }
   }
-  document.getElementById('clear-button-playlist').onclick = onClickOrEnter(onClearPlaylist)
-  document.getElementById('clear-button-playlist').onkeydown = onClickOrEnter(onClearPlaylist)
   document.getElementById('close-modal-button').onclick = onClickOrEnter(onOpenUploadModal)
   document.getElementById('close-modal-button').onkeydown = onClickOrEnter(onOpenUploadModal)
   document.getElementById('upload').onchange = () => {
@@ -172,7 +182,3 @@ build(state => {
     ["'", onTogglePlaylistMinimised],
   )
 })
-
-
-
-

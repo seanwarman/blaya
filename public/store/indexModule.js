@@ -1,6 +1,6 @@
 import { trackList as RAW_TRACKLIST } from '../track-list.js'
 import { appendTracksByPage, parseTrackList } from '../helpers/index.js'
-import { OFFLINE_TRACKS_KEY, PLAYLISTS_STATE_KEY, INITIAL_PLAYLISTS_STATE, INITIAL_PLAYLIST } from '../constants.js'
+import { PLAYLISTS_STATE_KEY, INITIAL_PLAYLISTS_STATE, INITIAL_PLAYLIST } from '../constants.js'
 
 import * as dom from '../helpers/dom.js'
 import * as utils from '../helpers/utils.js'
@@ -103,7 +103,6 @@ export default (postHook) => {
     offlineTracksState: [],
     set offlineTracks(tracks) {
       this.offlineTracksState = tracks
-      window.localStorage.setItem(OFFLINE_TRACKS_KEY, JSON.stringify(tracks))
       Array.from(document.getElementsByClassName('downloaded')).forEach(el => el.classList.remove('downloaded'))
       setDownloadedClassToOfflineTracks(tracks)
     },
@@ -117,8 +116,6 @@ export default (postHook) => {
 
   // BEGIN
   state.page = appendTracksByPage(state.trackList)(state.page)
-  // Defaults to trigger the setters
-  state.offlineTracks = initStateItem(OFFLINE_TRACKS_KEY, []).filter(track => state.trackList.includes(track))
   state.playlists = initStateItem(PLAYLISTS_STATE_KEY, INITIAL_PLAYLISTS_STATE)
     .map((playlistItem) => !playlistItem ? INITIAL_PLAYLIST : [
       playlistItem?.[0] || '',
