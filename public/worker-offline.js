@@ -2,6 +2,10 @@ const clientApplicationFiles = [
   '/',
   '/DragDropTouch.js',
   '/constants.js',
+  '/icons/grip-vertical-solid-white.svg',
+  '/icons/minus-solid-white.svg',
+  '/icons/plus-solid-white.svg',
+  '/icons/play-solid-white.svg',
   '/icons/grip-vertical-solid.svg',
   '/icons/minus-solid.svg',
   '/icons/plus-solid.svg',
@@ -21,7 +25,7 @@ const clientApplicationFiles = [
   '/node_modules/socket.io/client-dist/socket.io.esm.min.js',
 ]
 
-const CACHE_VERSION = 5
+const CACHE_VERSION = 6
 const CURRENT_CACHES = {
   applicationFilesCache: 'blaya__APPLICATION_FILES_CACHE_V' + CACHE_VERSION,
   offlineTracksCache: 'blaya__OFFLINE_TRACKS_CACHE_V' + CACHE_VERSION,

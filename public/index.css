@@ -42,6 +42,16 @@ img.svg {
   width: .5rem;
 }
 
+.drag-container img.svg.grip {
+  content: url(icons/grip-vertical-solid.svg);
+}
+
+.downloaded .drag-container img.svg.grip {
+  content: url(icons/grip-vertical-solid-white.svg);
+}
+
+
+
 .search-container {
   grid-column: 2 / span 3;
   height: 4rem;
@@ -104,8 +114,7 @@ input#search-input {
   border-radius: 2px;
   display: flex;
   flex-direction: column-reverse;
-  margin-top: 45px;
-  /* height: 100%; */
+  margin-top: 49px;
   justify-content: flex-end;
   width: 100%;
   padding-bottom: 9rem;
@@ -317,7 +326,7 @@ div[data-playlist="true"] .track-name-album-container {
   margin-right: 0.7rem;
 }
 
-.downloaded .playing .track-name::before {
+.downloaded.playing .track-name::before {
   content: url(./icons/play-solid-white.svg);
 }
 
@@ -338,6 +347,26 @@ body[data-playlist-mode="true"] #playlist .track {
 
 body[data-playlist-mode="false"] .add-to-playlist {
   display: none;
+}
+
+.add-to-playlist-icon {
+  height:1rem;
+  content: url(public/icons/plus-solid.svg);
+}
+
+.downloaded .add-to-playlist-icon {
+  height:1rem;
+  content: url(public/icons/plus-solid-white.svg);
+}
+
+.remove-from-playlist-icon {
+  content: url(public/icons/minus-solid.svg);
+  height: 0.8rem;
+}
+
+.downloaded .remove-from-playlist-icon {
+  content: url(public/icons/minus-solid-white.svg);
+  height: 0.8rem;
 }
 
 .track-name {
@@ -380,6 +409,10 @@ body[data-playlist-mode="true"] .track-name {
 div[role="link"] {
   cursor: pointer;
   margin: 1px;
+}
+
+#playlist div[role="link"] {
+  margin: 0 1px;
 }
 
 div[role="link"]:active,

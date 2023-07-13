@@ -28,7 +28,7 @@ export const createTrackInnerHTMLFromTrackAndAlbum = ([track, album]) =>
 
 // createPlaylistTrackInnerHtmlFromTrackAndAlbum :: [String] -> String
 export const createPlaylistTrackInnerHtmlFromTrackAndAlbum = ([track, _]) =>
-  '<div class="track-name"><div class="name">' + track + '</div></div><div class="drag-container"><img class="svg" src="icons/grip-vertical-solid.svg" /></div>'
+  '<div class="track-name"><div class="name">' + track + '</div></div><div class="drag-container"><img class="svg grip" /></div>'
 
 // createTrackInnerHTML :: String -> String
 export const createTrackInnerHTML = f.pipe(
@@ -183,7 +183,7 @@ export const createAddToPlaylistElement = trackId => f.pipe(
     className: 'add-to-playlist',
     role: 'link',
     tabIndex: '0',
-    innerHTML: '<img style="height:1rem;" src="public/icons/plus-solid.svg" />',
+    innerHTML: '<img class="add-to-playlist-icon" />',
     onclick: ifFalseOnAddToPlaylist(() => window.state.selectedPlaylist === undefined),
     onkeydown: ifFalseOnAddToPlaylist(() => window.state.selectedPlaylist === undefined),
   }),
@@ -199,7 +199,7 @@ export const createRemoveFromPlaylistElement = trackId => f.pipe(
     className: 'add-to-playlist',
     tabIndex: '0',
     role: 'link',
-    innerHTML: '<img style="height:0.8rem;" src="public/icons/minus-solid.svg" />',
+    innerHTML: '<img class="remove-from-playlist-icon" />',
     onclick: onClickOrEnter(onRemoveFromPlaylist),
     onkeydown: onClickOrEnter(onRemoveFromPlaylist),
   }),
