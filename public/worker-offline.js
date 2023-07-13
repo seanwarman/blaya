@@ -25,7 +25,7 @@ const clientApplicationFiles = [
   '/node_modules/socket.io/client-dist/socket.io.esm.min.js',
 ]
 
-const CACHE_VERSION = 8
+const CACHE_VERSION = 9
 const CURRENT_CACHES = {
   applicationFilesCache: 'blaya__APPLICATION_FILES_CACHE_V' + CACHE_VERSION,
   offlineTracksCache: 'blaya__OFFLINE_TRACKS_CACHE_V' + CACHE_VERSION,
@@ -104,7 +104,9 @@ async function syncOfflineTracks(event) {
   try {
     const cache = await caches.open(CURRENT_CACHES.offlineTracksCache)
     const responses = await cache.keys()
-    const tracks = responses.map(({ url }) => url.replace(location.origin + '/', ''))
+    const tracks = responses
+      .map(({ url }) => url.replace(location.origin + '/', ''))
+      .map(decodeURIComponent)
     source.postMessage({
       type: 'SYNC_OFFLINE_TRACKS_SUCCESS',
       payload: { tracks },
