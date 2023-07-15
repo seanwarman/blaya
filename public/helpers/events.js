@@ -41,6 +41,17 @@ export const onAddToPlaylistFromSearch = () => {
     return
   }
   const href = document.querySelector('#track-list-container #page-1 > .track')?.dataset?.href
+  const playlistEl = document.querySelector('.button-playlist-container')
+  playlistEl.classList.add('playlist-adding-track')
+  setTimeout(() => {
+    playlistEl.classList.remove('playlist-adding-track')
+    setTimeout(() => {
+      playlistEl.classList.add('playlist-adding-track')
+      setTimeout(() => {
+        playlistEl.classList.remove('playlist-adding-track')
+      }, 100)
+    }, 100)
+  }, 100)
   if (!href) return
   addToPlaylist(href)
 }

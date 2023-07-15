@@ -196,6 +196,10 @@ body[data-playlist-mode="true"] .mode-button-playlist {
   width: 100%;
 }
 
+.button-playlist-container.playlist-adding-track {
+  border-bottom: 3px solid #f6d804;
+}
+
 #playlist-container[data-playlist-minimised="true"] .button-playlist-container {
   background-color: transparent;
 }
@@ -293,6 +297,10 @@ body[data-downloading="false"] .download-progress {
 @keyframes spin {
     from {transform:rotate(0deg);}
     to {transform:rotate(360deg);}
+}
+
+body[data-searching="true"] #page-1 .track:first-child {
+  border-bottom: none;
 }
 
 body[data-searching="true"] #page-1 .track:first-child .track-name-album-container {
