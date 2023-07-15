@@ -139,15 +139,19 @@ export const chooseTrackList = ([stateTrackList, playlistTrackList]) => {
   return stateTrackList
 }
 
+export const addToPlaylist = href => {
+  window.state.playlists = addHrefToPlaylist(window.state.selectedPlaylist, href, window.state.playlists)
+  // Scroll playlist to bottom to keep track of everything...
+  const el = document.getElementById('playlist-container')
+  el.scrollTop = el.scrollHeight
+}
+
 // onAddToPlaylist :: Event -> void
 export const onAddToPlaylist = e => {
   e.stopPropagation()
   const href = e.currentTarget.parentElement.dataset.href
   if (!href) return e
-  window.state.playlists = addHrefToPlaylist(window.state.selectedPlaylist, href, window.state.playlists)
-  // Scroll playlist to bottom to keep track of everything...
-  const el = document.getElementById('playlist-container')
-  el.scrollTop = el.scrollHeight
+  addToPlaylist(href)
 }
 
 // onRemoveFromPlaylist :: Event -> Element

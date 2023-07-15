@@ -21,6 +21,13 @@ export const onClickOrEnter = cb => (e) => {
   }
 }
 
+// onEnter :: (a -> b) -> Event -> undefined
+export const onEnter = cb => e => {
+  if (e.key === "Enter") {
+    cb(e)
+  }
+}
+
 // onClearSearch :: undefined -> undefined
 export const onClearSearch = () => {
   const searchInput = document.getElementById('search-input')
