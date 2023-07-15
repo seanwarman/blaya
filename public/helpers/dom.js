@@ -232,17 +232,21 @@ export const Create = trackString => {
 
   const createTrackElementFromDiv = f.pipe(
     f.AssignObject({
-      className: 'track',
+      className:
+        'track' +
+        (window.state?.playModule?.currentTrackSrc === trackString
+          ? ' playing'
+          : ''),
       id: trackId,
     }),
     f.ObjectAssignDataSet({
       href: trackString,
     }),
     addPlayingClassIf(
-      trackString === window.state?.playModule?.currentTrackSrc
-      && !window.state?.playModule?.isPlaylist
-    ),
-  )
+      trackString === window.state?.playModule?.currentTrackSrc &&
+        !window.state?.playModule?.isPlaylist
+    )
+  );
 
   const trackNameAlbumContainer =
     createTrackNameAlbumContainer(document.createElement('div'))
