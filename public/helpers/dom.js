@@ -236,6 +236,9 @@ export const Create = trackString => {
         'track' +
         (window.state?.playModule?.currentTrackSrc === trackString
           ? ' playing'
+          : '') +
+        (window.state?.offlineTracks?.includes(trackString)
+          ? ' downloaded'
           : ''),
       id: trackId,
     }),
