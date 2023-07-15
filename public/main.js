@@ -16,6 +16,8 @@ import {
   onDownload,
   onOpenUploadModal,
   onUpload,
+  onStopPropagation,
+  onAddToPlaylistFromSearch,
 } from './helpers/events.js'
 import { logger } from './helpers/functional-utils.js'
 import { getTrackSearchQuery, addToPlaylist } from './helpers/dom.js';
@@ -134,12 +136,8 @@ build(state => {
   document.getElementById('current-playing-text').onclick = onClickOrEnter(onScrollThisTrack(window.state.trackList))
   document.getElementById('current-playing-text').onkeydown = onClickOrEnter(onScrollThisTrack(window.state.trackList))
   document.getElementById('search-input').oninput = onSearch(window.state.trackList)
-  document.getElementById('search-input').onkeydown = onEnter(e => {
-    e.stopPropagation()
-    const href = document.querySelector('#track-list-container #page-1 > .track')?.dataset?.href
-    if (!href) return
-    addToPlaylist(href)
-  })
+  // onStopPropagation stops the the other keyboard shortcuts from working...
+  document.getElementById('search-input').onkeydown = onStopPropagation(onEnter(onAddToPlaylistFromSearch))
   document.getElementById('clear-search-button').onclick = onClickOrEnter(onClearSearch)
   document.getElementById('clear-search-button').onkeydown = onClickOrEnter(onClearSearch)
   const onTogglePlaylistMinimised = () => {

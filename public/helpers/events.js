@@ -4,6 +4,7 @@ import {
   afterSearchReset,
   scrollToTrackByTrackId,
   getSearchValue,
+  addToPlaylist,
 } from './dom.js'
 import {
   appendTracksByPageFilteredBy,
@@ -26,6 +27,22 @@ export const onEnter = cb => e => {
   if (e.key === "Enter") {
     cb(e)
   }
+}
+
+// onStopPropagation :: (a -> b) -> Event -> undefined
+export const onStopPropagation = cb => e => {
+  e.stopPropagation()
+  cb(e)
+}
+
+// onAddToPlaylistFromSearch :: (a -> b) -> Event -> undefined
+export const onAddToPlaylistFromSearch = () => {
+  if (!window.state.searching) {
+    return
+  }
+  const href = document.querySelector('#track-list-container #page-1 > .track')?.dataset?.href
+  if (!href) return
+  addToPlaylist(href)
 }
 
 // onClearSearch :: undefined -> undefined
