@@ -320,6 +320,10 @@ body[data-searching="true"] #page-1 .track.downloaded:first-child .track-name-al
   border-bottom: 1px solid #ededed;
 }
 
+body[data-searching="true"] #page-1 .track:first-child.track-adding-track .track-name-album-container {
+  outline: none;
+}
+
 .downloaded {
   background-color: #0008ff85;
   color: white;

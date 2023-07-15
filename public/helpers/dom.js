@@ -14,6 +14,28 @@ import {
 } from './index.js'
 import * as f from './functional-utils.js'
 
+export const flashPlaylist = () => {
+  const playlistEl = document.querySelector('.button-playlist-container')
+  playlistEl.classList.add('playlist-adding-track')
+  setTimeout(() => {
+    playlistEl.classList.remove('playlist-adding-track')
+    setTimeout(() => {
+      playlistEl.classList.add('playlist-adding-track')
+      setTimeout(() => {
+        playlistEl.classList.remove('playlist-adding-track')
+      }, 100)
+    }, 100)
+  }, 100)
+}
+
+export const flashTrack = () => {
+  const trackEl = document.querySelector('#track-list-container #page-1 > .track')
+  trackEl.classList.add('track-adding-track')
+  setTimeout(() => {
+    trackEl.classList.remove('track-adding-track')
+  }, 100)
+}
+
 // addPlayingClassIf :: Element -> Boolean -> Element
 export const addPlayingClassIf = condition => element => {
   if (condition) {
@@ -141,6 +163,8 @@ export const chooseTrackList = ([stateTrackList, playlistTrackList]) => {
 
 export const addToPlaylist = href => {
   window.state.playlists = addHrefToPlaylist(window.state.selectedPlaylist, href, window.state.playlists)
+  flashTrack()
+  flashPlaylist()
   // Scroll playlist to bottom to keep track of everything...
   const el = document.getElementById('playlist-container')
   el.scrollTop = el.scrollHeight
