@@ -295,6 +295,17 @@ body[data-downloading="false"] .download-progress {
     to {transform:rotate(360deg);}
 }
 
+body[data-searching="true"] #page-1 .track:first-child .track-name-album-container {
+  outline: 1px;
+  outline-style: solid;
+  outline-color: #f6d804;
+  font-weight: 900;
+}
+
+body[data-searching="true"] #page-1 .track.downloaded:first-child .track-name-album-container {
+  outline-color: #0008ff85;
+}
+
 .track {
   display: grid;
   overflow: hidden;
