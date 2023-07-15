@@ -75,7 +75,14 @@ export default (postHook) => {
     page: 1,
     numberOfPages: 3,
     lazyLoadDebounce: false,
-    searching: false,
+    searchingState: false,
+    get searching() {
+      return this.searchingState
+    },
+    set searching(searching) {
+      this.searchingState = searching
+      document.body.dataset.searching = searching
+    },
     searchingPage: 1,
     previousScrollPositionY: 0,
     previousTrackListContainer: null,
