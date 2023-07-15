@@ -80,6 +80,21 @@ if ("serviceWorker" in navigator) {
         window.state.offlineTracks = tracks
       }
 
+      if (type === 'DELETE_PLAYLIST_TRACKS_SUCCESS') {
+        const { playlist } = payload
+        const [,, tracks] = playlist
+        window.state.offlineTracks = window.state.offlineTracks
+          ?.filter(track => !tracks.includes(track))
+      }
+
+      if (
+        type === 'DELETE_PLAYLIST_TRACKS_ERROR'
+        || type === 'SYNC_OFFLINE_TRACKS_ERROR'
+      ) {
+        const { error } = payload
+        alert(type.replaceAll(/_/, ' ') + ' :' + error.message)
+      }
+
     })
 
     // Worker events to run on page load...

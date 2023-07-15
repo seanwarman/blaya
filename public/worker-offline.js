@@ -123,18 +123,20 @@ async function deletePlaylistTracks(event) {
   const { data, source } = event
   const { payload } = data
   const { playlist } = payload
-  const [s, n, tracks] = playlist
+  const [,, tracks] = playlist
   try {
     const cache = await caches.open(CURRENT_CACHES.offlineTracksCache)
-    await Promise.all(tracks.map(cache.delete))
+    for (const track of tracks) {
+      await cache.delete(track)
+    }
     source.postMessage({
       type: 'DELETE_PLAYLIST_TRACKS_SUCCESS',
-      playload: { playlist },
+      payload: { playlist },
     })
   } catch (error) {
     source.postMessage({
       type: 'DELETE_PLAYLIST_TRACKS_ERROR',
-      playload: { playlist, error },
+      payload: { playlist, error },
     })
   }
 }

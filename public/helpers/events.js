@@ -179,7 +179,7 @@ export const onTogglePlaylistMode = () => {
 }
 
 export const onClearPlaylist = registration => () => {
-  if(confirm('Are you sure?')) {
+  if(confirm('Are you sure?\rThis will also remove the selected tracks from your offline tracks.')) {
     if (registration) {
       registration.active.postMessage({
         type: 'DELETE_PLAYLIST_TRACKS',
