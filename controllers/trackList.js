@@ -22,8 +22,8 @@ export const rmDir = (req, res, next) => {
 	})
 }
 
-export const cleanDir = (req, res, next) => {
-	readdir(__dirname + '/../music', (error, files) => {
+export const cleanDir = dir => (req, res, next) => {
+	readdir(dir, (error, files) => {
 		if(error) {
       console.log('@FILTER error:', error)
       return next()

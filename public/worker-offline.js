@@ -161,6 +161,7 @@ async function uploadFiles(event) {
         payload: { filenames, index: Number(index) },
       })
     } catch (error) {
+      console.log(`@FILTER error:`, error)
       throw error
     }
   }
