@@ -1,8 +1,12 @@
 import { spawn } from 'child_process'
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
 import multer from 'multer'
 import { cleanDir, copySendFile, mvFile, rmDir } from './controllers/trackList.js'
 import { gitPullOrigin } from './controllers/update.js'
 import { copy } from './mover.mjs'
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const upload = multer({
   storage: multer.diskStorage({
