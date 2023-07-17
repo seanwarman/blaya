@@ -77,7 +77,6 @@ export async function parser(i, tracklist, then) {
     cp.on('close', () => {
       console.log(`Copy completed!`)
       console.log(`file:`, file)
-      console.log(`title:`, title)
 
       if (!tracklist[i+1]) return remove(then)
       copy(i + 1, tracklist, then)
