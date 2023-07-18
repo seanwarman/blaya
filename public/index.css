@@ -621,7 +621,7 @@ div#current-playing-text {
   }
 
   #upload-modal form {
-    grid-template-rows: 4rem 57% 2rem 2rem;
+    grid-template-rows: 4rem 80% 2rem 2rem;
   }
 
   .open-upload-modal-button {
@@ -755,7 +755,7 @@ div#current-playing-text {
 
   #upload-modal form {
     width: 50%;
-    max-height: 436px;
+    max-height: 96%;
     margin: unset;
   }
 }
