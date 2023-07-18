@@ -238,9 +238,45 @@ export function onUpload(registration) {
     const files = document.getElementById('upload').files
     if (!files.length) return
     window.state.uploading = true
-    registration.active.postMessage({
-      type: 'UPLOAD_FILES',
-      payload: { files },
-    })
+    uploadFiles(files)
+  }
+}
+
+async function uploadFiles(files) {
+  const filenames = Array.from(files).map(({ name: filename }) => filename)
+  for (const [index, file] of Object.entries(Array.from(files))) {
+    const body = new FormData()
+    body.append('files', file)
+    try {
+      await fetch('api/upload', {
+        method: 'POST',
+        body,
+      })
+      uploadsProgress(filenames, Number(index))
+    } catch (error) {
+      console.log(`@FILTER error:`, error)
+      throw error
+    }
+  }
+}
+
+function uploadsProgress(filenames, index) {
+  const lis = Array.from(document.getElementById('upload-files-list')?.getElementsByTagName('li') || [])
+  lis.forEach((li, i) => i === index && li.classList.add('downloaded'))
+  if (filenames.length !== index + 1) {
+    window.state.uploading = true
+  } else {
+    fetch('api/refresh')
+      .then(() => {
+        window.state.uploading = false
+        if (confirm('Uploads done. Refresh track list?')) {
+          window.location.reload()
+        }
+      })
+      .catch(error => {
+        console.error(error)
+        window.state.uploading = false
+        alert('Error uploading tracks')
+      })
   }
 }

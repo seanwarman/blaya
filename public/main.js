@@ -56,28 +56,6 @@ if ("serviceWorker" in navigator) {
         })
       }
 
-      if (type === 'UPLOADS_PROGRESS') {
-        const { filenames, index } = payload
-        const lis = Array.from(document.getElementById('upload-files-list')?.getElementsByTagName('li') || [])
-        lis.forEach((li, i) => i === index && li.classList.add('downloaded'))
-        if (filenames.length !== index + 1) {
-          window.state.uploading = true
-        } else {
-          fetch('api/refresh')
-            .then(() => {
-              window.state.uploading = false
-              if (confirm('Uploads done. Refresh track list?')) {
-                window.location.reload()
-              }
-            })
-            .catch(error => {
-              console.error(error)
-              window.state.uploading = false
-              alert('Error uploading tracks')
-            })
-        }
-      }
-
       if (type === 'SYNC_OFFLINE_TRACKS_SUCCESS') {
         const { tracks } = payload
         window.state.offlineTracks = tracks

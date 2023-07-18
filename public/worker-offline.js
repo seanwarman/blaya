@@ -94,7 +94,6 @@ self.addEventListener('message', async event => {
   const { data } = event
   const { type } = data
   if (type === 'DOWNLOAD_PLAYLIST') cacheOffline(event)
-  if (type === 'UPLOAD_FILES') uploadFiles(event)
   if (type === 'DELETE_PLAYLIST_TRACKS') deletePlaylistTracks(event)
   if (type === 'SYNC_OFFLINE_TRACKS') syncOfflineTracks(event)
 })
@@ -138,32 +137,6 @@ async function deletePlaylistTracks(event) {
       type: 'DELETE_PLAYLIST_TRACKS_ERROR',
       payload: { playlist, error },
     })
-  }
-}
-
-async function uploadFiles(event) {
-  const { data, source } = event
-  const { payload } = data
-  const { files } = payload
-
-  const filenames = Array.from(files).map(({ name: filename }) => filename)
-
-  for (const [index, file] of Object.entries(Array.from(files))) {
-    const body = new FormData()
-    body.append('files', file)
-    try {
-      await fetch('api/upload', {
-        method: 'POST',
-        body,
-      })
-      source.postMessage({
-        type: 'UPLOADS_PROGRESS',
-        payload: { filenames, index: Number(index) },
-      })
-    } catch (error) {
-      console.log(`@FILTER error:`, error)
-      throw error
-    }
   }
 }
 
