@@ -544,7 +544,7 @@ div#current-playing-text {
   margin: 0;
   overflow: hidden;
   padding: 0;
-  line-height: 3rem;
+  line-height: 2rem;
 }
 
 #upload-files-list ol li {
