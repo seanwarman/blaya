@@ -24,7 +24,7 @@ export const playModule = {
   },
   set currentTrackSrc(src) {
     this.currentTrackSrcState = src
-    document.getElementById('current-track').src = src
+    document.getElementById('current-track').src = src.split('/').map(section => encodeURIComponent(section)).join('/')
     const player = document.getElementById('player')
     if (!player.paused) {
       player.pause()
