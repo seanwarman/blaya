@@ -99,7 +99,7 @@ build(state => {
 
   window.state = state
 
-  onScrollThisTrack(window.state.trackList, getTrackSearchQuery(window.location.search))()
+//   onScrollThisTrack(window.state.trackList, getTrackSearchQuery(window.location.search))()
 
   // Socket events
   io().on('RELOAD', () => location.reload())

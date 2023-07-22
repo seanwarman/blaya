@@ -372,16 +372,22 @@ export const createPageElement = page => {
 
 // scrollToTrackByTrackId :: Number -> [String] -> undefined
 export const scrollToTrackByTrackId = trackId => trackList => {
-  const trackListIndex = trackList.findIndex(track => trackId === simpleHash(track))
-  const [page] = pagesFromIndexRange([trackListIndex, 0])
-  let pageRange = []
-  if (page - 1) pageRange.push(page - 1)
-  pageRange.push(page)
-  if (page + 1) pageRange.push(page + 1)
-  removeTrackEls()
-  window.state.page = appendTracksByPageRange(trackList)(pageRange)
-  let el = document.getElementById(trackId)
-  el.focus()
+  let trackEl = document.getElementById(trackId)
+  if (!trackEl) {
+    const trackListIndex = trackList.findIndex(track => trackId === simpleHash(track))
+    const [page] = pagesFromIndexRange([trackListIndex, 0])
+    let pageRange = []
+    if (page - 1) pageRange.push(page - 1)
+    pageRange.push(page)
+    if (page + 1) pageRange.push(page + 1)
+    console.log(`@FILTER pageRange:`, pageRange)
+    removeTrackEls()
+    window.state.page = appendTracksByPageRange(trackList)(pageRange)
+    trackEl = document.getElementById(trackId)
+  }
+
+  trackEl.querySelector('.track-name-album-container').focus()
+  trackEl.scrollIntoView()
   window.state.playModule.focussedTrackId = trackId
 }
 

@@ -132,7 +132,6 @@ export const onScrollThisTrack = (trackList, id) => () => {
   if (window.state.targeting) {
     return
   }
-  if (!id || !id.length) return
   window.state.targeting = true
   if (window.state.searching) {
     const trackListFiltered = fzfFilter(trackList)(getSearchValue())
@@ -140,9 +139,7 @@ export const onScrollThisTrack = (trackList, id) => () => {
   } else {
     scrollToTrackByTrackId(id || window.state.playModule.currentTrackId)(trackList)
   }
-  setTimeout(() => {
-    window.state.targeting = false
-  }, 100)
+  window.state.targeting = false
 }
 
 export const onUpScroll = trackList => () => {
