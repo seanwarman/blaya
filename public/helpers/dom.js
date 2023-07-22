@@ -250,10 +250,6 @@ export const Create = trackString => {
   const trackId = simpleHash(trackString)
   const [track, album] = getTrackAndAlbumFromTrackString(trackString)
 
-  if (/#/.test(track) || /#/.test(album)) {
-    return
-  }
-
   const createTrackElementFromDiv = f.pipe(
     f.AssignObject({
       className:

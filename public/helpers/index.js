@@ -30,6 +30,7 @@ export const parseTrackList = pipe(
     && (/.mp3$/.test(track) || /.flac$/.test(track))
   ),
   filter(Boolean),
+  map(encodeURIComponent),
 )
 
 // trackListElements :: [String] -> [Element]
