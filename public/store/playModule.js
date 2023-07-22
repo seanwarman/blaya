@@ -37,7 +37,7 @@ export const playModule = {
     document.getElementById('current-playing-text').innerHTML = `<div>${track}</div><div>${album}</div>`
     this.currentTrackId = f.simpleHash(src)
   },
-  setTrack({ src, isPlaylist = false, playlistIndex = null, selectedPlaylist = null, withHistory = true }) {
+  setTrack({ src, isPlaylist = false, playlistIndex = null, selectedPlaylist = null, withHistory = true, trackAlbum = false }) {
     // Manage the state items...
     if (selectedPlaylist !== null) window.state.selectedPlaylist = selectedPlaylist
     this.currentTrackSrc = src
@@ -49,6 +49,9 @@ export const playModule = {
     if (isPlaylist) {
       // The setter on playlists takes care of the 'playing' class...
       window.state.playlists = updatePlaylistIndex(window.state.selectedPlaylist, playlistIndex, window.state.playlists)
+    } else if (trackAlbum) {
+      const trackListEl = document.querySelector(`.track-album-tab[data-href="${src}"]`)
+      if (trackListEl) trackListEl.nextElementSibling.classList.add('playing')
     } else {
       const trackListEl = document.querySelector(`[data-href="${src}"]`)
       if (trackListEl) trackListEl.classList.add('playing')
@@ -66,7 +69,6 @@ export const playModule = {
 
   },
   nextTrack() {
-    console.log(`@FILTER this.isPlaylist:`, this.isPlaylist)
     if (this.isPlaylist) {
       this.nextTrackPlaylist()
     } else {

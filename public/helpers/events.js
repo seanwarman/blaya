@@ -113,6 +113,20 @@ export const onOpenUploadModal = e => {
   uploadModal.dataset.visible = `${uploadModal.dataset.visible === 'false'}`
 }
 
+// onPlayAlbum :: Event -> undefined
+export const onPlayAlbum = (e) => {
+  const ref = e.currentTarget
+  window.ref = ref
+  if (ref === document.activeElement) {
+    window.state.playModule.setTrack({ src: ref.parentElement.nextElementSibling.dataset.href, isPlaylist: false, trackAlbum: true })
+    document.getElementById('player').play()
+    ref.focus()
+  } else {
+    ref.focus()
+  }
+  window.state.playModule.focussedTrackId = ref.parentElement.id
+}
+
 // onPlay :: Event -> undefined
 export const onPlay = (e) => {
   const ref = e.currentTarget

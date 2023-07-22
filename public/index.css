@@ -448,17 +448,34 @@ div[role="link"]:focus {
 .track-album-tab.track {
   background: #efefef3b;
   border: none;
+  height: 2rem;
+}
+
+.track-album-tab.track .track-name-album-container,
+.track-album-tab.track .track-album,
+.track-album-tab.track .track-name {
+  height: unset;
 }
 
 .track-album-tab.track .track-album {
   background: white;
   border-radius: 29px 29px 0 0;
-  padding-right: 2rem;
   justify-content: end;
   margin-left: 50%;
-  box-shadow: -0.5px -0.5px 0px 0px #00000026;
+  box-shadow: -0.5px -0.5px 3px -1px #00000026;
+  color: #35353582;
+  padding: 0 2rem 0 0;
 }
 
+.track-album-tab.track .track-album .album {
+  white-space: nowrap;
+  padding-left: 1.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.8rem;
+}
+
+.track-album-tab.track .add-to-playlist-icon,
 .track-album-tab.track .track-name .name {
   display: none;
 }

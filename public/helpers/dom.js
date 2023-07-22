@@ -1,5 +1,5 @@
 import { simpleHash } from './utils.js'
-import { onClickOrEnter, onPlay, onPlayPlaylist } from './events.js'
+import { onClickOrEnter, onPlay, onPlayPlaylist, onPlayAlbum } from './events.js'
 import {
   getCurrentTrackString,
   getTrackAndAlbumFromTrackString,
@@ -237,16 +237,17 @@ export const createRemoveFromPlaylistElement = trackId => f.pipe(
 )(document.createElement('div'))
 
 // createTrackNameAlbumContainer :: Element -> Element
-export const createTrackNameAlbumContainer = f.AssignObject({
+export const createTrackNameAlbumContainer = onEvent => f.AssignObject({
   className: 'track-name-album-container',
   tabIndex: '0',
   role: 'link',
-  onmousedown: onPlay,
-  onkeydown: onClickOrEnter(onPlay),
+  onmousedown: onEvent,
+  onkeydown: onClickOrEnter(onEvent),
 })
 
 // Create :: (String, String, String, Number) -> Element
-export const Create = (trackString, classes) => {
+export const Create = (trackString, options = {}) => {
+  const { albumTab } = options
   const trackId = simpleHash(trackString)
   const [track, album] = getTrackAndAlbumFromTrackString(trackString)
 
@@ -254,14 +255,14 @@ export const Create = (trackString, classes) => {
     f.AssignObject({
       className:
         'track' +
-        (window.state?.playModule?.currentTrackSrc === trackString
+        (window.state?.playModule?.currentTrackSrc === trackString && !albumTab
           ? ' playing'
           : '') +
-        (window.state?.offlineTracks?.includes(trackString)
+        (window.state?.offlineTracks?.includes(trackString) && !albumTab
           ? ' downloaded'
           : '') +
-        (classes
-          ? ' ' + classes
+        (albumTab
+          ? ' track-album-tab'
           : ''),
       id: trackId,
     }),
@@ -275,20 +276,20 @@ export const Create = (trackString, classes) => {
   );
 
   const trackNameAlbumContainer =
-    createTrackNameAlbumContainer(document.createElement('div'))
+    createTrackNameAlbumContainer(albumTab ? onPlayAlbum : onPlay)(document.createElement('div'))
 
   const trackName = createTrackName(track)
 
   const trackAlbum = f.AssignObject({
     className: 'track-album',
     innerHTML: '<div class="album">' + (album || '') + '</div>',
-    onmousedown: onPlay,
-    onkeydown: onClickOrEnter(onPlay),
+    onmousedown: albumTab ? onPlayAlbum : onPlay,
+    onkeydown: onClickOrEnter(albumTab ? onPlayAlbum : onPlay),
   })(document.createElement('div'))
 
   const trackEl = createTrackElementFromDiv(document.createElement('div'))
 
-  trackEl.append(createAddToPlaylistElement(trackId))
+  trackEl.append(createAddToPlaylistElement(trackId, { albumTab }))
   trackNameAlbumContainer.append(trackName)
   trackNameAlbumContainer.append(trackAlbum)
   trackEl.append(trackNameAlbumContainer)

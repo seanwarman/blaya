@@ -47,7 +47,7 @@ export const trackListElements = pipe(
       ) {
         return [
           ...acc,
-          Create(track, 'track-album-tab'),
+          Create(track, { albumTab: true }),
           Create(track),
         ]
       }
