@@ -445,6 +445,24 @@ div[role="link"]:focus {
   outline-color: #000000c2;
 }
 
+.track-album-tab.track {
+  background: #efefef3b;
+  border: none;
+}
+
+.track-album-tab.track .track-album {
+  background: white;
+  border-radius: 29px 29px 0 0;
+  padding-right: 2rem;
+  justify-content: end;
+  margin-left: 50%;
+  box-shadow: -0.5px -0.5px 0px 0px #00000026;
+}
+
+.track-album-tab.track .track-name .name {
+  display: none;
+}
+
 footer {
   position: fixed;
   bottom: 0;

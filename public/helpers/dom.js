@@ -246,7 +246,7 @@ export const createTrackNameAlbumContainer = f.AssignObject({
 })
 
 // Create :: (String, String, String, Number) -> Element
-export const Create = trackString => {
+export const Create = (trackString, classes) => {
   const trackId = simpleHash(trackString)
   const [track, album] = getTrackAndAlbumFromTrackString(trackString)
 
@@ -259,6 +259,9 @@ export const Create = trackString => {
           : '') +
         (window.state?.offlineTracks?.includes(trackString)
           ? ' downloaded'
+          : '') +
+        (classes
+          ? ' ' + classes
           : ''),
       id: trackId,
     }),
@@ -295,6 +298,7 @@ export const Create = trackString => {
 
 // Append :: (Number, [Element]) -> Number
 export const Append = (page, newEls) => {
+  console.error(page)
   if (newEls.length < 1) return page
   const div = document.createElement('div')
   div.id = 'page-' + page

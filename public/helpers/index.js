@@ -34,7 +34,30 @@ export const parseTrackList = pipe(
 
 // trackListElements :: [String] -> [Element]
 export const trackListElements = pipe(
-  map(Create),
+  trackList => {
+    return trackList.reduce((acc, track, i) => {
+      if (!trackList[i+1]) return [
+        ...acc,
+        Create(track),
+      ]
+      if (
+        track
+        && track.split('/')?.[1] === trackList[i+1]?.split('/')?.[1]
+        && track.split('/')?.[1] !== trackList[i-1]?.split('/')?.[1]
+      ) {
+        return [
+          ...acc,
+          Create(track, 'track-album-tab'),
+          Create(track),
+        ]
+      }
+      return [
+        ...acc,
+        Create(track),
+      ]
+    }, [])
+  },
+  // map(Create),
   filter(Boolean),
 )
 
