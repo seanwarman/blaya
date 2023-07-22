@@ -380,14 +380,13 @@ export const scrollToTrackByTrackId = trackId => trackList => {
     if (page - 1) pageRange.push(page - 1)
     pageRange.push(page)
     if (page + 1) pageRange.push(page + 1)
-    console.log(`@FILTER pageRange:`, pageRange)
     removeTrackEls()
     window.state.page = appendTracksByPageRange(trackList)(pageRange)
     trackEl = document.getElementById(trackId)
   }
 
   trackEl.querySelector('.track-name-album-container').focus()
-  trackEl.scrollIntoView()
+  trackEl.scrollIntoView({ block: 'center' })
   window.state.playModule.focussedTrackId = trackId
 }
 

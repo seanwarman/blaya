@@ -131,8 +131,7 @@ export const appendTracksByPage = trackList => pipe(
 export const appendTracksByPageRange = trackList => pages => {
   const trackLists = sliceTrackListByPageRange(trackList)(pages)
   return trackLists.reduce((_, [page, trackList]) => {
-    appendTracks(page, trackList)
-    return page
+    return appendTracks(page, trackList)
   }, 0)
 }
 

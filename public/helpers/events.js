@@ -143,6 +143,7 @@ export const onScrollThisTrack = (trackList, id) => () => {
 }
 
 export const onUpScroll = trackList => () => {
+  if (window.state.targeting) return
   if (window.state.lazyLoadDebounce) {
     return
   }
@@ -166,6 +167,7 @@ export const onUpScroll = trackList => () => {
 }
 
 export const onDownScroll = trackList => () => {
+  if (window.state.targeting) return
   if (window.state.lazyLoadDebounce) {
     return
   }
