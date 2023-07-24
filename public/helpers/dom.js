@@ -247,7 +247,12 @@ export const createTrackNameAlbumContainer = onEvent => f.AssignObject({
 
 // Create :: (String, String, String, Number) -> Element
 export const Create = (trackString, options = {}) => {
-  const { albumTab, artistTab } = options
+  let albumTab = options.albumTab
+  let artistTab = options.artistTab
+  if (window.state?.searching) {
+    albumTab = false
+    artistTab = false
+  }
   const trackId = simpleHash(trackString)
   const [track, album] = getTrackAndAlbumFromTrackString(trackString)
 
