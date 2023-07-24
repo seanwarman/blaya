@@ -36,6 +36,7 @@ export const parseTrackList = pipe(
 export const trackListElements = pipe(
   trackList => {
     return trackList.reduce((acc, track, i) => {
+      if (window.state?.searching) return [...acc, Create(track)]
       const [pastArtist] = trackList[i-1]?.split('/')?.[1]?.split(' - ') || []
       const [thisArtist] = trackList[i]?.split('/')?.[1]?.split(' - ') || []
       if (
