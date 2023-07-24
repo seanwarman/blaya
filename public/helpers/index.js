@@ -36,13 +36,19 @@ export const parseTrackList = pipe(
 export const trackListElements = pipe(
   trackList => {
     return trackList.reduce((acc, track, i) => {
-      if (!trackList[i+1]) return [
-        ...acc,
-        Create(track),
-      ]
+      const [pastArtist] = trackList[i-1]?.split('/')?.[1]?.split(' - ') || []
+      const [thisArtist] = trackList[i]?.split('/')?.[1]?.split(' - ') || []
+      if (
+        pastArtist !== thisArtist
+      ) {
+        return [
+          ...acc,
+          Create(track, { artistTab: true }),
+          Create(track),
+        ]
+      }
       if (
         track
-        && track.split('/')?.[1] === trackList[i+1]?.split('/')?.[1]
         && track.split('/')?.[1] !== trackList[i-1]?.split('/')?.[1]
       ) {
         return [
@@ -57,7 +63,6 @@ export const trackListElements = pipe(
       ]
     }, [])
   },
-  // map(Create),
   filter(Boolean),
 )
 
