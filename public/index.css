@@ -85,7 +85,7 @@ input#search-input {
   position: fixed;
   overflow-y: scroll;
   overflow-x: hidden;
-  transition: height .6s, padding .6s, box-shadow .6s, background .6s;
+  transition: top .6s, height .6s, padding .6s, box-shadow .6s, background .6s;
   display: flex;
   align-items: start;
   bottom: 0;
@@ -104,9 +104,12 @@ input#search-input {
 
 #playlist-container[data-playlist-minimised="false"] {
   background-color: white;
-  height: 100%;
-  /* padding-bottom: 5rem; */
   box-shadow: 1px 7px 17px 0px #00000024;
+  position: fixed;
+  top: 3rem;
+  bottom: 6.5rem;
+  left: 0;
+  right: 0;
 }
 
 #playlist {
@@ -114,7 +117,6 @@ input#search-input {
   border-radius: 2px;
   display: flex;
   flex-direction: column-reverse;
-  margin-top: 49px;
   justify-content: flex-end;
   width: 100%;
   padding-bottom: 9rem;
@@ -187,7 +189,7 @@ body[data-playlist-mode="true"] .mode-button-playlist {
   border-bottom: 3px solid #5ed0cf;
   z-index: 1;
   position: fixed;
-  transition: bottom .6s;
+  transition: bottom .6s, top .6s;
   height: 3rem;
   display: flex;
   align-items: center;
@@ -202,10 +204,12 @@ body[data-playlist-mode="true"] .mode-button-playlist {
 
 #playlist-container[data-playlist-minimised="true"] .button-playlist-container {
   background-color: transparent;
+  translate: 0;
 }
 
 #playlist-container[data-playlist-minimised="false"] .button-playlist-container {
   background-color: white;
+  translate: 0 -3rem;
 }
 
 #download-button-playlist,
@@ -729,9 +733,10 @@ div#current-playing-text {
 
   #playlist-container[data-playlist-minimised="true"] {
     background-color: transparent;
-    height: 33px;
+    height: 0;
     padding-bottom: 0;
     box-shadow: 1px 7px 17px 0px #00000000;
+    bottom: 54px;
   }
 
   #playlist-container[data-playlist-minimised="false"] {
@@ -739,6 +744,10 @@ div#current-playing-text {
     height: 70%;
     /* padding-bottom: 5rem; */
     box-shadow: 1px 7px 17px 0px #00000024;
+    bottom: 54px;
+    top: unset;
+    left: unset;
+    right: 1rem;
   }
 
   #playlist-container[data-playlist-minimised="false"] #playlist .playlist-name {
@@ -779,6 +788,11 @@ div#current-playing-text {
     justify-content: end;
     width: 30%;
     min-width: 368px;
+    translate: 0 -3rem;
+  }
+
+  #playlist-container[data-playlist-minimised="true"] .button-playlist-container {
+    translate: 0 -3rem;
   }
 
   #maximise-button-playlist {
