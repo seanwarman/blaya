@@ -447,10 +447,11 @@ div[role="link"]:focus {
 
 .track-artist-tab.track,
 .track-album-tab.track {
-  background: hsl(0 0% 94% / 1);
+  background: hsl(0 0% 98% / 1);
   border: none;
   height: 3rem;
   padding-top: 1rem;
+  box-shadow: inset 0px 0.6px 5px 0px hsl(0deg 0% 0% / 6%);
 }
 
 .track-artist-tab.track .track-name-album-container,
@@ -465,7 +466,7 @@ div[role="link"]:focus {
 
 .track-album-tab.track .track-album,
 .track-artist-tab.track .track-album {
-  background: hsl(0 0% 97% / 1);
+  background: hsl(0 0% 99% / 1);
   border-radius: 29px 29px 0 0;
   justify-content: end;
   margin-left: -50%;

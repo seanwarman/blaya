@@ -279,19 +279,15 @@ export const Create = (trackString, options = {}) => {
   );
 
   const trackNameAlbumContainer =
-    createTrackNameAlbumContainer(albumTab && artistTab ? onPlayAlbum : onPlay)(document.createElement('div'))
+    createTrackNameAlbumContainer(albumTab || artistTab ? onPlayAlbum : onPlay)(document.createElement('div'))
 
   const trackName = createTrackName(track)
 
-  const albumArtistText = artistTab
-    ? (album?.split(' - ')?.[0] || '')
-    : (album || '')
-
   const trackAlbum = f.AssignObject({
     className: 'track-album',
-    innerHTML: '<div class="album">' + albumArtistText + '</div>',
-    onmousedown: albumTab && artistTab ? onPlayAlbum : onPlay,
-    onkeydown: onClickOrEnter(albumTab && artistTab ? onPlayAlbum : onPlay),
+    innerHTML: '<div class="album">' + (album || '') + '</div>',
+    onmousedown: albumTab || artistTab ? onPlayAlbum : onPlay,
+    onkeydown: onClickOrEnter(albumTab || artistTab ? onPlayAlbum : onPlay),
   })(document.createElement('div'))
 
   const trackEl = createTrackElementFromDiv(document.createElement('div'))
