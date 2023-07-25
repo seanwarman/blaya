@@ -269,7 +269,7 @@ export const Create = (trackString, options = {}) => {
           : '') +
         (artistTab || albumTab
           ? ' track-tab'
-          : ''),
+          : ' track-non-tab'),
       id: albumTab || artistTab ? '' : trackId,
     }),
     f.ObjectAssignDataSet({

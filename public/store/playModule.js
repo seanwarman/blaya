@@ -53,7 +53,7 @@ export const playModule = {
       const trackListEl = document.querySelector(`.track-tab[data-href="${src}"]`)
       if (trackListEl) trackListEl.nextElementSibling.querySelector('.track-name-album-container').classList.add('playing')
     } else {
-      const trackListEl = document.querySelector(`[data-href="${src}"]`)
+      const trackListEl = document.querySelector(`.track-non-tab[data-href="${src}"]`)
       if (trackListEl) trackListEl.classList.add('playing')
     }
 
