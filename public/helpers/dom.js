@@ -266,15 +266,20 @@ export const Create = (trackString, options = {}) => {
           : '') +
         (albumTab
           ? ' track-album-tab'
+          : '') +
+        (artistTab || albumTab
+          ? ' track-tab'
           : ''),
-      id: trackId,
+      id: albumTab || artistTab ? '' : trackId,
     }),
     f.ObjectAssignDataSet({
       href: trackString,
     }),
     addPlayingClassIf(
-      trackString === window.state?.playModule?.currentTrackSrc &&
-        !window.state?.playModule?.isPlaylist
+      trackString === window.state?.playModule?.currentTrackSrc
+      && !window.state?.playModule?.isPlaylist
+      && !albumTab
+      && !artistTab
     )
   );
 
@@ -302,7 +307,6 @@ export const Create = (trackString, options = {}) => {
 
 // Append :: (Number, [Element]) -> Number
 export const Append = (page, newEls) => {
-  console.error(page)
   if (newEls.length < 1) return page
   const div = document.createElement('div')
   div.id = 'page-' + page

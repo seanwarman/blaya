@@ -118,7 +118,7 @@ export const onPlayAlbum = (e) => {
   const ref = e.currentTarget
   window.ref = ref
   if (ref === document.activeElement) {
-    window.state.playModule.setTrack({ src: ref.parentElement.nextElementSibling.dataset.href, isPlaylist: false, trackAlbum: true })
+    window.state.playModule.setTrack({ src: ref.parentElement.dataset.href, isPlaylist: false, tab: true })
     document.getElementById('player').play()
     ref.focus()
   } else {
