@@ -297,10 +297,10 @@ export const Create = (trackString, options = {}) => {
 
   const trackEl = createTrackElementFromDiv(document.createElement('div'))
 
-  trackEl.append(createAddToPlaylistElement(trackId))
   trackNameAlbumContainer.append(trackName)
   trackNameAlbumContainer.append(trackAlbum)
   trackEl.append(trackNameAlbumContainer)
+  trackEl.append(createAddToPlaylistElement(trackId))
 
   return trackEl
 }

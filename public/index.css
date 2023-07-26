@@ -321,7 +321,6 @@ body[data-searching="true"] #page-1 .track.downloaded:first-child .track-name-al
 .track {
   display: grid;
   overflow: hidden;
-  border-bottom: 1px solid #ededed;
 }
 
 body[data-searching="true"] #page-1 .track:first-child.track-adding-track .track-name-album-container {
@@ -341,6 +340,7 @@ body[data-playlist-mode="true"] .track {
 .track-name-album-container {
   display: grid;
   grid-template-columns: auto 50%;
+  border-top: 1px solid #ededed;
 }
 
 div[data-playlist="true"] .track-name-album-container {
@@ -351,6 +351,10 @@ div[data-playlist="true"] .track-name-album-container {
   content: url(./icons/play-solid.svg);
   min-width: 9px;
   margin-right: 0.7rem;
+}
+
+.playing .track-name-album-container:focus .track-name::before {
+  content: url(./icons/play-solid-white.svg);
 }
 
 .downloaded.playing .track-name::before {
@@ -370,6 +374,24 @@ body[data-playlist-mode="true"] #playlist .track {
   align-items: center;
   justify-content: center;
   background: #ffffff4d;
+  border-top: 1px solid #ededed;
+}
+
+.track-tab .track-name-album-container,
+.track-tab .add-to-playlist,
+.track-tab + .track-non-tab .add-to-playlist,
+.track-tab + .track-non-tab .track-name-album-container,
+.track-tab .track-name-album-container:focus + .add-to-playlist {
+  border-top: none;
+}
+
+.track-tab .track-name-album-container:focus + .add-to-playlist {
+  background: unset;
+}
+
+.track-tab .track-name-album-container:focus {
+  background: unset;
+  border-top: none;
 }
 
 body[data-playlist-mode="false"] .add-to-playlist {
@@ -379,6 +401,10 @@ body[data-playlist-mode="false"] .add-to-playlist {
 .add-to-playlist-icon {
   height:1rem;
   content: url(public/icons/plus-solid.svg);
+}
+
+.track-name-album-container:focus + .add-to-playlist .add-to-playlist-icon {
+  content: url(public/icons/plus-solid-white.svg);
 }
 
 .downloaded .add-to-playlist-icon {
@@ -435,18 +461,24 @@ body[data-playlist-mode="true"] .track-name {
 
 div[role="link"] {
   cursor: pointer;
-  margin: 1px;
+  padding: 1px;
 }
 
 #playlist div[role="link"] {
   margin: 0 1px;
 }
 
-div[role="link"]:active,
-div[role="link"]:focus {
-  outline: 1px;
-  outline-style: auto;
-  outline-color: #000000c2;
+.track-name-album-container {
+  order: 1;
+}
+
+.track-name-album-container:active,
+.track-name-album-container:focus + .add-to-playlist,
+.track-name-album-container:focus {
+  background: #55baba;
+  color: white;
+  border-top: 1px solid #55baba;
+  outline: none;
 }
 
 .track-artist-tab.track,
