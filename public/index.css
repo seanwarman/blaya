@@ -385,7 +385,8 @@ body[data-playlist-mode="true"] #playlist .track {
 .track-tab .track-name-album-container.track-selected + .add-to-playlist,
 .track-tab .track-name-album-container:focus + .add-to-playlist {
   border-top: none;
-  border-top: 1px solid white;
+  border-top: 1px solid transparent;
+  padding-top: 1px;
 }
 
 .track-tab .track-name-album-container.track-selected + .add-to-playlist,
@@ -396,7 +397,8 @@ body[data-playlist-mode="true"] #playlist .track {
 .track-tab .track-name-album-container.track-selected,
 .track-tab .track-name-album-container:focus {
   background: unset;
-  border-top: none;
+  border-top: 1px solid transparent;
+  padding-top: 1px;
 }
 
 body[data-playlist-mode="false"] .add-to-playlist {
@@ -488,6 +490,11 @@ div[role="link"] {
   border-top: 2px solid white;
   outline: none;
   padding-top: 0;
+}
+
+.track-tab + .track-non-tab .track-name-album-container.track-selected + .add-to-playlist,
+.track-tab + .track-non-tab .track-name-album-container:focus + .add-to-playlist {
+  border-top: none;
 }
 
 .track-artist-tab.track,
