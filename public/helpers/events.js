@@ -115,6 +115,9 @@ export const onOpenUploadModal = e => {
 
 // onPlayAlbum :: Event -> undefined
 export const onPlayAlbum = (e) => {
+  for (const t of document.querySelectorAll('.track-name-album-container.track-selected')) {
+    t.classList.remove('track-selected')
+  }
   const ref = e.currentTarget
   window.ref = ref
   if (ref === document.activeElement) {
@@ -129,6 +132,9 @@ export const onPlayAlbum = (e) => {
 
 // onPlay :: Event -> undefined
 export const onPlay = (e) => {
+  for (const t of document.querySelectorAll('.track-name-album-container.track-selected')) {
+    t.classList.remove('track-selected')
+  }
   const ref = e.currentTarget
   window.ref = ref
   if (ref === document.activeElement) {
@@ -292,4 +298,52 @@ function uploadsProgress(filenames, index) {
         alert('Error uploading tracks')
       })
   }
+}
+
+export function onSelectDown(e) {
+  let track = document.querySelector('.track-name-album-container:focus')
+  const el = track
+    .parentElement
+    .nextElementSibling
+    .querySelector('.track-name-album-container')
+
+  if (e.shiftKey) {
+    if (el.classList.contains('track-selected')) {
+      track.classList.remove('track-selected')
+    } else {
+      track.classList.add('track-selected')
+      el.classList.add('track-selected')
+    }
+  } else {
+    for (const t of document.querySelectorAll('.track-name-album-container.track-selected')) {
+      t.classList.remove('track-selected')
+    }
+  }
+
+  el
+    .focus()
+}
+
+export function onSelectUp(e) {
+  const track = document.querySelector('.track-name-album-container:focus')
+  const el = track
+    .parentElement
+    .previousElementSibling
+    .querySelector('.track-name-album-container')
+
+  if (e.shiftKey) {
+    if (el.classList.contains('track-selected')) {
+      track.classList.remove('track-selected')
+    } else {
+      track.classList.add('track-selected')
+      el.classList.add('track-selected')
+    }
+  } else {
+    for (const t of document.querySelectorAll('.track-name-album-container.track-selected')) {
+      t.classList.remove('track-selected')
+    }
+  }
+
+  el
+    .focus()
 }

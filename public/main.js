@@ -18,6 +18,8 @@ import {
   onUpload,
   onStopPropagation,
   onAddToPlaylistFromSearch,
+  onSelectUp,
+  onSelectDown,
 } from './helpers/events.js'
 import { logger } from './helpers/functional-utils.js'
 import { getTrackSearchQuery, addToPlaylist } from './helpers/dom.js';
@@ -155,12 +157,23 @@ build(state => {
         (typeof key === 'string' && e.key === key)
         || (key.key === e.key && key.ctrlKey === e.ctrlKey)
         || (key.key === e.key && key.metaKey === e.metaKey)
+        || (key.key === e.key && key.shiftKey === e.shiftKey)
       ) {
         e.preventDefault()
         cb(e)
       }
     })
   }
+
+  // Adding to Tab event, have to use addEventListener to prevent overwriting
+  // original event...
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab') {
+      for (const t of document.querySelectorAll('.track-name-album-container.track-selected')) {
+        t.classList.remove('track-selected')
+      }
+    }
+  })
 
   document.onkeydown = onKey(
     [' ', () => {
@@ -173,6 +186,10 @@ build(state => {
     }],
     ['ArrowRight', onNext],
     ['ArrowLeft', onPrev],
+    ['ArrowDown', onSelectDown],
+    ['ArrowUp', onSelectUp],
+    [{ key: 'n', ctrlKey: true }, onSelectDown],
+    [{ key: 'p', ctrlKey: true }, onSelectUp],
     [{ key: 'k', ctrlKey: true }, () => document.getElementById('search-input').focus()],
     [{ key: 'k', metaKey: true }, () => document.getElementById('search-input').focus()],
     ['Escape', () => {

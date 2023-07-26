@@ -353,6 +353,7 @@ div[data-playlist="true"] .track-name-album-container {
   margin-right: 0.7rem;
 }
 
+.playing .track-name-album-container.track-selected .track-name::before,
 .playing .track-name-album-container:focus .track-name::before {
   content: url(./icons/play-solid-white.svg);
 }
@@ -381,14 +382,18 @@ body[data-playlist-mode="true"] #playlist .track {
 .track-tab .add-to-playlist,
 .track-tab + .track-non-tab .add-to-playlist,
 .track-tab + .track-non-tab .track-name-album-container,
+.track-tab .track-name-album-container.track-selected + .add-to-playlist,
 .track-tab .track-name-album-container:focus + .add-to-playlist {
   border-top: none;
+  border-top: 1px solid white;
 }
 
+.track-tab .track-name-album-container.track-selected + .add-to-playlist,
 .track-tab .track-name-album-container:focus + .add-to-playlist {
   background: unset;
 }
 
+.track-tab .track-name-album-container.track-selected,
 .track-tab .track-name-album-container:focus {
   background: unset;
   border-top: none;
@@ -403,6 +408,7 @@ body[data-playlist-mode="false"] .add-to-playlist {
   content: url(public/icons/plus-solid.svg);
 }
 
+.track-name-album-container.track-selected + .add-to-playlist .add-to-playlist-icon,
 .track-name-album-container:focus + .add-to-playlist .add-to-playlist-icon {
   content: url(public/icons/plus-solid-white.svg);
 }
@@ -473,12 +479,15 @@ div[role="link"] {
 }
 
 .track-name-album-container:active,
+.track-name-album-container.track-selected + .add-to-playlist,
 .track-name-album-container:focus + .add-to-playlist,
+.track-name-album-container.track-selected,
 .track-name-album-container:focus {
   background: #55baba;
   color: white;
-  border-top: 1px solid #55baba;
+  border-top: 2px solid white;
   outline: none;
+  padding-top: 0;
 }
 
 .track-artist-tab.track,
