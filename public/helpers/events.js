@@ -302,10 +302,20 @@ function uploadsProgress(filenames, index) {
 
 export function onSelectDown(e) {
   let track = document.querySelector('.track-name-album-container:focus')
-  const el = track
+  let el = track
     .parentElement
     .nextElementSibling
-    .querySelector('.track-name-album-container')
+    ?.querySelector('.track-name-album-container')
+
+  if (!el) {
+    const nextPage = track
+      .parentElement
+      .parentElement
+      .nextElementSibling
+    el = nextPage
+      .firstElementChild
+      .querySelector('.track-name-album-container')
+  }
 
   if (e.shiftKey) {
     if (el.classList.contains('track-selected')) {
@@ -329,7 +339,17 @@ export function onSelectUp(e) {
   const el = track
     .parentElement
     .previousElementSibling
-    .querySelector('.track-name-album-container')
+    ?.querySelector('.track-name-album-container')
+
+  if (!el) {
+    const prevPage = track
+      .parentElement
+      .parentElement
+      .previousElementSibling
+    el = prevPage
+      .lastElementChild
+      .querySelector('.track-name-album-container')
+  }
 
   if (e.shiftKey) {
     if (el.classList.contains('track-selected')) {
