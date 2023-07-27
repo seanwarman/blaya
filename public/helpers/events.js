@@ -130,18 +130,39 @@ export const onPlayAlbum = (e) => {
   window.state.playModule.focussedTrackId = ref.parentElement.id
 }
 
-const findTrackNameAlbumContainerParent = el => {
+const findParentByClassName = (className, el) => {
   if (!el) return null
   let fuse = 0
   let searchEl = el
   while (
-    !searchEl?.classList?.contains('track-name-album-container')
+    !searchEl?.classList?.contains(className)
     && fuse < 6
   ) {
     searchEl = searchEl.parentElement
     fuse++
   }
   return searchEl
+}
+
+export const onSelectPlaylist = () => {
+  const playlist = document.getElementById('playlist')
+  for (const t of playlist.querySelectorAll('.track-name.track-selected')) {
+    t.classList.remove('track-selected')
+  }
+
+  const selection = window.getSelection()
+  const { anchorNode, focusNode } = selection
+  const start = findParentByClassName('track-name', anchorNode)
+  const end = findParentByClassName('track-name', focusNode)
+  let selectedEls = []
+  if (start) selectedEls.push(start)
+  for (const node of playlist.getElementsByClassName('track-name')) {
+    if (selection.containsNode(node)) selectedEls.push(node)
+  }
+  if (end) selectedEls.push(end)
+  for (const selectedEl of selectedEls) {
+    selectedEl.classList.add('track-selected')
+  }
 }
 
 export const onSelect = () => {
@@ -151,8 +172,8 @@ export const onSelect = () => {
 
   const selection = window.getSelection()
   const { anchorNode, focusNode } = selection
-  const start = findTrackNameAlbumContainerParent(anchorNode)
-  const end = findTrackNameAlbumContainerParent(focusNode)
+  const start = findParentByClassName('track-name-album-container', anchorNode)
+  const end = findParentByClassName('track-name-album-container', focusNode)
   let selectedEls = []
   if (start) selectedEls.push(start)
   for (const node of document.getElementsByClassName('track-name-album-container')) {

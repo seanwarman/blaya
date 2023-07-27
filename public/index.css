@@ -36,6 +36,8 @@ header {
   display: flex;
   align-items: center;
   justify-content: center;
+  border-bottom: 1px solid #ededed;
+  background-color: white;
 }
 
 img.svg {
@@ -44,13 +46,16 @@ img.svg {
 
 .drag-container img.svg.grip {
   content: url(icons/grip-vertical-solid.svg);
+  user-select: none;
+  -webkit-user-select: none; /* Safari */        
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none;
 }
 
+/* .track:focus .drag-container img.svg.grip, */
 .downloaded .drag-container img.svg.grip {
   content: url(icons/grip-vertical-solid-white.svg);
 }
-
-
 
 .search-container {
   grid-column: 2 / span 3;
@@ -353,6 +358,8 @@ div[data-playlist="true"] .track-name-album-container {
   margin-right: 0.7rem;
 }
 
+#playlist .track .track-name.track-selected::before,
+#playlist .track:focus .track-name::before,
 .playing .track-name-album-container.track-selected .track-name::before,
 .playing .track-name-album-container:focus .track-name::before {
   content: url(./icons/play-solid-white.svg);
@@ -376,6 +383,11 @@ body[data-playlist-mode="true"] #playlist .track {
   justify-content: center;
   background: #ffffff4d;
   border-top: 1px solid #ededed;
+}
+
+#playlist .add-to-playlist {
+  border-bottom: 1px solid #ededed;
+  border-top: none;
 }
 
 .track-tab .track-name-album-container,
@@ -428,6 +440,7 @@ body[data-playlist-mode="false"] .add-to-playlist {
   height: 0.8rem;
 }
 
+#playlist .track:focus .remove-from-playlist-icon,
 .downloaded .remove-from-playlist-icon {
   content: url(public/icons/minus-solid-white.svg);
   height: 0.8rem;
@@ -483,6 +496,18 @@ div[role="link"] {
   order: 1;
 }
 
+#playlist .track-name {
+  border-bottom: 1px solid #ededed;
+}
+
+#playlist .track:focus {
+  /* background: #55baba; */
+  outline: none;
+  /* color: white; */
+  /* border-bottom: none; */
+  /* padding-bottom: 1px; */
+}
+
 .track-name-album-container:active,
 .track-name-album-container.track-selected + .add-to-playlist,
 .track-name-album-container:focus + .add-to-playlist,
@@ -495,10 +520,18 @@ div[role="link"] {
   color: white;
 }
 
+#playlist .track-name .name::selection,
 .track-name-album-container .album::selection,
 .track-name-album-container .name::selection {
   background-color: #55baba;
   color: white;
+}
+
+#playlist .track-name:active,
+#playlist .track-name.track-selected {
+  background-color: #55baba;
+  color: white;
+  outline: none;
 }
 
 .track-tab .track-name-album-container .album::selection,
