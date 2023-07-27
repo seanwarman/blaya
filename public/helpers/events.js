@@ -145,6 +145,10 @@ const findTrackNameAlbumContainerParent = el => {
 }
 
 export const onSelect = () => {
+  for (const t of document.querySelectorAll('.track-name-album-container.track-selected')) {
+    t.classList.remove('track-selected')
+  }
+
   const selection = window.getSelection()
   const { anchorNode, focusNode } = selection
   const start = findTrackNameAlbumContainerParent(anchorNode)
@@ -173,6 +177,7 @@ export const onPlay = (e) => {
     document.getElementById('player').play()
     ref.focus()
   } else {
+    window.getSelection().removeAllRanges()
     ref.focus()
   }
   window.state.playModule.focussedTrackId = ref.parentElement.id

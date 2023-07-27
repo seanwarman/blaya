@@ -408,6 +408,9 @@ body[data-playlist-mode="false"] .add-to-playlist {
 .add-to-playlist-icon {
   height:1rem;
   content: url(public/icons/plus-solid.svg);
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
 }
 
 .track-name-album-container.track-selected + .add-to-playlist .add-to-playlist-icon,
@@ -491,12 +494,6 @@ div[role="link"] {
   padding-top: 0;
   color: white;
 }
-
-/* .track-name-album-container { */
-  /* -webkit-user-select: all; */
-  /* -moz-user-select: all; */
-  /* user-select: all; */
-/* } */
 
 .track-name-album-container .album::selection,
 .track-name-album-container .name::selection {

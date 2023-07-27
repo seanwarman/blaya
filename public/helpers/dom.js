@@ -106,7 +106,10 @@ export const createTrackElementForPlaylist = trackList => playingFn => trackId =
       className: 'track' + (playingFn() ? ' playing' : ''),
       id: trackId,
       onmousedown: onPlayPlaylist,
+      onmouseout: onSelect,
       onmouseup: onSelect,
+      oncontextmenu: onSelect,
+      ontouchcancel: onSelect,
       onkeydown: onClickOrEnter(onPlayPlaylist),
       role: 'link',
       tabIndex: '0',
@@ -235,7 +238,10 @@ export const createTrackNameAlbumContainer = onEvent => f.AssignObject({
   tabIndex: '0',
   role: 'link',
   onmousedown: onEvent,
+  onmouseout: onSelect,
   onmouseup: onSelect,
+  oncontextmenu: onSelect,
+  ontouchcancel: onSelect,
   onkeydown: onClickOrEnter(onEvent),
 })
 
@@ -283,7 +289,10 @@ export const Create = (trackString, options = {}) => {
     className: 'track-album',
     innerHTML: '<div class="album">' + (album || '') + '</div>',
     onmousedown: albumTab || artistTab ? onPlayAlbum : onPlay,
+    onmouseout: onSelect,
     onmouseup: onSelect,
+    oncontextmenu: onSelect,
+    ontouchcancel: onSelect,
     onkeydown: onClickOrEnter(albumTab || artistTab ? onPlayAlbum : onPlay),
   })(document.createElement('div'))
 
