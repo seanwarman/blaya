@@ -130,14 +130,45 @@ export const onPlayAlbum = (e) => {
   window.state.playModule.focussedTrackId = ref.parentElement.id
 }
 
+const findTrackNameAlbumContainerParent = el => {
+  if (!el) return null
+  let fuse = 0
+  let searchEl = el
+  while (
+    !searchEl?.classList?.contains('track-name-album-container')
+    && fuse < 6
+  ) {
+    searchEl = searchEl.parentElement
+    fuse++
+  }
+  return searchEl
+}
+
+export const onSelect = () => {
+  const selection = window.getSelection()
+  const { anchorNode, focusNode } = selection
+  const start = findTrackNameAlbumContainerParent(anchorNode)
+  const end = findTrackNameAlbumContainerParent(focusNode)
+  let selectedEls = []
+  if (start) selectedEls.push(start)
+  for (const node of document.getElementsByClassName('track-name-album-container')) {
+    if (selection.containsNode(node)) selectedEls.push(node)
+  }
+  if (end) selectedEls.push(end)
+  for (const selectedEl of selectedEls) {
+    selectedEl.classList.add('track-selected')
+  }
+}
+
 // onPlay :: Event -> undefined
 export const onPlay = (e) => {
   for (const t of document.querySelectorAll('.track-name-album-container.track-selected')) {
     t.classList.remove('track-selected')
   }
+
   const ref = e.currentTarget
   window.ref = ref
-  if (ref === document.activeElement) {
+  if (ref === document.activeElement && !e.shiftKey) {
     window.state.playModule.setTrack({ src: ref.parentElement.dataset.href, isPlaylist: false })
     document.getElementById('player').play()
     ref.focus()
@@ -352,6 +383,7 @@ export function onSelectUp(e) {
   }
 
   if (e.shiftKey) {
+    window.getSelection().removeAllRanges()
     if (el.classList.contains('track-selected')) {
       track.classList.remove('track-selected')
     } else {

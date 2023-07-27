@@ -1,5 +1,5 @@
 import { simpleHash } from './utils.js'
-import { onClickOrEnter, onPlay, onPlayPlaylist, onPlayAlbum } from './events.js'
+import { onClickOrEnter, onPlay, onPlayPlaylist, onPlayAlbum, onSelect } from './events.js'
 import {
   getCurrentTrackString,
   getTrackAndAlbumFromTrackString,
@@ -34,14 +34,6 @@ export const flashTrack = () => {
   setTimeout(() => {
     trackEl.classList.remove('track-adding-track')
   }, 100)
-}
-
-// addPlayingClassIf :: Element -> Boolean -> Element
-export const addPlayingClassIf = condition => element => {
-  if (condition) {
-    return f.classListAdd('playing')(element)
-  }
-  return element
 }
 
 // createTrackInnerHTMLFromTrackAndAlbum :: [String] -> String
@@ -114,6 +106,7 @@ export const createTrackElementForPlaylist = trackList => playingFn => trackId =
       className: 'track' + (playingFn() ? ' playing' : ''),
       id: trackId,
       onmousedown: onPlayPlaylist,
+      onmouseup: onSelect,
       onkeydown: onClickOrEnter(onPlayPlaylist),
       role: 'link',
       tabIndex: '0',
@@ -242,10 +235,11 @@ export const createTrackNameAlbumContainer = onEvent => f.AssignObject({
   tabIndex: '0',
   role: 'link',
   onmousedown: onEvent,
+  onmouseup: onSelect,
   onkeydown: onClickOrEnter(onEvent),
 })
 
-// Create :: (String, String, String, Number) -> Element
+// Create :: (String, { Boolean, Boolean }) -> Element
 export const Create = (trackString, options = {}) => {
   const { albumTab, artistTab } = options
   const trackId = simpleHash(trackString)
@@ -255,7 +249,10 @@ export const Create = (trackString, options = {}) => {
     f.AssignObject({
       className:
         'track' +
-        (window.state?.playModule?.currentTrackSrc === trackString && !albumTab && !artistTab
+        (window.state?.playModule?.currentTrackSrc === trackString
+          && !albumTab
+          && !artistTab
+          && !window.state?.playModule?.isPlaylist
           ? ' playing'
           : '') +
         (window.state?.offlineTracks?.includes(trackString) && !albumTab && !artistTab
@@ -275,13 +272,7 @@ export const Create = (trackString, options = {}) => {
     f.ObjectAssignDataSet({
       href: trackString,
     }),
-    addPlayingClassIf(
-      trackString === window.state?.playModule?.currentTrackSrc
-      && !window.state?.playModule?.isPlaylist
-      && !albumTab
-      && !artistTab
-    )
-  );
+  )
 
   const trackNameAlbumContainer =
     createTrackNameAlbumContainer(albumTab || artistTab ? onPlayAlbum : onPlay)(document.createElement('div'))
@@ -292,6 +283,7 @@ export const Create = (trackString, options = {}) => {
     className: 'track-album',
     innerHTML: '<div class="album">' + (album || '') + '</div>',
     onmousedown: albumTab || artistTab ? onPlayAlbum : onPlay,
+    onmouseup: onSelect,
     onkeydown: onClickOrEnter(albumTab || artistTab ? onPlayAlbum : onPlay),
   })(document.createElement('div'))
 
@@ -415,4 +407,10 @@ export const getTrackSearchQuery = (search) => {
     if (key === 'track-id') return val
     return value
   }, null)
+}
+
+export const setDownloadedClassToOfflineTracks = offlineTracks => {
+  offlineTracks.forEach(track => {
+    Array.from(document.querySelectorAll(`[data-href="${track}"]`)).forEach(el => el.classList.add('downloaded'))
+  })
 }

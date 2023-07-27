@@ -486,10 +486,28 @@ div[role="link"] {
 .track-name-album-container.track-selected,
 .track-name-album-container:focus {
   background: #55baba;
-  color: white;
   border-top: 2px solid white;
   outline: none;
   padding-top: 0;
+  color: white;
+}
+
+/* .track-name-album-container { */
+  /* -webkit-user-select: all; */
+  /* -moz-user-select: all; */
+  /* user-select: all; */
+/* } */
+
+.track-name-album-container .album::selection,
+.track-name-album-container .name::selection {
+  background-color: #55baba;
+  color: white;
+}
+
+.track-tab .track-name-album-container .album::selection,
+.track-tab .track-name-album-container .name::selection {
+  background-color: unset;
+  color: unset;
 }
 
 .track-tab + .track-non-tab .track-name-album-container.track-selected + .add-to-playlist,
