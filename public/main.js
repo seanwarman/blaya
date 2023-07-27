@@ -22,12 +22,11 @@ import {
   onSelectDown,
 } from './helpers/events.js'
 import { logger } from './helpers/functional-utils.js'
-import { getTrackSearchQuery, addToPlaylist } from './helpers/dom.js';
 
 import io from './node_modules/socket.io/client-dist/socket.io.esm.min.js'
 
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/worker-offline.js").then(
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/worker-offline.js').then(
   (registration) => {
 
     // Dom events that need the worker...
@@ -166,7 +165,7 @@ build(state => {
   }
 
   // Adding to Tab event, have to use addEventListener to prevent overwriting
-  // original event...
+  // any original events...
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Tab') {
       for (const t of document.querySelectorAll('.track-name-album-container.track-selected')) {
