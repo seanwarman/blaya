@@ -21,10 +21,33 @@ import {
   onSelectUp,
   onSelectDown,
 } from './helpers/events.js'
+import * as dom from './helpers/dom.js'
 import { logger } from './helpers/functional-utils.js'
 
 import io from './node_modules/socket.io/client-dist/socket.io.esm.min.js'
 
+// Mutation Observer events...
+const observer = new MutationObserver(mutationResolver)
+observer.observe(document.getElementById('track-list-container'), { subtree:true, attributes:true })
+function mutationResolver(mutations) {
+  // Add any other managers here...
+  manageTrackSelectedMenu(mutations)
+}
+function manageTrackSelectedMenu(mutations) {
+  const mutation = mutations[mutations.length-1]
+  if (
+    mutation.attributeName === 'class'
+    && mutation.target.classList.contains('track-selected')
+  ) {
+    for (const el of document.getElementsByClassName('track-selected-menu')) {
+      el.classList.remove('track-selected-menu')
+    }
+    // Probably want to insert an element here for the menu...
+    mutation.target.parentElement.classList.add('track-selected-menu')
+  }
+}
+
+// Service Worker (mainly for offline cacheing)
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/worker-offline.js').then(
   (registration) => {
