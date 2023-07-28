@@ -169,7 +169,6 @@ export const onSelect = () => {
   for (const t of document.querySelectorAll('.track-name-album-container.track-selected')) {
     t.classList.remove('track-selected')
   }
-
   const selection = window.getSelection()
   const { anchorNode, focusNode } = selection
   const start = findParentByClassName('track-name-album-container', anchorNode)
@@ -190,7 +189,6 @@ export const onPlay = (e) => {
   for (const t of document.querySelectorAll('.track-name-album-container.track-selected')) {
     t.classList.remove('track-selected')
   }
-
   const ref = e.currentTarget
   window.ref = ref
   if (ref === document.activeElement && !e.shiftKey) {
@@ -198,7 +196,7 @@ export const onPlay = (e) => {
     document.getElementById('player').play()
     ref.focus()
   } else {
-    window.getSelection().removeAllRanges()
+    if (!e.shiftKey) window.getSelection().removeAllRanges()
     ref.focus()
   }
   window.state.playModule.focussedTrackId = ref.parentElement.id
