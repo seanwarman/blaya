@@ -20,9 +20,10 @@ import {
   onAddToPlaylistFromSearch,
   onSelectUp,
   onSelectDown,
+  onOpenMenu,
 } from './helpers/events.js'
 import * as dom from './helpers/dom.js'
-import { logger } from './helpers/functional-utils.js'
+import * as f from './helpers/functional-utils.js'
 
 import io from './node_modules/socket.io/client-dist/socket.io.esm.min.js'
 
@@ -39,11 +40,38 @@ function manageTrackSelectedMenu(mutations) {
     mutation.attributeName === 'class'
     && mutation.target.classList.contains('track-selected')
   ) {
-    for (const el of document.getElementsByClassName('track-selected-menu')) {
-      el.classList.remove('track-selected-menu')
-    }
-    // Probably want to insert an element here for the menu...
-    mutation.target.parentElement.classList.add('track-selected-menu')
+    // TODO this interferes with the keyboard shift selection...
+    document.getElementById('menu')?.remove()
+    const menuEl = f.pipe(
+      f.AssignObject({
+        id: 'menu',
+        innerHTML: `
+        <ul class="menu-items closed">
+          <li>Edit</li>
+          <li>Delete</li>
+        </ul>
+        `
+      })
+    )(document.createElement('div'))
+    menuEl.prepend(
+      f.pipe(
+        f.AssignObject({
+          className: 'menu-activate',
+          innerText: '●●●',
+          // tabIndex: '0',
+          // role: 'link',
+          onclick: onClickOrEnter(onOpenMenu),
+          // onkeydown: onClickOrEnter(onOpenMenu),
+        })
+      )(document.createElement('div'))
+    )
+    mutation.target
+      .parentElement
+      .parentElement
+      .insertBefore(
+        menuEl,
+        mutation.target.parentElement.nextElementSibling
+      )
   }
 }
 
@@ -116,7 +144,7 @@ if ('serviceWorker' in navigator) {
   console.error("Service workers are not supported.");
 }
 
-window.logger = logger
+window.logger = f.logger
 
 // Builds tracklist ui...
 build(state => {
