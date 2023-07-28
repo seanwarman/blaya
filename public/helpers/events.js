@@ -5,6 +5,7 @@ import {
   scrollToTrackByTrackId,
   getSearchValue,
   addToPlaylist,
+  findParentByClassName,
 } from './dom.js'
 import {
   appendTracksByPageFilteredBy,
@@ -128,20 +129,6 @@ export const onPlayAlbum = (e) => {
     ref.focus()
   }
   window.state.playModule.focussedTrackId = ref.parentElement.id
-}
-
-const findParentByClassName = (className, el) => {
-  if (!el) return null
-  let fuse = 0
-  let searchEl = el
-  while (
-    !searchEl?.classList?.contains(className)
-    && fuse < 6
-  ) {
-    searchEl = searchEl.parentElement
-    fuse++
-  }
-  return searchEl
 }
 
 export const onSelectPlaylist = () => {

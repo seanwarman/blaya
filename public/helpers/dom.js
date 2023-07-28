@@ -423,3 +423,18 @@ export const setDownloadedClassToOfflineTracks = offlineTracks => {
     Array.from(document.querySelectorAll(`[data-href="${track}"]`)).forEach(el => el.classList.add('downloaded'))
   })
 }
+
+export const findParentByClassName = (className, el) => {
+  if (!el) return null
+  let fuse = 0
+  let searchEl = el
+  while (
+    !searchEl?.classList?.contains(className)
+    && fuse < 6
+  ) {
+    searchEl = searchEl.parentElement
+    fuse++
+  }
+  return searchEl
+}
+
