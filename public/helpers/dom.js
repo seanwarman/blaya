@@ -438,3 +438,20 @@ export const findParentByClassName = (className, el) => {
   return searchEl
 }
 
+export const appendChildren = children => el => {
+  if (children?.length) {
+    el.append(...children)
+  }
+  return el
+}
+
+export const element = tag => ({ children, ...props }) => f.pipe(
+  f.AssignObject(props),
+  appendChildren(children),
+)(document.createElement(tag))
+
+export const div = element('div')
+
+export const ul = element('ul')
+
+export const li = element('li')

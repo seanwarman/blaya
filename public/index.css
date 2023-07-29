@@ -570,6 +570,10 @@ div[role="link"] {
   overflow: hidden;
 }
 
+#playlist #menu {
+  translate: -59px -10px;
+}
+
 #menu .menu-activate {
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -896,10 +900,6 @@ div#current-playing-text {
     justify-content: start;
   }
 
-  #menu {
-    translate: -9px -61px;
-  }
-
   #playlist-container {
     left: auto;
     bottom: 4.5rem;
@@ -956,9 +956,20 @@ div#current-playing-text {
     /* font-size: 0.7rem; */
   }
 
-  .track-album-tab.track .track-album,
-  .track-artist-tab.track .track-album {
-    margin-left: 50%;
+  #menu {
+    translate: -9px -61px;
+  }
+
+  #playlist #menu {
+    translate: -56px -8px;
+  }
+
+  #playlist #tracklist-add-to-playlist-menu-item {
+    display: none;
+  }
+
+  #track-list-container #playlist-remove-from-playlist-menu-item {
+    display: none;
   }
 
   .button-playlist-container {

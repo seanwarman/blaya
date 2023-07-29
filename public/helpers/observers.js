@@ -3,42 +3,20 @@ import * as ev from './events.js'
 import * as h from './index.js'
 import * as dom from './dom.js'
 
-const appendChildren = children => el => {
-  if (children?.length) {
-    el.append(...children)
-  }
-  return el
-}
-
-const Div = ({ children, ...props }) => f.pipe(
-  f.AssignObject(props),
-  appendChildren(children),
-)(document.createElement('div'))
-
-const Ul = ({ children, ...props }) => f.pipe(
-  f.AssignObject(props),
-  appendChildren(children),
-)(document.createElement('ul'))
-
-const Li = ({ children, ...props }) => f.pipe(
-  f.AssignObject(props),
-  appendChildren(children),
-)(document.createElement('li'))
-
 export function observeTrackSelectedMenu(mutations) {
   const mutation = mutations[mutations.length-1]
   if (
     mutation.attributeName === 'class'
     && mutation.target.classList.contains('track-selected')
   ) {
-    // TODO this interferes with the keyboard shift selection...
-    document.getElementById('menu')?.remove()
-    const ul = Ul({
+    document.getElementById('menu-container')?.remove()
+    const ul = dom.ul({
       className: 'menu-items closed',
       children: [
-        Li({
+        dom.li({
+          id: 'tracklist-add-to-playlist-menu-item',
           innerText: 'Add',
-          onclick: ev.onClickOrEnter(e => {
+          onclick: ev.onClickOrEnter(() => {
             const els = document.getElementsByClassName('track-selected')
             let playlists = window.state.playlists
             for (const el of els) {
@@ -57,17 +35,46 @@ export function observeTrackSelectedMenu(mutations) {
             }, 200)
           })
         }),
+        dom.li({
+          id: 'playlist-remove-from-playlist-menu-item',
+          innerText: 'Remove',
+          onclick: ev.onClickOrEnter(() => {
+            const els = document.getElementsByClassName('track-selected')
+            let playlists = window.state.playlists
+            for (const el of els) {
+              if (!el.parentElement) {
+                continue
+              }
+              const i = h
+                .findIndexOfElement(
+                  el.parentElement
+                )(document.getElementById('playlist').getElementsByClassName('track'))
+              playlists = h.removeTrackFromPlaylist(
+                window.state.selectedPlaylist, i, playlists
+              )
+            }
+            window.state.playlists = playlists
+            setTimeout(() => {
+              ul.classList.add('closed')
+            }, 200)
+          }),
+        }),
       ],
     })
-    const menuEl = Div({
-      id: 'menu',
+    const menuEl = dom.div({
+      id: 'menu-container',
       children: [
-        Div({
-          className: 'menu-activate',
-          innerText: '●●●',
-          onclick: ev.onClickOrEnter(ev.onOpenMenu),
-        }),
-        ul,
+        dom.div({
+          id: 'menu',
+          children: [
+            dom.div({
+              className: 'menu-activate',
+              innerText: '●●●',
+              onclick: ev.onClickOrEnter(ev.onOpenMenu),
+            }),
+            ul,
+          ],
+        })
       ],
     })
 
@@ -80,4 +87,3 @@ export function observeTrackSelectedMenu(mutations) {
       )
   }
 }
-
