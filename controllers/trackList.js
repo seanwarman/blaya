@@ -1,3 +1,4 @@
+import { GetObjectCommand } from '@aws-sdk/client-s3'
 import { readdir, access, constants } from 'fs'
 import { spawn } from 'child_process'
 import { fileURLToPath } from 'url';
@@ -98,18 +99,23 @@ export const mvFile = (req, res) => {
   })
 }
 
-export const copySendFile = (req, res) => {
+export const streamFile = async (req, res) => {
+  const { s3 } = req.context
 	const filePath = req.params[0]
-	access(__dirname + filePath, constants.F_OK, (err) => {
-		if (!err) return res.sendFile(__dirname + filePath)
-    copyFromBucketToMusicDir(filePath, () => {
-      res.sendFile('/music/' + filePath, { root: __dirname + '/..' })
+  try {
+    const command = new GetObjectCommand({
+      Bucket: 'everest-files',
+      Key: 'music/' + filePath,
     })
-	})
-}
-
-export const streamFile = (req, res) => {
-	const filePath = req.params[0]
-	const cp = spawn('aws', ['s3', 'cp', 's3://everest-files/music/' + filePath, '-'])
-	cp.stdout.pipe(res)
+    const response = await s3.send(command)
+    response.Body.on('data', chunk => {
+      res.write(chunk)
+    })
+    response.Body.on('end', () => {
+      res.end()
+    })
+  } catch (error) {
+    console.log(`S3 read error: `, error)
+    res.status(500).send(error.message)
+  }
 }

@@ -1,4 +1,5 @@
 import fs from 'fs'
+import { S3Client } from '@aws-sdk/client-s3'
 import express from 'express'
 import basicAuth from 'express-basic-auth'
 const app = express()
@@ -52,8 +53,10 @@ app.use(express.static('public'))
 app.use('/public', express.static('public'))
 app.use('/node_modules', express.static('node_modules'))
 app.use((req, _, next) => {
+  const s3 = new S3Client({ region: 'eu-west-2' })
   req.context = {
     io,
+    s3,
   }
   next()
 })
