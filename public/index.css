@@ -72,6 +72,17 @@ input#search-input {
   border-radius: 2px;
   padding-left: 1rem;
   font-size: 1.2rem;
+  user-select: none;
+  -webkit-user-select: none; /* Safari */        
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none;
+}
+
+input#search-input:focus {
+  user-select: text;
+  -webkit-user-select: text; /* Safari */        
+  -moz-user-select: text; /* Firefox */
+  -ms-user-select: text;
 }
 
 #clear-search-button {
@@ -670,6 +681,10 @@ footer {
   background: linear-gradient(to right, #7affff, white);
   grid-template-columns: 30% auto 80px 80px;
   grid-template-rows: 52px 52px;
+  user-select: none;
+  -webkit-user-select: none; /* Safari */        
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none;
 }
 
 #player {
@@ -879,6 +894,10 @@ div#current-playing-text {
     display: grid;
     align-content: center;
     justify-content: start;
+  }
+
+  #menu {
+    translate: -9px -61px;
   }
 
   #playlist-container {

@@ -22,8 +22,8 @@ import {
   onSelectDown,
   onOpenMenu,
 } from './helpers/events.js'
-import * as dom from './helpers/dom.js'
 import * as f from './helpers/functional-utils.js'
+import * as o from './helpers/observers.js'
 
 import io from './node_modules/socket.io/client-dist/socket.io.esm.min.js'
 
@@ -32,47 +32,7 @@ const observer = new MutationObserver(mutationResolver)
 observer.observe(document.getElementById('track-list-container'), { subtree:true, attributes:true })
 function mutationResolver(mutations) {
   // Add any other managers here...
-  manageTrackSelectedMenu(mutations)
-}
-function manageTrackSelectedMenu(mutations) {
-  const mutation = mutations[mutations.length-1]
-  if (
-    mutation.attributeName === 'class'
-    && mutation.target.classList.contains('track-selected')
-  ) {
-    // TODO this interferes with the keyboard shift selection...
-    document.getElementById('menu')?.remove()
-    const menuEl = f.pipe(
-      f.AssignObject({
-        id: 'menu',
-        innerHTML: `
-        <ul class="menu-items closed">
-          <li>Edit</li>
-          <li>Delete</li>
-        </ul>
-        `
-      })
-    )(document.createElement('div'))
-    menuEl.prepend(
-      f.pipe(
-        f.AssignObject({
-          className: 'menu-activate',
-          innerText: '●●●',
-          // tabIndex: '0',
-          // role: 'link',
-          onclick: onClickOrEnter(onOpenMenu),
-          // onkeydown: onClickOrEnter(onOpenMenu),
-        })
-      )(document.createElement('div'))
-    )
-    mutation.target
-      .parentElement
-      .parentElement
-      .insertBefore(
-        menuEl,
-        mutation.target.parentElement.nextElementSibling
-      )
-  }
+  o.observeTrackSelectedMenu(mutations)
 }
 
 // Service Worker (mainly for offline cacheing)
