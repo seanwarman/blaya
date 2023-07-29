@@ -102,17 +102,35 @@ export const mvFile = (req, res) => {
 export const streamFile = async (req, res) => {
   const { s3 } = req.context
 	const filePath = req.params[0]
+  const { range } = req.headers
   try {
     const command = new GetObjectCommand({
       Bucket: 'everest-files',
       Key: 'music/' + filePath,
+      Range: range,
     })
-    const response = await s3.send(command)
-    response.Body.on('data', chunk => {
+    const {
+      AcceptRanges,
+      ContentLength,
+      ContentType,
+      ContentRange,
+      Body,
+    } = await s3.send(command)
+    res.writeHead(206, {
+      'Accept-Ranges': AcceptRanges,
+      'Content-Length': ContentLength,
+      'Content-Type': ContentType,
+      'Content-Range': ContentRange,
+    })
+    Body.on('data', chunk => {
       res.write(chunk)
     })
-    response.Body.on('end', () => {
-      res.end()
+    Body.on('end', () => {
+      res.status(200).end()
+    })
+    Body.on('error', (error) => {
+      console.log(`S3 read error: `, error)
+      res.status(500).send(error.message)
     })
   } catch (error) {
     console.log(`S3 read error: `, error)
