@@ -68,26 +68,32 @@ export const onDragLeave = e => {
 }
 
 export const onDrop = e => {
-  const trackEls = arrayFromElements(e.currentTarget.parentElement.parentElement.getElementsByClassName('track')).reverse()
-  const iFrom = Number(e.dataTransfer.getData('iFrom'))
-  const iTo = trackEls.findIndex(el => el === e.currentTarget.parentElement)
-
-  window.state.playlists = rearrangeInPlaylist(
-    [iFrom, iTo],
-    window.state.selectedPlaylist,
-    window.state.playlists,
-  )
-
   e.preventDefault()
+  const elementMoving = window.state.elementMoving
+  const elementDroppedOn = e.currentTarget.parentElement
+  elementMoving.classList.remove('dragover')
   for (const child of document.getElementsByClassName('dragover')) {
     child.classList.remove('dragover')
   }
+  if (elementMoving === elementDroppedOn) return
+
+  const trackEls = arrayFromElements(e.currentTarget.parentElement.parentElement.getElementsByClassName('track')).reverse()
+  const iFrom = trackEls.findIndex(el => el === elementMoving)
+  const iTo = trackEls.findIndex(el => el === elementDroppedOn)
+
+  if (iFrom > iTo) {
+    elementDroppedOn.insertAdjacentElement('afterEnd', elementMoving)
+  } else {
+    elementDroppedOn.insertAdjacentElement('beforeBegin', elementMoving)
+  }
+  window.state.refreshPlaylistsStateFromDomElements(window.state.selectedPlaylist)
 }
 
 export const onDragStart = e => {
   const trackEls = arrayFromElements(e.currentTarget.parentElement.parentElement.getElementsByClassName('track')).reverse()
   const iFrom = trackEls.findIndex(el => el === e.currentTarget.parentElement)
   e.dataTransfer.setData('iFrom', iFrom)
+  window.state.elementMoving = e.currentTarget.parentElement
 }
 
 // createTrackName :: String -> Element
