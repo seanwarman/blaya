@@ -151,6 +151,9 @@ export const createTrackElementForPlaylist = trackList => playingFn => trackId =
       }
     }
     dragIconEl.ondrag = (e) => {
+      if (window.innerWidth > 768) {
+        return
+      }
       const footerHeight = document.getElementsByTagName('footer')[0].clientHeight
       const headerHeight = document.getElementsByClassName('button-playlist-container')[0].clientHeight
       stop = true
@@ -158,7 +161,6 @@ export const createTrackElementForPlaylist = trackList => playingFn => trackId =
         stop = false;
         scroll(-1)
       }
-
       if (e.clientY > (window.innerHeight - footerHeight - 50)) {
         stop = false;
         scroll(1)
