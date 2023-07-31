@@ -75,6 +75,7 @@ export const onDrop = e => {
     child.classList.remove('dragover')
   }
   elementMoving.dataset.mutation = 'moved'
+  elementMoving.focus()
   if (elementMoving === elementDroppedOn) return
   const trackEls = arrayFromElements(e.currentTarget.parentElement.parentElement.getElementsByClassName('track')).reverse()
   const iFrom = trackEls.findIndex(el => el === elementMoving)
