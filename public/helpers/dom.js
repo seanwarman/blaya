@@ -71,16 +71,14 @@ export const onDrop = e => {
   e.preventDefault()
   const elementMoving = window.state.elementMoving
   const elementDroppedOn = e.currentTarget.parentElement
-  elementMoving.classList.remove('dragover')
   for (const child of document.getElementsByClassName('dragover')) {
     child.classList.remove('dragover')
   }
+  elementMoving.dataset.mutation = 'moved'
   if (elementMoving === elementDroppedOn) return
-
   const trackEls = arrayFromElements(e.currentTarget.parentElement.parentElement.getElementsByClassName('track')).reverse()
   const iFrom = trackEls.findIndex(el => el === elementMoving)
   const iTo = trackEls.findIndex(el => el === elementDroppedOn)
-
   if (iFrom > iTo) {
     elementDroppedOn.insertAdjacentElement('afterEnd', elementMoving)
   } else {
@@ -93,6 +91,8 @@ export const onDragStart = e => {
   const trackEls = arrayFromElements(e.currentTarget.parentElement.parentElement.getElementsByClassName('track')).reverse()
   const iFrom = trackEls.findIndex(el => el === e.currentTarget.parentElement)
   e.dataTransfer.setData('iFrom', iFrom)
+  Array.from(document.getElementsByClassName('track-selected')).forEach(el => el.classList.remove('track-selected'))
+  e.currentTarget.parentElement.getElementsByClassName('track-name')[0].classList.add('track-selected')
   window.state.elementMoving = e.currentTarget.parentElement
 }
 
@@ -147,7 +147,7 @@ export const createTrackElementForPlaylist = trackList => playingFn => trackId =
       stop = true
     }
     const playlistContainer = document.getElementById('playlist-container')
-    const scroll = function (step) {
+    const scroll = step => {
       var scrollY = playlistContainer.scrollTop
       playlistContainer.scrollTo(0, scrollY + step);
       if (!stop) {

@@ -829,6 +829,14 @@ div#current-playing-text {
   background-color: #e0e0e0;
 }
 
+#playlist #tracklist-add-to-playlist-menu-item {
+  display: none;
+}
+
+#track-list-container #playlist-remove-from-playlist-menu-item {
+  display: none;
+}
+
 @media (min-width: 768px) {
   body {
     font-size: 1rem;
@@ -962,14 +970,6 @@ div#current-playing-text {
 
   #playlist #menu {
     translate: -56px -8px;
-  }
-
-  #playlist #tracklist-add-to-playlist-menu-item {
-    display: none;
-  }
-
-  #track-list-container #playlist-remove-from-playlist-menu-item {
-    display: none;
   }
 
   .button-playlist-container {

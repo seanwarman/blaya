@@ -15,4 +15,17 @@ export function observeTrackSelectedMenu(mutations) {
         mutation.target.parentElement.nextElementSibling
       )
   }
+
+  if (
+    mutation.attributeName === 'data-mutation'
+    && mutation.target.dataset?.mutation === 'moved'
+  ) {
+    document.getElementById('menu-container')?.remove()
+    mutation.target
+      .parentElement
+      .insertBefore(
+        Menu(),
+        mutation.target.nextElementSibling
+      )
+  }
 }
