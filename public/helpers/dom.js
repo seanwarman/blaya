@@ -125,11 +125,45 @@ export const createTrackElementForPlaylist = trackList => playingFn => trackId =
   playlistEl.prepend(createRemoveFromPlaylistElement(document.createElement('div')))
 
   Array.from(playlistEl.getElementsByClassName('drag-container')).forEach(dragIconEl => {
+    let stop = true
     dragIconEl.draggable = true
     dragIconEl.ondragover = onDragover
-    dragIconEl.ondragleave = onDragLeave
-    dragIconEl.ondrop = onDrop
     dragIconEl.ondragstart = onDragStart
+    dragIconEl.ondragleave = (e) => {
+      stop = true
+      onDragLeave(e)
+    }
+    dragIconEl.ondrop = (e) => {
+      stop = true
+      onDrop(e)
+    }
+    dragIconEl.ondragend = () => {
+      stop = true
+    }
+    const playlistContainer = document.getElementById('playlist-container')
+    const scroll = function (step) {
+      var scrollY = playlistContainer.scrollTop
+      playlistContainer.scrollTo(0, scrollY + step);
+      if (!stop) {
+        setTimeout(() => {
+          scroll(step)
+        }, 5);
+      }
+    }
+    dragIconEl.ondrag = (e) => {
+      const footerHeight = document.getElementsByTagName('footer')[0].clientHeight
+      const headerHeight = document.getElementsByClassName('button-playlist-container')[0].clientHeight
+      stop = true
+      if (e.clientY < headerHeight + 50) {
+        stop = false;
+        scroll(-1)
+      }
+
+      if (e.clientY > (window.innerHeight - footerHeight - 100)) {
+        stop = false;
+        scroll(1)
+      }
+    }
   })
 
   return playlistEl

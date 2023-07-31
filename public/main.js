@@ -20,7 +20,6 @@ import {
   onAddToPlaylistFromSearch,
   onSelectUp,
   onSelectDown,
-  onOpenMenu,
 } from './helpers/events.js'
 import * as f from './helpers/functional-utils.js'
 import * as o from './helpers/observers.js'
