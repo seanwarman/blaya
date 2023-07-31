@@ -154,12 +154,12 @@ export const createTrackElementForPlaylist = trackList => playingFn => trackId =
       const footerHeight = document.getElementsByTagName('footer')[0].clientHeight
       const headerHeight = document.getElementsByClassName('button-playlist-container')[0].clientHeight
       stop = true
-      if (e.clientY < headerHeight + 50) {
+      if (e.clientY < window.innerHeight - playlistContainer.clientHeight - headerHeight) {
         stop = false;
         scroll(-1)
       }
 
-      if (e.clientY > (window.innerHeight - footerHeight - 100)) {
+      if (e.clientY > (window.innerHeight - footerHeight - 50)) {
         stop = false;
         scroll(1)
       }
