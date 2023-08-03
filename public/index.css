@@ -370,7 +370,7 @@ div[data-playlist="true"] .track-name-album-container {
 }
 
 #playlist .track .track-name.track-selected::before,
-#playlist .track:focus .track-name::before,
+#playlist .playing.track:focus .track-name::before,
 .playing .track-name-album-container.track-selected .track-name::before,
 .playing .track-name-album-container:focus .track-name::before {
   content: url(./icons/play-solid-white.svg);
@@ -538,7 +538,7 @@ div[role="link"] {
   color: white;
 }
 
-#playlist .track-name:active,
+#playlist .track-name:focus,
 #playlist .track-name.track-selected {
   background-color: #55baba;
   color: white;
