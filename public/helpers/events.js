@@ -137,7 +137,7 @@ export const onPlayAlbum = (e) => {
 
 export const onSelectPlaylist = () => {
   const playlist = document.getElementById('playlist')
-  for (const t of playlist.querySelectorAll('.track-name.track-selected')) {
+  for (const t of document.querySelectorAll('.track-selected')) {
     t.classList.remove('track-selected')
   }
 
@@ -157,7 +157,7 @@ export const onSelectPlaylist = () => {
 }
 
 export const onSelect = () => {
-  for (const t of document.querySelectorAll('.track-name-album-container.track-selected')) {
+  for (const t of document.querySelectorAll('.track-selected')) {
     t.classList.remove('track-selected')
   }
   const selection = window.getSelection()

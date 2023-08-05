@@ -3,8 +3,11 @@ import * as h from '../helpers/index.js'
 import * as dom from '../helpers/dom.js'
 
 export default function Menu() {
+  const id = 'menu-container'
+  let el = document.getElementById(id)
+  if (el) el.remove()
   return dom.div({
-    id: 'menu-container',
+    id,
     children: [
       dom.div({
         id: 'menu',

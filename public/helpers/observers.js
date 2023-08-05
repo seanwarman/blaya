@@ -6,7 +6,6 @@ export function observeTrackSelectedMenu(mutations) {
     mutation.attributeName === 'class'
     && mutation.target.classList.contains('track-selected')
   ) {
-    document.getElementById('menu-container')?.remove()
     mutation.target
       .parentElement
       .parentElement
@@ -20,7 +19,6 @@ export function observeTrackSelectedMenu(mutations) {
     mutation.attributeName === 'data-mutation'
     && mutation.target.dataset?.mutation === 'moved'
   ) {
-    document.getElementById('menu-container')?.remove()
     mutation.target
       .parentElement
       .insertBefore(
