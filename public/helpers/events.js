@@ -41,7 +41,11 @@ export const onAddToPlaylistFromSearch = () => {
   if (!window.state.searching) {
     return
   }
-  const href = document.querySelector('#track-list-container #page-1 > .track')?.dataset?.href
+  const href = document
+    .getElementById('track-list-container')
+    .getElementById('page-1')
+    .getElementsByClassName('track')[0]
+    ?.dataset?.href
   if (!href) return
   addToPlaylist(href)
 }
@@ -116,7 +120,7 @@ export const onOpenUploadModal = e => {
 
 // onPlayAlbum :: Event -> undefined
 export const onPlayAlbum = (e) => {
-  for (const t of document.querySelectorAll('.track-name-album-container.track-selected')) {
+  for (const t of document.getElementsByClassName('track-name-album-container track-selected')) {
     t.classList.remove('track-selected')
   }
   const ref = e.currentTarget
