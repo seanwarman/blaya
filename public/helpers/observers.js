@@ -14,8 +14,6 @@ function emptySelectionContainer() {
   selection = null
 }
 
-let times = 0
-
 export function observeTrackSelectedMenu(mutations) {
   const mutation = mutations[mutations.length-1]
 
