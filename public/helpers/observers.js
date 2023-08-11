@@ -27,6 +27,7 @@ export function observeTrackSelectedMenu(mutations) {
     const playlist = document.getElementById('playlist')
     const tracks = Array.from(document.getElementsByClassName('track-selected')).map(el => el.parentElement).reverse()
     const selectionContainer = SelectionContainer()
+
     // Insert the selection container before the first selected track...
     playlist
       .insertBefore(
@@ -43,24 +44,10 @@ export function observeTrackSelectedMenu(mutations) {
     }
 
     // Insert the menu...
-    playlist
-      .insertBefore(
-        Menu(),
-        selectionContainer,
-      )
+    selectionContainer.prepend(Menu())
 
+    // Refresh the playlist state
     window.state.refreshPlaylistsStateFromDomElements()
   }
 
-  if (
-    mutation.attributeName === 'data-mutation'
-    && mutation.target.dataset?.mutation === 'moved'
-  ) {
-    mutation.target
-      .parentElement
-      .insertBefore(
-        Menu(),
-        mutation.target.nextElementSibling
-      )
-  }
 }
