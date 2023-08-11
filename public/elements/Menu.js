@@ -15,7 +15,7 @@ export default function Menu() {
           dom.div({
             className: 'menu-activate',
             innerText: '●●●',
-            onclick: ev.onClickOrEnter(ev.onOpenMenu),
+            onclick: ev.onClickOrEnter(onOpenMenu),
           }),
           dom.ul({
             className: 'menu-items closed',
@@ -96,4 +96,13 @@ function Remove() {
       }, 200)
     }),
   })
+}
+
+function onOpenMenu(e) {
+  const { nextElementSibling: menuItems } = e.currentTarget
+  if (menuItems.classList.contains('closed')) {
+    menuItems.classList.remove('closed')
+  } else {
+    menuItems.classList.add('closed')
+  }
 }

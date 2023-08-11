@@ -14,6 +14,7 @@ import {
   prependTracksByPageLazy,
   prependFilteredTracksByPageLazy,
   findIndexOfElement,
+  arrayFromElements,
 } from './index.js'
 
 // onClickOrEnter :: (a -> b) -> Event -> undefined
@@ -413,13 +414,4 @@ export function onSelectUp(e) {
 
   el
     .focus()
-}
-
-export function onOpenMenu(e) {
-  const { nextElementSibling: menuItems } = e.currentTarget
-  if (menuItems.classList.contains('closed')) {
-    menuItems.classList.remove('closed')
-  } else {
-    menuItems.classList.add('closed')
-  }
 }

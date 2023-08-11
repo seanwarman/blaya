@@ -40,6 +40,10 @@ header {
   background-color: white;
 }
 
+#selection-container .drag-container {
+  display: none;
+}
+
 img.svg {
   width: .5rem;
 }
@@ -164,7 +168,8 @@ input#search-input:focus {
 }
 
 .dragover {
-  background: #dedede !important;
+  /* background: #dedede !important; */
+  border-bottom: 1px solid grey;
 }
 
 #playlist .track {
@@ -381,11 +386,11 @@ div[data-playlist="true"] .track-name-album-container {
 }
 
 body[data-playlist-mode="false"] #playlist .track {
-  grid-template-columns: auto 3rem;
+  grid-template-columns: auto;
 }
 
 body[data-playlist-mode="true"] #playlist .track {
-  grid-template-columns: 4rem auto 3rem;
+  grid-template-columns: 4rem auto;
 }
 
 .add-to-playlist {
@@ -545,6 +550,14 @@ div[role="link"] {
   outline: none;
 }
 
+#selection-container {
+  /* outline-color: #f6d804; */
+  /* outline-style: dashed; */
+  /* outline-width: 2px; */
+  z-index: 1;
+  /* margin: 0px 3px; */
+}
+
 .track-tab .track-name-album-container .album::selection,
 .track-tab .track-name-album-container .name::selection {
   background-color: unset;
@@ -568,6 +581,7 @@ div[role="link"] {
   -ms-user-select: none;
   box-shadow: 1px 1px 6px #00000040;
   overflow: hidden;
+  z-index: 2;
 }
 
 #playlist #menu {

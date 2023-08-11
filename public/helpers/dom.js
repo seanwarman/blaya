@@ -9,8 +9,6 @@ import {
   appendTracksByPage,
   addHrefToPlaylist,
   removeTrackFromPlaylist,
-  rearrangeInPlaylist,
-  arrayFromElements,
 } from './index.js'
 import * as f from './functional-utils.js'
 
@@ -42,7 +40,7 @@ export const createTrackInnerHTMLFromTrackAndAlbum = ([track, album]) =>
 
 // createPlaylistTrackInnerHtmlFromTrackAndAlbum :: [String] -> String
 export const createPlaylistTrackInnerHtmlFromTrackAndAlbum = ([track, _]) =>
-  '<div class="track-name"><div class="name">' + track + '</div></div><div class="drag-container"><img class="svg grip" /></div>'
+  '<div class="track-name"><div class="name">' + track + '</div></div>'
 
 // createTrackInnerHTML :: String -> String
 export const createTrackInnerHTML = f.pipe(
@@ -55,47 +53,6 @@ export const createPlaylistTrackInnerHtml = f.pipe(
   getTrackAndAlbumFromTrackString,
   createPlaylistTrackInnerHtmlFromTrackAndAlbum,
 )
-
-// TODO: move these to the events file...
-export const onDragover = e => {
-  e.preventDefault()
-  e.currentTarget.parentElement.classList.add('dragover')
-}
-
-export const onDragLeave = e => {
-  e.preventDefault()
-  e.currentTarget.parentElement.classList.remove('dragover')
-}
-
-export const onDrop = e => {
-  e.preventDefault()
-  const elementMoving = window.state.elementMoving
-  const elementDroppedOn = e.currentTarget.parentElement
-  for (const child of document.getElementsByClassName('dragover')) {
-    child.classList.remove('dragover')
-  }
-  elementMoving.dataset.mutation = 'moved'
-  elementMoving.children[1].classList.add('track-selected')
-  if (elementMoving === elementDroppedOn) return
-  const trackEls = arrayFromElements(e.currentTarget.parentElement.parentElement.getElementsByClassName('track')).reverse()
-  const iFrom = trackEls.findIndex(el => el === elementMoving)
-  const iTo = trackEls.findIndex(el => el === elementDroppedOn)
-  if (iFrom > iTo) {
-    elementDroppedOn.insertAdjacentElement('afterEnd', elementMoving)
-  } else {
-    elementDroppedOn.insertAdjacentElement('beforeBegin', elementMoving)
-  }
-  window.state.refreshPlaylistsStateFromDomElements(window.state.selectedPlaylist)
-}
-
-export const onDragStart = e => {
-  const trackEls = arrayFromElements(e.currentTarget.parentElement.parentElement.getElementsByClassName('track')).reverse()
-  const iFrom = trackEls.findIndex(el => el === e.currentTarget.parentElement)
-  e.dataTransfer.setData('iFrom', iFrom)
-  Array.from(document.getElementsByClassName('track-selected')).forEach(el => el.classList.remove('track-selected'))
-  e.currentTarget.parentElement.getElementsByClassName('track-name')[0].classList.add('track-selected')
-  window.state.elementMoving = e.currentTarget.parentElement
-}
 
 // createTrackName :: String -> Element
 const createTrackName = trackString => f.AssignObject({
@@ -130,50 +87,6 @@ export const createTrackElementForPlaylist = trackList => playingFn => trackId =
 
   const playlistEl = createTrackPlaylistElementFromDiv(document.createElement('div'))
   playlistEl.prepend(createRemoveFromPlaylistElement(document.createElement('div')))
-
-  Array.from(playlistEl.getElementsByClassName('drag-container')).forEach(dragIconEl => {
-    let stop = true
-    dragIconEl.draggable = true
-    dragIconEl.ondragover = onDragover
-    dragIconEl.ondragstart = onDragStart
-    dragIconEl.ondragleave = (e) => {
-      stop = true
-      onDragLeave(e)
-    }
-    dragIconEl.ondrop = (e) => {
-      stop = true
-      onDrop(e)
-    }
-    dragIconEl.ondragend = () => {
-      stop = true
-    }
-    const playlistContainer = document.getElementById('playlist-container')
-    const scroll = step => {
-      var scrollY = playlistContainer.scrollTop
-      playlistContainer.scrollTo(0, scrollY + step);
-      if (!stop) {
-        setTimeout(() => {
-          scroll(step)
-        }, 5);
-      }
-    }
-    dragIconEl.ondrag = (e) => {
-      if (window.innerWidth > 768) {
-        return
-      }
-      const footerHeight = document.getElementsByTagName('footer')[0].clientHeight
-      const headerHeight = document.getElementsByClassName('button-playlist-container')[0].clientHeight
-      stop = true
-      if (e.clientY < window.innerHeight - playlistContainer.clientHeight - headerHeight) {
-        stop = false;
-        scroll(-1)
-      }
-      if (e.clientY > (window.innerHeight - footerHeight - 50)) {
-        stop = false;
-        scroll(1)
-      }
-    }
-  })
 
   return playlistEl
 }
@@ -488,10 +401,13 @@ export const appendChildren = children => el => {
   return el
 }
 
-export const element = tag => ({ children, ...props }) => f.pipe(
+export const element = tag => ({ children, dataset, ...props }) => f.pipe(
   f.AssignObject(props),
+  f.ObjectAssignDataSet(dataset),
   appendChildren(children),
 )(document.createElement(tag))
+
+export const img = element('img')
 
 export const div = element('div')
 

@@ -30,8 +30,8 @@ export default (postHook) => {
       this.selectedPlaylistState = Number(i)
       this.playlists = this.playlistsState
     },
-    refreshPlaylistsStateFromDomElements(i) {
-      this.playlistsState[i][2] = Array.from(document.getElementById('playlist').getElementsByClassName('track')).map(el => el.dataset.href).reverse()
+    refreshPlaylistsStateFromDomElements() {
+      this.playlistsState[this.selectedPlaylist][2] = Array.from(document.getElementById('playlist').getElementsByClassName('track')).map(el => el.dataset.href).reverse()
       window.localStorage.setItem(PLAYLISTS_STATE_KEY, JSON.stringify(this.playlistsState))
     },
     playlistsState: undefined,
