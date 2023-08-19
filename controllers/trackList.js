@@ -99,6 +99,31 @@ export const mvFile = (req, res) => {
   })
 }
 
+export const downloadFile = async (req, res) => {
+  const { s3 } = req.context
+	const filePath = req.params[0]
+
+  try {
+    const command = new GetObjectCommand({
+      Bucket: 'everest-files',
+      Key: 'music/' + filePath,
+      Range: 'bytes=0-',
+    })
+    const {
+      Body,
+    } = await s3.send(command)
+    Body.on('data', chunk => {
+      res.write(chunk)
+    })
+    Body.on('end', () => {
+      res.status(200).end()
+    })
+  } catch (error) {
+    console.log(`S3 read error: `, error)
+    res.status(500).send(error.message)
+  }
+}
+
 export const streamFile = async (req, res) => {
   const { s3 } = req.context
 	const filePath = req.params[0]

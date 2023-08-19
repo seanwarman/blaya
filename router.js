@@ -2,7 +2,7 @@ import { spawn } from 'child_process'
 import { dirname } from 'path'
 import { fileURLToPath } from 'url'
 import multer from 'multer'
-import { streamFile, cleanDir, mvFile, rmDir } from './controllers/trackList.js'
+import { downloadFile, streamFile, cleanDir, mvFile, rmDir } from './controllers/trackList.js'
 import { gitPullOrigin } from './controllers/update.js'
 import { copy } from './mover.mjs'
 
@@ -18,6 +18,7 @@ const upload = multer({
 export default app => {
   app.get('/api/update', gitPullOrigin)
   app.get('/music/*', streamFile)
+  app.get('/download/music/*', downloadFile)
   app.get('/api/mv/*', rmDir, mvFile)
   app.post('/api/upload', cleanDir(__dirname + '/workspace'), upload.array('files'), (req, res) => {
     const { files } = req
