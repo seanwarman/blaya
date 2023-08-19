@@ -58,12 +58,15 @@ export function onDragLeave(e) {
 
 export function onDragEnd(e) {
   e.preventDefault()
+
+  // TODO: If els come from the tracklist, they need to be cloned and rejigged to match the playlist format...
+  const selectionContainer = e.currentTarget
   const dragOverEls = document.getElementsByClassName('dragover')
 
   if (dragOverEls[0]) {
     dragOverEls[0]
       .parentElement
-      .insertBefore(e.currentTarget, dragOverEls[0])
+      .insertBefore(selectionContainer, dragOverEls[0])
   }
 
   Array.from(dragOverEls).map(el => el.classList.remove('dragover'))
@@ -77,6 +80,8 @@ export function onDragEnd(e) {
         child.ondragleave = null
       }
     })
+
+  window.state.refreshPlaylistsStateFromDomElements()
 }
 
 export const onDragStart = () => {
