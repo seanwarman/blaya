@@ -1,4 +1,5 @@
 import { setDebounce, fzfFilter } from './utils.js'
+import * as dom from './dom.js'
 import {
   removeTrackEls,
   afterSearchReset,
@@ -16,6 +17,7 @@ import {
   findIndexOfElement,
   arrayFromElements,
 } from './index.js'
+import Menu from '../elements/Menu.js'
 
 // onClickOrEnter :: (a -> b) -> Event -> undefined
 export const onClickOrEnter = cb => (e) => {
@@ -121,19 +123,16 @@ export const onOpenUploadModal = e => {
 
 // onPlayAlbum :: Event -> undefined
 export const onPlayAlbum = (e) => {
-  for (const t of document.getElementsByClassName('track-name-album-container track-selected')) {
-    t.classList.remove('track-selected')
-  }
-  const ref = e.currentTarget
-  window.ref = ref
-  if (ref === document.activeElement) {
-    window.state.playModule.setTrack({ src: ref.parentElement.dataset.href, isPlaylist: false, tab: true })
-    document.getElementById('player').play()
-    ref.focus()
-  } else {
-    ref.focus()
-  }
-  window.state.playModule.focussedTrackId = ref.parentElement.id
+  // const ref = e.currentTarget
+  // window.ref = ref
+  // if (ref === document.activeElement) {
+  //   window.state.playModule.setTrack({ src: ref.parentElement.dataset.href, isPlaylist: false, tab: true })
+  //   document.getElementById('player').play()
+  //   ref.focus()
+  // } else {
+  //   ref.focus()
+  // }
+  // window.state.playModule.focussedTrackId = ref.parentElement.id
 }
 
 export const onSelectPlaylist = () => {
@@ -141,7 +140,6 @@ export const onSelectPlaylist = () => {
   for (const t of document.querySelectorAll('.track-selected')) {
     t.classList.remove('track-selected')
   }
-
   const selection = window.getSelection()
   const { anchorNode, focusNode } = selection
   const start = findParentByClassName('track-name', anchorNode)
@@ -155,6 +153,16 @@ export const onSelectPlaylist = () => {
   for (const selectedEl of selectedEls) {
     selectedEl.classList.add('track-selected')
   }
+  dom.emptySelectionContainerPlaylist();
+  if (start === end) {
+    start.parentElement.parentElement.insertBefore(Menu(), start.parentElement.nextElementSibling)
+    return
+  }
+  dom.insertTracksIntoSelectionContainer(
+    () => document.getElementById('playlist'),
+    tracks => tracks.reverse(),
+    () => document.getElementById('playlist'),
+  ).prepend(Menu())
 }
 
 export const onSelect = () => {
@@ -173,14 +181,22 @@ export const onSelect = () => {
   if (end) selectedEls.push(end)
   for (const selectedEl of selectedEls) {
     selectedEl.classList.add('track-selected')
+    selectedEl.attributes.draggable = true
   }
+  dom.emptySelectionContainerTrackList();
+  if (start === end) {
+    start.parentElement.parentElement.insertBefore(Menu(), start.parentElement.nextElementSibling)
+    return
+  }
+  dom.insertTracksIntoSelectionContainer(
+    () => document.getElementById('track-list-container'),
+    tracks => tracks,
+    tracks => tracks[0].parentElement,
+  ).append(Menu())
 }
 
 // onPlay :: Event -> undefined
 export const onPlay = (e) => {
-  for (const t of document.querySelectorAll('.track-name-album-container.track-selected')) {
-    t.classList.remove('track-selected')
-  }
   const ref = e.currentTarget
   window.ref = ref
   if (ref === document.activeElement && !e.shiftKey) {

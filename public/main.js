@@ -22,15 +22,8 @@ import {
   onSelectDown,
 } from './helpers/events.js'
 import * as f from './helpers/functional-utils.js'
-import * as o from './helpers/observers.js'
 
 import io from './node_modules/socket.io/client-dist/socket.io.esm.min.js'
-
-// Mutation Observer events...
-const trackListObserver = new MutationObserver(o.observeTrackSelectedMenu)
-const playlistObserver = new MutationObserver(o.observeTrackSelectedMenu)
-trackListObserver.observe(document.getElementById('track-list-container'), { subtree:true, attributes:true })
-playlistObserver.observe(document.getElementById('playlist-container'), { subtree:true, attributes:true })
 
 // Service Worker (mainly for offline cacheing)
 if ('serviceWorker' in navigator) {

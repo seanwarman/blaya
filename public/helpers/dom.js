@@ -11,6 +11,8 @@ import {
   removeTrackFromPlaylist,
 } from './index.js'
 import * as f from './functional-utils.js'
+import SelectionContainer from '../elements/SelectionContainer.js'
+import Menu from '../elements/Menu.js'
 
 export const flashPlaylist = () => {
   const playlistEl = document.querySelector('.button-playlist-container')
@@ -443,3 +445,23 @@ export function emptySelectionContainerPlaylist() {
     selection = null
   }
 }
+
+export function insertTracksIntoSelectionContainer(getParentEl1, map, getParentEl2) {
+  const tracks = map(Array.from(getParentEl1().getElementsByClassName('track-selected')).map(el => el.parentElement))
+  const selectionContainer = SelectionContainer()
+  // Insert the selection container before the first selected track...
+  getParentEl2(tracks)
+    .insertBefore(
+      selectionContainer,
+      tracks[0],
+    )
+  // Move the selected tracks inside the container...
+  for (const track of tracks) {
+    selectionContainer
+      .append(
+        track,
+      )
+  }
+  return selectionContainer
+}
+
