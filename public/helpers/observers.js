@@ -1,30 +1,6 @@
 import Menu from '../elements/Menu.js'
 import SelectionContainer from '../elements/SelectionContainer.js'
-
-function emptySelectionContainerTrackList() {
-  let selection = document.getElementById('selection-container')
-  Array
-    .from(selection?.children || [])
-    .map(child =>
-      selection.parentElement.insertBefore(child, selection)
-    )
-
-  selection?.remove()
-  selection = null
-}
-
-function emptySelectionContainerPlaylist() {
-  let selection = document.getElementById('selection-container')
-  Array
-    .from(selection?.children || [])
-    .reverse()
-    .map(child =>
-      selection.parentElement.insertBefore(child, selection)
-    )
-
-  selection?.remove()
-  selection = null
-}
+import * as dom from './dom.js'
 
 function insertTracksIntoSelectionContainer(getParentEl1, map, getParentEl2) {
   const tracks = map(Array.from(getParentEl1().getElementsByClassName('track-selected')).map(el => el.parentElement))
@@ -54,7 +30,7 @@ export function observeTrackSelectedMenu(mutations) {
     && mutation.target.classList.contains('track-name')
     && mutation.target.parentElement.dataset?.playlist
   ) {
-    emptySelectionContainerPlaylist();
+    dom.emptySelectionContainerPlaylist();
     insertTracksIntoSelectionContainer(
       () => document.getElementById('playlist'),
       tracks => tracks.reverse(),
@@ -68,7 +44,7 @@ export function observeTrackSelectedMenu(mutations) {
     && mutation.target.classList.contains('track-name-album-container')
     && !mutation.target.parentElement.dataset?.playlist
   ) {
-    emptySelectionContainerTrackList();
+    dom.emptySelectionContainerTrackList();
     insertTracksIntoSelectionContainer(
       () => document.getElementById('track-list-container'),
       tracks => tracks,

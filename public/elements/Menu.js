@@ -4,8 +4,8 @@ import * as dom from '../helpers/dom.js'
 
 export default function Menu() {
   const id = 'menu-container'
-  let el = document.getElementById(id)
-  if (el) el.remove()
+  let els = document.querySelectorAll('#' + id)
+  if (els.length) els.forEach(el => el.remove())
   return dom.div({
     id,
     children: [

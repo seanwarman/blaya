@@ -56,11 +56,23 @@ export function onDragLeave(e) {
   e.currentTarget.classList.remove('dragover')
 }
 
+function convertTracksToPlaylistFormat(selectionContainerFromTacklist) {
+  const selectionContainer = selectionContainerFromTacklist.cloneNode(true)
+  dom.emptySelectionContainerTrackList();
+  Array.from(selectionContainer.children).forEach(child => {
+    if (child.id === 'menu-container') return
+    selectionContainer.replaceChild(dom.createTrackElementForPlaylist(window.state.trackList)(() => false)(child.id), child)
+  })
+  return selectionContainer
+}
+
 export function onDragEnd(e) {
   e.preventDefault()
 
-  // TODO: If els come from the tracklist, they need to be cloned and rejigged to match the playlist format...
-  const selectionContainer = e.currentTarget
+  const [child] = Array.from(e.currentTarget.children).filter(el => el.id !== 'menu-container')
+  const { playlist } = child?.dataset || {}
+  // If els come from the tracklist, they need to be cloned and rejigged to match the playlist format...
+  const selectionContainer = playlist ? e.currentTarget : convertTracksToPlaylistFormat(e.currentTarget)
   const dragOverEls = document.getElementsByClassName('dragover')
 
   if (dragOverEls[0]) {

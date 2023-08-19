@@ -414,3 +414,32 @@ export const div = element('div')
 export const ul = element('ul')
 
 export const li = element('li')
+
+export function emptySelectionContainerTrackList() {
+  const tracklist = document.getElementById('track-list-container')
+  const selections = tracklist.querySelectorAll('#selection-container')
+  for (let selection of selections) {
+    Array
+      .from(selection?.children || [])
+      .map(child =>
+        selection.parentElement.insertBefore(child, selection)
+      )
+    selection?.remove()
+    selection = null
+  }
+}
+
+export function emptySelectionContainerPlaylist() {
+  const playlist = document.getElementById('playlist')
+  let selections = playlist.querySelectorAll('#selection-container')
+  for (let selection of selections) {
+    Array
+      .from(selection?.children || [])
+      .reverse()
+      .map(child =>
+        selection.parentElement.insertBefore(child, selection)
+      )
+    selection?.remove()
+    selection = null
+  }
+}
