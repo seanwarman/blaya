@@ -191,16 +191,16 @@ export const createRemoveFromPlaylistElement = trackId => f.pipe(
 )(document.createElement('div'))
 
 // createTrackNameAlbumContainer :: Element -> Element
-export const createTrackNameAlbumContainer = onEvent => f.AssignObject({
+export const createTrackNameAlbumContainer = () => f.AssignObject({
   className: 'track-name-album-container',
   tabIndex: '0',
   role: 'link',
-  onmousedown: onEvent,
+  onmousedown: onPlay,
   // onmouseout: onSelect,
   onmouseup: onSelect,
   oncontextmenu: onSelect,
   // ontouchcancel: onSelect,
-  onkeydown: onClickOrEnter(onEvent),
+  onkeydown: onClickOrEnter(onPlay),
 })
 
 // Create :: (String, { Boolean, Boolean }) -> Element
@@ -239,19 +239,19 @@ export const Create = (trackString, options = {}) => {
   )
 
   const trackNameAlbumContainer =
-    createTrackNameAlbumContainer(albumTab || artistTab ? onPlayAlbum : onPlay)(document.createElement('div'))
+    createTrackNameAlbumContainer()(document.createElement('div'))
 
   const trackName = createTrackName(track)
 
   const trackAlbum = f.AssignObject({
     className: 'track-album',
     innerHTML: '<div class="album">' + (album || '') + '</div>',
-    onmousedown: albumTab || artistTab ? onPlayAlbum : onPlay,
+    onmousedown: onPlay,
     // onmouseout: onSelect,
     onmouseup: onSelect,
     oncontextmenu: onSelect,
     // ontouchcancel: onSelect,
-    onkeydown: onClickOrEnter(albumTab || artistTab ? onPlayAlbum : onPlay),
+    onkeydown: onClickOrEnter(onPlay),
   })(document.createElement('div'))
 
   const trackEl = createTrackElementFromDiv(document.createElement('div'))

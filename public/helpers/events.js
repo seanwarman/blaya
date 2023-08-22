@@ -102,7 +102,8 @@ export const onPrev = () => {
 export const onPlayPlaylist = (e) => {
   const ref = e.currentTarget
   window.ref = ref
-  if (ref === document.activeElement) {
+  if (ref.classList.contains('play-ready')) {
+    Array.from(document.getElementsByClassName('play-ready')).map(el => el.classList.remove('play-ready'))
     window.state.playModule.setTrack({ 
       src: ref.dataset.href,
       playlistIndex: findIndexOfElement(ref)(document.getElementById('playlist').getElementsByClassName('track')),
@@ -111,6 +112,7 @@ export const onPlayPlaylist = (e) => {
     document.getElementById('player').play()
     ref.focus()
   } else {
+    ref.classList.add('play-ready')
     ref.focus()
   }
 }
@@ -154,10 +156,10 @@ export const onSelectPlaylist = () => {
     selectedEl.classList.add('track-selected')
   }
   dom.emptySelectionContainerPlaylist();
-  if (start === end) {
-    start.parentElement.parentElement.insertBefore(Menu(), start.parentElement.nextElementSibling)
-    return
-  }
+  // if (start === end) {
+  //   start.parentElement.parentElement.insertBefore(Menu(), start.parentElement.nextElementSibling)
+  //   return
+  // }
   dom.insertTracksIntoSelectionContainer(
     () => document.getElementById('playlist'),
     tracks => tracks.reverse(),
@@ -184,10 +186,10 @@ export const onSelect = () => {
     selectedEl.attributes.draggable = true
   }
   dom.emptySelectionContainerTrackList();
-  if (start === end) {
-    start.parentElement.parentElement.insertBefore(Menu(), start.parentElement.nextElementSibling)
-    return
-  }
+  // if (start === end) {
+  //   start.parentElement.parentElement.insertBefore(Menu(), start.parentElement.nextElementSibling)
+  //   return
+  // }
   dom.insertTracksIntoSelectionContainer(
     () => document.getElementById('track-list-container'),
     tracks => tracks,
@@ -199,12 +201,14 @@ export const onSelect = () => {
 export const onPlay = (e) => {
   const ref = e.currentTarget
   window.ref = ref
-  if (ref === document.activeElement && !e.shiftKey) {
+  if (ref.classList.contains('play-ready') && !e.shiftKey) {
+    Array.from(document.getElementsByClassName('play-ready')).map(el => el.classList.remove('play-ready'))
     window.state.playModule.setTrack({ src: ref.parentElement.dataset.href, isPlaylist: false })
     document.getElementById('player').play()
     ref.focus()
   } else {
     if (!e.shiftKey) window.getSelection().removeAllRanges()
+    ref.classList.add('play-ready')
     ref.focus()
   }
   window.state.playModule.focussedTrackId = ref.parentElement.id

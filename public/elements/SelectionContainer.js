@@ -71,9 +71,10 @@ export function onDragEnd(e) {
 
   const [child] = Array.from(e.currentTarget.children).filter(el => el.id !== 'menu-container')
   const { playlist } = child?.dataset || {}
-  // If els come from the tracklist, they need to be cloned and rejigged to match the playlist format...
-  const selectionContainer = playlist ? e.currentTarget : convertTracksToPlaylistFormat(e.currentTarget)
+
   const dragOverEls = document.getElementsByClassName('dragover')
+  // If els come from the tracklist, they need to be cloned and rejigged to match the playlist format...
+  const selectionContainer = playlist || !dragOverEls.length ? e.currentTarget : convertTracksToPlaylistFormat(e.currentTarget)
 
   if (dragOverEls[0]) {
     dragOverEls[0]
