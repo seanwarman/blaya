@@ -160,16 +160,16 @@ export const onSelectPlaylist = () => {
   //   start.parentElement.parentElement.insertBefore(Menu(), start.parentElement.nextElementSibling)
   //   return
   // }
-  dom.insertTracksIntoSelectionContainer(
-    () => document.getElementById('playlist'),
-    tracks => tracks.reverse(),
-    () => document.getElementById('playlist'),
-  ).prepend(Menu())
+  const tracks = Array.from(document.getElementById('playlist')?.getElementsByClassName('track-selected')).map(el => el.parentElement)
+  if (!tracks.length) return
+  dom.insertTracksIntoSelectionContainer(tracks.reverse()).prepend(Menu())
 }
 
-export const onSelect = () => {
-  for (const t of document.querySelectorAll('.track-selected')) {
-    t.classList.remove('track-selected')
+export const onSelect = (e) => {
+  // If clicking into the selection don't change it...
+  onPlay(e)
+  if (e.currentTarget.getElementsByClassName('track-selected')?.length) {
+    return
   }
   const selection = window.getSelection()
   const { anchorNode, focusNode } = selection
@@ -181,20 +181,26 @@ export const onSelect = () => {
     if (selection.containsNode(node)) selectedEls.push(node)
   }
   if (end) selectedEls.push(end)
+
+  for (const t of document.querySelectorAll('.track-selected')) {
+    if (!selectedEls.includes(t)) {
+      t.classList.remove('track-selected')
+      t.attributes.draggable = false
+    }
+  }
+
   for (const selectedEl of selectedEls) {
     selectedEl.classList.add('track-selected')
     selectedEl.attributes.draggable = true
   }
+  const tracks = Array.from(
+    document
+      .getElementById("track-list-container")
+      ?.getElementsByClassName("track-selected")
+  ).map((el) => el.parentElement);
+  if (!tracks.length) return
   dom.emptySelectionContainerTrackList();
-  // if (start === end) {
-  //   start.parentElement.parentElement.insertBefore(Menu(), start.parentElement.nextElementSibling)
-  //   return
-  // }
-  dom.insertTracksIntoSelectionContainer(
-    () => document.getElementById('track-list-container'),
-    tracks => tracks,
-    tracks => tracks[0].parentElement,
-  ).append(Menu())
+  dom.insertTracksIntoSelectionContainer(tracks).append(Menu())
 }
 
 // onPlay :: Event -> undefined
@@ -203,11 +209,11 @@ export const onPlay = (e) => {
   window.ref = ref
   if (ref.classList.contains('play-ready') && !e.shiftKey) {
     Array.from(document.getElementsByClassName('play-ready')).map(el => el.classList.remove('play-ready'))
-    window.state.playModule.setTrack({ src: ref.parentElement.dataset.href, isPlaylist: false })
+    window.state.playModule.setTrack({ src: ref.dataset.href, isPlaylist: false })
     document.getElementById('player').play()
     ref.focus()
   } else {
-    if (!e.shiftKey) window.getSelection().removeAllRanges()
+    Array.from(document.getElementsByClassName('play-ready')).map(el => el.classList.remove('play-ready'))
     ref.classList.add('play-ready')
     ref.focus()
   }

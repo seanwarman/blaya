@@ -195,12 +195,12 @@ export const createTrackNameAlbumContainer = () => f.AssignObject({
   className: 'track-name-album-container',
   tabIndex: '0',
   role: 'link',
-  onmousedown: onPlay,
+  // onmousedown: onPlay,
   // onmouseout: onSelect,
-  onmouseup: onSelect,
-  oncontextmenu: onSelect,
+  // onmouseup: onSelect,
+  // oncontextmenu: onSelect,
   // ontouchcancel: onSelect,
-  onkeydown: onClickOrEnter(onPlay),
+  // onkeydown: onClickOrEnter(onPlay),
 })
 
 // Create :: (String, { Boolean, Boolean }) -> Element
@@ -211,6 +211,8 @@ export const Create = (trackString, options = {}) => {
 
   const createTrackElementFromDiv = f.pipe(
     f.AssignObject({
+      onmouseup: onSelect,
+      oncontextmenu: onSelect,
       className:
         'track' +
         (window.state?.playModule?.currentTrackSrc === trackString
@@ -246,12 +248,12 @@ export const Create = (trackString, options = {}) => {
   const trackAlbum = f.AssignObject({
     className: 'track-album',
     innerHTML: '<div class="album">' + (album || '') + '</div>',
-    onmousedown: onPlay,
+    // onmousedown: onPlay,
     // onmouseout: onSelect,
-    onmouseup: onSelect,
-    oncontextmenu: onSelect,
+    // onmouseup: onSelect,
+    // oncontextmenu: onSelect,
     // ontouchcancel: onSelect,
-    onkeydown: onClickOrEnter(onPlay),
+    // onkeydown: onClickOrEnter(onPlay),
   })(document.createElement('div'))
 
   const trackEl = createTrackElementFromDiv(document.createElement('div'))
@@ -388,6 +390,7 @@ export const findParentByClassName = (className, el) => {
   let searchEl = el
   while (
     !searchEl?.classList?.contains(className)
+    && searchEl
     && fuse < 6
   ) {
     searchEl = searchEl.parentElement
@@ -446,11 +449,10 @@ export function emptySelectionContainerPlaylist() {
   }
 }
 
-export function insertTracksIntoSelectionContainer(getParentEl1, map, getParentEl2) {
-  const tracks = map(Array.from(getParentEl1().getElementsByClassName('track-selected')).map(el => el.parentElement))
+export function insertTracksIntoSelectionContainer(tracks) {
   const selectionContainer = SelectionContainer()
   // Insert the selection container before the first selected track...
-  getParentEl2(tracks)
+  tracks[0].parentElement
     .insertBefore(
       selectionContainer,
       tracks[0],

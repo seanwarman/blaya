@@ -368,6 +368,10 @@ div[data-playlist="true"] .track-name-album-container {
   grid-template-columns: auto;
 }
 
+.play-ready {
+  outline: 2px solid black;
+}
+
 .playing .track-name::before {
   content: url(./icons/play-solid.svg);
   min-width: 9px;
@@ -530,7 +534,7 @@ div[role="link"] {
 .track-name-album-container.track-selected,
 .track-name-album-container:focus {
   background: #55baba;
-  border-top: 2px solid white;
+  border-top: 2px solid #55baba;
   outline: none;
   padding-top: 0;
   color: white;
