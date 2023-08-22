@@ -157,8 +157,17 @@ async function cacheOffline(event) {
     try {
       const response = await cache.match(track)
       if (!response) {
-        const res = await fetch('/download/' + track)
-        await cache.put(track, res)
+        let res = await fetch(track, { headers: new Headers({ Range: 'bytes=0-' }) })
+        res = await fetch('/download/' + track, {
+          headers: new Headers({
+            Range:
+              'bytes=0-' +
+              res.headers.get('Content-Length') +
+              '/' +
+              res.headers.get('Content-Length'),
+          }),
+        });
+        await cache.put(track, res);
       }
       completedTracks.push(track)
       if (completedTracks.length === tracks.length) break

@@ -102,16 +102,18 @@ export const mvFile = (req, res) => {
 export const downloadFile = async (req, res) => {
   const { s3 } = req.context
 	const filePath = req.params[0]
+  const { range } = req.headers
 
   try {
     const command = new GetObjectCommand({
       Bucket: 'everest-files',
       Key: 'music/' + filePath,
-      Range: 'bytes=0-',
+      Range: range,
     })
     const {
       Body,
     } = await s3.send(command)
+    res.set('Content-Type', 'audio/mpeg')
     Body.on('data', chunk => {
       res.write(chunk)
     })
