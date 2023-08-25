@@ -155,7 +155,7 @@ export const onSelectPlaylist = () => {
   for (const selectedEl of selectedEls) {
     selectedEl.classList.add('track-selected')
   }
-  dom.emptySelectionContainerPlaylist();
+  dom.emptySelectionContainer(document.getElementById('playlist'));
   // if (start === end) {
   //   start.parentElement.parentElement.insertBefore(Menu(), start.parentElement.nextElementSibling)
   //   return
@@ -165,7 +165,48 @@ export const onSelectPlaylist = () => {
   dom.insertTracksIntoSelectionContainer(tracks.reverse()).prepend(Menu())
 }
 
+export const onSelectContext = (e) => {
+  dom.emptySelectionContainer(document.getElementById('track-list-container'));
+  if (e.currentTarget.getElementsByClassName('track-selected')?.length) {
+    return
+  }
+  const selection = window.getSelection()
+  const { anchorNode, focusNode } = selection
+  const start = findParentByClassName('track-name-album-container', anchorNode)
+  const end = findParentByClassName('track-name-album-container', focusNode)
+  let selectedEls = []
+  if (start) selectedEls.push(start)
+  for (const node of document.getElementsByClassName('track-name-album-container')) {
+    if (selection.containsNode(node)) selectedEls.push(node)
+  }
+  if (end) selectedEls.push(end)
+  if (start === end) {
+    start.parentElement.parentElement.insertBefore(Menu(), start.parentElement.nextElementSibling)
+    return
+  }
+  for (const t of document.querySelectorAll('.track-selected')) {
+    if (!selectedEls.includes(t)) {
+      t.classList.remove('track-selected')
+      t.attributes.draggable = false
+    }
+  }
+  for (const selectedEl of selectedEls) {
+    selectedEl.classList.add('track-selected')
+    selectedEl.attributes.draggable = true
+  }
+  const tracks = Array.from(
+    document
+      .getElementById('track-list-container')
+      ?.getElementsByClassName('track-selected')
+  ).map((el) => el.parentElement);
+  if (!tracks.length) return
+  dom.insertTracksIntoSelectionContainer(tracks).append(Menu())
+}
+
 export const onSelect = (e) => {
+  if (e.currentTarget.getElementsByClassName('track-selected')?.length > 1) {
+    return
+  }
   // If clicking into the selection don't change it...
   onPlay(e)
   if (e.currentTarget.getElementsByClassName('track-selected')?.length) {
@@ -181,25 +222,23 @@ export const onSelect = (e) => {
     if (selection.containsNode(node)) selectedEls.push(node)
   }
   if (end) selectedEls.push(end)
-
   for (const t of document.querySelectorAll('.track-selected')) {
     if (!selectedEls.includes(t)) {
       t.classList.remove('track-selected')
       t.attributes.draggable = false
     }
   }
-
   for (const selectedEl of selectedEls) {
     selectedEl.classList.add('track-selected')
     selectedEl.attributes.draggable = true
   }
   const tracks = Array.from(
     document
-      .getElementById("track-list-container")
-      ?.getElementsByClassName("track-selected")
+      .getElementById('track-list-container')
+      ?.getElementsByClassName('track-selected')
   ).map((el) => el.parentElement);
   if (!tracks.length) return
-  dom.emptySelectionContainerTrackList();
+  dom.emptySelectionContainer(document.getElementById('track-list-container'));
   dom.insertTracksIntoSelectionContainer(tracks).append(Menu())
 }
 

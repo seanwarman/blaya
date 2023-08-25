@@ -1,5 +1,5 @@
 import { simpleHash } from './utils.js'
-import { onClickOrEnter, onPlay, onPlayPlaylist, onPlayAlbum, onSelect, onSelectPlaylist } from './events.js'
+import { onClickOrEnter, onPlay, onPlayPlaylist, onPlayAlbum, onSelect, onSelectContext, onSelectPlaylist } from './events.js'
 import {
   getCurrentTrackString,
   getTrackAndAlbumFromTrackString,
@@ -212,7 +212,7 @@ export const Create = (trackString, options = {}) => {
   const createTrackElementFromDiv = f.pipe(
     f.AssignObject({
       onmouseup: onSelect,
-      oncontextmenu: onSelect,
+      oncontextmenu: onSelectContext,
       className:
         'track' +
         (window.state?.playModule?.currentTrackSrc === trackString
@@ -420,17 +420,42 @@ export const ul = element('ul')
 
 export const li = element('li')
 
+export function emptySelectionContainer(container) {
+  const selections = container.querySelectorAll('#selection-container')
+  for (let selection of selections) {
+    Array
+      .from(selection?.children || [])
+      .map(child => {
+        return selection.parentElement.insertBefore(child, selection)
+      })
+    selection?.remove()
+    selection = null
+  }
+  // Use querySelectorAll rather than getElementsByClassName sometimes,
+  // eventhough it's slower, it's more thorougher. getElementsByClassName
+  // misses some elements sometimes...
+  for (const t of document.querySelectorAll('.track-selected')) {
+    t.classList.remove('track-selected')
+  }
+}
+
 export function emptySelectionContainerTrackList() {
   const tracklist = document.getElementById('track-list-container')
   const selections = tracklist.querySelectorAll('#selection-container')
   for (let selection of selections) {
     Array
       .from(selection?.children || [])
-      .map(child =>
-        selection.parentElement.insertBefore(child, selection)
-      )
+      .map(child => {
+        return selection.parentElement.insertBefore(child, selection)
+      })
     selection?.remove()
     selection = null
+  }
+  // Use querySelectorAll rather than getElementsByClassName sometimes,
+  // eventhough it's slower, it's more thorougher. getElementsByClassName
+  // misses some elements sometimes...
+  for (const t of document.querySelectorAll('.track-selected')) {
+    t.classList.remove('track-selected')
   }
 }
 
@@ -446,6 +471,9 @@ export function emptySelectionContainerPlaylist() {
       )
     selection?.remove()
     selection = null
+  }
+  for (const t of document.getElementsByClassName('track-selected')) {
+    t.classList.remove('track-selected')
   }
 }
 

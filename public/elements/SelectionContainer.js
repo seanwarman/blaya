@@ -58,7 +58,7 @@ export function onDragLeave(e) {
 
 function convertTracksToPlaylistFormat(selectionContainerFromTacklist) {
   const selectionContainer = selectionContainerFromTacklist.cloneNode(true)
-  dom.emptySelectionContainerTrackList();
+  dom.emptySelectionContainer(document.getElementById('track-list-container'));
   Array.from(selectionContainer.children).forEach(child => {
     if (child.id === 'menu-container') return
     selectionContainer.replaceChild(dom.createTrackElementForPlaylist(window.state.trackList)(() => false)(child.id), child)

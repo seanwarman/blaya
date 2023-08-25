@@ -378,10 +378,10 @@ div[data-playlist="true"] .track-name-album-container {
   margin-right: 0.7rem;
 }
 
-#playlist .track .track-name.track-selected::before,
-#playlist .playing.track:focus .track-name::before,
-.playing .track-name-album-container.track-selected .track-name::before,
-.playing .track-name-album-container:focus .track-name::before {
+#playlist #selection-container .track .track-name::before,
+#playlist #selection-container .playing.track:focus .track-name::before,
+#selection-container .playing .track-name-album-container .track-name::before,
+#selection-container .playing .track-name-album-container:focus .track-name::before {
   content: url(./icons/play-solid-white.svg);
 }
 
@@ -414,20 +414,20 @@ body[data-playlist-mode="true"] #playlist .track {
 .track-tab .add-to-playlist,
 .track-tab + .track-non-tab .add-to-playlist,
 .track-tab + .track-non-tab .track-name-album-container,
-.track-tab .track-name-album-container.track-selected + .add-to-playlist,
-.track-tab .track-name-album-container:focus + .add-to-playlist {
+#selection-container .track-tab .track-name-album-container + .add-to-playlist,
+#selection-container .track-tab .track-name-album-container:focus + .add-to-playlist {
   border-top: none;
   border-top: 1px solid transparent;
   padding-top: 1px;
 }
 
-.track-tab .track-name-album-container.track-selected + .add-to-playlist,
-.track-tab .track-name-album-container:focus + .add-to-playlist {
+#selection-container .track-tab .track-name-album-container + .add-to-playlist,
+#selection-container .track-tab .track-name-album-container:focus + .add-to-playlist {
   background: unset;
 }
 
-.track-tab .track-name-album-container.track-selected,
-.track-tab .track-name-album-container:focus {
+#selection-container .track-tab .track-name-album-container,
+#selection-container .track-tab .track-name-album-container:focus {
   background: unset;
   border-top: 1px solid transparent;
   padding-top: 1px;
@@ -445,8 +445,8 @@ body[data-playlist-mode="false"] .add-to-playlist {
   user-select: none;
 }
 
-.track-name-album-container.track-selected + .add-to-playlist .add-to-playlist-icon,
-.track-name-album-container:focus + .add-to-playlist .add-to-playlist-icon {
+#selection-container .track-name-album-container + .add-to-playlist .add-to-playlist-icon,
+#selection-container .track-name-album-container:focus + .add-to-playlist .add-to-playlist-icon {
   content: url(public/icons/plus-solid-white.svg);
 }
 
@@ -528,11 +528,11 @@ div[role="link"] {
   /* padding-bottom: 1px; */
 }
 
-.track-name-album-container:active,
-.track-name-album-container.track-selected + .add-to-playlist,
-.track-name-album-container:focus + .add-to-playlist,
-.track-name-album-container.track-selected,
-.track-name-album-container:focus {
+#selection-container .track-name-album-container:active,
+#selection-container .track-name-album-container + .add-to-playlist,
+#selection-container .track-name-album-container:focus + .add-to-playlist,
+#selection-container .track-name-album-container,
+#selection-container .track-name-album-container:focus {
   background: #55baba;
   border-top: 2px solid #55baba;
   outline: none;
@@ -540,15 +540,15 @@ div[role="link"] {
   color: white;
 }
 
-#playlist .track-name .name::selection,
-.track-name-album-container .album::selection,
-.track-name-album-container .name::selection {
+#playlist #selection-container .track-name .name::selection,
+#selection-container .track-name-album-container .album::selection,
+#selection-container .track-name-album-container .name::selection {
   background-color: #55baba;
   color: white;
 }
 
-#playlist .track-name:focus,
-#playlist .track-name.track-selected {
+#playlist #selection-container .track-name:focus,
+#playlist #selection-container .track-name {
   background-color: #55baba;
   color: white;
   outline: none;
@@ -568,8 +568,8 @@ div[role="link"] {
   color: unset;
 }
 
-.track-tab + .track-non-tab .track-name-album-container.track-selected + .add-to-playlist,
-.track-tab + .track-non-tab .track-name-album-container:focus + .add-to-playlist {
+#selection-container .track-tab + .track-non-tab .track-name-album-container + .add-to-playlist,
+#selection-container .track-tab + .track-non-tab .track-name-album-container:focus + .add-to-playlist {
   border-top: none;
 }
 
