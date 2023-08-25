@@ -40,6 +40,10 @@ header {
   background-color: white;
 }
 
+#selection-container {
+  background-color: #55baba;
+}
+
 #selection-container .drag-container {
   display: none;
 }
@@ -369,7 +373,7 @@ div[data-playlist="true"] .track-name-album-container {
 }
 
 .play-ready {
-  outline: 2px solid black;
+  outline: 2px solid white;
 }
 
 .playing .track-name::before {
@@ -518,6 +522,10 @@ div[role="link"] {
 
 #playlist .track-name {
   border-bottom: 1px solid #ededed;
+}
+
+#playlist #selection-container .track-name {
+  border-bottom: none;
 }
 
 #playlist .track:focus {
