@@ -102,7 +102,8 @@ export const onPrev = () => {
 export const onPlayPlaylist = (e) => {
   const ref = e.currentTarget
   window.ref = ref
-  if (ref.classList.contains('play-ready')) {
+  const multiSelected = document.getElementById('selection-container')?.getElementsByClassName('track')?.length > 1
+  if (!multiSelected && ref.classList.contains('play-ready')) {
     Array.from(document.getElementsByClassName('play-ready')).map(el => el.classList.remove('play-ready'))
     window.state.playModule.setTrack({ 
       src: ref.dataset.href,
@@ -112,6 +113,7 @@ export const onPlayPlaylist = (e) => {
     document.getElementById('player').play()
     ref.focus()
   } else {
+    Array.from(document.getElementsByClassName('play-ready')).map(el => el.classList.remove('play-ready'))
     ref.classList.add('play-ready')
     ref.focus()
   }
@@ -137,54 +139,8 @@ export const onPlayAlbum = (e) => {
   // window.state.playModule.focussedTrackId = ref.parentElement.id
 }
 
-export const onSelectPlaylist = () => {
-  const playlist = document.getElementById('playlist')
-  for (const t of document.querySelectorAll('.track-selected')) {
-    t.classList.remove('track-selected')
-  }
-  const selection = window.getSelection()
-  const { anchorNode, focusNode } = selection
-  const start = findParentByClassName('track-name', anchorNode)
-  const end = findParentByClassName('track-name', focusNode)
-  let selectedEls = []
-  if (start) selectedEls.push(start)
-  for (const node of playlist.getElementsByClassName('track-name')) {
-    if (selection.containsNode(node)) selectedEls.push(node)
-  }
-  if (end) selectedEls.push(end)
-  for (const selectedEl of selectedEls) {
-    selectedEl.classList.add('track-selected')
-  }
-  dom.emptySelectionContainer(document.getElementById('playlist'));
-  // if (start === end) {
-  //   start.parentElement.parentElement.insertBefore(Menu(), start.parentElement.nextElementSibling)
-  //   return
-  // }
-  const tracks = Array.from(document.getElementById('playlist')?.getElementsByClassName('track-selected')).map(el => el.parentElement)
-  if (!tracks.length) return
-  dom.insertTracksIntoSelectionContainer(tracks.reverse()).prepend(Menu())
-}
-
-export const onSelectContext = (e) => {
-  dom.emptySelectionContainer(document.getElementById('track-list-container'));
-  if (e.currentTarget.getElementsByClassName('track-selected')?.length) {
-    return
-  }
-  const selection = window.getSelection()
-  const { anchorNode, focusNode } = selection
-  const start = findParentByClassName('track-name-album-container', anchorNode)
-  const end = findParentByClassName('track-name-album-container', focusNode)
-  let selectedEls = []
-  if (start) selectedEls.push(start)
-  for (const node of document.getElementsByClassName('track-name-album-container')) {
-    if (selection.containsNode(node)) selectedEls.push(node)
-  }
-  if (end) selectedEls.push(end)
-  if (start === end) {
-    start.parentElement.parentElement.insertBefore(Menu(), start.parentElement.nextElementSibling)
-    return
-  }
-  for (const t of document.querySelectorAll('.track-selected')) {
+export const getTracksArrayFromElements = (target, selectedEls) => {
+  for (const t of target.querySelectorAll('.track-selected')) {
     if (!selectedEls.includes(t)) {
       t.classList.remove('track-selected')
       t.attributes.draggable = false
@@ -194,11 +150,74 @@ export const onSelectContext = (e) => {
     selectedEl.classList.add('track-selected')
     selectedEl.attributes.draggable = true
   }
-  const tracks = Array.from(
-    document
-      .getElementById('track-list-container')
-      ?.getElementsByClassName('track-selected')
+  return Array.from(
+    target?.getElementsByClassName('track-selected')
   ).map((el) => el.parentElement);
+}
+
+export const getSelectedElements = (parentClassName, scopeElement) => {
+  const selection = window.getSelection()
+  const { anchorNode, focusNode } = selection
+  const start = findParentByClassName(parentClassName, anchorNode)
+  const end = findParentByClassName(parentClassName, focusNode)
+  let elements = []
+  if (start) elements.push(start)
+  for (const node of scopeElement.getElementsByClassName(parentClassName)) {
+    if (selection.containsNode(node)) elements.push(node)
+  }
+  if (end) elements.push(end)
+  return {
+    start,
+    end,
+    elements,
+  }
+}
+
+export const onSelectPlaylist = (e) => {
+  if (e.currentTarget.getElementsByClassName('track-selected')?.length > 1) {
+    return
+  }
+  // If clicking into the selection don't change it...
+  onPlayPlaylist(e)
+  if (e.currentTarget.getElementsByClassName('track-selected')?.length) {
+    return
+  }
+  const playlist = document.getElementById('playlist')
+  const { elements: selectedEls } = getSelectedElements('track-name', playlist)
+  const tracks = getTracksArrayFromElements(playlist, selectedEls)
+  if (!tracks.length) return
+  dom.emptySelectionContainer(playlist);
+  dom.insertTracksIntoSelectionContainer(tracks.reverse()).prepend(Menu())
+}
+
+export const onSelectPlaylistContext = (e) => {
+  const playlist = document.getElementById('playlist')
+  dom.emptySelectionContainer(playlist);
+  if (e.currentTarget.getElementsByClassName('track-selected')?.length) {
+    return
+  }
+  const { start, end, elements: selectedEls } = getSelectedElements('track-name', playlist)
+  if (start === end) {
+    start.parentElement.parentElement.insertBefore(Menu(), start.parentElement.nextElementSibling)
+    return
+  }
+  const tracks = getTracksArrayFromElements(document.getElementById('playlist'), selectedEls)
+  if (!tracks.length) return
+  dom.insertTracksIntoSelectionContainer(tracks.reverse()).append(Menu())
+}
+
+export const onSelectContext = (e) => {
+  const trackListContainer = document.getElementById('track-list-container')
+  dom.emptySelectionContainer(trackListContainer);
+  if (e.currentTarget.getElementsByClassName('track-selected')?.length) {
+    return
+  }
+  const { start, end, elements: selectedEls } = getSelectedElements('track-name-album-container', document)
+  if (start === end) {
+    start.parentElement.parentElement.insertBefore(Menu(), start.parentElement.nextElementSibling)
+    return
+  }
+  const tracks = getTracksArrayFromElements(trackListContainer, selectedEls)
   if (!tracks.length) return
   dom.insertTracksIntoSelectionContainer(tracks).append(Menu())
 }
@@ -212,31 +231,8 @@ export const onSelect = (e) => {
   if (e.currentTarget.getElementsByClassName('track-selected')?.length) {
     return
   }
-  const selection = window.getSelection()
-  const { anchorNode, focusNode } = selection
-  const start = findParentByClassName('track-name-album-container', anchorNode)
-  const end = findParentByClassName('track-name-album-container', focusNode)
-  let selectedEls = []
-  if (start) selectedEls.push(start)
-  for (const node of document.getElementsByClassName('track-name-album-container')) {
-    if (selection.containsNode(node)) selectedEls.push(node)
-  }
-  if (end) selectedEls.push(end)
-  for (const t of document.querySelectorAll('.track-selected')) {
-    if (!selectedEls.includes(t)) {
-      t.classList.remove('track-selected')
-      t.attributes.draggable = false
-    }
-  }
-  for (const selectedEl of selectedEls) {
-    selectedEl.classList.add('track-selected')
-    selectedEl.attributes.draggable = true
-  }
-  const tracks = Array.from(
-    document
-      .getElementById('track-list-container')
-      ?.getElementsByClassName('track-selected')
-  ).map((el) => el.parentElement);
+  const { elements: selectedEls } = getSelectedElements('track-name-album-container', document)
+  const tracks = getTracksArrayFromElements(document.getElementById('track-list-container'), selectedEls)
   if (!tracks.length) return
   dom.emptySelectionContainer(document.getElementById('track-list-container'));
   dom.insertTracksIntoSelectionContainer(tracks).append(Menu())
@@ -245,8 +241,8 @@ export const onSelect = (e) => {
 // onPlay :: Event -> undefined
 export const onPlay = (e) => {
   const ref = e.currentTarget
-  window.ref = ref
-  if (ref.classList.contains('play-ready') && !e.shiftKey) {
+  const multiSelected = document.getElementById('selection-container')?.getElementsByClassName('track')?.length > 1
+  if (!multiSelected && ref.classList.contains('play-ready') && !e.shiftKey) {
     Array.from(document.getElementsByClassName('play-ready')).map(el => el.classList.remove('play-ready'))
     window.state.playModule.setTrack({ src: ref.dataset.href, isPlaylist: false })
     document.getElementById('player').play()

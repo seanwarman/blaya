@@ -1,5 +1,14 @@
 import { simpleHash } from './utils.js'
-import { onClickOrEnter, onPlay, onPlayPlaylist, onPlayAlbum, onSelect, onSelectContext, onSelectPlaylist } from './events.js'
+import {
+  onClickOrEnter,
+  onPlay,
+  onPlayPlaylist,
+  onPlayAlbum,
+  onSelect,
+  onSelectContext,
+  onSelectPlaylist,
+  onSelectPlaylistContext,
+} from './events.js'
 import {
   getCurrentTrackString,
   getTrackAndAlbumFromTrackString,
@@ -71,12 +80,8 @@ export const createTrackElementForPlaylist = trackList => playingFn => trackId =
     f.AssignObject({
       className: 'track' + (playingFn() ? ' playing' : ''),
       id: trackId,
-      onmousedown: onPlayPlaylist,
-      // onmouseout: onSelectPlaylist,
       onmouseup: onSelectPlaylist,
-      oncontextmenu: onSelectPlaylist,
-      // ontouchcancel: onSelectPlaylist,
-      onkeydown: onClickOrEnter(onPlayPlaylist),
+      oncontextmenu: onSelectPlaylistContext,
       role: 'link',
       tabIndex: '0',
       innerHTML: createPlaylistTrackInnerHtml(trackString),
@@ -248,12 +253,6 @@ export const Create = (trackString, options = {}) => {
   const trackAlbum = f.AssignObject({
     className: 'track-album',
     innerHTML: '<div class="album">' + (album || '') + '</div>',
-    // onmousedown: onPlay,
-    // onmouseout: onSelect,
-    // onmouseup: onSelect,
-    // oncontextmenu: onSelect,
-    // ontouchcancel: onSelect,
-    // onkeydown: onClickOrEnter(onPlay),
   })(document.createElement('div'))
 
   const trackEl = createTrackElementFromDiv(document.createElement('div'))
