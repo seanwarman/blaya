@@ -173,7 +173,7 @@ input#search-input:focus {
 
 .dragover {
   /* background: #dedede !important; */
-  border-bottom: 1px solid grey;
+  border-bottom: 3px solid #55baba;
 }
 
 #playlist .track {
