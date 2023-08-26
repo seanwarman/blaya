@@ -108,4 +108,6 @@ export const onDragStart = () => {
         child.ondragleave = onDragLeave
       }
     })
+  Array.from(document.getElementsByClassName('play-ready'))
+    .forEach(el => el.classList.remove('play-ready'))
 }
