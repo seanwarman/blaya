@@ -598,7 +598,7 @@ div[role="link"] {
 }
 
 #playlist #menu {
-  translate: -59px -10px;
+  translate: -11px -10px;
 }
 
 #menu .menu-activate {
@@ -995,8 +995,12 @@ div#current-playing-text {
     translate: -9px -61px;
   }
 
+  body[data-playlist-minimised="false"] #menu {
+    translate: -50vw -61px;
+  }
+
   #playlist #menu {
-    translate: -56px -8px;
+    translate: -16px -8px;
   }
 
   .button-playlist-container {
