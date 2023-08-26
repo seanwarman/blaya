@@ -186,13 +186,13 @@ export const onSelectPlaylist = (e) => {
   const { elements: selectedEls } = getSelectedElements('track-name', playlist)
   const tracks = getTracksArrayFromElements(playlist, selectedEls)
   if (!tracks.length) return
-  dom.emptySelectionContainer(playlist);
+  dom.emptySelectionContainer();
   dom.insertTracksIntoSelectionContainer(tracks.reverse()).prepend(Menu())
 }
 
 export const onSelectPlaylistContext = (e) => {
   const playlist = document.getElementById('playlist')
-  dom.emptySelectionContainer(playlist);
+  dom.emptySelectionContainer();
   if (e.currentTarget.getElementsByClassName('track-selected')?.length) {
     return
   }
@@ -208,7 +208,7 @@ export const onSelectPlaylistContext = (e) => {
 
 export const onSelectContext = (e) => {
   const trackListContainer = document.getElementById('track-list-container')
-  dom.emptySelectionContainer(trackListContainer);
+  dom.emptySelectionContainer();
   if (e.currentTarget.getElementsByClassName('track-selected')?.length) {
     return
   }
@@ -234,7 +234,7 @@ export const onSelect = (e) => {
   const { elements: selectedEls } = getSelectedElements('track-name-album-container', document)
   const tracks = getTracksArrayFromElements(document.getElementById('track-list-container'), selectedEls)
   if (!tracks.length) return
-  dom.emptySelectionContainer(document.getElementById('track-list-container'));
+  dom.emptySelectionContainer()
   dom.insertTracksIntoSelectionContainer(tracks).append(Menu())
 }
 

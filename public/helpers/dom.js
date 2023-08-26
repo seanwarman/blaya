@@ -419,60 +419,26 @@ export const ul = element('ul')
 
 export const li = element('li')
 
-export function emptySelectionContainer(container) {
-  const selections = container.querySelectorAll('#selection-container')
-  for (let selection of selections) {
-    Array
-      .from(selection?.children || [])
-      .map(child => {
-        return selection.parentElement.insertBefore(child, selection)
-      })
-    selection?.remove()
-    selection = null
-  }
-  // Use querySelectorAll rather than getElementsByClassName sometimes,
-  // eventhough it's slower, it's more thorougher. getElementsByClassName
-  // misses some elements sometimes...
-  for (const t of document.querySelectorAll('.track-selected')) {
-    t.classList.remove('track-selected')
-  }
-}
-
-export function emptySelectionContainerTrackList() {
-  const tracklist = document.getElementById('track-list-container')
-  const selections = tracklist.querySelectorAll('#selection-container')
-  for (let selection of selections) {
-    Array
-      .from(selection?.children || [])
-      .map(child => {
-        return selection.parentElement.insertBefore(child, selection)
-      })
-    selection?.remove()
-    selection = null
-  }
-  // Use querySelectorAll rather than getElementsByClassName sometimes,
-  // eventhough it's slower, it's more thorougher. getElementsByClassName
-  // misses some elements sometimes...
-  for (const t of document.querySelectorAll('.track-selected')) {
-    t.classList.remove('track-selected')
-  }
-}
-
-export function emptySelectionContainerPlaylist() {
+export function emptySelectionContainer() {
+  const trackListContainer = document.getElementById('track-list-container')
   const playlist = document.getElementById('playlist')
-  let selections = playlist.querySelectorAll('#selection-container')
-  for (let selection of selections) {
-    Array
-      .from(selection?.children || [])
-      .reverse()
-      .map(child =>
-        selection.parentElement.insertBefore(child, selection)
-      )
-    selection?.remove()
-    selection = null
-  }
-  for (const t of document.getElementsByClassName('track-selected')) {
-    t.classList.remove('track-selected')
+  for (const container of [playlist, trackListContainer]) {
+    const selections = container.querySelectorAll('#selection-container')
+    for (let selection of selections) {
+      Array
+        .from(selection?.children || [])
+        .map(child => {
+          return selection.parentElement.insertBefore(child, selection)
+        })
+      selection?.remove()
+      selection = null
+    }
+    // Use querySelectorAll rather than getElementsByClassName sometimes,
+    // eventhough it's slower, it's more thorougher. getElementsByClassName
+    // misses some elements sometimes...
+    for (const t of container.querySelectorAll('.track-selected')) {
+      t.classList.remove('track-selected')
+    }
   }
 }
 
