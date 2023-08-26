@@ -440,6 +440,7 @@ export function emptySelectionContainer() {
       t.classList.remove('track-selected')
     }
   }
+  Array.from(document.querySelectorAll('#menu-container')).map(el => el.remove())
 }
 
 export function insertTracksIntoSelectionContainer(tracks) {
