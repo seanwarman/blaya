@@ -217,8 +217,8 @@ export const createRemoveFromPlaylistElement = trackId => f.pipe(
 // createTrackNameAlbumContainer :: Element -> Element
 export const createTrackNameAlbumContainer = () => f.AssignObject({
   className: 'track-name-album-container',
-  tabIndex: '0',
-  role: 'link',
+  // tabIndex: '0',
+  // role: 'link',
 })
 
 // Create :: (String, { Boolean, Boolean }) -> Element
@@ -248,6 +248,8 @@ export const Create = (trackString, options = {}) => {
           event: e,
         })
       },
+      role: 'link',
+      tabIndex: '0',
       className:
         'track' +
         (window.state?.playModule?.currentTrackSrc === trackString

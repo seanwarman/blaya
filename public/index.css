@@ -372,11 +372,15 @@ div[data-playlist="true"] .track-name-album-container {
   grid-template-columns: auto;
 }
 
+/* .play-ready, */
+.track:focus-visible,
 .track:focus {
   outline: 2px solid black;
 }
 
-#selection-container .track:focus {
+/* .play-ready, */
+#selection-container .track:focus,
+#selection-container .track:focus-visible {
   outline: 2px solid white;
 }
 
@@ -530,14 +534,6 @@ div[role="link"] {
 
 #playlist #selection-container .track-name {
   border-bottom: none;
-}
-
-#playlist .track:focus {
-  /* background: #55baba; */
-  /* outline: none; */
-  /* color: white; */
-  /* border-bottom: none; */
-  /* padding-bottom: 1px; */
 }
 
 #selection-container .track-name-album-container:active,
