@@ -22,6 +22,7 @@ export default function Menu() {
             className: 'menu-items closed',
             children: [
               Add(),
+              Deselect(),
               // TODO...
               // Edit(),
               Remove(),
@@ -40,24 +41,26 @@ function Add() {
     onclick: ev.onClickOrEnter(() => {
 
       const selectionContainer = convertTracksToPlaylistFormat(document.getElementById('selection-container'))
-      const playlistChildren = document.getElementById('playlist')?.children
+      const playlist = document.getElementById('playlist')
+      const playlistChildren = playlist?.children
 
       if (playlistChildren[0]) {
-        playlistChildren[0]
-          .parentElement
+        playlist
           .insertBefore(selectionContainer, playlistChildren[0])
+      } else {
+        playlist.append(selectionContainer)
       }
 
-      Array
-        .from(document.getElementById('playlist').children)
-        .map(child => {
-          if (child.classList.contains('track')) {
-            child.draggable = false
-            child.ondragover = null
-            child.ondragenter = null
-            child.ondragleave = null
-          }
-        })
+//       Array
+//         .from(document.getElementById('playlist').children)
+//         .map(child => {
+//           if (child.classList.contains('track')) {
+//             child.draggable = false
+//             child.ondragover = null
+//             child.ondragenter = null
+//             child.ondragleave = null
+//           }
+//         })
 
       window.state.refreshPlaylistsStateFromDomElements()
 
@@ -81,6 +84,20 @@ function Add() {
 //       }, 200)
     })
   })
+}
+
+function Deselect() {
+  return dom.li({
+    id: "delect-menu-item",
+    innerText: "Deselect",
+    onclick: ev.onClickOrEnter(() => {
+      dom.emptySelectionContainer({
+        reverseTracks: !!document
+          .getElementById('playlist')
+          ?.querySelector('#selection-container'),
+      });
+    }),
+  });
 }
 
 function Edit() {

@@ -471,6 +471,7 @@ export function emptySelectionContainer({ reverseTracks }) {
     }
   }
   Array.from(document.querySelectorAll('#menu-container')).map(el => el.remove())
+  Array.from(document.getElementsByClassName('play-ready')).map(el => el.classList.remove('play-ready'))
 }
 
 export function insertTracksIntoSelectionContainer(tracks) {

@@ -22,6 +22,7 @@ import {
   onSelectDown,
 } from './helpers/events.js'
 import * as f from './helpers/functional-utils.js'
+import * as dom from './helpers/dom.js'
 
 import io from './node_modules/socket.io/client-dist/socket.io.esm.min.js'
 
@@ -150,6 +151,9 @@ build(state => {
     button.onclick = onClickOrEnter(onTogglePlaylistMode)
     button.onkeydown = onClickOrEnter(onTogglePlaylistMode)
   })
+  document.getElementById('playlist-container').onclick = e => {
+    dom.emptySelectionContainer({ reverseTracks: true })
+  }
 
   // Key commands...
   const onKey = (...maps) => e => {
