@@ -154,6 +154,8 @@ build(state => {
   document.getElementById('playlist-container').onclick = e => {
     dom.emptySelectionContainer({ reverseTracks: true })
   }
+  // This prevents the above from running if clicking the buttons on the top of the playlist...
+  document.getElementsByClassName('button-playlist-container')[0].onclick = e => e.stopPropagation()
 
   // Key commands...
   const onKey = (...maps) => e => {
