@@ -532,6 +532,11 @@ div[role="link"] {
   border-bottom: 1px solid #ededed;
 }
 
+#playlist #selection-container + .track .track-name {
+  padding-bottom: 1px;
+  border-bottom: none;
+}
+
 #playlist #selection-container .track-name {
   border-bottom: none;
 }
@@ -578,6 +583,12 @@ div[role="link"] {
 
 #selection-container .track-tab + .track-non-tab .track-name-album-container + .add-to-playlist,
 #selection-container .track-tab + .track-non-tab .track-name-album-container:focus + .add-to-playlist {
+  border-top: none;
+}
+
+#playlist #selection-container + .track-name,
+#selection-container + .track .track-name-album-container {
+  margin-top: 1px;
   border-top: none;
 }
 
