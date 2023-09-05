@@ -1,13 +1,9 @@
 import { simpleHash } from './utils.js'
 import {
   onClickOrEnter,
-  onPlay,
-  onPlayPlaylist,
-  onPlayAlbum,
-  onSelect,
-  onSelectContext,
-  onSelectPlaylist,
-  onSelectPlaylistContext,
+  onPlayHandler,
+  onSelectHandler,
+  onSelectContextHandler,
 } from './events.js'
 import {
   getCurrentTrackString,
@@ -21,7 +17,6 @@ import {
 } from './index.js'
 import * as f from './functional-utils.js'
 import SelectionContainer from '../elements/SelectionContainer.js'
-import Menu from '../elements/Menu.js'
 
 export const flashPlaylist = () => {
   const playlistEl = document.querySelector('.button-playlist-container')
@@ -80,8 +75,32 @@ export const createTrackElementForPlaylist = trackList => playingFn => trackId =
     f.AssignObject({
       className: 'track' + (playingFn() ? ' playing' : ''),
       id: trackId,
-      onmouseup: onSelectPlaylist,
-      oncontextmenu: onSelectPlaylistContext,
+      onmouseup: e => {
+        onSelectHandler({
+          target: document.getElementById('playlist'),
+          trackContainerClass: 'track-name',
+          reverseTracks: true,
+          event: e,
+        }, () => {
+          onPlayHandler({
+            isPlaylist: true,
+            playlistIndex: findIndexOfElement(e.currentTarget)(
+              document
+                .getElementById('playlist')
+                .getElementsByClassName('track')
+            ),
+            event: e,
+          });
+        })
+      },
+      oncontextmenu: (e) => {
+        onSelectContextHandler({
+          target: document.getElementById('playlist'),
+          trackContainerClass: 'track-name',
+          reverseTracks: true,
+          event: e,
+        })
+      },
       role: 'link',
       tabIndex: '0',
       innerHTML: createPlaylistTrackInnerHtml(trackString),
@@ -200,12 +219,6 @@ export const createTrackNameAlbumContainer = () => f.AssignObject({
   className: 'track-name-album-container',
   tabIndex: '0',
   role: 'link',
-  // onmousedown: onPlay,
-  // onmouseout: onSelect,
-  // onmouseup: onSelect,
-  // oncontextmenu: onSelect,
-  // ontouchcancel: onSelect,
-  // onkeydown: onClickOrEnter(onPlay),
 })
 
 // Create :: (String, { Boolean, Boolean }) -> Element
@@ -216,8 +229,25 @@ export const Create = (trackString, options = {}) => {
 
   const createTrackElementFromDiv = f.pipe(
     f.AssignObject({
-      onmouseup: onSelect,
-      oncontextmenu: onSelectContext,
+      onmouseup: e => {
+        onSelectHandler({
+          target: document.getElementById('track-list-container'),
+          trackContainerClass: 'track-name-album-container',
+          reverseTracks: false,
+          event: e,
+        }, () => onPlayHandler({
+          isPlaylist: false,
+          event: e,
+        }))
+      },
+      oncontextmenu: e => {
+        onSelectContextHandler({
+          target: document.getElementById('track-list-container'),
+          trackContainerClass: 'track-name-album-container',
+          reverseTracks: false,
+          event: e,
+        })
+      },
       className:
         'track' +
         (window.state?.playModule?.currentTrackSrc === trackString
@@ -419,17 +449,17 @@ export const ul = element('ul')
 
 export const li = element('li')
 
-export function emptySelectionContainer() {
+export function emptySelectionContainer({ reverseTracks }) {
   const trackListContainer = document.getElementById('track-list-container')
   const playlist = document.getElementById('playlist')
   for (const container of [playlist, trackListContainer]) {
     const selections = container.querySelectorAll('#selection-container')
     for (let selection of selections) {
-      Array
-        .from(selection?.children || [])
-        .map(child => {
-          return selection.parentElement.insertBefore(child, selection)
-        })
+      const children = Array.from(selection?.children || [])
+      if (reverseTracks) children.reverse()
+      children.map(child => {
+        return selection.parentElement.insertBefore(child, selection)
+      })
       selection?.remove()
       selection = null
     }
@@ -453,6 +483,7 @@ export function insertTracksIntoSelectionContainer(tracks) {
     )
   // Move the selected tracks inside the container...
   for (const track of tracks) {
+    track.classList?.add('track-selected')
     selectionContainer
       .append(
         track,

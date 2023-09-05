@@ -1,6 +1,7 @@
 import * as ev from '../helpers/events.js'
 import * as h from '../helpers/index.js'
 import * as dom from '../helpers/dom.js'
+import { convertTracksToPlaylistFormat } from './SelectionContainer.js'
 
 export default function Menu() {
   const id = 'menu-container'
@@ -37,23 +38,47 @@ function Add() {
     id: 'tracklist-add-to-playlist-menu-item',
     innerText: 'Add',
     onclick: ev.onClickOrEnter(() => {
-      const els = document.getElementsByClassName('track-selected')
-      let playlists = window.state.playlists
-      for (const el of els) {
-        const { href } = el.parentElement?.dataset
-        if (!href) {
-          continue
-        }
-        playlists = h.addHrefToPlaylist(
-          window.state.selectedPlaylist, href, playlists
-        )
+
+      const selectionContainer = convertTracksToPlaylistFormat(document.getElementById('selection-container'))
+      const playlistChildren = document.getElementById('playlist')?.children
+
+      if (playlistChildren[0]) {
+        playlistChildren[0]
+          .parentElement
+          .insertBefore(selectionContainer, playlistChildren[0])
       }
-      window.state.playlists = playlists
-      dom.flashPlaylist()
-      const ul = document.getElementsByClassName('menu-items')?.[0]
-      setTimeout(() => {
-        ul.classList.add('closed')
-      }, 200)
+
+      Array
+        .from(document.getElementById('playlist').children)
+        .map(child => {
+          if (child.classList.contains('track')) {
+            child.draggable = false
+            child.ondragover = null
+            child.ondragenter = null
+            child.ondragleave = null
+          }
+        })
+
+      window.state.refreshPlaylistsStateFromDomElements()
+
+
+//       const els = document.getElementsByClassName('track-selected')
+//       let playlists = window.state.playlists
+//       for (const el of els) {
+//         const { href } = el.parentElement?.dataset
+//         if (!href) {
+//           continue
+//         }
+//         playlists = h.addHrefToPlaylist(
+//           window.state.selectedPlaylist, href, playlists
+//         )
+//       }
+//       window.state.playlists = playlists
+//       dom.flashPlaylist()
+//       const ul = document.getElementsByClassName('menu-items')?.[0]
+//       setTimeout(() => {
+//         ul.classList.add('closed')
+//       }, 200)
     })
   })
 }
@@ -65,7 +90,6 @@ function Edit() {
     onclick: ev.onClickOrEnter(() => {
       const els = document.getElementsByClassName('track-selected')
       const hrefs = Array.from(els).map(el => el.parentElement?.dataset?.href)
-      console.log(`@FILTER hrefs:`, hrefs)
     }),
   })
 }
@@ -75,25 +99,12 @@ function Remove() {
     id: 'playlist-remove-from-playlist-menu-item',
     innerText: 'Remove',
     onclick: ev.onClickOrEnter(() => {
-      const els = document.getElementsByClassName('track-selected')
-      let playlists = window.state.playlists
-      for (const el of els) {
-        if (!el.parentElement) {
-          continue
-        }
-        const i = h
-          .findIndexOfElement(
-            el.parentElement
-          )(document.getElementById('playlist').getElementsByClassName('track'))
-        playlists = h.removeTrackFromPlaylist(
-          window.state.selectedPlaylist, i, playlists
-        )
+      document.getElementsByClassName('menu-items')?.[0]?.classList.add('closed')
+      document.getElementById('menu-container')?.remove()
+      for (const el of document.querySelectorAll('.track-selected')) {
+        el.remove()
       }
-      window.state.playlists = playlists
-      const ul = document.getElementsByClassName('menu-items')?.[0]
-      setTimeout(() => {
-        ul.classList.add('closed')
-      }, 200)
+      window.state.refreshPlaylistsStateFromDomElements();
     }),
   })
 }
