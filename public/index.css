@@ -372,7 +372,11 @@ div[data-playlist="true"] .track-name-album-container {
   grid-template-columns: auto;
 }
 
-.play-ready {
+.track:focus {
+  outline: 2px solid black;
+}
+
+#selection-container .track:focus {
   outline: 2px solid white;
 }
 
@@ -530,7 +534,7 @@ div[role="link"] {
 
 #playlist .track:focus {
   /* background: #55baba; */
-  outline: none;
+  /* outline: none; */
   /* color: white; */
   /* border-bottom: none; */
   /* padding-bottom: 1px; */

@@ -114,7 +114,6 @@ export const createTrackElementForPlaylist = trackList => playingFn => trackId =
 
   const playlistEl = createTrackPlaylistElementFromDiv(document.createElement('div'))
   playlistEl.prepend(createRemoveFromPlaylistElement(document.createElement('div')))
-
   return playlistEl
 }
 
@@ -472,7 +471,7 @@ export function emptySelectionContainer({ reverseTracks }) {
     }
   }
   Array.from(document.querySelectorAll('#menu-container')).map(el => el.remove())
-  Array.from(document.getElementsByClassName('play-ready')).map(el => el.classList.remove('play-ready'))
+  // Array.from(document.getElementsByClassName('play-ready')).map(el => el.classList.remove('play-ready'))
 }
 
 export function insertTracksIntoSelectionContainer(tracks) {
