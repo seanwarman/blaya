@@ -75,13 +75,14 @@ export const createTrackElementForPlaylist = trackList => playingFn => trackId =
     f.AssignObject({
       className: 'track' + (playingFn() ? ' playing' : ''),
       id: trackId,
+      onclick: e => e.stopPropagation(),
       onmouseup: e => {
         onSelectHandler({
           target: document.getElementById('playlist'),
           trackContainerClass: 'track-name',
           reverseTracks: true,
           event: e,
-        }, () => {
+        }, (e) => {
           onPlayHandler({
             isPlaylist: true,
             playlistIndex: findIndexOfElement(e.currentTarget)(

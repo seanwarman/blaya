@@ -38,7 +38,8 @@ function Add() {
   return dom.li({
     id: 'tracklist-add-to-playlist-menu-item',
     innerText: 'Add',
-    onclick: ev.onClickOrEnter(() => {
+    onclick: ev.onClickOrEnter((e) => {
+      e.stopPropagation()
 
       const selectionContainer = convertTracksToPlaylistFormat(document.getElementById('selection-container'))
       const playlist = document.getElementById('playlist')
@@ -90,7 +91,8 @@ function Deselect() {
   return dom.li({
     id: "delect-menu-item",
     innerText: "Deselect",
-    onclick: ev.onClickOrEnter(() => {
+    onclick: ev.onClickOrEnter((e) => {
+      e.stopPropagation()
       dom.emptySelectionContainer({
         reverseTracks: !!document
           .getElementById('playlist')
@@ -115,7 +117,8 @@ function Remove() {
   return dom.li({
     id: 'playlist-remove-from-playlist-menu-item',
     innerText: 'Remove',
-    onclick: ev.onClickOrEnter(() => {
+    onclick: ev.onClickOrEnter((e) => {
+      e.stopPropagation()
       document.getElementsByClassName('menu-items')?.[0]?.classList.add('closed')
       document.getElementById('menu-container')?.remove()
       for (const el of document.querySelectorAll('.track-selected')) {
@@ -127,6 +130,7 @@ function Remove() {
 }
 
 function onOpenMenu(e) {
+  e.stopPropagation()
   const { nextElementSibling: menuItems } = e.currentTarget
   if (menuItems.classList.contains('closed')) {
     menuItems.classList.remove('closed')
