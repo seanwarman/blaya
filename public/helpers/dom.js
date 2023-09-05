@@ -492,6 +492,6 @@ export function insertTracksIntoSelectionContainer(tracks) {
         track,
       )
   }
+  tracks[tracks?.length - 1]?.focus()
   return selectionContainer
 }
-

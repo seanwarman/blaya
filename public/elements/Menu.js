@@ -52,38 +52,8 @@ function Add() {
         playlist.append(selectionContainer)
       }
 
-//       Array
-//         .from(document.getElementById('playlist').children)
-//         .map(child => {
-//           if (child.classList.contains('track')) {
-//             child.draggable = false
-//             child.ondragover = null
-//             child.ondragenter = null
-//             child.ondragleave = null
-//           }
-//         })
-
       window.state.refreshPlaylistsStateFromDomElements()
-
-
-//       const els = document.getElementsByClassName('track-selected')
-//       let playlists = window.state.playlists
-//       for (const el of els) {
-//         const { href } = el.parentElement?.dataset
-//         if (!href) {
-//           continue
-//         }
-//         playlists = h.addHrefToPlaylist(
-//           window.state.selectedPlaylist, href, playlists
-//         )
-//       }
-//       window.state.playlists = playlists
-//       dom.flashPlaylist()
-//       const ul = document.getElementsByClassName('menu-items')?.[0]
-//       setTimeout(() => {
-//         ul.classList.add('closed')
-//       }, 200)
-    })
+    }),
   })
 }
 
@@ -98,6 +68,7 @@ function Deselect() {
           .getElementById('playlist')
           ?.querySelector('#selection-container'),
       });
+      Array.from(document.getElementsByClassName('play-ready')).map(el => el.classList.remove('play-ready'))
     }),
   });
 }
