@@ -48,7 +48,10 @@ export const playModule = {
     // Update the UI
     if (isPlaylist) {
       // The setter on playlists takes care of the 'playing' class...
-      window.state.playlists = updatePlaylistIndex(window.state.selectedPlaylist, playlistIndex, window.state.playlists)
+      const trackListEl = document.querySelector(`#playlist .track[data-href="${src}"]`)
+      if (trackListEl) trackListEl.classList.add('playing')
+      // window.state.playlists = updatePlaylistIndex(window.state.selectedPlaylist, playlistIndex, window.state.playlists)
+      window.state.refreshPlaylistsStateFromDomElements()
     } else if (tab) {
       const trackListEl = document.querySelector(`.track-tab[data-href="${src}"]`)
       if (trackListEl) trackListEl.nextElementSibling.querySelector('.track-name-album-container').classList.add('playing')

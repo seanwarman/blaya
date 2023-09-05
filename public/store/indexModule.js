@@ -31,21 +31,26 @@ export default (postHook) => {
       this.playlists = this.playlistsState
     },
     refreshPlaylistsStateFromDomElements() {
-      const playlistHrefs = Array.from(document.getElementById('playlist').children).reduce((hrefs, child) => {
+      const playlistHrefs = Array.from(document.getElementById('playlist').children).reduce((hrefs, child, index) => {
         if (child.dataset?.href) return [
           ...hrefs,
           child.dataset.href,
         ]
         return [
           ...hrefs,
-          ...Array.from(child.children).reduce(
-            (hrefs, ch) =>
-              ch.dataset?.href ? [...hrefs, ch.dataset.href] : hrefs,
-            []
-          ).reverse(),
+          ...Array.from(child.children)
+            .reduce(
+              (hrefs, ch) => ch.dataset?.href ? [...hrefs, ch.dataset.href] : hrefs, [],
+            )
+            .reverse(),
         ];
       }, []).reverse()
-      this.playlistsState[this.selectedPlaylist][2] = playlistHrefs
+      this.playlistsState[this.selectedPlaylist][2] = playlistHrefs.map((href, i) => {
+        if (href === this.playModule.currentTrackSrc) {
+          this.playlistsState[this.selectedPlaylist][1] = i
+        }
+        return href
+      })
       window.localStorage.setItem(PLAYLISTS_STATE_KEY, JSON.stringify(this.playlistsState))
     },
     playlistsState: undefined,
