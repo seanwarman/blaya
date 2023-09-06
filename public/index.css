@@ -587,9 +587,13 @@ div[role="link"] {
 }
 
 #playlist #selection-container + .track-name,
-#selection-container + .track .track-name-album-container {
+#selection-container + .track-non-tab .track-name-album-container {
   margin-top: 1px;
   border-top: none;
+}
+
+.track-tab + #selection-container {
+  margin-top: 1px;
 }
 
 #menu {
