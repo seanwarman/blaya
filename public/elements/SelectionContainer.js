@@ -3,11 +3,13 @@ import * as dom from '../helpers/dom.js'
 // This is a fix to keep track of the scroll position on drag end when
 // selecting more than one track
 let scrollTracker = 0
+let mobScroll = false
 
 export default function SelectionContainer() {
   const id = 'selection-container'
   const playlistContainer = document.getElementById('playlist-container')
   const scroll = step => {
+    mobScroll = true
     playlistContainer.scrollTo(0, playlistContainer.scrollTop + step)
     scrollTracker = playlistContainer.scrollTop + step
     if (!stop) {
@@ -29,7 +31,7 @@ export default function SelectionContainer() {
     },
     ondragend: e => {
       stop = true
-      playlistContainer.scrollTo(0, scrollTracker)
+      if (mobScroll) playlistContainer.scrollTo(0, scrollTracker)
       onDragEnd(e)
     },
     ondrag: (e) => {
