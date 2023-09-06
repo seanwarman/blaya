@@ -671,12 +671,20 @@ div[role="link"] {
   margin: 0;
 }
 
+.track-tab .track-name {
+  order: 2;
+}
+
+.track-tab .track-album {
+  order: 1;
+}
+
 .track-artist-tab.track,
 .track-album-tab.track {
   background: hsl(0 0% 98% / 1);
   border: none;
-  height: 3rem;
-  padding-top: 1rem;
+  height: 5rem;
+  padding-top: 3rem;
   box-shadow: inset 0px 0.6px 5px 0px hsl(0deg 0% 0% / 6%);
 }
 
@@ -708,7 +716,7 @@ div[role="link"] {
   padding-left: 1.5rem;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
 }
 
 .track-album-tab.track .add-to-playlist-icon,

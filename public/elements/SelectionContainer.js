@@ -1,15 +1,19 @@
 import * as dom from '../helpers/dom.js'
 
+// This is a fix to keep track of the scroll position on drag end when
+// selecting more than one track
+let scrollTracker = 0
+
 export default function SelectionContainer() {
   const id = 'selection-container'
   const playlistContainer = document.getElementById('playlist-container')
   const scroll = step => {
-    var scrollY = playlistContainer.scrollTop
-    playlistContainer.scrollTo(0, scrollY + step);
+    playlistContainer.scrollTo(0, playlistContainer.scrollTop + step)
+    scrollTracker = playlistContainer.scrollTop + step
     if (!stop) {
       setTimeout(() => {
         scroll(step)
-      }, 5);
+      }, 5)
     }
   }
   return dom.div({
@@ -25,6 +29,7 @@ export default function SelectionContainer() {
     },
     ondragend: e => {
       stop = true
+      playlistContainer.scrollTo(0, scrollTracker)
       onDragEnd(e)
     },
     ondrag: (e) => {
@@ -35,11 +40,11 @@ export default function SelectionContainer() {
       const headerHeight = document.getElementsByClassName('button-playlist-container')[0].clientHeight
       stop = true
       if (e.clientY < window.innerHeight - playlistContainer.clientHeight - headerHeight) {
-        stop = false;
+        stop = false
         scroll(-1)
       }
       if (e.clientY > (window.innerHeight - footerHeight - 50)) {
-        stop = false;
+        stop = false
         scroll(1)
       }
     },
@@ -58,7 +63,7 @@ export function onDragLeave(e) {
 
 export function convertTracksToPlaylistFormat(selectionContainerFromTacklist) {
   const selectionContainer = selectionContainerFromTacklist.cloneNode(true)
-  dom.emptySelectionContainer({ reverseTracks: false });
+  dom.emptySelectionContainer({ reverseTracks: false })
   Array.from(selectionContainer.children).forEach(child => {
     if (child.id === 'menu-container') return
     selectionContainer.replaceChild(dom.createTrackElementForPlaylist(window.state.trackList)(() => false)(child.id), child)
