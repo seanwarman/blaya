@@ -10,6 +10,7 @@ import { playModule } from './playModule.js'
 export default (postHook) => {
   const state = {
     trackList: parseTrackList(RAW_TRACKLIST),
+    playlistScrollPosition: 0,
     playlistModeState: null,
     set playlistMode(playlistMode) {
       this.playlistModeState = playlistMode
