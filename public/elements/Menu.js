@@ -40,16 +40,16 @@ function Add() {
     innerText: 'Add',
     onclick: ev.onClickOrEnter((e) => {
       e.stopPropagation()
-
-      const selectionContainer = convertTracksToPlaylistFormat(document.getElementById('selection-container'))
+      Array.from(document.getElementsByClassName('menu-items')).map(el => el.classList?.add('closed'))
+      const selectionContainerClone = convertTracksToPlaylistFormat(document.getElementById('selection-container'))
       const playlist = document.getElementById('playlist')
       const playlistChildren = playlist?.children
 
       if (playlistChildren[0]) {
         playlist
-          .insertBefore(selectionContainer, playlistChildren[0])
+          .insertBefore(selectionContainerClone, playlistChildren[0])
       } else {
-        playlist.append(selectionContainer)
+        playlist.append(selectionContainerClone)
       }
 
       window.state.refreshPlaylistsStateFromDomElements()

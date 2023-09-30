@@ -65,7 +65,7 @@ export function onDragLeave(e) {
 
 export function convertTracksToPlaylistFormat(selectionContainerFromTacklist) {
   const selectionContainer = selectionContainerFromTacklist.cloneNode(true)
-  dom.emptySelectionContainer({ reverseTracks: false })
+  // dom.emptySelectionContainer({ reverseTracks: false })
   Array.from(selectionContainer.children).forEach(child => {
     if (child.id === 'menu-container') return
     selectionContainer.replaceChild(dom.createTrackElementForPlaylist(window.state.trackList)(() => false)(child.id), child)
