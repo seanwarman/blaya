@@ -672,19 +672,19 @@ div[role="link"] {
 }
 
 .track-tab .track-name {
-  order: 2;
+  order: 1;
 }
 
 .track-tab .track-album {
-  order: 1;
+  order: 2;
 }
 
 .track-artist-tab.track,
 .track-album-tab.track {
   background: hsl(0 0% 98% / 1);
   border: none;
-  height: 5rem;
-  padding-top: 3rem;
+  height: 3rem;
+  padding-top: 1rem;
   box-shadow: inset 0px 0.6px 5px 0px hsl(0deg 0% 0% / 6%);
 }
 
@@ -1017,6 +1017,15 @@ div#current-playing-text {
   #menu {
     translate: -9px -61px;
   }
+
+  .track-tab .track-name {
+    order: 2;
+  }
+
+  .track-tab .track-album {
+    order: 1;
+  }
+
 
   body[data-playlist-minimised="false"] #menu {
     translate: -50vw -61px;
