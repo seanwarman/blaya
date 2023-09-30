@@ -42,7 +42,7 @@ header {
 }
 
 #selection-container {
-  background-color: #55baba;
+  background-color: #6f73ff;
 }
 
 #selection-container .drag-container {
@@ -160,7 +160,7 @@ input#search-input:focus {
   width: 100%;
   border: none;
   font-size: 0.8rem;
-  border-bottom: 3px solid #5ed0cf;
+  border-bottom: 3px solid #6f73ff;
   transition: margin-left .6s;
   /* height: 2.1rem; */
 }
@@ -175,7 +175,7 @@ input#search-input:focus {
 
 .dragover {
   /* background: #dedede !important; */
-  border-bottom: 3px solid #55baba;
+  border-bottom: 3px solid #6f73ff;
 }
 
 #playlist .track {
@@ -209,11 +209,11 @@ button.button-circle-transparent {
 }
 
 body[data-playlist-mode="true"] .mode-button-playlist {
-  background: #5ed0cf;
+  background: #6f73ff;
 }
 
 .button-playlist-container {
-  border-bottom: 3px solid #5ed0cf;
+  border-bottom: 3px solid #6f73ff;
   z-index: 1;
   position: fixed;
   transition: bottom .6s, top .6s;
@@ -342,7 +342,7 @@ body[data-searching="true"] #page-1 .track:first-child .track-name-album-contain
 }
 
 body[data-searching="true"] #page-1 .track.downloaded:first-child .track-name-album-container {
-  outline-color: #0008ff85;
+  outline-color: #6f73ff;
 }
 
 .track {
@@ -355,9 +355,20 @@ body[data-searching="true"] #page-1 .track:first-child.track-adding-track .track
 }
 
 .downloaded {
-  background-color: #0008ff85;
-  color: white;
-  font-weight: 600;
+  position: relative;
+}
+
+.downloaded:after {
+  content: url(./icons/cloud-arrow-down-solid.svg);
+  min-width: 15px;
+  position: absolute;
+  left: 0.2rem;
+  top: 0.3rem;
+}
+
+.downloaded:active:after,
+.downloaded:focus:after {
+  content: url(./icons/cloud-arrow-down-solid-lighter.svg);
 }
 
 body[data-playlist-mode="true"] .track {
@@ -548,8 +559,8 @@ div[role="link"] {
 #selection-container .track-name-album-container:focus + .add-to-playlist,
 #selection-container .track-name-album-container,
 #selection-container .track-name-album-container:focus {
-  background: #55baba;
-  border-top: 1px solid #55baba;
+  background: #6f73ff;
+  border-top: 1px solid #6f73ff;
   outline: none;
   padding-top: 0;
   color: white;
@@ -558,13 +569,13 @@ div[role="link"] {
 #playlist #selection-container .track-name .name::selection,
 #selection-container .track-name-album-container .album::selection,
 #selection-container .track-name-album-container .name::selection {
-  background-color: #55baba;
+  background-color: #6f73ff;
   color: white;
 }
 
 #playlist #selection-container .track-name:focus,
 #playlist #selection-container .track-name {
-  background-color: #55baba;
+  background-color: #6f73ff;
   color: white;
   outline: none;
 }
@@ -657,7 +668,7 @@ div[role="link"] {
 }
 
 #menu .menu-items li:hover {
-  background-color: #55baba;
+  background-color: #6f73ff;
   color: white;
 }
 
