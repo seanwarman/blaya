@@ -20,7 +20,7 @@ header {
   margin-top: -6rem;
   grid-gap: 0;
   align-items: center;
-  z-index: 1;
+  z-index: 2;
 }
 
 .open-upload-modal-button-container {
@@ -135,7 +135,7 @@ input#search-input:focus {
   bottom: 6.5rem;
   left: 0;
   right: 0;
-  z-index: 1;
+  z-index: 2;
 }
 
 #playlist {
@@ -209,7 +209,7 @@ button.button-circle-transparent {
 }
 
 body[data-playlist-mode="true"] .mode-button-playlist {
-  background: #6f73ff;
+  background: #91f0bd;
 }
 
 .button-playlist-container {
@@ -366,8 +366,7 @@ body[data-searching="true"] #page-1 .track:first-child.track-adding-track .track
   top: 0.3rem;
 }
 
-.downloaded:active:after,
-.downloaded:focus:after {
+#selection-container .downloaded:after {
   content: url(./icons/cloud-arrow-down-solid-lighter.svg);
 }
 
@@ -389,6 +388,8 @@ div[data-playlist="true"] .track-name-album-container {
 .track:focus-visible,
 .track:focus {
   outline: 2px solid black;
+  margin: 0 2px !important;
+  z-index: 1;
 }
 
 /* .play-ready, */
@@ -745,13 +746,14 @@ footer {
   width: 100vw;
   box-shadow: 0px -5px 12px 0px #00000024;
   display: grid;
-  background: linear-gradient(to right, #7affff, white);
+  background: linear-gradient(to right, #6dffb2, white);
   grid-template-columns: 30% auto 80px 80px;
   grid-template-rows: 52px 52px;
   user-select: none;
   -webkit-user-select: none; /* Safari */        
   -moz-user-select: none; /* Firefox */
   -ms-user-select: none;
+  z-index: 3;
 }
 
 #player {
