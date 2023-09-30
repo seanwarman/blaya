@@ -388,8 +388,13 @@ div[data-playlist="true"] .track-name-album-container {
 .track:focus-visible,
 .track:focus {
   outline: 2px solid black;
-  margin: 0 2px !important;
+  margin: 0 0.1rem !important;
   z-index: 1;
+}
+
+.track:focus-visible .track-name,
+.track:focus .track-name {
+  padding-left: 0.9rem;
 }
 
 /* .play-ready, */
