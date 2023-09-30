@@ -69,6 +69,7 @@ function Deselect() {
     innerText: "Deselect",
     onclick: ev.onClickOrEnter((e) => {
       e.stopPropagation()
+      Array.from(document.getElementsByClassName('menu-items')).map(el => el.classList?.add('closed'))
       dom.emptySelectionContainer({
         reverseTracks: !!document
           .getElementById('playlist')
@@ -84,6 +85,7 @@ function Edit() {
     id: 'edit-track-menu-item',
     innerText: 'Edit',
     onclick: ev.onClickOrEnter(() => {
+      Array.from(document.getElementsByClassName('menu-items')).map(el => el.classList?.add('closed'))
       const els = document.getElementsByClassName('track-selected')
       const hrefs = Array.from(els).map(el => el.parentElement?.dataset?.href)
     }),
@@ -96,6 +98,7 @@ function Remove() {
     innerText: 'Remove',
     onclick: ev.onClickOrEnter((e) => {
       e.stopPropagation()
+      Array.from(document.getElementsByClassName('menu-items')).map(el => el.classList?.add('closed'))
       document.getElementsByClassName('menu-items')?.[0]?.classList.add('closed')
       document.getElementById('menu-container')?.remove()
       for (const el of document.querySelectorAll('.track-selected')) {
