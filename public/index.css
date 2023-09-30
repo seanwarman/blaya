@@ -20,6 +20,7 @@ header {
   margin-top: -6rem;
   grid-gap: 0;
   align-items: center;
+  z-index: 1;
 }
 
 .open-upload-modal-button-container {
@@ -134,6 +135,7 @@ input#search-input:focus {
   bottom: 6.5rem;
   left: 0;
   right: 0;
+  z-index: 1;
 }
 
 #playlist {
@@ -608,7 +610,7 @@ div[role="link"] {
   -ms-user-select: none;
   box-shadow: 1px 1px 6px #00000040;
   overflow: hidden;
-  z-index: 2;
+  z-index: 1;
   color: black;
 }
 
