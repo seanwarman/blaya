@@ -63,9 +63,9 @@ export function onDragLeave(e) {
   e.currentTarget.classList.remove('dragover')
 }
 
-export function convertTracksToPlaylistFormat(selectionContainerFromTacklist) {
+export function convertTracksToPlaylistFormat(selectionContainerFromTacklist, options = { emptySelectionContainer: true }) {
   const selectionContainer = selectionContainerFromTacklist.cloneNode(true)
-  // dom.emptySelectionContainer({ reverseTracks: false })
+  if (options.emptySelectionContainer) dom.emptySelectionContainer({ reverseTracks: false })
   Array.from(selectionContainer.children).forEach(child => {
     if (child.id === 'menu-container') return
     selectionContainer.replaceChild(dom.createTrackElementForPlaylist(window.state.trackList)(() => false)(child.id), child)

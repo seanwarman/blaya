@@ -41,16 +41,22 @@ function Add() {
     onclick: ev.onClickOrEnter((e) => {
       e.stopPropagation()
       Array.from(document.getElementsByClassName('menu-items')).map(el => el.classList?.add('closed'))
-      const selectionContainerClone = convertTracksToPlaylistFormat(document.getElementById('selection-container'))
-      const playlist = document.getElementById('playlist')
+      const selectionContainerClone = convertTracksToPlaylistFormat(
+        document.getElementById("selection-container"),
+        { emptySelectionContainer: false }
+      )
+      const playlist = document.getElementById("playlist");
       const playlistChildren = playlist?.children
 
-      if (playlistChildren[0]) {
-        playlist
-          .insertBefore(selectionContainerClone, playlistChildren[0])
-      } else {
-        playlist.append(selectionContainerClone)
-      }
+      Array.from(selectionContainerClone.children).map(child => {
+        if (child.id === 'menu-container') return
+        if (playlistChildren[0]) {
+          playlist
+            .insertBefore(child, playlistChildren[0])
+        } else {
+          playlist.append(child)
+        }
+      })
 
       window.state.refreshPlaylistsStateFromDomElements()
     }),
