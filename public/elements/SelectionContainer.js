@@ -105,6 +105,7 @@ export function onDragEnd(e) {
 }
 
 export const onDragStart = () => {
+  scrollTracker = document.getElementById('playlist-container')?.scrollTop || 0;
   Array
     .from(document.getElementById('playlist').children)
     .map(child => {
