@@ -67,8 +67,13 @@ export function convertTracksToPlaylistFormat(selectionContainerFromTacklist, op
   const selectionContainer = selectionContainerFromTacklist.cloneNode(true)
   if (options.emptySelectionContainer) dom.emptySelectionContainer({ reverseTracks: false })
   Array.from(selectionContainer.children).forEach(child => {
-    if (child.id === 'menu-container') return
-    selectionContainer.replaceChild(dom.createTrackElementForPlaylist(window.state.trackList)(() => false)(child.id), child)
+    if (child.id === "menu-container") return;
+    selectionContainer.replaceChild(
+      dom.createTrackElementForPlaylist(window.state.trackList)(() => false)(
+        child.id
+      ),
+      child
+    );
   })
   return selectionContainer
 }

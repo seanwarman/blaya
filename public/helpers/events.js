@@ -121,11 +121,13 @@ export const getTracksArrayFromElements = (target, selectedEls) => {
   for (const t of target.querySelectorAll('.track-selected')) {
     if (!selectedEls.includes(t)) {
       t.classList.remove('track-selected')
+      if (t.removeNamedItem) t.removeNamedItem('draggable')
       t.attributes.draggable = false
     }
   }
   for (const selectedEl of selectedEls) {
     selectedEl.classList.add('track-selected')
+    if (selectedEl.removeNamedItem) t.removeNamedItem('draggable')
     selectedEl.attributes.draggable = true
   }
   return Array.from(
