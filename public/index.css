@@ -586,6 +586,10 @@ div[role="link"] {
   outline: none;
 }
 
+#playlist .track:focus .name {
+  margin-left: 1px;
+}
+
 #selection-container {
   /* outline-color: #f6d804; */
   /* outline-style: dashed; */
