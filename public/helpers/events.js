@@ -60,6 +60,9 @@ export const onClearSearch = () => {
   searchInput.value = ''
   afterSearchReset()
   window.state.searching = false
+  if (window.state.focussed === searchInput) {
+    searchInput.focus()
+  }
 }
 
 // onSearch :: Event -> undefined

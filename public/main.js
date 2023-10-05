@@ -108,6 +108,9 @@ build(state => {
   io().on('RELOAD', () => location.reload())
 
   // DOM events
+  document.addEventListener('focusin', (e) => {
+    window.state.focussed = e.target
+  })
   window.addEventListener('scroll', onScroll([onUpScroll(window.state.trackList), onDownScroll(window.state.trackList)]), false)
   document.getElementById('player').onended = onEndNext
   document.getElementById('next-button').onclick = onClickOrEnter(onNext)

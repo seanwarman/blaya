@@ -134,6 +134,16 @@ export default (postHook) => {
     get offlineTracks() {
       return this.offlineTracksState
     },
+    focussedState: [],
+    set focussed(el) {
+      this.focussedState.push(el)
+      if (this.focussedState.length > 3) {
+        this.focussedState = this.focussedState.slice(1)
+      }
+    },
+    get focussed() {
+      return this.focussedState[this.focussedState.length - 2]
+    }
   }
 
   // Add other modules...
