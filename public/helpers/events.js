@@ -85,6 +85,11 @@ export const onSearch = trackList => (e) => {
 }
 
 export const onEndNext = () => {
+  if (
+    !window.state.playModule.currentPlaylist[window.state.playlistIndex + 1]
+  ) {
+    return
+  }
   window.state.playModule.nextTrack()
   document.getElementById('player').play()
 }

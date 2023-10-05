@@ -85,6 +85,14 @@ export const playModule = {
       this.setTrack({ src: trackList[i+1], isPlaylist: false })
     }
   },
+  get playlistIndex() {
+    const [_, playlistIndex] = window.state.playlists[window.state.selectedPlaylist]
+    return playlistIndex
+  },
+  get currentPlaylist () {
+    const [,,playlist] = window.state.playlists[window.state.selectedPlaylist]
+    return playlist
+  },
   nextTrackPlaylist() {
     const [_, playlistIndex, playlist] = window.state.playlists[window.state.selectedPlaylist]
     const i = playlistIndex
