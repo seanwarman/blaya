@@ -907,6 +907,10 @@ div#current-playing-text {
   display: none;
 }
 
+#track-list-container {
+  padding-bottom: 11rem;
+}
+
 #track-list-container #playlist-remove-from-playlist-menu-item {
   display: none;
 }
@@ -1107,4 +1111,3 @@ div#current-playing-text {
     margin: unset;
   }
 }
-
