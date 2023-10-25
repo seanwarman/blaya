@@ -158,9 +158,6 @@ export const getSelectedElements = (parentClassName, scopeElement) => {
 }
 
 export const onSelectHandler = ({ target, reverseTracks, trackContainerClass, event }, playEventHandler) => {
-  const multiSelected = document.getElementById('selection-container')?.getElementsByClassName('track')?.length > 1
-  console.log(`@FILTER multiSelected:`, multiSelected)
-  console.log(`@FILTER event.currentTarget.getElementsByClassName('track-selected')?.length > 1:`, event.currentTarget.getElementsByClassName('track-selected')?.length > 1)
   if (event.currentTarget.getElementsByClassName('track-selected')?.length > 1) {
     return
   }
@@ -198,10 +195,11 @@ export const onSelectContextHandler = ({ target, reverseTracks, trackContainerCl
   }
 }
 
-
 export const onPlayHandler = ({ isPlaylist, playlistIndex, event }) => {
   const ref = event.currentTarget
-  const multiSelected = document.getElementById('selection-container')?.getElementsByClassName('track')?.length > 1
+  const selectionContainer = document.getElementById('selection-container')
+  if (!selectionContainer?.contains(ref)) return;
+  const multiSelected = selectionContainer?.getElementsByClassName('track')?.length > 1
   if (!multiSelected && ref.classList.contains('play-ready') && !event.shiftKey) {
     Array.from(document.getElementsByClassName('play-ready')).map(el => el.classList.remove('play-ready'))
     window.state.playModule.setTrack({ src: ref.dataset.href, isPlaylist, playlistIndex })
