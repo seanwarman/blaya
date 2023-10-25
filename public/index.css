@@ -41,6 +41,16 @@ header {
   background-color: white;
 }
 
+::-moz-selection {
+  color: white;
+  background-color: #8d90ff;
+}
+
+::selection {
+  color: white;
+  background-color: #8d90ff;
+}
+
 #selection-container {
   background-color: #6f73ff;
 }
