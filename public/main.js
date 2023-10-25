@@ -18,6 +18,7 @@ import {
   onUpload,
   onStopPropagation,
   onAddToPlaylistFromSearch,
+  onCopyPlaylist,
   onSelectUp,
   onSelectDown,
 } from './helpers/events.js'
@@ -163,6 +164,8 @@ build(state => {
   }
   // This prevents the above from running if clicking the buttons on the top of the playlist...
   document.getElementsByClassName('button-playlist-container')[0].onclick = e => e.stopPropagation()
+  document.getElementById('copy-button-playlist').onclick = onClickOrEnter(onCopyPlaylist)
+  document.getElementById('copy-button-playlist').onkeydown = onClickOrEnter(onCopyPlaylist) 
 
   // Key commands...
   const onKey = (...maps) => e => {

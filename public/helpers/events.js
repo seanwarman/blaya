@@ -434,3 +434,9 @@ export function onSelectUp(e) {
   el
     .focus()
 }
+
+export const onCopyPlaylist = () => {
+  navigator.clipboard
+    ?.writeText(JSON.stringify(window.state.playlists))
+    .then(() => alert('All playlists copied'));
+}

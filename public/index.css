@@ -214,6 +214,7 @@ button.button-circle-transparent {
   background: #e3e2e2
 }
 
+.button-circle img,
 .button-circle svg {
   width: 1rem;
 }
@@ -259,17 +260,17 @@ body[data-playlist-mode="true"] .mode-button-playlist {
   transition: opacity .6s;
 }
 
-#playlist-container[data-playlist-minimised="true"] #selected-playlist,
-#playlist-container[data-playlist-minimised="true"] #open-upload-modal-button-playlist,
-#playlist-container[data-playlist-minimised="true"] #download-button-playlist,
-#playlist-container[data-playlist-minimised="true"] #clear-button-playlist {
+#playlist-container[data-playlist-minimised="true"] > .button-playlist-container > input,
+#playlist-container[data-playlist-minimised="true"] > .button-playlist-container > button {
   opacity: 0;
 }
 
-#playlist-container[data-playlist-minimised="false"] #selected-playlist,
-#playlist-container[data-playlist-minimised="false"] #open-upload-modal-button-playlist,
-#playlist-container[data-playlist-minimised="false"] #download-button-playlist,
-#playlist-container[data-playlist-minimised="false"] #clear-button-playlist {
+#playlist-container[data-playlist-minimised="false"] > .button-playlist-container > input,
+#playlist-container[data-playlist-minimised="false"] > .button-playlist-container > button {
+  opacity: 1;
+}
+
+#playlist-container[data-playlist-minimised="true"] #maximise-button-playlist {
   opacity: 1;
 }
 
@@ -1081,7 +1082,7 @@ div#current-playing-text {
     height: 3rem;
     display: flex;
     align-items: center;
-    justify-content: end;
+    justify-content: space-evenly;
     width: 30%;
     min-width: 368px;
     translate: 0 -3rem;
