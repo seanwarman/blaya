@@ -129,14 +129,10 @@ export const getTracksArrayFromElements = (target, selectedEls) => {
   for (const t of target.querySelectorAll('.track-selected')) {
     if (!selectedEls.includes(t)) {
       t.classList.remove('track-selected')
-      if (t.removeNamedItem) t.removeNamedItem('draggable')
-      t.attributes.draggable = false
     }
   }
   for (const selectedEl of selectedEls) {
     selectedEl.classList.add('track-selected')
-    if (selectedEl.removeNamedItem) t.removeNamedItem('draggable')
-    selectedEl.attributes.draggable = true
   }
   return Array.from(
     target?.getElementsByClassName('track-selected')
@@ -162,6 +158,9 @@ export const getSelectedElements = (parentClassName, scopeElement) => {
 }
 
 export const onSelectHandler = ({ target, reverseTracks, trackContainerClass, event }, playEventHandler) => {
+  const multiSelected = document.getElementById('selection-container')?.getElementsByClassName('track')?.length > 1
+  console.log(`@FILTER multiSelected:`, multiSelected)
+  console.log(`@FILTER event.currentTarget.getElementsByClassName('track-selected')?.length > 1:`, event.currentTarget.getElementsByClassName('track-selected')?.length > 1)
   if (event.currentTarget.getElementsByClassName('track-selected')?.length > 1) {
     return
   }
