@@ -163,19 +163,19 @@ async function cacheOffline(event) {
       const response = await cache.match(track)
       if (!response) {
         let res = await fetch(track, { headers: new Headers({ Range: 'bytes=0-' }) })
-        res = await fetch('/download/' + track, {
-          headers: new Headers({
-            Range:
-              'bytes=0-' +
-              res.headers.get('Content-Length') +
-              '/' +
-              res.headers.get('Content-Length'),
-            'Accept-Ranges': res.headers.get('Accept-Ranges'),
-            'Content-Length': res.headers.get('Content-Length'),
-            'Content-Type': res.headers.get('Content-Type'),
-            'Content-Range': res.headers.get('Content-Range'),
-          }),
-        });
+        // res = await fetch('/download/' + track, {
+        //   headers: new Headers({
+        //     Range:
+        //       'bytes=0-' +
+        //       res.headers.get('Content-Length') +
+        //       '/' +
+        //       res.headers.get('Content-Length'),
+        //     'Accept-Ranges': res.headers.get('Accept-Ranges'),
+        //     'Content-Length': res.headers.get('Content-Length'),
+        //     'Content-Type': res.headers.get('Content-Type'),
+        //     'Content-Range': res.headers.get('Content-Range'),
+        //   }),
+        // });
         await cache.put(track, res);
       }
       completedTracks.push(track)
