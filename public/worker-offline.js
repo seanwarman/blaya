@@ -166,11 +166,7 @@ async function cacheOffline(event) {
         // res.headers.set('status', 200);
         const res = await fetch('/download/' + track, {
           headers: new Headers({
-            Range:
-              'bytes=0-' +
-              res.headers.get('Content-Length') +
-              '/' +
-              res.headers.get('Content-Length'),
+            Range: 'bytes=0-',
             // 'Accept-Ranges': res.headers.get('Accept-Ranges'),
             // 'Content-Length': res.headers.get('Content-Length'),
             // 'Content-Type': res.headers.get('Content-Type'),
