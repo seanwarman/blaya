@@ -163,6 +163,7 @@ async function cacheOffline(event) {
       const response = await cache.match(track)
       if (!response) {
         let res = await fetch(track, { headers: new Headers({ Range: 'bytes=0-' }) })
+        res.headers.set('status', 200);
         // res = await fetch('/download/' + track, {
         //   headers: new Headers({
         //     Range:
