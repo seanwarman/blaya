@@ -114,14 +114,12 @@ export const downloadFile = async (req, res) => {
       AcceptRanges,
       ContentLength,
       ContentType,
-      ContentRange,
       Body,
     } = await s3.send(command)
     res.writeHead(206, {
       'Accept-Ranges': AcceptRanges,
       'Content-Length': ContentLength,
       'Content-Type': ContentType,
-      'Content-Range': ContentRange,
     })
     Body.on('data', chunk => {
       res.write(chunk)
