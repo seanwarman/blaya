@@ -198,7 +198,7 @@ export const onSelectContextHandler = ({ target, reverseTracks, trackContainerCl
 export const onPlayHandler = ({ isPlaylist, playlistIndex, event }) => {
   const ref = event.currentTarget
   const selectionContainer = document.getElementById('selection-container')
-  if (!selectionContainer?.contains(ref)) return;
+  // if (!selectionContainer?.contains(ref)) return;
   const multiSelected = selectionContainer?.getElementsByClassName('track')?.length > 1
   if (!multiSelected && ref.classList.contains('play-ready') && !event.shiftKey) {
     Array.from(document.getElementsByClassName('play-ready')).map(el => el.classList.remove('play-ready'))
