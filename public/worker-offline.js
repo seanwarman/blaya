@@ -41,7 +41,9 @@ self.addEventListener('install', event => {
       Promise.all([
         cache.matchAll(clientApplicationFiles).then(responses => Array.from(responses).map(cache.delete)),
         cache.addAll(clientApplicationFiles),
-      ]))
+      ])).catch(error => {
+        console.log(`Worker install error:`, error)
+      })
   )
 })
 
@@ -168,6 +170,10 @@ async function cacheOffline(event) {
               res.headers.get('Content-Length') +
               '/' +
               res.headers.get('Content-Length'),
+            'Accept-Ranges': res.headers.get('Accept-Ranges'),
+            'Content-Length': res.headers.get('Content-Length'),
+            'Content-Type': res.headers.get('Content-Type'),
+            'Content-Range': res.headers.get('Content-Range'),
           }),
         });
         await cache.put(track, res);
