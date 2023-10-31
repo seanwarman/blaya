@@ -258,7 +258,7 @@ export const Create = (trackString, options = {}) => {
           event: e,
         })
       },
-      role: !albumTab && 'link',
+      role: !albumTab ? 'link' : 'div',
       tabIndex: !albumTab ? '0' : '-1',
       className:
         'track' +
