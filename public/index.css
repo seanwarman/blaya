@@ -631,6 +631,10 @@ div[role="link"] {
   margin-top: 1px;
 }
 
+#selection-container .track-tab {
+  margin-bottom: 1px;
+}
+
 #menu {
   position: absolute;
   right: 0;
