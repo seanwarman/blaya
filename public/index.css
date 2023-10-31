@@ -377,6 +377,10 @@ body[data-searching="true"] #page-1 .track:first-child.track-adding-track .track
   top: 0.3rem;
 }
 
+.track-tab.downloaded:after {
+  visibility: hidden;
+}
+
 #selection-container .downloaded:after {
   content: url(./icons/cloud-arrow-down-solid-lighter.svg);
 }
@@ -423,11 +427,8 @@ div[data-playlist="true"] .track-name-album-container {
 #playlist #selection-container .track .track-name::before,
 #playlist #selection-container .playing.track:focus .track-name::before,
 #selection-container .playing .track-name-album-container .track-name::before,
+#selection-container .downloaded.playing .track-name::before,
 #selection-container .playing .track-name-album-container:focus .track-name::before {
-  content: url(./icons/play-solid-white.svg);
-}
-
-.downloaded.playing .track-name::before {
   content: url(./icons/play-solid-white.svg);
 }
 

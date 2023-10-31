@@ -76,6 +76,10 @@ export const createTrackElementForPlaylist = trackList => playingFn => trackId =
       className: 'track' + (playingFn() ? ' playing' : ''),
       id: trackId,
       onclick: e => e.stopPropagation(),
+      onmousedown: e => {
+        if (document.getElementById('selection-container')?.contains(e.currentTarget)) return;
+        emptySelectionContainer({ reverseTracks: true })
+      },
       onmouseup: e => {
         onSelectHandler({
           target: document.getElementById('playlist'),
@@ -229,7 +233,12 @@ export const Create = (trackString, options = {}) => {
 
   const createTrackElementFromDiv = f.pipe(
     f.AssignObject({
+      onmousedown: e => {
+        if (document.getElementById('selection-container')?.contains(e.currentTarget)) return;
+        emptySelectionContainer({ reverseTracks: false })
+      },
       onmouseup: e => {
+        if (albumTab) return
         onSelectHandler({
           target: document.getElementById('track-list-container'),
           trackContainerClass: 'track-name-album-container',
@@ -241,6 +250,7 @@ export const Create = (trackString, options = {}) => {
         }))
       },
       oncontextmenu: e => {
+        if (albumTab) return
         onSelectContextHandler({
           target: document.getElementById('track-list-container'),
           trackContainerClass: 'track-name-album-container',
@@ -248,8 +258,8 @@ export const Create = (trackString, options = {}) => {
           event: e,
         })
       },
-      role: 'link',
-      tabIndex: '0',
+      role: !albumTab && 'link',
+      tabIndex: !albumTab ? '0' : '-1',
       className:
         'track' +
         (window.state?.playModule?.currentTrackSrc === trackString
