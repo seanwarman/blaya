@@ -77,8 +77,9 @@ export const createTrackElementForPlaylist = trackList => playingFn => trackId =
       id: trackId,
       onclick: e => e.stopPropagation(),
       onmousedown: e => {
-        if (document.getElementById('selection-container')?.contains(e.currentTarget)) return;
-        emptySelectionContainer({ reverseTracks: true })
+        const selectionContainer = document.getElementById('selection-container')
+        if (selectionContainer?.contains(e.currentTarget)) return;
+        emptySelectionContainer({ reverseTracks: document.getElementById('playlist').contains(selectionContainer) })
       },
       onmouseup: e => {
         onSelectHandler({
@@ -234,8 +235,9 @@ export const Create = (trackString, options = {}) => {
   const createTrackElementFromDiv = f.pipe(
     f.AssignObject({
       onmousedown: e => {
-        if (document.getElementById('selection-container')?.contains(e.currentTarget)) return;
-        emptySelectionContainer({ reverseTracks: false })
+        const selectionContainer = document.getElementById('selection-container')
+        if (selectionContainer?.contains(e.currentTarget)) return;
+        emptySelectionContainer({ reverseTracks: document.getElementById('playlist').contains(selectionContainer) })
       },
       onmouseup: e => {
         if (albumTab) return

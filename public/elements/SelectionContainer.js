@@ -67,6 +67,10 @@ export function convertTracksToPlaylistFormat(selectionContainerFromTacklist, op
   const selectionContainer = selectionContainerFromTacklist.cloneNode(true)
   if (options.emptySelectionContainer) dom.emptySelectionContainer({ reverseTracks: false })
   Array.from(selectionContainer.children).forEach(child => {
+    if (child.classList.contains('track-tab')) {
+      child.remove();
+      return;
+    }
     if (child.id === "menu-container") return;
     selectionContainer.replaceChild(
       dom.createTrackElementForPlaylist(window.state.trackList)(() => false)(
@@ -81,7 +85,7 @@ export function convertTracksToPlaylistFormat(selectionContainerFromTacklist, op
 export function onDragEnd(e) {
   e.preventDefault()
 
-  const [child] = Array.from(e.currentTarget.children).filter(el => el.id !== 'menu-container')
+  const [child] = Array.from(e.currentTarget.children).filter(el => el.id !== 'menu-container' || el.classList.contains('track-tab'))
   const { playlist } = child?.dataset || {}
 
   const dragOverEls = document.getElementsByClassName('dragover')
