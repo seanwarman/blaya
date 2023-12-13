@@ -366,7 +366,7 @@ var DragDropTouch;
             requestAnimationFrame(function () {
                 if (_this._img) {
                     var pt = _this._getPoint(e, true), s = _this._img.style;
-                    s.position = 'absolute';
+                    s.position = 'fixed';
                     s.pointerEvents = 'none';
                     s.zIndex = '999999';
                     s.left = Math.round(pt.x - _this._imgOffset.x) + 'px';
