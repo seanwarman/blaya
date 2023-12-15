@@ -181,12 +181,6 @@ export const onRemoveFromPlaylist = e => {
   )
 }
 
-// ifFalseOnAddToPlaylist :: fn -> Event -> [Element, Object] | Event
-export const ifFalseOnAddToPlaylist = conditionFn => f.breakPipe(
-  f.breakIf(conditionFn),
-  onClickOrEnter(onAddToPlaylist),
-)
-
 // createAddToPlaylistElement :: String -> Element
 export const createAddToPlaylistElement = trackId => f.pipe(
   f.AssignObject({
@@ -195,8 +189,8 @@ export const createAddToPlaylistElement = trackId => f.pipe(
     role: 'link',
     tabIndex: '0',
     innerHTML: '<img class="add-to-playlist-icon" />',
-    onclick: ifFalseOnAddToPlaylist(() => window.state.selectedPlaylist === undefined),
-    onkeydown: ifFalseOnAddToPlaylist(() => window.state.selectedPlaylist === undefined),
+    onmouseup: onAddToPlaylist,
+    onkeydown: onClickOrEnter(onAddToPlaylist),
   }),
   f.ObjectAssignDataSet({
     trackId,
@@ -211,7 +205,7 @@ export const createRemoveFromPlaylistElement = trackId => f.pipe(
     tabIndex: '0',
     role: 'link',
     innerHTML: '<img class="remove-from-playlist-icon" />',
-    onclick: onClickOrEnter(onRemoveFromPlaylist),
+    onmouseup: onClickOrEnter(onRemoveFromPlaylist),
     onkeydown: onClickOrEnter(onRemoveFromPlaylist),
   }),
   f.ObjectAssignDataSet({
