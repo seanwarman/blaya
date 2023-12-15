@@ -409,7 +409,7 @@ div[data-playlist="true"] .track-name-album-container {
 
 .track:focus-visible .track-name,
 .track:focus .track-name {
-  padding-left: 0.9rem;
+  margin-left: -2px;
 }
 
 /* .play-ready, */
@@ -444,13 +444,17 @@ body[data-playlist-mode="true"] #playlist .track {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #ffffff4d;
+  /* background: #ffffff4d; */
   border-top: 1px solid #ededed;
 }
 
 #playlist .add-to-playlist {
   border-bottom: 1px solid #ededed;
   border-top: none;
+}
+
+#playlist #selection-container .add-to-playlist {
+  border-bottom: none;
 }
 
 .track-tab .track-name-album-container,
@@ -503,7 +507,7 @@ body[data-playlist-mode="false"] .add-to-playlist {
   height: 0.8rem;
 }
 
-#playlist .track:focus .remove-from-playlist-icon,
+#playlist #selection-container .track .remove-from-playlist-icon,
 .downloaded .remove-from-playlist-icon {
   content: url(public/icons/minus-solid-white.svg);
   height: 0.8rem;
