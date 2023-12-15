@@ -98,12 +98,7 @@ function Remove() {
     innerText: 'Remove',
     onclick: ev.onClickOrEnter((e) => {
       e.stopPropagation()
-      Array.from(document.getElementsByClassName('menu-items')).map(el => el.classList?.add('closed'))
-      document.getElementsByClassName('menu-items')?.[0]?.classList.add('closed')
-      document.getElementById('menu-container')?.remove()
-      for (const el of document.querySelectorAll('.track-selected')) {
-        el.remove()
-      }
+      document.getElementById('selection-container')?.remove();
       window.state.refreshPlaylistsStateFromDomElements();
     }),
   })
