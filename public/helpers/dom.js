@@ -205,7 +205,7 @@ export const createRemoveFromPlaylistElement = trackId => f.pipe(
     tabIndex: '0',
     role: 'link',
     innerHTML: '<img class="remove-from-playlist-icon" />',
-    onmouseup: onClickOrEnter(onRemoveFromPlaylist),
+    onmouseup: onRemoveFromPlaylist,
     onkeydown: onClickOrEnter(onRemoveFromPlaylist),
   }),
   f.ObjectAssignDataSet({
