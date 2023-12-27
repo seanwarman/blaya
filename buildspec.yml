@@ -10,9 +10,4 @@ phases:
   pre_build:
     on-failure: ABORT
     commands:
-      - npm run dev
-  build:
-    on-failure: ABORT
-    commands:
-      - npm run cypress:run
-
+      - npm run test
