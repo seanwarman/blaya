@@ -29,6 +29,7 @@ Cypress.Commands.add('authAllRequests', () => {
     method: '*',
     url: '*',
   }, req => {
-    req.headers['Authorization'] = 'Basic Y2QzazpjYXRjYXQxMg==';
+    req.headers['Authorization'] = 'Basic Y2QzazpwYXNzd29yZA==';
+    //                                    "password" as base64
   });
 });
