@@ -1,0 +1,16 @@
+version: 0.2
+
+phases:
+  install:
+    on-failure: ABORT
+    commands:
+      - npm i
+  pre_build:
+    on-failure: ABORT
+    commands:
+      - npm run dev
+  build:
+    on-failure: ABORT
+    commands:
+      - npm run cypress:run
+
