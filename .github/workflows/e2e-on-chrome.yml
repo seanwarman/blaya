@@ -27,5 +27,5 @@ jobs:
           wait-on: 'http://localhost:3000'
           # record: true
         env:
-          BASIC_AUTH_USERS: { secrets.BASIC_AUTH_USERS }
-          PORT: { secrets.PORT }
+          BASIC_AUTH_USERS: ${{ secrets.BASIC_AUTH_USERS }}
+          PORT: ${{ secrets.PORT }}
