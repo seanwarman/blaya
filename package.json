@@ -10,7 +10,7 @@
     "update": "git pull origin master && npm i",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run --browser chrome",
-    "test": "nodemon -e js,css,html,svg --ignore node_modules/ index.js > /dev/null 2>&1 & cypress run"
+    "test": "nodemon -e js,css,html,svg --ignore node_modules/ index.js > /dev/null 2>&1 & cypress run --browser chrome"
   },
   "keywords": [],
   "author": "",
