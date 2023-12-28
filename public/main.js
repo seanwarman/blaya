@@ -87,11 +87,9 @@ if ('serviceWorker' in navigator) {
       type: 'SYNC_OFFLINE_TRACKS',
     })
 
-  },
-    (error) => {
-      console.error(`Service worker registration failed: ${error}`);
-    }
-  );
+  }).catch((error) => {
+    console.error(`Service worker registration failed: ${error}`);
+  });
 } else {
   console.error("Service workers are not supported.");
 }

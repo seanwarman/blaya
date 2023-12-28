@@ -9,7 +9,7 @@
     "start": "node index.js",
     "update": "git pull origin master && npm i",
     "cypress:open": "cypress open",
-    "cypress:run": "cypress run",
+    "cypress:run": "cypress run --browser chrome",
     "test": "nodemon -e js,css,html,svg --ignore node_modules/ index.js > /dev/null 2>&1 & cypress run"
   },
   "keywords": [],

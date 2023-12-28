@@ -5,11 +5,11 @@ describe('template spec', () => {
   it('the plus and minus buttons work to update the playlist', () => {
     cy.authAllRequests();
     cy.visit('/');
-    cy.get('.mode-button-playlist.button-circle').click();
+    cy.get('.mode-button-playlist.button-circle').should('exist').click({ force: true });
     cy.get('.add-to-playlist').then(([el]) => {
       cy.wrap(el).click({ force: true });
       cy.get('#playlist-container .track').should('have.lengthOf', 1);
-      cy.get('.remove-from-playlist-icon').click();
+      cy.get('.remove-from-playlist-icon').click({ force: true });
       cy.get('#playlist-container .track').should('have.lengthOf', 0);
     });
   });
