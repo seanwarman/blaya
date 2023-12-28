@@ -19,8 +19,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Cypress run
-        with:
-          command: npm run test
+        run: npm run test    
         env:
           BASIC_AUTH_USERS: ${{ secrets.BASIC_AUTH_USERS }}
           PORT: ${{ secrets.PORT }}
