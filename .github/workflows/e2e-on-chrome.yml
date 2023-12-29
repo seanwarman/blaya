@@ -18,12 +18,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Install packages and run
-        run: npm i && npm run dev &
+      - name: Install packages and test
+        run: npm i && npm run test
         env:
           BASIC_AUTH_USERS: 'cd3k:password'
           PORT: 3000
           TEST: true
-
-      - name: Test
-        run: npm run cypress:run
