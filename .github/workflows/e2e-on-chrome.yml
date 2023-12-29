@@ -8,17 +8,21 @@ on:
 
 jobs:
   cypress-run:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '16.19.0'
+        
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Cypress run
-        uses: cypress-io/github-action@v6
-        with:
-          browser: chrome
-          start: npm run dev
-          wait-on: 'http://localhost:3000'
-          # record: true
+
+      - name: Install packages and run
+        run: npm i && npm run dev
+
+      - name: Test
+        run: npm run cypress:run
         env:
           BASIC_AUTH_USERS: 'cd3k:password'
           PORT: 3000
