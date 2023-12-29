@@ -11,7 +11,7 @@ import router from './router.js'
 
 dotenv.config()
 
-const { PRIV_KEY, CERTIFICATE, BASIC_AUTH_USERS, PORT = 80 } = process.env
+const { PRIV_KEY, CERTIFICATE, BASIC_AUTH_USERS, PORT = 80, TEST = false} = process.env
 
 let io;
 let http;
@@ -38,16 +38,18 @@ io.on('connection', () => {
   reloaded = true
 })
 
-app.use(basicAuth({
-  users: BASIC_AUTH_USERS.split(',').reduce((acc, userpass) => {
-    const [username, password] = userpass.split(':')
-    return {
-      ...acc,
-      [username]: password,
-    }
-  }, {}),
-  challenge: true,
-}))
+if (!TEST) {
+  app.use(basicAuth({
+    users: BASIC_AUTH_USERS.split(',').reduce((acc, userpass) => {
+      const [username, password] = userpass.split(':')
+      return {
+        ...acc,
+        [username]: password,
+      }
+    }, {}),
+    challenge: true,
+  }))
+}
 
 app.use(express.static('public'))
 app.use('/public', express.static('public'))

@@ -1,9 +1,5 @@
 describe('template spec', () => {
-  before(cy.authAllRequests);
-  beforeEach(cy.authAllRequests);
-
   it('the plus and minus buttons work to update the playlist', () => {
-    cy.authAllRequests();
     cy.visit('/');
     cy.get('.mode-button-playlist.button-circle').should('exist').click({ force: true });
     cy.get('.add-to-playlist').then(([el]) => {
