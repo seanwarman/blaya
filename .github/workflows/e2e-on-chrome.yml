@@ -8,6 +8,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '16.19.0'
+
       - name: Cypress run
         uses: cypress-io/github-action@v6.4.0
         with:
