@@ -15,10 +15,14 @@ jobs:
           node-version: '16.19.0'
 
       - name: Cypress run
-        uses: cypress-io/github-action@v6.4.0
+        uses: cypress-io/github-action@v3
         with:
-          start: npm run dev
+          browser: chrome
+          start: npm run run
+          wait-on: 'http://localhost:3001'
         env:
           BASIC_AUTH_USERS: 'cd3k:password'
           PORT: 3000
           TEST: true
+
+
