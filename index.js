@@ -11,7 +11,7 @@ import router from './router.js'
 
 dotenv.config()
 
-const { PRIV_KEY, CERTIFICATE, BASIC_AUTH_USERS, PORT = 80 } = process.env
+const { PRIV_KEY, CERTIFICATE, BASIC_AUTH_USERS, PORT = 80, TEST = false } = process.env
 
 let io;
 let http;
@@ -33,33 +33,39 @@ if (production) {
 }
 
 let reloaded = false
-io.on('connection', () => {
-  if (!reloaded) io.emit('RELOAD')
-  reloaded = true
-})
+if (!TEST) {
+  io.on('connection', () => {
+    if (!reloaded) io.emit('RELOAD')
+    reloaded = true
+  })
+}
 
-app.use(basicAuth({
-  users: BASIC_AUTH_USERS.split(',').reduce((acc, userpass) => {
-    const [username, password] = userpass.split(':')
-    return {
-      ...acc,
-      [username]: password,
-    }
-  }, {}),
-  challenge: true,
-}))
+if (!TEST) {
+  app.use(basicAuth({
+    users: BASIC_AUTH_USERS.split(',').reduce((acc, userpass) => {
+      const [username, password] = userpass.split(':')
+      return {
+        ...acc,
+        [username]: password,
+      }
+    }, {}),
+    challenge: true,
+  }))
+}
 
 app.use(express.static('public'))
 app.use('/public', express.static('public'))
 app.use('/node_modules', express.static('node_modules'))
-app.use((req, _, next) => {
-  const s3 = new S3Client({ region: 'eu-west-2' })
-  req.context = {
-    io,
-    s3,
-  }
-  next()
-})
+if (!TEST) {
+  app.use((req, _, next) => {
+    const s3 = new S3Client({ region: 'eu-west-2' })
+    req.context = {
+      io,
+      s3,
+    }
+    next()
+  })
+}
 
 router(app)
 
