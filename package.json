@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon -e js,css,html,svg --ignore node_modules/ index.js",
+    "dev": "nodemon -e js,css,html,svg --ignore node_modules/ --ignore cypress/ index.js",
     "start": "node index.js",
     "update": "git pull origin master && npm i",
     "cypress:open": "cypress open",
