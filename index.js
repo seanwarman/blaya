@@ -65,6 +65,23 @@ if (!TEST) {
     }
     next()
   })
+} else {
+  app.use((req, _, next) => {
+    const s3 = {
+      send: async () => ({
+        AcceptRanges: '',
+        ContentLength: '',
+        ContentType: '',
+        ContentRange: '',
+        Body: { on: (type, cb) => { type === 'end' ? cb() : null } },
+      }),
+    };
+    req.context = {
+      io,
+      s3,
+    };
+    next();
+  });
 }
 
 router(app)
