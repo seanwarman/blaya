@@ -10,4 +10,23 @@ describe('template spec', () => {
       cy.get('#playlist-container .track').should('have.lengthOf', 0);
     });
   });
+
+  it('tracks can be selected by tabbing', () => {
+    cy.visit('/');
+    cy.get('.track.track-non-tab').should('exist').then(([el]) => {
+      cy.wrap(el).click();
+      cy.wrap(el).should('have.focus');
+    });
+  });
+
+  it('tracks can be played by pressing enter', () => {
+    cy.visit('/');
+    cy.get('.track.track-non-tab').should('exist').then(([el]) => {
+      cy.wrap(el).click();
+      cy.wrap(el).should('have.focus');
+      cy.intercept('/music/01%20-%20Chris%20Avantgarde%2C%20Anyma%20(ofc)%20-%20Eternity%20(Extended%20Mix).mp3').as('song-request');
+      cy.wrap(el).type('{enter}');
+      cy.wait('@song-request').should('exist');
+    });
+  });
 });

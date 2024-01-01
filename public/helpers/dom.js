@@ -81,6 +81,20 @@ export const createTrackElementForPlaylist = trackList => playingFn => trackId =
         if (selectionContainer?.contains(e.currentTarget)) return;
         emptySelectionContainer({ reverseTracks: document.getElementById('playlist').contains(selectionContainer) })
       },
+      onkeyup: e => {
+        if (e.key === 'Enter') {
+          e.target.classList.add('play-ready');
+          onPlayHandler({
+            isPlaylist: true,
+            playlistIndex: findIndexOfElement(e.currentTarget)(
+              document
+                .getElementById('playlist')
+                .getElementsByClassName('track')
+            ),
+            event: e,
+          });
+        }
+      },
       onmouseup: e => {
         onSelectHandler({
           target: document.getElementById('playlist'),
@@ -232,6 +246,15 @@ export const Create = (trackString, options = {}) => {
         const selectionContainer = document.getElementById('selection-container')
         if (selectionContainer?.contains(e.currentTarget)) return;
         emptySelectionContainer({ reverseTracks: document.getElementById('playlist').contains(selectionContainer) })
+      },
+      onkeyup: e => {
+        if (e.key === 'Enter') {
+          e.target.classList.add('play-ready');
+          onPlayHandler({
+            isPlaylist: false,
+            event: e,
+          })
+        }
       },
       onmouseup: e => {
         if (albumTab) return
