@@ -33,12 +33,11 @@ if (production) {
 }
 
 let reloaded = false
-if (!TEST) {
-  io.on('connection', () => {
-    if (!reloaded) io.emit('RELOAD')
-    reloaded = true
-  })
-}
+io.on('connection', () => {
+  if (!reloaded) io.emit('RELOAD')
+  reloaded = true
+})
+
 
 if (!TEST) {
   app.use(basicAuth({
