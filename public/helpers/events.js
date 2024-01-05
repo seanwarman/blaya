@@ -14,8 +14,6 @@ import {
   appendFilteredTracksByPageLazy,
   prependTracksByPageLazy,
   prependFilteredTracksByPageLazy,
-  findIndexOfElement,
-  arrayFromElements,
 } from './index.js'
 import Menu from '../elements/Menu.js'
 
@@ -94,7 +92,7 @@ export const onEndNext = () => {
     return
   }
   window.state.playModule.nextTrack()
-  document.getElementById('player').play()
+  window.state.playModule.player.play()
 }
 
 export const onNext = () => {
@@ -196,6 +194,7 @@ export const onSelectContextHandler = ({ target, reverseTracks, trackContainerCl
 }
 
 export const onPlayHandler = ({ isPlaylist, playlistIndex, event }) => {
+  console.log(`@FILTER on play...`)
   const ref = event.currentTarget
   const selectionContainer = document.getElementById('selection-container')
   // if (!selectionContainer?.contains(ref)) return;
@@ -203,7 +202,7 @@ export const onPlayHandler = ({ isPlaylist, playlistIndex, event }) => {
   if (!multiSelected && ref.classList.contains('play-ready') && !event.shiftKey) {
     Array.from(document.getElementsByClassName('play-ready')).map(el => el.classList.remove('play-ready'))
     window.state.playModule.setTrack({ src: ref.dataset.href, isPlaylist, playlistIndex })
-    document.getElementById('player').play()
+    window.state.playModule.player.play()
     ref.focus()
   } else {
     Array.from(document.getElementsByClassName('play-ready')).map(el => el.classList.remove('play-ready'))
@@ -453,7 +452,7 @@ export const onTogglePlaylistMinimised = () => {
   if (!minimise) playlistContainer.scrollTo(0, window.state.playlistScrollPosition)
 }
 
-export default function Events() {
+export default function Events(player) {
   // DOM events
   document.addEventListener('focusin', (e) => {
     window.state.focussed = e.target

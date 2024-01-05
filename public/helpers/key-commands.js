@@ -5,7 +5,7 @@ import {
   onPrev,
 } from './events.js'
 
-export default function KeyboardCommands() {
+export default function KeyboardCommands(player) {
   // Key commands...
   const onKey = (...maps) => e => {
     maps.forEach(([key, cb]) => {
@@ -33,8 +33,7 @@ export default function KeyboardCommands() {
 
   document.onkeydown = onKey(
     [' ', () => {
-      const player = document.getElementById('player')
-      if (player.paused) {
+      if (!player.isPlaying()) {
         player.play()
       } else {
         player.pause()

@@ -1,5 +1,5 @@
 import build from './store/indexModule.js'
-import { playModule } from './store/playModule.js'
+import PlayModule from './store/playModule.js'
 
 import { appendTracksByPage } from './helpers/index.js'
 import Events, {
@@ -9,7 +9,7 @@ import Events, {
   onUpload,
 } from './helpers/events.js'
 import KeyboardCommands from './helpers/key-commands.js'
-import Player from './helpers/player.js'
+import Player from './elements/player.js';
 import * as f from './helpers/functional-utils.js'
 
 import {
@@ -98,7 +98,9 @@ function initStateItem(key, defaultInitiliser) {
 // Builds tracklist ui...
 build(state => {
   // Add other modules...
-  state.playModule = playModule
+  const player = Player()
+
+  state.playModule = PlayModule(player)
 
   // BEGIN
   state.page = appendTracksByPage(state.trackList)(state.page)
@@ -123,7 +125,6 @@ build(state => {
   // Socket events
   io().on('RELOAD', () => location.reload())
 
-  Player()
-  Events()
-  KeyboardCommands()
+  Events(player)
+  KeyboardCommands(player)
 })
