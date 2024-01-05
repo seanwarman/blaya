@@ -440,3 +440,64 @@ export const onCopyPlaylist = () => {
     ?.writeText(JSON.stringify(window.state.playlists))
     .then(() => alert('All playlists copied'));
 }
+
+export const onTogglePlaylistMinimised = () => {
+  const playlistContainer = document.getElementById('playlist-container')
+  const minimise = playlistContainer.dataset.playlistMinimised === 'false'
+  if (minimise) window.state.playlistScrollPosition = playlistContainer.scrollTop
+  playlistContainer.dataset.playlistMinimised = playlistContainer.dataset.playlistMinimised === 'false'
+  document.body.dataset.playlistMinimised = playlistContainer.dataset.playlistMinimised === 'true'
+  document.getElementById('maximise-button-playlist').innerHTML = playlistContainer.dataset.playlistMinimised === 'false'
+    ? '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>'
+    : '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M233.4 105.4c12.5-12.5 32.8-12.5 45.3 0l192 192c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L256 173.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l192-192z"/></svg>'
+  if (!minimise) playlistContainer.scrollTo(0, window.state.playlistScrollPosition)
+}
+
+export default function Events() {
+  // DOM events
+  document.addEventListener('focusin', (e) => {
+    window.state.focussed = e.target
+  })
+  window.addEventListener('scroll', onScroll([onUpScroll(window.state.trackList), onDownScroll(window.state.trackList)]), false)
+  document.getElementById('player').onended = onEndNext
+  document.getElementById('next-button').onclick = onClickOrEnter(onNext)
+  document.getElementById('next-button').onkeydown = onClickOrEnter(onNext)
+  document.getElementById('prev-button').onclick = onClickOrEnter(onPrev)
+  document.getElementById('prev-button').onkeydown = onClickOrEnter(onPrev)
+  document.getElementById('current-playing-text').onclick = onClickOrEnter(onScrollThisTrack(window.state.trackList))
+  document.getElementById('current-playing-text').onkeydown = onClickOrEnter(onScrollThisTrack(window.state.trackList))
+  document.getElementById('search-input').oninput = onSearch(window.state.trackList)
+  // onStopPropagation stops the the other keyboard shortcuts from working...
+  document.getElementById('search-input').onkeydown = onStopPropagation(onEnter(onAddToPlaylistFromSearch))
+  document.getElementById('clear-search-button').onclick = onClickOrEnter(onClearSearch)
+  document.getElementById('clear-search-button').onkeydown = onClickOrEnter(onClearSearch)
+  document.getElementById('maximise-button-playlist').onclick = onClickOrEnter(onTogglePlaylistMinimised)
+  document.getElementById('maximise-button-playlist').onkeydown = onClickOrEnter(onTogglePlaylistMinimised)
+  document.getElementById('selected-playlist').oninput = ({ target }) => {
+    const { value } = target
+    if (value) {
+      window.state.selectedPlaylist = value
+    }
+  }
+  document.getElementById('close-modal-button').onclick = onClickOrEnter(onOpenUploadModal)
+  document.getElementById('close-modal-button').onkeydown = onClickOrEnter(onOpenUploadModal)
+  document.getElementById('upload').onchange = () => {
+    const files = Array.from(document.getElementById('upload').files)
+    document.getElementById('upload-files-list').innerHTML = `<ol><li>${ files.map(fileItem => fileItem.name).join('</li><li>') }</li></ol>`
+  }
+  Array.from(document.getElementsByClassName('open-upload-modal-button')).forEach(button => {
+    button.onclick = onClickOrEnter(onOpenUploadModal)
+    button.onkeydown = onClickOrEnter(onOpenUploadModal)
+  })
+  Array.from(document.getElementsByClassName('mode-button-playlist')).forEach(button => {
+    button.onclick = onClickOrEnter(onTogglePlaylistMode)
+    button.onkeydown = onClickOrEnter(onTogglePlaylistMode)
+  })
+  document.getElementById('playlist-container').onclick = e => {
+    dom.emptySelectionContainer({ reverseTracks: true })
+  }
+  // This prevents the above from running if clicking the buttons on the top of the playlist...
+  document.getElementsByClassName('button-playlist-container')[0].onclick = e => e.stopPropagation()
+  document.getElementById('copy-button-playlist').onclick = onClickOrEnter(onCopyPlaylist)
+  document.getElementById('copy-button-playlist').onkeydown = onClickOrEnter(onCopyPlaylist) 
+}

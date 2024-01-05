@@ -1,32 +1,24 @@
 import build from './store/indexModule.js'
-import {
-  onClearSearch,
-  onSearch,
-  onEndNext,
-  onNext,
-  onPrev,
-  onScrollThisTrack,
+import { playModule } from './store/playModule.js'
+
+import { appendTracksByPage } from './helpers/index.js'
+import Events, {
   onClickOrEnter,
-  onEnter,
-  onScroll,
-  onUpScroll,
-  onDownScroll,
-  onTogglePlaylistMode,
   onClearPlaylist,
   onDownload,
-  onOpenUploadModal,
   onUpload,
-  onStopPropagation,
-  onAddToPlaylistFromSearch,
-  onCopyPlaylist,
-  onSelectUp,
-  onSelectDown,
 } from './helpers/events.js'
+import KeyboardCommands from './helpers/key-commands.js'
+import Player from './helpers/player.js'
 import * as f from './helpers/functional-utils.js'
-import * as dom from './helpers/dom.js'
+
+import {
+  PLAYLISTS_STATE_KEY,
+  INITIAL_PLAYLISTS_STATE,
+  INITIAL_PLAYLIST
+} from './constants.js'
 
 import io from './node_modules/socket.io/client-dist/socket.io.esm.min.js'
-import WaveSurfer from './node_modules/wavesurfer.js/dist/wavesurfer.js'
 
 // Service Worker (mainly for offline cacheing)
 if ('serviceWorker' in navigator) {
@@ -97,8 +89,32 @@ if ('serviceWorker' in navigator) {
 
 window.logger = f.logger
 
+function initStateItem(key, defaultInitiliser) {
+  const stateItem = JSON.parse(window.localStorage.getItem(key))
+  if (stateItem) return stateItem
+  return defaultInitiliser
+}
+
 // Builds tracklist ui...
 build(state => {
+  // Add other modules...
+  state.playModule = playModule
+
+  // BEGIN
+  state.page = appendTracksByPage(state.trackList)(state.page)
+
+  state.playlists = initStateItem(PLAYLISTS_STATE_KEY, INITIAL_PLAYLISTS_STATE)
+    .map((playlistItem) => !playlistItem ? INITIAL_PLAYLIST : [
+      playlistItem?.[0] || '',
+      playlistItem?.[1] || 0,
+      playlistItem?.[2]?.filter(track => state.trackList.includes(track)) || [],
+    ])
+  state.playlistMode = false
+
+  const input = document.getElementById('selected-playlist')
+  if (input && input.defaultValue?.length === 0) {
+    input.defaultValue = 0
+  }
 
   window.state = state
 
@@ -107,120 +123,7 @@ build(state => {
   // Socket events
   io().on('RELOAD', () => location.reload())
 
-  const wavesurfer = WaveSurfer.create({
-    container: document.getElementById('player'),
-    waveColor: 'rgb(200, 0, 200)',
-    progressColor: 'rgb(100, 0, 100)',
-    url: '/AveMarisStella.mp3',
-    height: 'auto',
-  });
-
-  // DOM events
-  document.addEventListener('focusin', (e) => {
-    window.state.focussed = e.target
-  })
-  window.addEventListener('scroll', onScroll([onUpScroll(window.state.trackList), onDownScroll(window.state.trackList)]), false)
-  document.getElementById('player').onended = onEndNext
-  document.getElementById('next-button').onclick = onClickOrEnter(onNext)
-  document.getElementById('next-button').onkeydown = onClickOrEnter(onNext)
-  document.getElementById('prev-button').onclick = onClickOrEnter(onPrev)
-  document.getElementById('prev-button').onkeydown = onClickOrEnter(onPrev)
-  document.getElementById('current-playing-text').onclick = onClickOrEnter(onScrollThisTrack(window.state.trackList))
-  document.getElementById('current-playing-text').onkeydown = onClickOrEnter(onScrollThisTrack(window.state.trackList))
-  document.getElementById('search-input').oninput = onSearch(window.state.trackList)
-  // onStopPropagation stops the the other keyboard shortcuts from working...
-  document.getElementById('search-input').onkeydown = onStopPropagation(onEnter(onAddToPlaylistFromSearch))
-  document.getElementById('clear-search-button').onclick = onClickOrEnter(onClearSearch)
-  document.getElementById('clear-search-button').onkeydown = onClickOrEnter(onClearSearch)
-  const onTogglePlaylistMinimised = () => {
-    const playlistContainer = document.getElementById('playlist-container')
-    const minimise = playlistContainer.dataset.playlistMinimised === 'false'
-    if (minimise) window.state.playlistScrollPosition = playlistContainer.scrollTop
-    playlistContainer.dataset.playlistMinimised = playlistContainer.dataset.playlistMinimised === 'false'
-    document.body.dataset.playlistMinimised = playlistContainer.dataset.playlistMinimised === 'true'
-    document.getElementById('maximise-button-playlist').innerHTML = playlistContainer.dataset.playlistMinimised === 'false'
-      ? '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>'
-      : '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M233.4 105.4c12.5-12.5 32.8-12.5 45.3 0l192 192c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L256 173.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l192-192z"/></svg>'
-
-    if (!minimise) playlistContainer.scrollTo(0, window.state.playlistScrollPosition)
-  }
-  document.getElementById('maximise-button-playlist').onclick = onClickOrEnter(onTogglePlaylistMinimised)
-  document.getElementById('maximise-button-playlist').onkeydown = onClickOrEnter(onTogglePlaylistMinimised)
-  document.getElementById('selected-playlist').oninput = ({ target }) => {
-    const { value } = target
-    if (value) {
-      window.state.selectedPlaylist = value
-    }
-  }
-  document.getElementById('close-modal-button').onclick = onClickOrEnter(onOpenUploadModal)
-  document.getElementById('close-modal-button').onkeydown = onClickOrEnter(onOpenUploadModal)
-  document.getElementById('upload').onchange = () => {
-    const files = Array.from(document.getElementById('upload').files)
-    document.getElementById('upload-files-list').innerHTML = `<ol><li>${ files.map(fileItem => fileItem.name).join('</li><li>') }</li></ol>`
-  }
-  Array.from(document.getElementsByClassName('open-upload-modal-button')).forEach(button => {
-    button.onclick = onClickOrEnter(onOpenUploadModal)
-    button.onkeydown = onClickOrEnter(onOpenUploadModal)
-  })
-  Array.from(document.getElementsByClassName('mode-button-playlist')).forEach(button => {
-    button.onclick = onClickOrEnter(onTogglePlaylistMode)
-    button.onkeydown = onClickOrEnter(onTogglePlaylistMode)
-  })
-  document.getElementById('playlist-container').onclick = e => {
-    dom.emptySelectionContainer({ reverseTracks: true })
-  }
-  // This prevents the above from running if clicking the buttons on the top of the playlist...
-  document.getElementsByClassName('button-playlist-container')[0].onclick = e => e.stopPropagation()
-  document.getElementById('copy-button-playlist').onclick = onClickOrEnter(onCopyPlaylist)
-  document.getElementById('copy-button-playlist').onkeydown = onClickOrEnter(onCopyPlaylist) 
-
-  // Key commands...
-  const onKey = (...maps) => e => {
-    maps.forEach(([key, cb]) => {
-      if(
-        (typeof key === 'string' && e.key === key)
-        || (key.key === e.key && key.ctrlKey === e.ctrlKey)
-        || (key.key === e.key && key.metaKey === e.metaKey)
-        || (key.key === e.key && key.shiftKey === e.shiftKey)
-      ) {
-        e.preventDefault()
-        cb(e)
-      }
-    })
-  }
-
-  // Adding to Tab event, have to use addEventListener to prevent overwriting
-  // any original events...
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Tab') {
-      for (const t of document.querySelectorAll('.track-name-album-container.track-selected')) {
-        t.classList.remove('track-selected')
-      }
-    }
-  })
-
-  document.onkeydown = onKey(
-    [' ', () => {
-      const player = document.getElementById('player')
-      if (player.paused) {
-        player.play()
-      } else {
-        player.pause()
-      }
-    }],
-    ['ArrowRight', onNext],
-    ['ArrowLeft', onPrev],
-    // ['ArrowDown', onSelectDown],
-    // ['ArrowUp', onSelectUp],
-    // [{ key: 'n', ctrlKey: true }, onSelectDown],
-    // [{ key: 'p', ctrlKey: true }, onSelectUp],
-    [{ key: 'k', ctrlKey: true }, () => document.getElementById('search-input').focus()],
-    [{ key: 'k', metaKey: true }, () => document.getElementById('search-input').focus()],
-    ['Escape', () => {
-      document.getElementById('search-input').blur()
-      document.getElementById('upload-modal').dataset.visible = 'false'
-    }],
-    ['e', onTogglePlaylistMode],
-    ["'", onTogglePlaylistMinimised],
-  )
+  Player()
+  Events()
+  KeyboardCommands()
 })
