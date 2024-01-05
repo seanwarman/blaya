@@ -26,6 +26,7 @@ import * as f from './helpers/functional-utils.js'
 import * as dom from './helpers/dom.js'
 
 import io from './node_modules/socket.io/client-dist/socket.io.esm.min.js'
+import WaveSurfer from './node_modules/wavesurfer.js/dist/wavesurfer.js'
 
 // Service Worker (mainly for offline cacheing)
 if ('serviceWorker' in navigator) {
@@ -105,6 +106,14 @@ build(state => {
 
   // Socket events
   io().on('RELOAD', () => location.reload())
+
+  const wavesurfer = WaveSurfer.create({
+    container: document.getElementById('player'),
+    waveColor: 'rgb(200, 0, 200)',
+    progressColor: 'rgb(100, 0, 100)',
+    url: '/AveMarisStella.mp3',
+    height: 'auto',
+  });
 
   // DOM events
   document.addEventListener('focusin', (e) => {

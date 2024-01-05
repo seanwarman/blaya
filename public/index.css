@@ -192,6 +192,10 @@ input#search-input:focus {
   transition: background .3s;
 }
 
+button.button-circle:hover {
+  cursor: pointer;
+}
+
 button.button-circle {
   box-shadow: 5px 5px 12px 0px #00000024;
   border-radius: 50%;
@@ -776,12 +780,12 @@ div[role="link"] {
 }
 
 footer {
+  background-color: white;
   position: fixed;
   bottom: 0;
   width: 100vw;
   box-shadow: 0px -5px 12px 0px #00000024;
   display: grid;
-  background: linear-gradient(to right, #6dffb2, white);
   grid-template-columns: 30% auto 80px 80px;
   grid-template-rows: 52px 52px;
   user-select: none;
@@ -793,10 +797,10 @@ footer {
 
 #player {
   position: relative;
-  background: #f1f3f4;
+  background: linear-gradient(to right, #6dffb2, #d5ffe9);
   width: 100%;
   grid-column: 1/5;
-  grid-row: 2;
+  grid-row: 1;
 }
 
 button#prev-button svg {
@@ -817,16 +821,17 @@ button#next-button {
 
 button#prev-button, button#next-button {
   border: none;
-  background-color: #f1f3f4;
+  background-color: white;
   width: 80px;
   grid-column: unset;
 }
 
 button#prev-button:hover, button#next-button:hover {
-  background-color: #e2e2e2;
+  background-color: #fafafa;
 }
 
 div#current-playing-text {
+  background-color: white;
   padding: 0.7rem;
   font-size: 0.9rem;
   height: 50px;
@@ -1116,7 +1121,7 @@ div#current-playing-text {
   }
 
   footer {
-    grid-template-columns: 30% auto 80px 80px;
+    grid-template-columns: 80px 80px 30% auto;
     grid-template-rows: unset;
   }
 
