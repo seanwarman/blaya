@@ -194,7 +194,6 @@ export const onSelectContextHandler = ({ target, reverseTracks, trackContainerCl
 }
 
 export const onPlayHandler = ({ isPlaylist, playlistIndex, event }) => {
-  console.log(`@FILTER on play...`)
   const ref = event.currentTarget
   const selectionContainer = document.getElementById('selection-container')
   // if (!selectionContainer?.contains(ref)) return;
