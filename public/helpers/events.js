@@ -458,6 +458,13 @@ export default function Events(player) {
   })
   window.addEventListener('scroll', onScroll([onUpScroll(window.state.trackList), onDownScroll(window.state.trackList)]), false)
   document.getElementById('player').onended = onEndNext
+  document.getElementById('play-button').onclick = onClickOrEnter(() => {
+    if (player.isPlaying()) {
+      player.pause()
+    } else {
+      player.play()
+    }
+  })
   document.getElementById('next-button').onclick = onClickOrEnter(onNext)
   document.getElementById('next-button').onkeydown = onClickOrEnter(onNext)
   document.getElementById('prev-button').onclick = onClickOrEnter(onPrev)
