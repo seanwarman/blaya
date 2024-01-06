@@ -3,3 +3,4 @@ music
 complete
 track-list.js
 .env
+.DS_Store
