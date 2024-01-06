@@ -9,7 +9,7 @@ import Events, {
   onUpload,
 } from './helpers/events.js'
 import KeyboardCommands from './helpers/key-commands.js'
-import Player from './elements/player.js';
+import Player from './elements/Player.js';
 import * as f from './helpers/functional-utils.js'
 
 import {
