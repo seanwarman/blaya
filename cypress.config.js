@@ -1,6 +1,7 @@
 import { defineConfig } from 'cypress';
 
 export default defineConfig({
+  projectId: '95xgfq',
   video: false,
   experimentalInteractiveRunEvents: false,
   numTestsKeptInMemory: 1,
