@@ -136,10 +136,10 @@ export const downloadFile = async (req, res) => {
 }
 
 export const streamFile = async (req, res) => {
-  const { s3 } = req.context
-	const filePath = req.params[0]
-  const { range } = req.headers
   try {
+    const { s3 } = req.context
+    const filePath = req.params[0]
+    const { range } = req.headers
     const command = new GetObjectCommand({
       Bucket: 'everest-files',
       Key: 'music/' + filePath,

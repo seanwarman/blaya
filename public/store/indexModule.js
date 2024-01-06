@@ -1,14 +1,12 @@
 import { trackList as RAW_TRACKLIST } from '../track-list.js'
-import { appendTracksByPage, parseTrackList } from '../helpers/index.js'
+import { parseTrackList } from '../helpers/index.js'
 import { PLAYLISTS_STATE_KEY, INITIAL_PLAYLISTS_STATE, INITIAL_PLAYLIST } from '../constants.js'
 
 import * as dom from '../helpers/dom.js'
 import * as utils from '../helpers/utils.js'
 
-import { playModule } from './playModule.js'
-
-export default (postHook) => {
-  const state = {
+export default function build(postHook) {
+  let state = {
     trackList: parseTrackList(RAW_TRACKLIST),
     playlistScrollPosition: 0,
     playlistModeState: null,
@@ -145,30 +143,5 @@ export default (postHook) => {
       return this.focussedState[this.focussedState.length - 2]
     }
   }
-
-  // Add other modules...
-  state.playModule = playModule
-
-  // BEGIN
-  state.page = appendTracksByPage(state.trackList)(state.page)
-  state.playlists = initStateItem(PLAYLISTS_STATE_KEY, INITIAL_PLAYLISTS_STATE)
-    .map((playlistItem) => !playlistItem ? INITIAL_PLAYLIST : [
-      playlistItem?.[0] || '',
-      playlistItem?.[1] || 0,
-      playlistItem?.[2]?.filter(track => state.trackList.includes(track)) || [],
-    ])
-  state.playlistMode = false
-
-  const input = document.getElementById('selected-playlist')
-  if (input && input.defaultValue?.length === 0) {
-    input.defaultValue = 0
-  }
-
   return postHook(state)
-}
-
-function initStateItem(key, defaultInitiliser) {
-  const stateItem = JSON.parse(window.localStorage.getItem(key))
-  if (stateItem) return stateItem
-  return defaultInitiliser
 }
