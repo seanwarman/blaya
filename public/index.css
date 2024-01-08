@@ -803,6 +803,18 @@ footer {
   grid-row: 1;
 }
 
+#track-loader {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#track-loader[data-track-loading="false"] {
+  display: none;
+}
+
 button#prev-button {
   grid-column: 3/4;
 }

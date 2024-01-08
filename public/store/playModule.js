@@ -11,6 +11,14 @@ export default function PlayModule(player) {
   return {
     player,
     isPlaylist: false,
+    loadingTrackState: false,
+    get loadingTrack() {
+      return this.loadingTrackState;
+    },
+    set loadingTrack(trackLoading) {
+      this.trackLoadingState = trackLoading;
+      document.getElementById('track-loader').dataset.trackLoading = trackLoading;
+    },
     focussedTrackIdState: null,
     get focussedTrackId() {
       return this.focussedTrackIdState
@@ -26,17 +34,19 @@ export default function PlayModule(player) {
     },
     set currentTrackSrc(src) {
       this.currentTrackSrcState = src
+      this.loadingTrack = true
       fetch('/' + src, {
         headers: new Headers({ Range: 'bytes=0-' }),
       })
       .then(r => r.blob())
       .then(blob => player.loadBlob(blob))
-      .then(() => player.play())
       .then(() => {
         const [track, album] = getTrackAndAlbumFromTrackString(src)
         document.getElementById('current-playing-text').innerHTML = `<div>${track}</div><div>${album}</div>`
         this.currentTrackId = f.simpleHash(src)
+        this.loadingTrack = false
       })
+      .then(() => player.play())
     },
     setTrack({ src, isPlaylist = false, playlistIndex = null, selectedPlaylist = null, withHistory = true, tab = false }) {
       // Manage the state items...
