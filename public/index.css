@@ -809,6 +809,8 @@ footer {
   display: flex;
   justify-content: center;
   align-items: center;
+  position: absolute;
+  z-index: 3;
 }
 
 #track-loader[data-track-loading="false"] {

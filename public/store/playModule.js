@@ -35,18 +35,26 @@ export default function PlayModule(player) {
     set currentTrackSrc(src) {
       this.currentTrackSrcState = src
       this.loadingTrack = true
-      fetch('/' + src, {
-        headers: new Headers({ Range: 'bytes=0-' }),
-      })
-      .then(r => r.blob())
-      .then(blob => player.loadBlob(blob))
-      .then(() => {
-        const [track, album] = getTrackAndAlbumFromTrackString(src)
-        document.getElementById('current-playing-text').innerHTML = `<div>${track}</div><div>${album}</div>`
-        this.currentTrackId = f.simpleHash(src)
-        this.loadingTrack = false
-      })
-      .then(() => player.play())
+      let range = '';
+      fetch('/' + src, { headers: new Headers({ Range: 'bytes=0-' + range }) })
+        .then(async r => {
+          const reader = await r.body.getReader();
+          const uintData = [];
+          while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            uintData.push(value);
+            player.loadBlob(new Blob(uintData));
+          }
+        })
+        .then(() => {
+          const [track, album] = getTrackAndAlbumFromTrackString(src)
+          document.getElementById('current-playing-text').innerHTML = `<div>${track}</div><div>${album}</div>`
+          this.currentTrackId = f.simpleHash(src)
+          this.loadingTrack = false
+        })
+        .then(() => player.play())
+
     },
     setTrack({ src, isPlaylist = false, playlistIndex = null, selectedPlaylist = null, withHistory = true, tab = false }) {
       // Manage the state items...
