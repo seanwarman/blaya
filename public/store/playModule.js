@@ -32,28 +32,65 @@ export default function PlayModule(player) {
     get currentTrackSrc() {
       return this.currentTrackSrcState
     },
+    reader: null,
+    readerData: [],
+    async updatePlayhead(reader) {
+      if (reader) {
+        this.reader = reader;
+        this.readerData = [];
+      } else if (!this.reader) {
+        console.error('No reader');
+        return { value: null, done: true };
+      }
+      const { value, done } = await this.reader.read();
+
+      if (done) {
+        return { value, done };
+      }
+
+      this.readerData.push(value);
+      console.log(`@FILTER this.readerData:`, this.readerData)
+      return { value, done, blob: new Blob(this.readerData) };
+    },
     set currentTrackSrc(src) {
       this.currentTrackSrcState = src
-      this.loadingTrack = true
-      let range = '';
-      fetch('/' + src, { headers: new Headers({ Range: 'bytes=0-' + range }) })
-        .then(async r => {
-          const reader = await r.body.getReader();
-          const uintData = [];
-          while (true) {
-            const { value, done } = await reader.read();
-            if (done) break;
-            uintData.push(value);
-            player.loadBlob(new Blob(uintData));
+      const [track, album] = getTrackAndAlbumFromTrackString(src)
+      document.getElementById('current-playing-text').innerHTML = `<div>${track}</div><div>${album}</div>`
+      this.currentTrackId = f.simpleHash(src)
+
+      const loadBlobAndPlay = arr => async r => {
+        const reader = await r.body.getReader();
+        const thener = ({done,value}) => {
+          if (done) {
+            return;
           }
-        })
-        .then(() => {
-          const [track, album] = getTrackAndAlbumFromTrackString(src)
-          document.getElementById('current-playing-text').innerHTML = `<div>${track}</div><div>${album}</div>`
-          this.currentTrackId = f.simpleHash(src)
-          this.loadingTrack = false
-        })
-        .then(() => player.play())
+          arr.push(value);
+          return reader.read().then(thener);
+        };
+        await reader.read().then(thener);
+        await player.loadBlob(new Blob(arr));
+        return arr;
+      };
+
+      (async() => {
+        //          '6419664';
+        let range = '0-200000';
+        let arr = await fetch('/' + src, { headers: new Headers({ Range: 'bytes=' + range }) })
+          .then(loadBlobAndPlay([])).catch(error => console.log(error));
+
+        await player.play();
+
+
+        // range = '2000000-4000000';
+        // await fetch('/' + src, { headers: new Headers({ Range: 'bytes=' + range }) })
+        //   .then(loadBlobAndPlay(arr)).catch(error => console.log(error));
+
+        // await player.play();
+
+
+      })()
+
+
 
     },
     setTrack({ src, isPlaylist = false, playlistIndex = null, selectedPlaylist = null, withHistory = true, tab = false }) {

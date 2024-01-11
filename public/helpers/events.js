@@ -201,7 +201,6 @@ export const onPlayHandler = ({ isPlaylist, playlistIndex, event }) => {
   if (!multiSelected && ref.classList.contains('play-ready') && !event.shiftKey) {
     Array.from(document.getElementsByClassName('play-ready')).map(el => el.classList.remove('play-ready'))
     window.state.playModule.setTrack({ src: ref.dataset.href, isPlaylist, playlistIndex })
-    window.state.playModule.player.play()
     ref.focus()
   } else {
     Array.from(document.getElementsByClassName('play-ready')).map(el => el.classList.remove('play-ready'))
