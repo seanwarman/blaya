@@ -28,7 +28,7 @@ const clientApplicationFiles = [
   '/node_modules/socket.io/client-dist/socket.io.esm.min.js',
 ]
 
-const CACHE_VERSION = 11
+const CACHE_VERSION = 12
 const CURRENT_CACHES = {
   applicationFilesCache: 'blaya__APPLICATION_FILES_CACHE_V' + CACHE_VERSION,
   offlineTracksCache: 'blaya__OFFLINE_TRACKS_CACHE_V' + CACHE_VERSION,
@@ -162,7 +162,7 @@ async function cacheOffline(event) {
     try {
       const response = await cache.match(track)
       if (!response) {
-        const res = await fetch('/download/' + track, {
+        const res = await fetch('/download/' + track.split('/').map(section => encodeURIComponent(section)).join('/'), {
           headers: new Headers({ Range: 'bytes=0-' }),
         });
         await cache.put(track, res);
