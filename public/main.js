@@ -25,6 +25,8 @@ import {
 import * as f from './helpers/functional-utils.js'
 import * as dom from './helpers/dom.js'
 
+import Player from './elements/Player.js';
+
 import io from './node_modules/socket.io/client-dist/socket.io.esm.min.js'
 
 // Service Worker (mainly for offline cacheing)
@@ -98,6 +100,8 @@ window.logger = f.logger
 
 // Builds tracklist ui...
 build(state => {
+
+  const player = Player()
 
   window.state = state
 
