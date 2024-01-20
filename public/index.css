@@ -687,12 +687,12 @@ div[role="link"] {
   font-weight: 500;
   user-select: none;
   transition: height 0.2s, width 0s;
-  height: 70px;
+  height: 98px;
   width: 77px;
   font-size: 0.7rem;
 }
 
-#menu .menu-items li:nth-of-type(odd) {
+#menu .menu-items li {
   border-bottom: 1px solid #ededed;
 }
 
@@ -949,6 +949,24 @@ div#current-playing-text {
   background: white;
   padding: 131px 0;
   box-shadow: 0px -5px 12px 0px #0000000d;
+}
+
+#track-loader-loading {
+  position: fixed;
+  bottom: 54px;
+  left: 0;
+  right: 0;
+  background: transparent;
+  padding: 131px 0;
+  text-align: center;
+}
+
+#track-loader-loading img {
+  height: 100px;
+}
+
+#track-loader-loading[data-track-loading="false"] {
+  display: none;
 }
 
 @media (min-width: 768px) {

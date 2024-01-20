@@ -102,6 +102,7 @@ window.logger = f.logger
 build(state => {
 
   const player = Player()
+  state.elements = { player };
 
   window.state = state
 

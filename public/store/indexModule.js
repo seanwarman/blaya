@@ -9,6 +9,14 @@ import { playModule } from './playModule.js'
 
 export default (postHook) => {
   const state = {
+    loadingTrackState: false,
+    set loadingTrack(bool) {
+      document.getElementById('track-loader-loading').dataset.trackLoading = bool
+      this.loadingTrackState = bool
+    },
+    get loadingTrack() {
+      return this.loadingTrackState
+    },
     trackList: parseTrackList(RAW_TRACKLIST),
     playlistScrollPosition: 0,
     playlistModeState: null,
