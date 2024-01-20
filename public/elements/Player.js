@@ -7,15 +7,15 @@ export default function Player() {
     container: document.getElementById('track-loader'),
     waveColor: 'rgb(200, 0, 200)',
     progressColor: '#9b029b',
-    height: 100,
+    height: 150,
     hideScrollbar: true,
     plugins: [
       // Register the plugin
       Minimap.create({
         height: 20,
-        waveColor: '#9a9a9a78',
+        waveColor: '#98b5a8c9',
         cursorWidth: 0,
-        overlayColor: '#e0e0e0',
+        overlayColor: '#47a9755c',
         interact: false,
         // the Minimap takes all the same options as the WaveSurfer itself
       }),
@@ -24,9 +24,9 @@ export default function Player() {
   player.registerPlugin(
     ZoomPlugin.create({
       // the amount of zoom per wheel step, e.g. 0.5 means a 50% magnification per scroll
-      scale: 0.5,
+      scale: 0.4,
       // Optionally, specify the maximum pixels-per-second factor while zooming
-      maxZoom: 100,
+      maxZoom: 700,
     }),
   )
   return player;
