@@ -26,6 +26,17 @@ import * as f from './helpers/functional-utils.js'
 import * as dom from './helpers/dom.js'
 
 import io from './node_modules/socket.io/client-dist/socket.io.esm.min.js'
+import WaveSurfer from './node_modules/wavesurfer.js/dist/wavesurfer.js';
+
+const audio = document.getElementById('player');
+audio.src = '/music/A%24AP%20Rocky%20-%20AT.LONG.LAST.A%24AP%20-%202015/03%20-%20Fine%20Whine%20(Feat.%20Future%20%26%20M.I.A.).mp3'
+
+WaveSurfer.create({
+  container: document.getElementById('wave-surfer'),
+  waveColor: 'rgb(200, 0, 200)',
+  progressColor: 'rgb(100, 0, 100)',
+  media: audio,
+})
 
 // Service Worker (mainly for offline cacheing)
 if ('serviceWorker' in navigator) {
