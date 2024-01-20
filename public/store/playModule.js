@@ -27,7 +27,7 @@ export const playModule = {
     document.getElementById('current-track').src = src.split('/').map(section => encodeURIComponent(section)).join('/')
     const player = document.getElementById('player')
     if (!player.paused) {
-      player.pause()
+      // player.pause()
       player.load()
       player.play()
     } else {
