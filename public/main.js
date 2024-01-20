@@ -25,8 +25,6 @@ import {
 import * as f from './helpers/functional-utils.js'
 import * as dom from './helpers/dom.js'
 
-import Player from './elements/Player.js';
-
 import io from './node_modules/socket.io/client-dist/socket.io.esm.min.js'
 
 // Service Worker (mainly for offline cacheing)
@@ -101,9 +99,6 @@ window.logger = f.logger
 // Builds tracklist ui...
 build(state => {
 
-  const player = Player()
-  state.elements = { player };
-
   window.state = state
 
 //   onScrollThisTrack(window.state.trackList, getTrackSearchQuery(window.location.search))()
@@ -116,7 +111,16 @@ build(state => {
     window.state.focussed = e.target
   })
   window.addEventListener('scroll', onScroll([onUpScroll(window.state.trackList), onDownScroll(window.state.trackList)]), false)
-  document.getElementById('player').onended = onEndNext
+  document.getElementById('close-track-loader').addEventListener(
+    'click',
+    onClickOrEnter(
+      () =>
+        (document.getElementById(
+          'track-loader'
+        ).dataset.showTrackLoader = false)
+    ),
+  );
+  document.getElementById("player").onended = onEndNext;
   document.getElementById('next-button').onclick = onClickOrEnter(onNext)
   document.getElementById('next-button').onkeydown = onClickOrEnter(onNext)
   document.getElementById('prev-button').onclick = onClickOrEnter(onPrev)
