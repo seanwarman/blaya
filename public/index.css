@@ -2,6 +2,10 @@
   box-sizing: border-box;
 }
 
+:fullscreen, ::backdrop {
+  background-color: transparent;
+}
+
 body {
 	font-family: sans-serif;
 	padding: 0;
@@ -9,6 +13,7 @@ body {
 	margin: 0;
 	padding: 6rem 0;
   color: #353535;
+  overflow: auto;
 }
 
 header {
@@ -220,7 +225,7 @@ button.button-circle-transparent {
 }
 
 body[data-playlist-mode="true"] .mode-button-playlist {
-  background: #91f0bd;
+  background: #9497ff;
 }
 
 .button-playlist-container {
@@ -943,20 +948,32 @@ div#current-playing-text {
 
 #track-loader-loading,
 #track-loader {
+  height: 346px;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   padding: 7rem 0 4rem 0;
+  z-index: 1;
 }
 
 #track-loader {
+  cursor: crosshair;
   background: linear-gradient(to right, #6dffb2, #d5ffe9);
   box-shadow: 0px 7px 20px 5px #00000021;
+  transition: transform .5s;
+}
+
+#track-loader[data-show-track-loader="true"] {
+  transform: translateY(0%);
+}
+
+#track-loader[data-show-track-loader="false"] {
+  transform: translateY(-110%);
 }
 
 #track-loader-loading {
-  background: transparent;
+  transition: background-color .5s;
   text-align: center;
 }
 
@@ -967,7 +984,27 @@ div#current-playing-text {
 }
 
 #track-loader-loading[data-track-loading="false"] {
+  background-color: transparent;
+}
+
+#track-loader-loading[data-track-loading="false"] img {
   display: none;
+}
+
+#track-loader-loading[data-track-loading="true"] {
+  cursor: progress;
+  z-index: 3;
+  background-color: #0000008c;
+  padding-bottom: 64px;
+}
+
+#close-track-loader {
+  width: 1rem;
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  cursor: pointer;
+  z-index: 1;
 }
 
 @media (min-width: 768px) {
