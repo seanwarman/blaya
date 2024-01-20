@@ -13,7 +13,7 @@ describe('template spec', () => {
 
   it('tracks can be selected by tabbing', () => {
     cy.visit('/');
-    cy.get('.track.track-non-tab').should('exist').then(([el]) => {
+    cy.get('.track.track-non-tab').then(([el]) => {
       cy.wrap(el).click();
       cy.wrap(el).should('have.focus');
     });
