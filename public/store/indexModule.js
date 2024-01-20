@@ -7,8 +7,13 @@ import * as utils from '../helpers/utils.js'
 
 import { playModule } from './playModule.js'
 
+import Player from '../elements/Player.js';
+
 export default (postHook) => {
   const state = {
+    elements: {
+      player: Player(),
+    },
     loadingTrackState: false,
     set loadingTrack(bool) {
       document.getElementById('track-loader-loading').dataset.trackLoading = bool

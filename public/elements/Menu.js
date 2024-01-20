@@ -24,8 +24,6 @@ export default function Menu() {
               Add(),
               LoadTrack(),
               Deselect(),
-              // TODO...
-              // Edit(),
               Remove(),
             ],
           })
@@ -44,6 +42,7 @@ function LoadTrack() {
       Array.from(document.getElementsByClassName('menu-items')).map(el => el.classList?.add('closed'))
       const els = document.getElementsByClassName('track-selected')
       window.state.loadingTrack = true;
+      document.getElementById('track-loader').dataset.showTrackLoader = true
       window.state.elements.player.load(
         'download/' +
           els[0].dataset.href
@@ -101,18 +100,6 @@ function Deselect() {
       Array.from(document.getElementsByClassName('play-ready')).map(el => el.classList.remove('play-ready'))
     }),
   });
-}
-
-function Edit() {
-  return dom.li({
-    id: 'edit-track-menu-item',
-    innerText: 'Edit',
-    onclick: ev.onClickOrEnter(() => {
-      Array.from(document.getElementsByClassName('menu-items')).map(el => el.classList?.add('closed'))
-      const els = document.getElementsByClassName('track-selected')
-      const hrefs = Array.from(els).map(el => el.parentElement?.dataset?.href)
-    }),
-  })
 }
 
 function Remove() {
