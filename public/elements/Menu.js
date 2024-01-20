@@ -22,9 +22,8 @@ export default function Menu() {
             className: 'menu-items closed',
             children: [
               Add(),
+              LoadTrack(),
               Deselect(),
-              // TODO...
-              // Edit(),
               Remove(),
             ],
           })
@@ -32,6 +31,29 @@ export default function Menu() {
       })
     ],
   }) 
+}
+
+function LoadTrack() {
+  return dom.li({
+    id: 'tracklist-load-track-menu-item',
+    innerText: 'Load track',
+    onclick: ev.onClickOrEnter(async (e) => {
+      e.stopPropagation()
+      Array.from(document.getElementsByClassName('menu-items')).map(el => el.classList?.add('closed'))
+      const els = document.getElementsByClassName('track-selected')
+      window.state.loadingTrack = true;
+      document.getElementById('track-loader').dataset.showTrackLoader = true
+      window.state.elements.player.load(
+        'download/' +
+          els[0].dataset.href
+            .split('/')
+            .map((s) => encodeURIComponent(s))
+            .join('/')
+      ).finally(() => {
+        window.state.loadingTrack = false;
+      });
+    }),
+  });
 }
 
 function Add() {
@@ -78,18 +100,6 @@ function Deselect() {
       Array.from(document.getElementsByClassName('play-ready')).map(el => el.classList.remove('play-ready'))
     }),
   });
-}
-
-function Edit() {
-  return dom.li({
-    id: 'edit-track-menu-item',
-    innerText: 'Edit',
-    onclick: ev.onClickOrEnter(() => {
-      Array.from(document.getElementsByClassName('menu-items')).map(el => el.classList?.add('closed'))
-      const els = document.getElementsByClassName('track-selected')
-      const hrefs = Array.from(els).map(el => el.parentElement?.dataset?.href)
-    }),
-  })
 }
 
 function Remove() {

@@ -42,6 +42,14 @@
     </div>
 
     <div id="track-list-container"></div>
+
+    <div tabindex="-1" id="track-loader" data-show-track-loader="false">
+      <div tabindex="-1" id="track-loader-loading" data-track-loading="false">
+        <img src="/public/icons/loading.svg" />
+      </div>
+      <img id="close-track-loader" src="./icons/caret-up.svg" />
+    </div>
+
     <div id="playlist-container" data-playlist-minimised="true">
       <div class="button-playlist-container">
         <button id="copy-button-playlist" class="open-upload-modal-button button-circle button-circle-transparent">
@@ -64,11 +72,12 @@
           Clear
         </button>
         <button id="maximise-button-playlist" class="button-circle">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M233.4 105.4c12.5-12.5 32.8-12.5 45.3 0l192 192c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L256 173.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l192-192z"/></svg>
+          <img src="./icons/caret-up.svg" />
         </button>
       </div>
       <div id="playlist"></div>
     </div>
+
 		<footer>
 			<div tabindex="0" id="current-playing-text" role="link"></div>
 			<audio preload tabindex="-1" id="player" controls>
