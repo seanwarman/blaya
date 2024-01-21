@@ -115,9 +115,7 @@ build(state => {
     'click',
     onClickOrEnter(
       () =>
-        (document.getElementById(
-          'track-loader'
-        ).dataset.showTrackLoader = false)
+        (document.body.dataset.showTrackLoader = false)
     ),
   );
   document.getElementById('player').onended = onEndNext;
