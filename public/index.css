@@ -947,6 +947,16 @@ div#current-playing-text {
   padding-bottom: 11rem;
 }
 
+[data-show-track-loader="true"][data-searching="true"] #track-list-container {
+  margin-top: 15.7rem;
+}
+
+@media (min-width: 768px) {
+  [data-show-track-loader="true"][data-searching="true"] #track-list-container {
+    margin-top: 21rem;
+  }
+}
+
 #track-list-container #playlist-remove-from-playlist-menu-item {
   display: none;
 }
@@ -965,8 +975,14 @@ div#current-playing-text {
 #track-loader {
   cursor: crosshair;
   background: linear-gradient(to right, #6dffb2, #d5ffe9);
-  box-shadow: 0px 7px 20px 5px #00000021;
+  box-shadow: 0px 7px 20px 5px #0000000d;
   transition: transform .5s;
+}
+
+@media (min-width: 768px) {
+  #track-loader {
+    box-shadow: 0px 7px 20px 5px #00000021;
+  }
 }
 
 [data-show-track-loader="true"] #track-loader {
