@@ -1013,6 +1013,10 @@ div#current-playing-text {
   width: 100%;
 }
 
+[data-show-track-loader="false"] #loop-region {
+  display: none;
+}
+
 #loop-region:hover {
   cursor: pointer;
 }
