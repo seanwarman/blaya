@@ -40,9 +40,10 @@ function LoadTrack() {
     onclick: ev.onClickOrEnter(async (e) => {
       e.stopPropagation()
       Array.from(document.getElementsByClassName('menu-items')).map(el => el.classList?.add('closed'))
-      const els = document.getElementsByClassName('track-selected')
+      window.state.elements.player.stop()
       window.state.loadingTrack = true;
       document.getElementById('track-loader').dataset.showTrackLoader = true
+      const els = document.querySelectorAll('#selection-container .track-non-tab')
       window.state.elements.player.load(
         'download/' +
           els[0].dataset.href
