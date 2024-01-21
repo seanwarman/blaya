@@ -42,7 +42,7 @@ function LoadTrack() {
       Array.from(document.getElementsByClassName('menu-items')).map(el => el.classList?.add('closed'))
       window.state.elements.player.stop()
       window.state.loadingTrack = true;
-      document.getElementById('track-loader').dataset.showTrackLoader = true
+      document.body.dataset.showTrackLoader = true
       const els = document.querySelectorAll('#selection-container .track-non-tab')
       window.state.elements.player.load(
         'download/' +
