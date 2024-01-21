@@ -37,6 +37,9 @@ export default function Player() {
     color: '#47a9755c',
   })
 
+  player.on('decode', () => {
+    wsRegions.getRegions().forEach(r => r.remove())
+  })
   wsRegions.on('region-clicked', (region, e) => {
     e.stopPropagation()
     region.play()
