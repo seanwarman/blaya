@@ -52,9 +52,16 @@ if (!TEST) {
   }))
 }
 
-app.use(express.static('public'))
-app.use('/public', express.static('public'))
-app.use('/node_modules', express.static('node_modules'))
+const options = {
+  dotfiles: 'ignore',
+  setHeaders: (res) => {
+    res.set('Cache-Control', 'private, max-age=0')
+  },
+}
+
+app.use(express.static('public', options))
+app.use('/public', express.static('public', options))
+app.use('/node_modules', express.static('node_modules', options))
 if (!TEST) {
   app.use((req, _, next) => {
     const s3 = new S3Client({ region: 'eu-west-2' })
