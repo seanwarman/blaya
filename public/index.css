@@ -151,7 +151,7 @@ input#search-input:focus {
   bottom: 6.5rem;
   left: 0;
   right: 0;
-  z-index: 2;
+  z-index: 3;
 }
 
 #playlist {
