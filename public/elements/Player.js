@@ -8,11 +8,11 @@ export default function Player() {
     container: document.getElementById('track-loader'),
     waveColor: 'rgb(200, 0, 200)',
     progressColor: 'rgb(200, 0, 200)',
+    autoScroll: false,
     cursorColor: '#555555',
     height: 150,
     hideScrollbar: true,
-    autoScroll: false,
-    // interact: false,
+    interact: false,
     plugins: [
       Minimap.create({
         height: 20,
@@ -33,12 +33,38 @@ export default function Player() {
   const wsRegions = player.registerPlugin(
     RegionsPlugin.create()
   )
-  wsRegions.enableDragSelection({
+  let disableDragSelection = wsRegions.enableDragSelection({
     color: '#47a9755c',
   })
 
+  document.getElementById('italic-track-loader').addEventListener('click', () => {
+    const italic = document.getElementById('italic-track-loader')
+    if (italic.dataset.selectorActive === 'true') {
+      disableDragSelection()
+      italic.dataset.selectorActive = false
+    } else {
+      disableDragSelection = wsRegions.enableDragSelection({
+        color: '#47a9755c',
+      })
+      italic.dataset.selectorActive = true
+    }
+  })
+
+  player.on('play', () => {
+    document.getElementById('play-pause-track-loader').dataset.trackLoaderPlaying = true
+  })
+  player.on('destroy', () => {
+    document.getElementById('play-pause-track-loader').dataset.trackLoaderPlaying = false
+  })
+  player.on('pause', () => {
+    document.getElementById('play-pause-track-loader').dataset.trackLoaderPlaying = false
+  })
+  player.on('finish', () => {
+    document.getElementById('play-pause-track-loader').dataset.trackLoaderPlaying = false
+  })
   player.on('decode', () => {
     wsRegions.getRegions().forEach(r => r.remove())
+    document.getElementById('play-pause-track-loader').dataset.trackLoaderPlaying = false
   })
   wsRegions.on('region-clicked', (region, e) => {
     e.stopPropagation()
@@ -63,6 +89,32 @@ export default function Player() {
       if (r === region) return;
       r.remove()
     })
+  })
+
+  document.getElementById('play-pause-track-loader').addEventListener('click', () => {
+    if (player.isPlaying()) {
+      player.pause()
+    } else {
+      player.play()
+    }
+  })
+  let pixPerSec = 1;
+  document.getElementById('zoom-in-track-loader').addEventListener('click', () => {
+    if (pixPerSec < 5) {
+      pixPerSec += 1;
+    } else {
+      pixPerSec += 5;
+    }
+    player.zoom(pixPerSec)
+  })
+  document.getElementById('zoom-out-track-loader').addEventListener('click', () => {
+    if (pixPerSec <= 1) return
+    if (pixPerSec < 5) {
+      pixPerSec -= 1;
+    } else {
+      pixPerSec -= 5;
+    }
+    player.zoom(pixPerSec)
   })
   return player;
 }

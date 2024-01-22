@@ -111,13 +111,8 @@ build(state => {
     window.state.focussed = e.target
   })
   window.addEventListener('scroll', onScroll([onUpScroll(window.state.trackList), onDownScroll(window.state.trackList)]), false)
-  document.getElementById('close-track-loader').addEventListener(
-    'click',
-    onClickOrEnter(
-      () =>
-        (document.body.dataset.showTrackLoader = false)
-    ),
-  );
+  document.getElementById('close-track-loader').addEventListener('keydown', onClickOrEnter(() => document.body.dataset.showTrackLoader = false));
+  document.getElementById('close-track-loader').addEventListener('click', onClickOrEnter(() => (document.body.dataset.showTrackLoader = false)));
   document.getElementById('player').onended = onEndNext;
   document.getElementById('loop-region').onclick = onClickOrEnter(() => {
     const button = document.getElementById('loop-region')
