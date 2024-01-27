@@ -1106,6 +1106,7 @@ div#current-playing-text {
 
 #track-loader-loading[data-track-loading="false"] {
   background-color: transparent;
+  z-index: 0;
 }
 
 #track-loader-loading[data-track-loading="false"] img {

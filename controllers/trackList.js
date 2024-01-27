@@ -1,9 +1,9 @@
 import { GetObjectCommand } from '@aws-sdk/client-s3'
-import { readdir, access, constants } from 'fs'
+import { readdir } from 'fs'
 import { spawn } from 'child_process'
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import { parseTrack, removeFromDir } from '../mover.mjs';
+import { parseTrack } from '../mover.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -99,11 +99,32 @@ export const mvFile = (req, res) => {
   })
 }
 
+export const loadTrack = async (req, res) => {
+  const { s3 } = req.context
+	const filePath = req.params[0]
+  try {
+    const command = new GetObjectCommand({
+      Bucket: 'everest-files',
+      Key: 'music/' + filePath,
+      Range: 'bytes=0-',
+    })
+    const { Body } = await s3.send(command)
+    Body.on('data', chunk => {
+      res.write(chunk)
+    })
+    Body.on('end', () => {
+      res.status(200).send();
+    })
+  } catch (error) {
+    console.log(`S3 read error: `, error)
+    res.status(500).send(error.message)
+  }
+}
+
 export const downloadFile = async (req, res) => {
   const { s3 } = req.context
 	const filePath = req.params[0]
   const { range } = req.headers
-
   try {
     const command = new GetObjectCommand({
       Bucket: 'everest-files',
