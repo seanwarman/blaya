@@ -74,8 +74,10 @@ function zoomEvents({ zoom }) {
   });
   document.getElementById('zoomview-container').onwheel = e => {
     e.preventDefault();
-    // TODO: fine tune this
-    // console.log(`@FILTER zoom.getZoom():`, zoom.getZoom())
+    // TODO: fine tune this, use the delta values in combo with getZoom and
+    // setZoom instead
+    if (e.deltaX > 2) return;
+    if (e.deltaX < -2) return;
     if (e.deltaY < 0) {
       zoom.zoomIn();
     } else {
