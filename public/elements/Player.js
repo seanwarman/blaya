@@ -1,9 +1,5 @@
-// import WaveSurfer from '../node_modules/wavesurfer.js/dist/wavesurfer.js';
-// import ZoomPlugin from '../node_modules/wavesurfer.js/dist/plugins/zoom.esm.js'
-// import Minimap from '../node_modules/wavesurfer.js/dist/plugins/minimap.esm.js'
-// import RegionsPlugin from '../node_modules/wavesurfer.js/dist/plugins/regions.esm.js'
-
 const options = {
+  emitCueEvents: true,
   zoomLevels: [
     50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130,
     135, 140, 150, 155, 160, 165, 170, 175, 180, 185, 190, 195, 200, 205, 210,
@@ -19,22 +15,28 @@ const options = {
     2800, 3000, 3300, 3600, 3900, 4200,
   ],
   zoomview: {
-    waveformColor: "#c801c8",
-    axisGridlineColor: "transparent",
+    waveformColor: '#c801c8',
+    axisGridlineColor: 'transparent',
+    autoScroll: false,
   },
   overview: {
-    axisGridlineColor: "transparent",
-    waveformColor: "rgba(0,0,0,0.1)",
+    axisGridlineColor: 'transparent',
+    waveformColor: 'rgba(0,0,0,0.1)',
+  },
+  segmentOptions: {
+    overlay: true,
+    overlayOffset: 0,
+    markers: false,
   },
   scrollbar: {},
-  mediaElement: document.getElementById("peaks-audio"),
+  mediaElement: document.getElementById('peaks-audio'),
   webAudio: {
     audioContext: new AudioContext(),
   },
   showAxisLabels: false,
-  wheelMode: "scroll",
-  axisGridlineColor: "white",
-  playheadColor: "grey",
+  wheelMode: 'scroll',
+  axisGridlineColor: 'white',
+  playheadColor: 'grey',
 };
 
 function playerEvents({ player }) {
@@ -86,6 +88,62 @@ function zoomEvents({ zoom }) {
   };
 }
 
+function segmentEvents(peaks) {
+  peaks.views.getView('zoomview').enableSegmentDragging(true);
+  peaks.views.getView('zoomview').setWaveformDragMode('insert-segment');
+
+  const { segments, player } = peaks;
+
+  let stopPropagation = false;
+  document.getElementById('zoomview-container').addEventListener('mousedown', () => {
+    if (!stopPropagation) {
+      segments
+        .getSegments()
+        .slice(0, -1)
+        .forEach((seg) => segments.removeById(seg.id));
+    }
+    stopPropagation = false;
+  });
+  peaks.on('segments.mousedown', () => {
+    stopPropagation = true;
+  });
+
+  peaks.on('segments.click', e => {
+    const { segment } = e;
+    player.play();
+    player.seek(segment.startTime);
+  });
+  peaks.on('segments.exit', (e) => {
+    const { segment } = e;
+    const button = document.getElementById('loop-region')
+    if (button.dataset.loopRegion === 'true') {
+      player.seek(segment.startTime);
+    } else {
+      player.pause();
+      player.seek(segment.startTime);
+    }
+  });
+  peaks.on('segments.mouseleave', () => {
+    const italic = document.getElementById('italic-track-loader')
+    if (italic.dataset.selectorActive === 'true') {
+      peaks.views.getView('zoomview').setWaveformDragMode('insert-segment');
+    }
+  });
+  peaks.on('segments.mouseenter', () => {
+    peaks.views.getView('zoomview').setWaveformDragMode('scroll');
+  });
+  document.getElementById('italic-track-loader').addEventListener('click', () => {
+    const italic = document.getElementById('italic-track-loader')
+    if (italic.dataset.selectorActive === 'true') {
+      peaks.views.getView('zoomview').setWaveformDragMode('scroll');
+      italic.dataset.selectorActive = false
+    } else {
+      peaks.views.getView('zoomview').setWaveformDragMode('insert-segment');
+      italic.dataset.selectorActive = true
+    }
+  })
+}
+
 export default function Player() {
   const zoomview = document.getElementById('zoomview-container');
   const overview = document.getElementById('overview-container');
@@ -111,97 +169,12 @@ export default function Player() {
       }
       playerEvents(peaks);
       zoomEvents(peaks);
+      segmentEvents(peaks);
+
+      peaks.segments.removeAll();
+      document.getElementById('play-pause-track-loader').dataset.trackLoaderPlaying = false;
     });
   })(peaks);
 
   return peaks.player;
-
-
-
-
-
-
-
-
-
-
-
-  // const player = WaveSurfer.create({
-  //   container: document.getElementById('track-loader'),
-  //   waveColor: 'rgb(200, 0, 200)',
-  //   progressColor: 'rgb(200, 0, 200)',
-  //   autoScroll: false,
-  //   cursorColor: '#555555',
-  //   height: 150,
-  //   hideScrollbar: true,
-  //   interact: false,
-  //   plugins: [
-  //     Minimap.create({
-  //       height: 20,
-  //       waveColor: '#98b5a8c9',
-  //       progressColor: '#98b5a8c9',
-  //       cursorWidth: 0,
-  //       overlayColor: '#47a9755c',
-  //       interact: false,
-  //     }),
-  //   ],
-  // });
-  // player.registerPlugin(
-  //   ZoomPlugin.create({
-  //     scale: 0.4,
-  //     maxZoom: 2000,
-  //   }),
-  // )
-  // const wsRegions = player.registerPlugin(
-  //   RegionsPlugin.create()
-  // )
-  // let disableDragSelection = wsRegions.enableDragSelection({
-  //   color: '#47a9755c',
-  // })
-
-  // document.getElementById('italic-track-loader').addEventListener('click', () => {
-  //   const italic = document.getElementById('italic-track-loader')
-  //   if (italic.dataset.selectorActive === 'true') {
-  //     disableDragSelection()
-  //     italic.dataset.selectorActive = false
-  //   } else {
-  //     disableDragSelection = wsRegions.enableDragSelection({
-  //       color: '#47a9755c',
-  //     })
-  //     italic.dataset.selectorActive = true
-  //   }
-  // })
-  // wsRegions.on('region-clicked', (region, e) => {
-  //   e.stopPropagation()
-  //   region.play()
-  // })
-  // wsRegions.on('region-out', (region) => {
-  //   const button = document.getElementById('loop-region')
-  //   if (button.dataset.loopRegion === 'true') {
-  //     region.play()
-  //   } else {
-  //     player.stop()
-  //   }
-  // })
-  // player.on('click', () => {
-  //   const regions = wsRegions.getRegions()
-  //   regions.forEach(r => r.remove())
-  //   player.play()
-  // })
-  // wsRegions.on('region-created', region => {
-  //   const regions = wsRegions.getRegions()
-  //   regions.forEach(r => {
-  //     if (r === region) return;
-  //     r.remove()
-  //   })
-  // })
-  // player.on('decode', () => {
-  //   wsRegions.getRegions().forEach(r => r.remove())
-  //   document.getElementById('play-pause-track-loader').dataset.trackLoaderPlaying = false
-  // })
-  // player.on('destroy', () => {
-  //   document.getElementById('play-pause-track-loader').dataset.trackLoaderPlaying = false
-  // })
-
-  // return player;
 }
