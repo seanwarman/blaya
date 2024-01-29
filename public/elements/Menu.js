@@ -45,12 +45,13 @@ function LoadTrack() {
       window.state.loadingTrack = true
       document.body.dataset.showTrackLoader = true
       const els = document.querySelectorAll('#selection-container .track-non-tab')
-      const mediaUrl = 'download/' +
-        els[0].dataset.href
+      if (window.state.trackLoader) window.state.trackLoader.destroy()
+      TrackLoader('download/' + els[0].dataset.href
         .split('/')
         .map((s) => encodeURIComponent(s))
-        .join('/')
-      TrackLoader(mediaUrl, () => {
+        .join('/'),
+      (trackLoader) => {
+        window.state.trackLoader = trackLoader
         window.state.loadingTrack = false
       })
     }),
