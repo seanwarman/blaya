@@ -2,6 +2,7 @@ import * as ev from '../helpers/events.js'
 import * as h from '../helpers/index.js'
 import * as dom from '../helpers/dom.js'
 import { convertTracksToPlaylistFormat } from './SelectionContainer.js'
+import TrackLoader from './TrackLoader.js'
 
 export default function Menu() {
   const id = 'menu-container'
@@ -40,19 +41,19 @@ function LoadTrack() {
     onclick: ev.onClickOrEnter(async (e) => {
       e.stopPropagation()
       Array.from(document.getElementsByClassName('menu-items')).map(el => el.classList?.add('closed'))
-      window.state.elements.player.stop()
-      window.state.loadingTrack = true;
+      document.getElementById('peaks-audio').pause()
+      window.state.loadingTrack = true
       document.body.dataset.showTrackLoader = true
       const els = document.querySelectorAll('#selection-container .track-non-tab')
-      window.state.elements.player.load(
-        'download/' +
-          els[0].dataset.href
-            .split('/')
-            .map((s) => encodeURIComponent(s))
-            .join('/')
-      ).finally(() => {
-        window.state.loadingTrack = false;
-      });
+      if (window.state.trackLoader) window.state.trackLoader.destroy()
+      TrackLoader('download/' + els[0].dataset.href
+        .split('/')
+        .map((s) => encodeURIComponent(s))
+        .join('/'),
+      (trackLoader) => {
+        window.state.trackLoader = trackLoader
+        window.state.loadingTrack = false
+      })
     }),
   });
 }

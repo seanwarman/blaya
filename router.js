@@ -8,6 +8,7 @@ import {
   cleanDir,
   mvFile,
   rmDir,
+  loadTrack,
 } from "./controllers/trackList.js";
 import { copy } from "./mover.mjs";
 
@@ -22,6 +23,7 @@ const upload = multer({
 
 export default app => {
   app.get('/music/*', streamFile)
+  app.get('/load-track/music/*', loadTrack)
   app.get('/download/music/*', downloadFile)
   app.get('/api/mv/*', rmDir, mvFile)
   app.post('/api/upload', cleanDir(__dirname + '/workspace'), upload.array('files'), (req, res) => {

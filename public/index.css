@@ -1106,6 +1106,7 @@ div#current-playing-text {
 
 #track-loader-loading[data-track-loading="false"] {
   background-color: transparent;
+  z-index: 0;
 }
 
 #track-loader-loading[data-track-loading="false"] img {
@@ -1117,6 +1118,21 @@ div#current-playing-text {
   z-index: 3;
   background-color: #0000008c;
   padding-bottom: 64px;
+}
+
+#zoomview-container {
+  width:100%;
+  height:100px;
+}
+
+#overview-container {
+  width:100%;
+  height:30px;
+}
+
+#track-loader-loading[data-track-loading="true"] + #zoomview-container,
+#track-loader-loading[data-track-loading="true"] + #zoomview-container + #overview-container {
+  opacity: 0;
 }
 
 #close-track-loader {
