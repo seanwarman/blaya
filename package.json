@@ -21,6 +21,7 @@
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-basic-auth": "^1.2.1",
+    "fluent-ffmpeg": "^2.1.2",
     "fzf": "^0.5.1",
     "konva": "^9.3.2",
     "multer": "^1.4.5-lts.1",

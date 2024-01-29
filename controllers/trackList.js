@@ -1,9 +1,10 @@
 import { GetObjectCommand } from '@aws-sdk/client-s3'
 import { readdir } from 'fs'
 import { spawn } from 'child_process'
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import { parseTrack } from '../mover.mjs';
+import ffmpeg from 'fluent-ffmpeg'
+import { fileURLToPath } from 'url'
+import { dirname } from 'path'
+import { parseTrack } from '../mover.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -109,10 +110,12 @@ export const loadTrack = async (req, res) => {
       Range: 'bytes=0-',
     })
     const { Body } = await s3.send(command)
-    Body.on('data', chunk => {
+
+    ffmpeg(Body).audioBitrate(128)
+    .on('data', chunk => {
       res.write(chunk)
     })
-    Body.on('end', () => {
+    .on('end', () => {
       res.status(200).send();
     })
   } catch (error) {
