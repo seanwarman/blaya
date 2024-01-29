@@ -1120,6 +1120,21 @@ div#current-playing-text {
   padding-bottom: 64px;
 }
 
+#zoomview-container {
+  width:100%;
+  height:100px;
+}
+
+#overview-container {
+  width:100%;
+  height:30px;
+}
+
+#track-loader-loading[data-track-loading="true"] + #zoomview-container,
+#track-loader-loading[data-track-loading="true"] + #zoomview-container + #overview-container {
+  opacity: 0;
+}
+
 #close-track-loader {
   width: 1rem;
   position: absolute;
