@@ -38,7 +38,6 @@ io.on('connection', () => {
   reloaded = true
 })
 
-
 if (!TEST) {
   app.use(basicAuth({
     users: BASIC_AUTH_USERS.split(',').reduce((acc, userpass) => {
@@ -54,15 +53,25 @@ if (!TEST) {
 
 const options = {
   dotfiles: 'ignore',
+  fallthrough: true,
+  extensions: ['js'],
   setHeaders: (res) => {
     res.set('Cache-Control', 'private, max-age=0')
   },
 }
 
+function redirectWithExt(req, res) {
+  // Some node module files have extra extensions like 'worklet.js' which
+  // confuses express, manually add the .js to the end of these...
+  res.redirect('/node_modules' + req.path + '.js');
+}
+
 app.use(express.static('public', options))
 app.use('/public', express.static('public', options))
-app.use('/node_modules', express.static('node_modules', options))
-if (!TEST) {
+app.use('/node_modules', express.static('node_modules', options), redirectWithExt)
+app.use('/node_modules', express.static('node_modules', options), redirectWithExt)
+
+if (TEST) {
   app.use((req, _, next) => {
     const s3 = new S3Client({ region: 'eu-west-2' })
     req.context = {
