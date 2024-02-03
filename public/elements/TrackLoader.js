@@ -110,11 +110,32 @@ function segmentEvents(peaks) {
     stopPropagation = true
   })
 
+  document.body.addEventListener('click', () => {
+    Tone.start()
+  })
   peaks.on('segments.click', e => {
     const { segment } = e
-    player.play()
-    player.seek(segment.startTime)
+    const { startTime, endTime } = segment
+    // repeated event every 8th note
+    const plyr = new Tone.Player('Black-Mountain.mp3', () => {
+      console.log(`@FILTER plyr:`, plyr)
+      window.plyr = plyr
+    }).toDestination()
+
+    new Tone.Loop(time => {
+      // use the callback time to schedule events
+      console.log(`@FILTER startTime:`, startTime)
+      plyr.start(time).stop(time + endTime);
+      plyr.seek(startTime)
+    }, '4n').start(0)
+    // transport must be started before it starts invoking events
+
+    Tone.loaded().then(() => {
+      Tone.Transport.start();
+    })
   })
+
+
   peaks.on('segments.exit', (e) => {
     const { segment } = e
     const button = document.getElementById('loop-region')
@@ -166,7 +187,11 @@ export default function TrackLoader(mediaUrl, initFinished) {
 
       peaks.segments.removeAll()
       document.getElementById('play-pause-track-loader').dataset.trackLoaderPlaying = false
-      initFinished(peaks)
+      if (initFinished) {
+        initFinished(peaks)
+      }
     })
   })(peaks)
 }
+
+TrackLoader('Black-Mountain.mp3')
