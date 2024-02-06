@@ -1,31 +1,22 @@
-let res = 10
-let from = performance.now()
-let stop = true
 
 self.addEventListener('message', async event => {
   const { data } = event
   const { type } = data
 
+  let res = 10
+  let from = performance.now()
   if (type === 'START_CLOCK') {
-    stop = false
-    sendClock()
-  }
-  if (type === 'STOP_CLOCK') {
-    stop = true
-  }
-
-  function sendClock() {
-      postMessage({
-        type: 'CLOCK',
-        payload: {
-          workerTime: performance.now(),
-        },
-      })
-      if (!stop) {
-        setTimeout(() => {
-          sendClock()
-        }, res)
+    while (true) {
+      if (from + res < performance.now()) {
+        postMessage({
+          type: 'CLOCK',
+          payload: {
+            workerTime: performance.now(),
+          },
+        })
+        from = performance.now()
       }
+    }
   }
 })
 

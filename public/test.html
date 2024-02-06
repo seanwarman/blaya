@@ -8,77 +8,7 @@
   <h1>Test worker</h1>
   <button>Start</button>
   <button>Stop</button>
+  <button>Restart</button>
 </body>
-<script>
-
-  let timingDifference = 0
-
-  function clock({ data }) {
-    const { type, payload } = data
-    console.group('--------------------------')
-    console.log(payload.workerTime)
-    console.log(`@FILTER performance.now():`, performance.now())
-    console.log(`@FILTER data.workerTime - performance.now():`, payload.workerTime - performance.now())
-    const timingIncosistancy = (payload.workerTime + timingDifference) - performance.now()
-    console.log(`@FILTER timingIncosistancy:`, timingIncosistancy)
-    console.groupEnd()
-  }
-
-  let timing = 0
-  let setupTimingCount = 20
-  let diffs = []
-
-  const worker = new Worker('/testworker.js')
-
-  worker.addEventListener('message', setupTiming)
-  function setupTiming(event) {
-    const { data } = event
-    const { type, payload } = data
-    if (type !== 'CLOCK') {
-      return
-    }
-
-    const diff = performance.now() - payload.workerTime
-    diffs.push(diff)
-    if (diffs.length >= setupTimingCount) {
-      worker.removeEventListener('message', setupTiming)
-      console.log(`@FILTER diffs:`, diffs)
-      timingDifference = findConsistentDifference(diffs)
-      console.log(`@FILTER timingDifference:`, timingDifference)
-    }
-  }
-  worker.postMessage({
-    type: 'START_CLOCK',
-  })
-
-  const [start, stop] = Array.from(document.querySelectorAll('button'))
-  start.onclick = () => {
-    worker.addEventListener('message', clock)
-  }
-  stop.onclick = () => {
-    worker.removeEventListener('message', clock)
-  }
-
-
-  function findConsistentDifference(diffs) {
-    const results = diffs.reduce((acc, n) => {
-      if (acc[n]) {
-        return {
-          ...acc,
-          [n]: acc[n] + 1,
-        }
-      }
-      return {
-        ...acc,
-        [n]: 1,
-      }
-    }, {})
-    return Number(Object.entries(results).sort((a,b) => {
-      if (a[1] < b[1]) return 1
-      if (a[1] > b[1]) return -1
-      return 0
-    })[0][0])
-  }
-
-</script>
+<script src="./test.js"></script>
 </html>
