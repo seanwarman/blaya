@@ -1,4 +1,4 @@
-function createAudioBuffer(mapBuffer) {
+function createPlayer(mapBuffer) {
   const audioCtx = new AudioContext();
   const audioBuffer = audioCtx.createBuffer(
     2,
@@ -20,14 +20,6 @@ function createAudioBuffer(mapBuffer) {
     return source
   }
 }
-
-const eventLoop = createAudioBuffer(() => 0);
-const click = createAudioBuffer(i => {
-  if (i < 100) {
-    return Math.random() * 2 - 1
-  }
-  return 0
-})
 
 // TEST CODE --------- 
 const audioBufferPromis = fetch('Black-Mountain.mp3')
@@ -51,7 +43,7 @@ start.addEventListener('click', () => {
   // TEST CODE --------
   audioBufferPromis.then(blackMountainAudioBuffer => {
     const b = blackMountainAudioBuffer.getChannelData(1)
-    const playBlackMountain = createAudioBuffer((i) => {
+    const playBlackMountain = createPlayer((i) => {
       return b[i]
     })
     playBlackMountain(0)
@@ -64,6 +56,14 @@ start.addEventListener('click', () => {
 })
 
 start.disabled = false
+
+const eventLoop = createPlayer(() => 0);
+const click = createPlayer(i => {
+  if (i < 100) {
+    return Math.random() * 2 - 1
+  }
+  return 0
+})
 
 function clock() {
   count++
