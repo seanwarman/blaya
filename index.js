@@ -68,6 +68,9 @@ function redirectWithExt(req, res) {
 
 app.use(express.static('public', options))
 app.use('/public', express.static('public', options))
+if (TEST) {
+  app.use('/__test', express.static('__test', options))
+}
 app.use('/node_modules', express.static('node_modules', options), redirectWithExt)
 app.use('/node_modules', express.static('node_modules', options), redirectWithExt)
 
