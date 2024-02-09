@@ -17,7 +17,7 @@ function createPlayer(length, mapBuffer) {
     source.buffer = audioBuffer;
     source.connect(audioCtx.destination);
     source.start(cueTime, startTime, endTime);
-    return source
+    return source;
   }
 }
 
@@ -38,7 +38,6 @@ const BPS = 60 / BPM
 const clockTime = BPS / STEP_RESOLUTION
 const [start, stop] = document.querySelectorAll('button')
 start.disabled = true
-const clockWorker = new Worker('./clock-worker.js')
 
 const eventLoop = createPlayer(3, () => 0);
 const click = createPlayer(3, i => {
@@ -63,18 +62,8 @@ start.addEventListener('click', () => {
   // TEST CODE --------
 
   // Put this back...
-  // clock()
+  clock()
   let source = eventLoop(0, 0, clockTime);
-  clockWorker.postMessage({
-    type: 'START',
-    payload: {
-      // stop,
-      source,
-      count,
-      clockTime,
-      STEP_RESOLUTION,
-    },
-  })
   start.disabled = true
 })
 
@@ -103,3 +92,37 @@ timeline.addCustomTime(timeDate, 123);
 function setTimeline(n) {
   timeline.setCustomTime(timeDate.add(n, 'day'), 123);
 }
+
+function scheduleClick() {
+  click(0)
+}
+
+function clock() {
+  count++
+  if (count === 1) {
+    console.log(`=======================================================================================`)
+  }
+  if (count % 16 === 0) {
+    console.log(`---------------------${count / 16}---------------------`)
+    if (count / 16 === 1) scheduleClick()
+    if (count / 16 === 2) {}
+    if (count / 16 === 3) scheduleClick()
+    if (count / 16 === 4) {}
+    if (count / 16 === 5) scheduleClick()
+    if (count / 16 === 6) {}
+    if (count / 16 === 7) {}
+    if (count / 16 === 8) scheduleClick()
+  }
+  if (count === STEP_RESOLUTION) {
+    count = 0
+  }
+  const source = eventLoop(0, 0, clockTime)
+  stop.addEventListener('click', () => {
+    source.removeEventListener('ended', clock)
+    source.stop()
+    start.disabled = false
+    count = 0
+  })
+  source.addEventListener('ended', clock)
+}
+
