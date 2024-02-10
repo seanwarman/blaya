@@ -61,9 +61,9 @@ const cluck = createPlayer(2, i => {
 // Yes almost definitely (they'll need ids though)
 const sequence = {
   0: {name:'click',fn:click,delay:0},  1:  null,  2: null,  3: null,
-  4:  null,  5:  null,  6: {name:'click',fn:click,delay:0},  7: null,
-  8:  null,  9:  null, 10: null, 11: null,
-  12: null,  13: null, 14: {name:'click',fn:click,delay:0}, 15: null,
+  4:  {name:'click',fn:click,delay:0},  5:  null,  6: null,  7: null,
+  8:  {name:'click',fn:click,delay:0},  9:  null, 10: null, 11: null,
+  12: {name:'click',fn:click,delay:0},  13: null, 14: {name:'click',fn:click,delay:0}, 15: null,
 
 
 
@@ -81,13 +81,12 @@ const sequence = {
   // 60: cluck, 61: null, 62: null, 63: null,
 };
 
+const calcStepLength = () => (lookahead / 100) * (60.0 / tempo);
+
 // CLOCK
 function nextNote() {
   // Advance current note and time by a 16th note...
-  const secondsPerBeat = 60.0 / tempo;    // Notice this picks up the CURRENT 
-                                          // tempo value to calculate beat length.
-  nextNoteTime += 0.25 * secondsPerBeat;    // Add beat length to last beat time
-
+  nextNoteTime += calcStepLength();
   currentStep++;    // Advance the beat number, wrap to zero
   if (currentStep == loopBarLength * noteResolution) {
     currentStep = 0;
@@ -98,7 +97,7 @@ function scheduleNote( beatNumber, time ) {
   // push the note on the queue, even if we're not playing.
   notesInQueue.push( { note: beatNumber, time: time } );
   if (sequence[beatNumber]) {
-    sequence[beatNumber].fn(time + sequence[beatNumber].delay);
+    sequence[beatNumber].fn(time + (calcStepLength() * sequence[beatNumber].delay));
   }
 }
 
@@ -194,13 +193,13 @@ const options = {
   },
   onMove: (item, cb) => {
     const diff = vis.moment(item.start).diff(vis.moment(...startDateParams).add(item.index * beatPerDateMultiple, beatPerDateResolution), beatPerDateResolution);
-    console.log(`@FILTER diff:`, diff)
-    const newindex = item.index + (diff / beatPerDateMultiple);
-    console.log(`@FILTER newindex:`, newindex)
+    const position = item.index + (diff / beatPerDateMultiple)
+    const newindex = Math.floor(position);
     if (sequence[newindex]) return cb(null);
     sequence[item.index] = null;
     item.index = newindex;
-    sequence[item.index] = item.step;
+    // The position will be 1.5 for 12th hour, we'll take the decimal 0.5 for our delay
+    sequence[item.index] = { ...item.step, delay: position - Math.floor(position) };
     cb(item);
   },
   format: {
