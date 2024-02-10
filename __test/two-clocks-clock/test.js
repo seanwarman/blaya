@@ -156,11 +156,10 @@ document.querySelector('button').addEventListener('click', play)
 
 // TIMELINE
 const beatPerDateResolution = 'hours';
-const beatPerDateMultiple   = 12;
+const beatPerDateMultiple   = 24;
 const container = document.getElementById('visualization');
 const startDateParams = ['01/01/01', 'DD/MM/YY']
 const startDate = vis.moment(...startDateParams);
-const end = vis.moment(startDate).add(1, 'month');
 const items = new vis.DataSet(
   Object.values(sequence)
     .map((step, i) => {
@@ -182,7 +181,7 @@ const options = {
   height: 200,
   start: vis.moment(...startDateParams),
   min: vis.moment(...startDateParams),
-  max: vis.moment(...startDateParams).add(8, 'days'),
+  max: vis.moment(...startDateParams).add(16, 'days'),
   itemsAlwaysDraggable: true,
   stack: false,
   editable: {
@@ -221,7 +220,7 @@ const options = {
 const timeline = new vis.Timeline(container, items, options);
 timeline.setWindow(
   vis.moment(...startDateParams),
-  vis.moment(...startDateParams).add(8, 'days'),
+  vis.moment(...startDateParams).add(16, 'days'),
 );
 const timeDate = vis.moment(...startDateParams);
 timeline.addCustomTime(timeDate, 123);
