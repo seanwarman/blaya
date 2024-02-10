@@ -57,28 +57,20 @@ const cluck = createPlayer(2, i => {
   return 0
 })
 
+const clickStep = (delay) => ({
+  id: Date.now(),
+  name: 'click',
+  fn: click,
+  delay: delay || 0,
+});
+
 // Make steps arrays?
 // Yes almost definitely (they'll need ids though)
 const sequence = {
-  0: {name:'click',fn:click,delay:0},  1:  null,  2: null,  3: null,
-  4:  {name:'click',fn:click,delay:0},  5:  null,  6: null,  7: null,
-  8:  {name:'click',fn:click,delay:0},  9:  null, 10: null, 11: null,
-  12: {name:'click',fn:click,delay:0},  13: null, 14: {name:'click',fn:click,delay:0}, 15: null,
-
-
-
-  // 16: click, 17: null, 18: null, 19: null,
-  // 20:  null, 21: null, 22: null, 23: null,
-  // 24: click, 25: null, 26: null, 27: null,
-  // 28: cluck, 29: null, 30: null, 31: null,
-  // 32: cluck, 33: null, 34: cluck,35: null,
-  // 36:  null, 37: null, 38: null, 39: null,
-  // 40: click, 41: null, 42: null, 43: null,
-  // 44:  null, 45: null, 46: null, 47: null,
-  // 48: click, 49: null, 50: click,51: null,
-  // 52: click, 53: null, 54: cluck,55: null,
-  // 56: cluck, 57: null, 58: null, 59: null,
-  // 60: cluck, 61: null, 62: null, 63: null,
+  0: [{id:1,name:'click',fn:click,delay:0}],  1:  null,  2: null,  3: null,
+  4: [{id:2,name:'click',fn:click,delay:0}],  5:  null,  6: null,  7: null,
+  8: [{id:3,name:'click',fn:click,delay:0}],  9:  null, 10: null, 11: null,
+ 12: [{id:4,name:'click',fn:click,delay:0}],  13: null, 14: [{id:5,name:'click',fn:click,delay:0}], 15: null,
 };
 
 const calcStepLength = () => (lookahead / 100) * (60.0 / tempo);
@@ -97,7 +89,7 @@ function scheduleNote( beatNumber, time ) {
   // push the note on the queue, even if we're not playing.
   notesInQueue.push( { note: beatNumber, time: time } );
   if (sequence[beatNumber]) {
-    sequence[beatNumber].fn(time + (calcStepLength() * sequence[beatNumber].delay));
+    sequence[beatNumber].map(step => step.fn(time + (calcStepLength() * step.delay)));
   }
 }
 
@@ -161,17 +153,20 @@ const startDateParams = ['01/01/01', 'DD/MM/YY']
 const startDate = vis.moment(...startDateParams);
 const items = new vis.DataSet(
   Object.values(sequence)
-    .map((step, i) => {
-      if (!step) return;
-      return {
-        id: 'click' + i,
-        step,
-        fn: step.fn,
-        index: i,
-        content: step.name,
-        start: vis.moment(...startDateParams).add(i * beatPerDateMultiple, beatPerDateResolution),
-        end: vis.moment(...startDateParams).add(((i+1) * beatPerDateMultiple) - 1, beatPerDateResolution),
-      };
+    .flatMap((steps, i) => {
+      if (!steps) return;
+      return steps.map(step => {
+        if (!step) return;
+        return {
+          id: step.id,
+          step,
+          fn: step.fn,
+          index: i,
+          content: step.name,
+          start: vis.moment(...startDateParams).add(i * beatPerDateMultiple, beatPerDateResolution),
+          end: vis.moment(...startDateParams).add(((i+1) * beatPerDateMultiple) - 1, beatPerDateResolution),
+        };
+      })
     })
     .filter(Boolean)
 );
@@ -187,6 +182,20 @@ const options = {
     add: true,
     updateTime: true,
   },
+  onAdd: (item, cb) => {
+    item.type = 'range';
+    const diff = vis.moment(item.start).diff(vis.moment(...startDateParams), beatPerDateResolution);
+    const position = 0 + (diff / beatPerDateMultiple)
+    const newindex = Math.floor(position);
+    if (!sequence[newindex]) sequence[newindex] = [];
+    item.index = newindex;
+    item.step = clickStep(position - Math.floor(position));
+    item.end = vis.moment(item.start).add((1 * beatPerDateMultiple) - 1, beatPerDateResolution);
+    item.content = item.step.name;
+    item.id = item.step.id;
+    sequence[item.index].push(item.step);
+    cb(item);
+  },
   snap: (date, scale, step) => {
     var hour = 60 * 60 * 12000;
     return Math.round(date / hour) * hour;
@@ -195,11 +204,11 @@ const options = {
     const diff = vis.moment(item.start).diff(vis.moment(...startDateParams).add(item.index * beatPerDateMultiple, beatPerDateResolution), beatPerDateResolution);
     const position = item.index + (diff / beatPerDateMultiple)
     const newindex = Math.floor(position);
-    if (sequence[newindex]) return cb(null);
-    sequence[item.index] = null;
+    sequence[item.index] = sequence[item.index]?.filter(step => step.id !== item.id);
+    if (!sequence[newindex]) sequence[newindex] = [];
     item.index = newindex;
-    // The position will be 1.5 for 12th hour, we'll take the decimal 0.5 for our delay
-    sequence[item.index] = { ...item.step, delay: position - Math.floor(position) };
+    // The position will add .5 for 12th hour, we just want that decimal for the delay...
+    sequence[item.index].push({ ...item.step, delay: position - Math.floor(position) });
     cb(item);
   },
   format: {
@@ -215,12 +224,23 @@ const options = {
     },
   },
 };
-
 const timeline = new vis.Timeline(container, items, options);
 timeline.setWindow(
   vis.moment(...startDateParams),
   vis.moment(...startDateParams).add(16, 'days'),
 );
+window.addEventListener('keydown', e => {
+  if (e.key === 'Backspace') {
+    const ids = timeline.getSelection();
+    ids.map(id => {
+      const item = items.get(id);
+      if (sequence[item.index]) {
+        sequence[item.index] = sequence[item.index].filter(s => s.id !== item.id);
+      }
+    })
+    items.remove(timeline.getSelection())
+  }
+})
 const timeDate = vis.moment(...startDateParams);
 timeline.addCustomTime(timeDate, 123);
 function setTimeline() {
