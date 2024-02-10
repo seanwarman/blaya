@@ -2,15 +2,15 @@ let audioContext = null;
 let unlocked = false;
 let isPlaying = false;      // Are we currently playing?
 let startTime;              // The start time of the entire sequence.
-let current64Note;        // What note is currently last scheduled?
+let currentStep;        // What note is currently last scheduled?
 let tempo = 120.0;          // tempo (in beats per minute)
-let lookahead = 10.0;       // How frequently to call scheduling function 
+let lookahead = 25.0;       // How frequently to call scheduling function 
                             //(in milliseconds)
-let scheduleAheadTime = 2;
+let scheduleAheadTime = 0.1;
                             // This is calculated from lookahead, and overlaps 
                             // with next interval (in case the timer is late)
 let nextNoteTime = 0.0;     // when the next note is due.
-let noteResolution = 64;
+let noteResolution = 16;
 let noteLength = 0.05;      // length of "beep" (in seconds)
 var last16thNoteDrawn = -1; // the last "box" we drew on the screen
 let notesInQueue = [];      // the notes that have been put into the web audio,
@@ -57,35 +57,40 @@ const cluck = createPlayer(2, i => {
   return 0
 })
 
+// Make steps arrays?
+// Yes almost definitely (they'll need ids though)
 const sequence = {
-  0: click,  1:  null,  2: null,  3: null,
-  4:  null,  5:  null,  6: null,  7: null,
+  0: {name:'click',fn:click,delay:0},  1:  null,  2: null,  3: null,
+  4:  null,  5:  null,  6: {name:'click',fn:click,delay:0},  7: null,
   8:  null,  9:  null, 10: null, 11: null,
-  12: null,  13: null, 14: null, 15: null,
-  16: click, 17: null, 18: null, 19: null,
-  20:  null, 21: null, 22: null, 23: null,
-  24: click, 25: null, 26: null, 27: null,
-  28: cluck, 29: null, 30: null, 31: null,
-  32: cluck, 33: null, 34: cluck,35: null,
-  36:  null, 37: null, 38: null, 39: null,
-  40: click, 41: null, 42: null, 43: null,
-  44:  null, 45: null, 46: null, 47: null,
-  48: click, 49: null, 50: click,51: null,
-  52: click, 53: null, 54: cluck,55: null,
-  56: cluck, 57: null, 58: null, 59: null,
-  60: cluck, 61: null, 62: null, 63: null,
+  12: null,  13: null, 14: {name:'click',fn:click,delay:0}, 15: null,
+
+
+
+  // 16: click, 17: null, 18: null, 19: null,
+  // 20:  null, 21: null, 22: null, 23: null,
+  // 24: click, 25: null, 26: null, 27: null,
+  // 28: cluck, 29: null, 30: null, 31: null,
+  // 32: cluck, 33: null, 34: cluck,35: null,
+  // 36:  null, 37: null, 38: null, 39: null,
+  // 40: click, 41: null, 42: null, 43: null,
+  // 44:  null, 45: null, 46: null, 47: null,
+  // 48: click, 49: null, 50: click,51: null,
+  // 52: click, 53: null, 54: cluck,55: null,
+  // 56: cluck, 57: null, 58: null, 59: null,
+  // 60: cluck, 61: null, 62: null, 63: null,
 };
 
 // CLOCK
 function nextNote() {
   // Advance current note and time by a 16th note...
-  const secondsPerBeat = 15.0 / tempo;    // Notice this picks up the CURRENT 
-  // tempo value to calculate beat length.
+  const secondsPerBeat = 60.0 / tempo;    // Notice this picks up the CURRENT 
+                                          // tempo value to calculate beat length.
   nextNoteTime += 0.25 * secondsPerBeat;    // Add beat length to last beat time
 
-  current64Note++;    // Advance the beat number, wrap to zero
-  if (current64Note == loopBarLength * noteResolution) {
-    current64Note = 0;
+  currentStep++;    // Advance the beat number, wrap to zero
+  if (currentStep == loopBarLength * noteResolution) {
+    currentStep = 0;
   }
 }
 
@@ -93,7 +98,7 @@ function scheduleNote( beatNumber, time ) {
   // push the note on the queue, even if we're not playing.
   notesInQueue.push( { note: beatNumber, time: time } );
   if (sequence[beatNumber]) {
-    sequence[beatNumber](time);
+    sequence[beatNumber].fn(time + sequence[beatNumber].delay);
   }
 }
 
@@ -101,7 +106,7 @@ function scheduler() {
   // while there are notes that will need to play before the next interval, 
   // schedule them and advance the pointer.
   while (nextNoteTime < audioContext.currentTime + scheduleAheadTime ) {
-    scheduleNote( current64Note, nextNoteTime );
+    scheduleNote( currentStep, nextNoteTime );
     nextNote();
   }
 }
@@ -119,7 +124,7 @@ function play() {
   }
   isPlaying = !isPlaying;
   if (isPlaying) { // start playing
-    current64Note = 0;
+    currentStep = 0;
     timeLinePosition = 0;
     nextNoteTime = audioContext.currentTime;
     timerWorker.postMessage('start');
@@ -150,21 +155,24 @@ init()
 document.querySelector('button').addEventListener('click', play)
 
 // TIMELINE
+const beatPerDateResolution = 'hours';
+const beatPerDateMultiple   = 12;
 const container = document.getElementById('visualization');
 const startDateParams = ['01/01/01', 'DD/MM/YY']
 const startDate = vis.moment(...startDateParams);
 const end = vis.moment(startDate).add(1, 'month');
 const items = new vis.DataSet(
   Object.values(sequence)
-    .map((fn, i) => {
-      if (!fn) return;
+    .map((step, i) => {
+      if (!step) return;
       return {
         id: 'click' + i,
-        fn,
-        position: i,
-        content: fn.name,
-        start: vis.moment(...startDateParams).add(i * 3, 'hours'),
-        end: vis.moment(...startDateParams).add(((i+2) * 3) - 1, 'hours'),
+        step,
+        fn: step.fn,
+        index: i,
+        content: step.name,
+        start: vis.moment(...startDateParams).add(i * beatPerDateMultiple, beatPerDateResolution),
+        end: vis.moment(...startDateParams).add(((i+1) * beatPerDateMultiple) - 1, beatPerDateResolution),
       };
     })
     .filter(Boolean)
@@ -174,19 +182,26 @@ const options = {
   height: 200,
   start: vis.moment(...startDateParams),
   min: vis.moment(...startDateParams),
+  max: vis.moment(...startDateParams).add(8, 'days'),
   itemsAlwaysDraggable: true,
   stack: false,
   editable: {
     add: true,
     updateTime: true,
   },
+  snap: (date, scale, step) => {
+    var hour = 60 * 60 * 12000;
+    return Math.round(date / hour) * hour;
+  },
   onMove: (item, cb) => {
-    sequence[item.position] = null;
-    const diff = vis.moment(item.start).diff(vis.moment(...startDateParams).add(item.position * 3, 'hours'), 'hours');
-    const newposition = item.position + (diff / 3);
-    if (sequence[newposition]) return cb(null);
-    item.position = newposition;
-    sequence[item.position] = item.fn;
+    const diff = vis.moment(item.start).diff(vis.moment(...startDateParams).add(item.index * beatPerDateMultiple, beatPerDateResolution), beatPerDateResolution);
+    console.log(`@FILTER diff:`, diff)
+    const newindex = item.index + (diff / beatPerDateMultiple);
+    console.log(`@FILTER newindex:`, newindex)
+    if (sequence[newindex]) return cb(null);
+    sequence[item.index] = null;
+    item.index = newindex;
+    sequence[item.index] = item.step;
     cb(item);
   },
   format: {
@@ -204,11 +219,15 @@ const options = {
 };
 
 const timeline = new vis.Timeline(container, items, options);
+timeline.setWindow(
+  vis.moment(...startDateParams),
+  vis.moment(...startDateParams).add(8, 'days'),
+);
 const timeDate = vis.moment(...startDateParams);
 timeline.addCustomTime(timeDate, 123);
 function setTimeline() {
   timeline.setCustomTime(
-    vis.moment(...startDateParams).add(timeLinePosition * 3, 'hours'),
+    vis.moment(...startDateParams).add(timeLinePosition * beatPerDateMultiple, beatPerDateResolution),
     123
   );
   timeLinePosition++;
