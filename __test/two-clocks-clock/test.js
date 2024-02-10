@@ -1,67 +1,105 @@
-var audioContext = null;
-var unlocked = false;
-var isPlaying = false;      // Are we currently playing?
-var startTime;              // The start time of the entire sequence.
-var current16thNote;        // What note is currently last scheduled?
-var tempo = 120.0;          // tempo (in beats per minute)
-var lookahead = 25.0;       // How frequently to call scheduling function 
+let audioContext = null;
+let unlocked = false;
+let isPlaying = false;      // Are we currently playing?
+let startTime;              // The start time of the entire sequence.
+let current64Note;        // What note is currently last scheduled?
+let tempo = 120.0;          // tempo (in beats per minute)
+let lookahead = 10.0;       // How frequently to call scheduling function 
                             //(in milliseconds)
-var scheduleAheadTime = 0.1;    // How far ahead to schedule audio (sec)
+let scheduleAheadTime = 2;
                             // This is calculated from lookahead, and overlaps 
                             // with next interval (in case the timer is late)
-var nextNoteTime = 0.0;     // when the next note is due.
-var noteResolution = 0;     // 0 == 16th, 1 == 8th, 2 == quarter note
-var noteLength = 0.05;      // length of "beep" (in seconds)
-var canvas,                 // the canvas element
-    canvasContext;          // canvasContext is the canvas' context 2D
+let nextNoteTime = 0.0;     // when the next note is due.
+let noteResolution = 64;
+let noteLength = 0.05;      // length of "beep" (in seconds)
 var last16thNoteDrawn = -1; // the last "box" we drew on the screen
-var notesInQueue = [];      // the notes that have been put into the web audio,
+let notesInQueue = [];      // the notes that have been put into the web audio,
                             // and may or may not have played yet. {note, time}
-var timerWorker = null;     // The Web Worker used to fire timer messages
+let timerWorker = null;     // The Web Worker used to fire timer messages
+let loopBarLength = 1;
+let timeLinePosition = 0;
 
-function nextNote() {
-  // Advance current note and time by a 16th note...
-  var secondsPerBeat = 60.0 / tempo;    // Notice this picks up the CURRENT 
-  // tempo value to calculate beat length.
-  nextNoteTime += 0.25 * secondsPerBeat;    // Add beat length to last beat time
-
-  current16thNote++;    // Advance the beat number, wrap to zero
-  if (current16thNote == 16) {
-    current16thNote = 0;
+// PLAYER
+function createPlayer(length, mapBuffer) {
+  const audioCtx = new AudioContext();
+  const audioBuffer = audioCtx.createBuffer(
+    2,
+    audioCtx.sampleRate * length,
+    audioCtx.sampleRate,
+  );
+  for (let channel = 0; channel < audioBuffer.numberOfChannels; channel++) {
+    const nowBuffering = audioBuffer.getChannelData(channel);
+    for (let i = 0; i < audioBuffer.length; i++) {
+      nowBuffering[i] = mapBuffer(i)
+    }
+  }
+  let source;
+  return function player(cueTime, startTime, endTime) {
+    source = audioCtx.createBufferSource();
+    source.buffer = audioBuffer;
+    source.connect(audioCtx.destination);
+    source.start(cueTime, startTime, endTime);
+    return source;
   }
 }
 
-// First, let's shim the requestAnimationFrame API, with a setTimeout fallback
-window.requestAnimFrame = window.requestAnimationFrame;
+const click = createPlayer(3, i => {
+  if (i < 100) {
+    return Math.random() * 2 - 1
+  }
+  return 0
+})
+
+const cluck = createPlayer(2, i => {
+  if (i < 100) {
+    return Math.random() * 2 - 1
+  }
+  return 0
+})
+
+const sequence = {
+  0: click,  1:  null,  2: null,  3: null,
+  4:  null,  5:  null,  6: null,  7: null,
+  8:  null,  9:  null, 10: null, 11: null,
+  12: null,  13: null, 14: null, 15: null,
+  16: click, 17: null, 18: null, 19: null,
+  20:  null, 21: null, 22: null, 23: null,
+  24: click, 25: null, 26: null, 27: null,
+  28: cluck, 29: null, 30: null, 31: null,
+  32: cluck, 33: null, 34: cluck,35: null,
+  36:  null, 37: null, 38: null, 39: null,
+  40: click, 41: null, 42: null, 43: null,
+  44:  null, 45: null, 46: null, 47: null,
+  48: click, 49: null, 50: click,51: null,
+  52: click, 53: null, 54: cluck,55: null,
+  56: cluck, 57: null, 58: null, 59: null,
+  60: cluck, 61: null, 62: null, 63: null,
+};
+
+// CLOCK
+function nextNote() {
+  // Advance current note and time by a 16th note...
+  const secondsPerBeat = 15.0 / tempo;    // Notice this picks up the CURRENT 
+  // tempo value to calculate beat length.
+  nextNoteTime += 0.25 * secondsPerBeat;    // Add beat length to last beat time
+
+  current64Note++;    // Advance the beat number, wrap to zero
+  if (current64Note == loopBarLength * noteResolution) {
+    current64Note = 0;
+  }
+}
 
 function scheduleNote( beatNumber, time ) {
   // push the note on the queue, even if we're not playing.
   notesInQueue.push( { note: beatNumber, time: time } );
-
-  if ( (noteResolution==1) && (beatNumber%2))
-    return; // we're not playing non-8th 16th notes
-  if ( (noteResolution==2) && (beatNumber%4))
-    return; // we're not playing non-quarter 8th notes
-
-  // create an oscillator
-  var osc = audioContext.createOscillator();
-  osc.connect( audioContext.destination );
-  if (beatNumber % 16 === 0)    // beat 0 == high pitch
-    osc.frequency.value = 880.0;
-  else if (beatNumber % 4 === 0 )    // quarter notes = medium pitch
-    osc.frequency.value = 440.0;
-  else                        // other 16th notes = low pitch
-    osc.frequency.value = 220.0;
-
-  osc.start( time );
-  osc.stop( time + noteLength );
+  if (sequence[beatNumber]) sequence[beatNumber](time)
 }
 
 function scheduler() {
   // while there are notes that will need to play before the next interval, 
   // schedule them and advance the pointer.
   while (nextNoteTime < audioContext.currentTime + scheduleAheadTime ) {
-    scheduleNote( current16thNote, nextNoteTime );
+    scheduleNote( current64Note, nextNoteTime );
     nextNote();
   }
 }
@@ -69,7 +107,6 @@ function scheduler() {
 function play() {
   if (!audioContext)
     audioContext = new AudioContext();
-
   if (!unlocked) {
     // play silent buffer to unlock the audio
     var buffer = audioContext.createBuffer(1, 1, 22050);
@@ -78,34 +115,114 @@ function play() {
     node.start(0);
     unlocked = true;
   }
-
   isPlaying = !isPlaying;
-
   if (isPlaying) { // start playing
-    current16thNote = 0;
+    current64Note = 0;
+    timeLinePosition = 0;
     nextNoteTime = audioContext.currentTime;
-    timerWorker.postMessage("start");
-    return "stop";
+    timerWorker.postMessage('start');
+    return 'stop';
   } else {
-    timerWorker.postMessage("stop");
-    return "play";
+    timerWorker.postMessage('stop');
+    return 'play';
   }
 }
 
 function init(){
   timerWorker = new Worker('./clock-worker.js');
-
   timerWorker.onmessage = function(e) {
-    if (e.data == "tick") {
-      // console.log("tick!");
+    if (e.data == 'tick') {
+      // console.log('tick!');
       scheduler();
     }
     else
-      console.log("message: " + e.data);
+      console.log('message: ' + e.data);
   };
-  timerWorker.postMessage({"interval":lookahead});
+  timerWorker.postMessage({'interval':lookahead});
+  requestAnimationFrame(draw);
 }
 
 init()
 
 document.querySelector('button').addEventListener('click', play)
+
+// TIMELINE
+const container = document.getElementById('visualization');
+const startDateParams = ['01/01/01', 'DD/MM/YY']
+const startDate = vis.moment(...startDateParams);
+const end = vis.moment(startDate).add(1, 'month');
+const items = new vis.DataSet(
+  Object.values(sequence)
+    .map((fn, i) => {
+      if (!fn) return;
+      return {
+        id: i,
+        content: fn.name,
+        start: vis.moment(...startDateParams).add(i * 3, 'hours'),
+        end: vis.moment(...startDateParams).add(((i+2) * 3) - 1, 'hours'),
+        // editable: true,
+      };
+    })
+    .filter(Boolean)
+);
+
+const options = {
+  height: 200,
+  start: vis.moment(...startDateParams),
+  min: vis.moment(...startDateParams),
+  itemsAlwaysDraggable: true,
+  editable: {
+    add: true,
+    updateTime: true,
+  },
+  onMove: e => {
+    console.log(`@FILTER e:`, e)
+  },
+  format: {
+    minorLabels: {
+      millisecond:'SSS', second:     's', minute:     'HH:mm',
+      hour:       'HH:mm', weekday:    'DD', day:        'DD',
+      week:       'WW', month:      'MM', year:       'YY'
+    },
+    majorLabels: {
+      millisecond:'SSS', second:     's', minute:     'HH:mm',
+      hour:       'HH:mm', weekday:    'DD', day:        'DD',
+      week:       'WW', month:      'MM', year:       'YY'
+    },
+  },
+};
+
+const timeline = new vis.Timeline(container, items, options);
+const timeDate = vis.moment(...startDateParams);
+timeline.addCustomTime(timeDate, 123);
+function setTimeline() {
+  timeline.setCustomTime(
+    vis.moment(...startDateParams).add(timeLinePosition * 3, 'hours'),
+    123
+  );
+  timeLinePosition++;
+  if (timeLinePosition == loopBarLength * noteResolution) {
+    timeLinePosition = 0;
+  }
+}
+
+function draw() {
+  var currentNote = last16thNoteDrawn;
+  if (audioContext) {
+    var currentTime = audioContext.currentTime;
+
+    while (notesInQueue.length && notesInQueue[0].time < currentTime) {
+      currentNote = notesInQueue[0].note;
+      notesInQueue.splice(0,1);   // remove note from queue
+    }
+
+    // We only need to draw if the note has moved.
+    if (last16thNoteDrawn != currentNote) {
+      last16thNoteDrawn = currentNote;
+      setTimeline();
+    }
+  }
+  // set up to draw again
+  requestAnimationFrame(draw);
+}
+
