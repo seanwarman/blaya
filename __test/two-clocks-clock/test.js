@@ -92,7 +92,9 @@ function nextNote() {
 function scheduleNote( beatNumber, time ) {
   // push the note on the queue, even if we're not playing.
   notesInQueue.push( { note: beatNumber, time: time } );
-  if (sequence[beatNumber]) sequence[beatNumber](time)
+  if (sequence[beatNumber]) {
+    sequence[beatNumber](time);
+  }
 }
 
 function scheduler() {
@@ -123,6 +125,7 @@ function play() {
     timerWorker.postMessage('start');
     return 'stop';
   } else {
+    console.log(`@FILTER stop!`)
     timerWorker.postMessage('stop');
     return 'play';
   }
@@ -156,11 +159,12 @@ const items = new vis.DataSet(
     .map((fn, i) => {
       if (!fn) return;
       return {
-        id: i,
+        id: 'click' + i,
+        fn,
+        position: i,
         content: fn.name,
         start: vis.moment(...startDateParams).add(i * 3, 'hours'),
         end: vis.moment(...startDateParams).add(((i+2) * 3) - 1, 'hours'),
-        // editable: true,
       };
     })
     .filter(Boolean)
@@ -171,12 +175,19 @@ const options = {
   start: vis.moment(...startDateParams),
   min: vis.moment(...startDateParams),
   itemsAlwaysDraggable: true,
+  stack: false,
   editable: {
     add: true,
     updateTime: true,
   },
-  onMove: e => {
-    console.log(`@FILTER e:`, e)
+  onMove: (item, cb) => {
+    sequence[item.position] = null;
+    const diff = vis.moment(item.start).diff(vis.moment(...startDateParams).add(item.position * 3, 'hours'), 'hours');
+    const newposition = item.position + (diff / 3);
+    if (sequence[newposition]) return cb(null);
+    item.position = newposition;
+    sequence[item.position] = item.fn;
+    cb(item);
   },
   format: {
     minorLabels: {
