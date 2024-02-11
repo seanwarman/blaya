@@ -177,13 +177,14 @@ const options = {
   min: vis.moment(...startDateParams),
   max: vis.moment(...startDateParams).add(16, 'days'),
   itemsAlwaysDraggable: true,
-  stack: false,
+  type: 'range',
+  zoomFriction: 25,
+  stack: true,
   editable: {
     add: true,
     updateTime: true,
   },
   onAdd: (item, cb) => {
-    item.type = 'range';
     const diff = vis.moment(item.start).diff(vis.moment(...startDateParams), beatPerDateResolution);
     const position = 0 + (diff / beatPerDateMultiple)
     const newindex = Math.floor(position);
@@ -211,6 +212,7 @@ const options = {
     sequence[item.index].push({ ...item.step, delay: position - Math.floor(position) });
     cb(item);
   },
+  showMajorLabels: false,
   format: {
     minorLabels: {
       millisecond:'SSS', second:     's', minute:     'HH:mm',
