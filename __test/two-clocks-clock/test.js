@@ -244,16 +244,21 @@ window.addEventListener('keydown', e => {
   }
 })
 const timeDate = vis.moment(...startDateParams);
-timeline.addCustomTime(timeDate, 123);
+timeline.addCustomTime(timeDate, 'steptime');
 function setTimeline() {
-  timeline.setCustomTime(
-    vis.moment(...startDateParams).add(timeLinePosition * beatPerDateMultiple, beatPerDateResolution),
-    123
-  );
-  timeLinePosition++;
-  if (timeLinePosition == loopBarLength * noteResolution) {
-    timeLinePosition = 0;
+  document.querySelector('.vis-custom-time.steptime').style.transition = 'left 0.3s';
+  if (currentStep === 0)  {
+    document.querySelector('.vis-custom-time.steptime').style.transition = 'none';
+    document.querySelector('.vis-custom-time.steptime').style.left = '0px';
   }
+  timeline.setCustomTime(
+    vis.moment(...startDateParams).add(currentStep * beatPerDateMultiple, beatPerDateResolution),
+    'steptime'
+  );
+  // timeLinePosition++;
+  // if (timeLinePosition == loopBarLength * noteResolution) {
+  //   timeLinePosition = 0;
+  // }
 }
 
 function draw() {
