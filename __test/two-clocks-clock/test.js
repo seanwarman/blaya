@@ -39,10 +39,10 @@ const cluckStep = (delay) => ({
 });
 
 let sequence = {
-  0:  [clickStep()],  1:  null,  2: null,  3: null,
-  4:  [clickStep()],  5:  null,  6: null,  7: null,
-  8:  [cluckStep()],  9:  null, 10: null, 11: null,
-  12: [cluckStep()],  13: null, 14: null, 15: null,
+  0:  [makeStep('kick', 0, 0), makeStep('click', 0, 0)],  1:  null,  2: [makeStep('cluck', 2, 0), makeStep('click', 2, 0)],  3: null,
+  4:  [makeStep('sn', 4, 0), makeStep('click', 4, 0)],  5:  null,  6: [makeStep('click', 6, 0)],  7: null,
+  8:  [makeStep('kick', 1, 0), makeStep('click', 5, 0)],  9:  null, 10: [makeStep('click', 10, 0)], 11: null,
+  12: [makeStep('sn', 12, 0),makeStep('click', 12, 0)],  13: null, 14: null, 15: null,
 };
 
 let samples = {};
