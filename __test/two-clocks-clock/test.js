@@ -1,3 +1,4 @@
+(async () => {
 let audioContext = null;
 let unlocked = false;
 let isPlaying = false;      // Are we currently playing?
@@ -20,7 +21,7 @@ let loopBarLength = 1;
 let timeLinePosition = 0;
 
 // PLAYER
-function createPlayer(length, mapBuffer) {
+function createBitPlayer(length, mapBuffer) {
   const audioCtx = new AudioContext();
   const audioBuffer = audioCtx.createBuffer(
     2,
@@ -43,14 +44,34 @@ function createPlayer(length, mapBuffer) {
   }
 }
 
-const click = createPlayer(3, i => {
+function createFetchPlayer(url) {
+  const context = new AudioContext();
+  return fetch(url)
+  .then(res => res.arrayBuffer())
+  .then(buffer => context.decodeAudioData(buffer))
+  .then(async audioBuffer => {
+    return (time) => {
+      const source = context.createBufferSource();
+      source.buffer = audioBuffer;
+      source.connect(context.destination);
+      source.start(time);
+      return source;
+    };
+  })
+}
+
+// const sn = await createFetchPlayer('/__test/two-clocks-clock/sn.wav');
+// const kick = await createFetchPlayer('/__test/two-clocks-clock/kick.wav');
+// const hat = await createFetchPlayer('/__test/two-clocks-clock/hat2.wav');
+
+const click = createBitPlayer(3, i => {
   if (i < 100) {
     return Math.random() * 2 - 1
   }
   return 0
 })
 
-const cluck = createPlayer(2, i => {
+const cluck = createBitPlayer(2, i => {
   if (i < 100) {
     return Math.random() * 2 - 1
   }
@@ -67,10 +88,10 @@ const clickStep = (delay) => ({
 // Make steps arrays?
 // Yes almost definitely (they'll need ids though)
 const sequence = {
-  0: [{id:1,name:'click',fn:click,delay:0}],  1:  null,  2: null,  3: null,
+  0: [{id:1,name:'cluck',fn:cluck,delay:0}],  1:  null,  2: null,  3: null,
   4: [{id:2,name:'click',fn:click,delay:0}],  5:  null,  6: null,  7: null,
   8: [{id:3,name:'click',fn:click,delay:0}],  9:  null, 10: null, 11: null,
- 12: [{id:4,name:'click',fn:click,delay:0}],  13: null, 14: [{id:5,name:'click',fn:click,delay:0}], 15: null,
+ 12: [{id:4,name:'cluck',fn:cluck,delay:0}],  13: null, 14: [{id:5,name:'click',fn:click,delay:0}], 15: null,
 };
 
 const calcStepLength = () => (lookahead / 100) * (60.0 / tempo);
@@ -146,10 +167,10 @@ init()
 document.querySelector('button').addEventListener('click', play)
 
 // TIMELINE
-const beatPerDateResolution = 'hours';
-const beatPerDateMultiple   = 24;
+const beatPerDateResolution = 'month';
+const beatPerDateMultiple   = 12;
 const container = document.getElementById('visualization');
-const startDateParams = ['01/01/01', 'DD/MM/YY']
+const startDateParams = ['01/01/0001', 'DD/MM/YYYY']
 const startDate = vis.moment(...startDateParams);
 const items = new vis.DataSet(
   Object.values(sequence)
@@ -164,7 +185,7 @@ const items = new vis.DataSet(
           index: i,
           content: step.name,
           start: vis.moment(...startDateParams).add(i * beatPerDateMultiple, beatPerDateResolution),
-          end: vis.moment(...startDateParams).add(((i+1) * beatPerDateMultiple) - 1, beatPerDateResolution),
+          end: vis.moment(...startDateParams).add(((i+1) * beatPerDateMultiple), beatPerDateResolution),
         };
       })
     })
@@ -175,62 +196,82 @@ const options = {
   height: 200,
   start: vis.moment(...startDateParams),
   min: vis.moment(...startDateParams),
-  max: vis.moment(...startDateParams).add(16, 'days'),
+  max: vis.moment(...startDateParams).add(noteResolution * loopBarLength, 'year'),
   itemsAlwaysDraggable: true,
-  type: 'range',
   zoomFriction: 25,
+  // zoomMin: 49597000000,
+  // autoResize: false,
+  moveable: false,
+  horizontalScroll: true,
+  zoomable: false,
+  type: 'range',
+  multiselect: true,
   stack: true,
   editable: {
     add: true,
     updateTime: true,
   },
-  onAdd: (item, cb) => {
-    const diff = vis.moment(item.start).diff(vis.moment(...startDateParams), beatPerDateResolution);
-    const position = 0 + (diff / beatPerDateMultiple)
-    const newindex = Math.floor(position);
-    if (!sequence[newindex]) sequence[newindex] = [];
-    item.index = newindex;
-    item.step = clickStep(position - Math.floor(position));
-    item.end = vis.moment(item.start).add((1 * beatPerDateMultiple) - 1, beatPerDateResolution);
-    item.content = item.step.name;
-    item.id = item.step.id;
-    sequence[item.index].push(item.step);
-    cb(item);
-  },
+  margin: { item: { horizontal: 0, vertical: 1 } },
   snap: (date, scale, step) => {
-    var hour = 60 * 60 * 12000;
-    return Math.round(date / hour) * hour;
+    const clone = vis.moment(date);
+    clone.date(1);
+    if (clone.month() > 5) {
+      clone.month(5);
+    } else {
+      clone.month(0);
+    }
+    clone.hours(0);
+    clone.minutes(0);
+    clone.seconds(0);
+    clone.milliseconds(0);
+    return clone;
   },
-  onMove: (item, cb) => {
-    const diff = vis.moment(item.start).diff(vis.moment(...startDateParams).add(item.index * beatPerDateMultiple, beatPerDateResolution), beatPerDateResolution);
-    const position = item.index + (diff / beatPerDateMultiple)
-    const newindex = Math.floor(position);
-    sequence[item.index] = sequence[item.index]?.filter(step => step.id !== item.id);
-    if (!sequence[newindex]) sequence[newindex] = [];
-    item.index = newindex;
-    // The position will add .5 for 12th hour, we just want that decimal for the delay...
-    sequence[item.index].push({ ...item.step, delay: position - Math.floor(position) });
-    cb(item);
-  },
+  showWeekScale: true,
   showMajorLabels: false,
   format: {
     minorLabels: {
-      millisecond:'SSS', second:     's', minute:     'HH:mm',
-      hour:       'HH:mm', weekday:    'DD', day:        'DD',
-      week:       'WW', month:      'MM', year:       'YY'
+      month: 'YY:MM',
+      year: 'YY',
     },
-    majorLabels: {
-      millisecond:'SSS', second:     's', minute:     'HH:mm',
-      hour:       'HH:mm', weekday:    'DD', day:        'DD',
-      week:       'WW', month:      'MM', year:       'YY'
-    },
+  //   majorLabels: {
+  //     millisecond:'SSS', second:     's', minute:     'HH:mm',
+  //     hour:       'HH:mm', weekday:    'DD', day:        'DD',
+  //     week:       'WW', month:      'MM', year:       'YY'
+  //   },
   },
+  onAdd,
+  onMove,
 };
+
 const timeline = new vis.Timeline(container, items, options);
 timeline.setWindow(
-  vis.moment(...startDateParams),
-  vis.moment(...startDateParams).add(16, 'days'),
+  options.min,
+  options.max,
 );
+function onMove(item, cb) {
+  const diff = vis.moment(item.start).diff(vis.moment(...startDateParams).add(item.index * beatPerDateMultiple, beatPerDateResolution), beatPerDateResolution);
+  const position = item.index + (diff / beatPerDateMultiple)
+  const newindex = Math.floor(position);
+  sequence[item.index] = sequence[item.index]?.filter(step => step.id !== item.id);
+  if (!sequence[newindex]) sequence[newindex] = [];
+  item.index = newindex;
+  // The position will add .5 for 12th hour, we just want that decimal for the delay...
+  sequence[item.index].push({ ...item.step, delay: position - Math.floor(position) });
+  cb(item);
+}
+function onAdd(item, cb) {
+  const diff = vis.moment(item.start).diff(vis.moment(...startDateParams), beatPerDateResolution);
+  const position = 0 + (diff / beatPerDateMultiple)
+  const newindex = Math.floor(position);
+  if (!sequence[newindex]) sequence[newindex] = [];
+  item.index = newindex;
+  item.step = clickStep(position - Math.floor(position));
+  item.end = vis.moment(item.start).add((1 * beatPerDateMultiple), beatPerDateResolution);
+  item.content = item.step.name;
+  item.id = item.step.id;
+  sequence[item.index].push(item.step);
+  cb(item);
+}
 window.addEventListener('keydown', e => {
   if (e.key === 'Backspace') {
     const ids = timeline.getSelection();
@@ -280,4 +321,4 @@ function draw() {
   // set up to draw again
   requestAnimationFrame(draw);
 }
-
+})()
