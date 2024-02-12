@@ -21,6 +21,12 @@ let timeLinePosition = 0;
 
 let idCount = 0;
 
+const makeStep = (name, i, delay) => ({
+  index: i || 0,
+  id: Date.now() + idCount++,
+  name,
+  delay: delay || 0,
+});
 const clickStep = (delay) => ({
   id: Date.now() + idCount++,
   name: 'click',
@@ -65,27 +71,23 @@ function createBitPlayer(length, mapBuffer) {
   }
 }
 
-// function createFetchPlayer(url) {
-//   const context = new AudioContext();
-//   return fetch(url)
-//   .then(res => res.arrayBuffer())
-//   .then(buffer => context.decodeAudioData(buffer))
-//   .then(async audioBuffer => {
-//     return (time) => {
-//       const source = context.createBufferSource();
-//       source.buffer = audioBuffer;
-//       source.connect(context.destination);
-//       source.start(time);
-//       return source;
-//     };
-//   })
-// }
+function createFetchPlayer(url) {
+  const context = new AudioContext();
+  return fetch(url)
+  .then(res => res.arrayBuffer())
+  .then(buffer => context.decodeAudioData(buffer))
+  .then(async audioBuffer => {
+    return (time) => {
+      const source = context.createBufferSource();
+      source.buffer = audioBuffer;
+      source.connect(context.destination);
+      source.start(time);
+      return source;
+    };
+  })
+}
 
-// const sn = await createFetchPlayer('/__test/two-clocks-clock/sn.wav');
-// const kick = await createFetchPlayer('/__test/two-clocks-clock/kick.wav');
-// const hat = await createFetchPlayer('/__test/two-clocks-clock/hat2.wav');
-
-const calcStepLength = () => (lookahead / 100) * (60.0 / tempo);
+const calcStepLength = () => 0.25 * (60.0 / tempo);
 
 // CLOCK
 function nextNote() {
@@ -173,13 +175,18 @@ function init(){
     cluck,
   };
 
+  createFetchPlayer('/__test/two-clocks-clock/sn.wav').then(sn => samples.sn = sn).then(() => console.log(samples));
+  createFetchPlayer('/__test/two-clocks-clock/kick.wav').then(kick => samples.kick = kick).then(() => console.log(samples));
+  createFetchPlayer('/__test/two-clocks-clock/hat2.wav').then(hat => samples.hat = hat).then(() => console.log(samples));
+
   initTimeline();
   requestAnimationFrame(draw);
+  play();
 }
 
-document.querySelectorAll('button')[0].addEventListener('click', init)
-
-document.querySelector('button').addEventListener('click', play)
+const [buttonInit, buttonPlay] = document.querySelectorAll('button');
+buttonInit.addEventListener('click', init)
+buttonPlay.addEventListener('click', play)
 
 // TIMELINE
 const beatPerDateResolution = 'month';
@@ -271,18 +278,22 @@ function initTimeline() {
       ids.map(id => {
         const item = items.get(id);
         if (sequence[item.index]) {
-          sequence[item.index] = sequence[item.index].filter(s => s.id !== item.id);
+          sequence[item.index] = sequence[item.index].filter(s => s.id !== item.step.id);
         }
       })
       items.remove(timeline.getSelection())
     }
   })
+  Array.from(document.querySelectorAll('.items-panel li .item')).map((item) =>
+    item.addEventListener('dragstart', handleDragStart.bind(this), false)
+  );
 }
 function onMove(item, cb) {
+  console.log(`@FILTER item:`, item)
   const diff = vis.moment(item.start).diff(vis.moment(...startDateParams).add(item.index * beatPerDateMultiple, beatPerDateResolution), beatPerDateResolution);
   const position = item.index + (diff / beatPerDateMultiple)
   const newindex = Math.floor(position);
-  sequence[item.index] = sequence[item.index]?.filter(step => step.id !== item.id);
+  sequence[item.index] = sequence[item.index]?.filter(step => step.id !== item.step.id);
   if (!sequence[newindex]) sequence[newindex] = [];
   item.index = newindex;
   // The position will add .5 for 12th hour, we just want that decimal for the delay...
@@ -295,10 +306,10 @@ function onAdd(item, cb) {
   const newindex = Math.floor(position);
   if (!sequence[newindex]) sequence[newindex] = [];
   item.index = newindex;
-  item.step = clickStep(position - Math.floor(position));
+  item.step = makeStep(item.name, newindex, position - Math.floor(position));
   item.end = vis.moment(item.start).add((1 * beatPerDateMultiple), beatPerDateResolution);
-  item.content = item.step.name;
-  item.id = item.step.id;
+  item.content = item.name;
+  item.id = item.id;
   sequence[item.index].push(item.step);
   cb(item);
 }
@@ -337,4 +348,16 @@ function draw() {
   }
   // set up to draw again
   requestAnimationFrame(draw);
+}
+
+function handleDragStart(event) {
+  var dragSrcEl = event.target;
+  event.dataTransfer.effectAllowed = 'move';
+  var item = {
+    id: 0,
+    type: 'range',
+    name: event.target.dataset.name,
+    content: event.target.dataset.name,
+  };
+  event.dataTransfer.setData('text', JSON.stringify(item));
 }
