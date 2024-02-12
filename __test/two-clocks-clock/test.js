@@ -1,4 +1,3 @@
-(async () => {
 let audioContext = null;
 let unlocked = false;
 let isPlaying = false;      // Are we currently playing?
@@ -19,6 +18,28 @@ let notesInQueue = [];      // the notes that have been put into the web audio,
 let timerWorker = null;     // The Web Worker used to fire timer messages
 let loopBarLength = 1;
 let timeLinePosition = 0;
+
+let idCount = 0;
+
+const clickStep = (delay) => ({
+  id: Date.now() + idCount++,
+  name: 'click',
+  delay: delay || 0,
+});
+const cluckStep = (delay) => ({
+  id: Date.now() + idCount++,
+  name: 'cluck',
+  delay: delay || 0,
+});
+
+let sequence = {
+  0:  [clickStep()],  1:  null,  2: null,  3: null,
+  4:  [clickStep()],  5:  null,  6: null,  7: null,
+  8:  [cluckStep()],  9:  null, 10: null, 11: null,
+  12: [cluckStep()],  13: null, 14: null, 15: null,
+};
+
+let samples = {};
 
 // PLAYER
 function createBitPlayer(length, mapBuffer) {
@@ -64,44 +85,14 @@ function createBitPlayer(length, mapBuffer) {
 // const kick = await createFetchPlayer('/__test/two-clocks-clock/kick.wav');
 // const hat = await createFetchPlayer('/__test/two-clocks-clock/hat2.wav');
 
-const click = createBitPlayer(3, i => {
-  if (i < 100) {
-    return Math.random() * 2 - 1
-  }
-  return 0
-})
-
-const cluck = createBitPlayer(2, i => {
-  if (i < 100) {
-    return Math.random() * 2 - 1
-  }
-  return 0
-})
-
-const clickStep = (delay) => ({
-  id: Date.now(),
-  name: 'click',
-  fn: click,
-  delay: delay || 0,
-});
-
-// Make steps arrays?
-// Yes almost definitely (they'll need ids though)
-const sequence = {
-  0: [{id:1,name:'cluck',fn:cluck,delay:0}],  1:  null,  2: null,  3: null,
-  4: [{id:2,name:'click',fn:click,delay:0}],  5:  null,  6: null,  7: null,
-  8: [{id:3,name:'click',fn:click,delay:0}],  9:  null, 10: null, 11: null,
- 12: [{id:4,name:'cluck',fn:cluck,delay:0}],  13: null, 14: null, 15: null,
-};
-
 const calcStepLength = () => (lookahead / 100) * (60.0 / tempo);
 
 // CLOCK
 function nextNote() {
-  const secondsPerBeat = 60.0 / tempo;
-  nextNoteTime += 0.25 * secondsPerBeat;
+  // const secondsPerBeat = 60.0 / tempo;
+  // nextNoteTime += 0.25 * secondsPerBeat;
   //
-  // nextNoteTime += calcStepLength();
+  nextNoteTime += calcStepLength();
 
   currentStep++;    // Advance the beat number, wrap to zero
   if (currentStep == loopBarLength * noteResolution) {
@@ -113,7 +104,7 @@ function scheduleNote( beatNumber, time ) {
   // push the note on the queue, even if we're not playing.
   notesInQueue.push( { note: beatNumber, time: time } );
   if (sequence[beatNumber]) {
-    sequence[beatNumber].map(step => step.fn(time + (calcStepLength() * step.delay)));
+    sequence[beatNumber].map(step => samples[step.name](time + (calcStepLength() * step.delay)));
   }
 }
 
@@ -162,10 +153,31 @@ function init(){
       console.log('message: ' + e.data);
   };
   timerWorker.postMessage({'interval':lookahead});
+
+  const click = createBitPlayer(3, i => {
+    if (i < 100) {
+      return Math.random() * 2 - 1
+    }
+    return 0
+  })
+
+  const cluck = createBitPlayer(2, i => {
+    if (i < 100) {
+      return Math.random() * 2 - 1
+    }
+    return 0
+  })
+
+  samples = {
+    click,
+    cluck,
+  };
+
+  initTimeline();
   requestAnimationFrame(draw);
 }
 
-init()
+document.querySelectorAll('button')[0].addEventListener('click', init)
 
 document.querySelector('button').addEventListener('click', play)
 
@@ -175,25 +187,6 @@ const beatPerDateMultiple   = 12;
 const container = document.getElementById('visualization');
 const startDateParams = ['01/01/0001', 'DD/MM/YYYY']
 const startDate = vis.moment(...startDateParams);
-const items = new vis.DataSet(
-  Object.values(sequence)
-    .flatMap((steps, i) => {
-      if (!steps) return;
-      return steps.map(step => {
-        if (!step) return;
-        return {
-          id: step.id,
-          step,
-          fn: step.fn,
-          index: i,
-          content: step.name,
-          start: vis.moment(...startDateParams).add(i * beatPerDateMultiple, beatPerDateResolution),
-          end: vis.moment(...startDateParams).add(((i+1) * beatPerDateMultiple), beatPerDateResolution),
-        };
-      })
-    })
-    .filter(Boolean)
-);
 
 const options = {
   height: 200,
@@ -246,11 +239,45 @@ const options = {
   onMove,
 };
 
-const timeline = new vis.Timeline(container, items, options);
-timeline.setWindow(
-  options.min,
-  options.max,
-);
+let timeline = {};
+function initTimeline() {
+  const items = new vis.DataSet(
+    Object.values(sequence)
+    .flatMap((steps, i) => {
+      if (!steps) return;
+      return steps.map(step => {
+        if (!step) return;
+        return {
+          id: step.id,
+          step,
+          index: i,
+          content: step.name,
+          start: vis.moment(...startDateParams).add(i * beatPerDateMultiple, beatPerDateResolution),
+          end: vis.moment(...startDateParams).add(((i+1) * beatPerDateMultiple), beatPerDateResolution),
+        };
+      })
+    })
+    .filter(Boolean)
+  );
+  timeline = new vis.Timeline(container, items, options);
+  timeline.setWindow(
+    options.min,
+    options.max,
+  );
+  timeline.addCustomTime(timeDate, 'steptime');
+  window.addEventListener('keydown', e => {
+    if (e.key === 'Backspace') {
+      const ids = timeline.getSelection();
+      ids.map(id => {
+        const item = items.get(id);
+        if (sequence[item.index]) {
+          sequence[item.index] = sequence[item.index].filter(s => s.id !== item.id);
+        }
+      })
+      items.remove(timeline.getSelection())
+    }
+  })
+}
 function onMove(item, cb) {
   const diff = vis.moment(item.start).diff(vis.moment(...startDateParams).add(item.index * beatPerDateMultiple, beatPerDateResolution), beatPerDateResolution);
   const position = item.index + (diff / beatPerDateMultiple)
@@ -275,20 +302,7 @@ function onAdd(item, cb) {
   sequence[item.index].push(item.step);
   cb(item);
 }
-window.addEventListener('keydown', e => {
-  if (e.key === 'Backspace') {
-    const ids = timeline.getSelection();
-    ids.map(id => {
-      const item = items.get(id);
-      if (sequence[item.index]) {
-        sequence[item.index] = sequence[item.index].filter(s => s.id !== item.id);
-      }
-    })
-    items.remove(timeline.getSelection())
-  }
-})
 const timeDate = vis.moment(...startDateParams);
-timeline.addCustomTime(timeDate, 'steptime');
 function setTimeline() {
   document.querySelector('.vis-custom-time.steptime').style.transition = 'left 0.3s';
   if (currentStep === 0)  {
@@ -324,4 +338,3 @@ function draw() {
   // set up to draw again
   requestAnimationFrame(draw);
 }
-})()
