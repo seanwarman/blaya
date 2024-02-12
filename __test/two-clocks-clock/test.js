@@ -44,21 +44,21 @@ function createBitPlayer(length, mapBuffer) {
   }
 }
 
-function createFetchPlayer(url) {
-  const context = new AudioContext();
-  return fetch(url)
-  .then(res => res.arrayBuffer())
-  .then(buffer => context.decodeAudioData(buffer))
-  .then(async audioBuffer => {
-    return (time) => {
-      const source = context.createBufferSource();
-      source.buffer = audioBuffer;
-      source.connect(context.destination);
-      source.start(time);
-      return source;
-    };
-  })
-}
+// function createFetchPlayer(url) {
+//   const context = new AudioContext();
+//   return fetch(url)
+//   .then(res => res.arrayBuffer())
+//   .then(buffer => context.decodeAudioData(buffer))
+//   .then(async audioBuffer => {
+//     return (time) => {
+//       const source = context.createBufferSource();
+//       source.buffer = audioBuffer;
+//       source.connect(context.destination);
+//       source.start(time);
+//       return source;
+//     };
+//   })
+// }
 
 // const sn = await createFetchPlayer('/__test/two-clocks-clock/sn.wav');
 // const kick = await createFetchPlayer('/__test/two-clocks-clock/kick.wav');
@@ -91,15 +91,18 @@ const sequence = {
   0: [{id:1,name:'cluck',fn:cluck,delay:0}],  1:  null,  2: null,  3: null,
   4: [{id:2,name:'click',fn:click,delay:0}],  5:  null,  6: null,  7: null,
   8: [{id:3,name:'click',fn:click,delay:0}],  9:  null, 10: null, 11: null,
- 12: [{id:4,name:'cluck',fn:cluck,delay:0}],  13: null, 14: [{id:5,name:'click',fn:click,delay:0}], 15: null,
+ 12: [{id:4,name:'cluck',fn:cluck,delay:0}],  13: null, 14: null, 15: null,
 };
 
 const calcStepLength = () => (lookahead / 100) * (60.0 / tempo);
 
 // CLOCK
 function nextNote() {
-  // Advance current note and time by a 16th note...
-  nextNoteTime += calcStepLength();
+  const secondsPerBeat = 60.0 / tempo;
+  nextNoteTime += 0.25 * secondsPerBeat;
+  //
+  // nextNoteTime += calcStepLength();
+
   currentStep++;    // Advance the beat number, wrap to zero
   if (currentStep == loopBarLength * noteResolution) {
     currentStep = 0;
