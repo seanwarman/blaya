@@ -4,9 +4,9 @@ let isPlaying = false;      // Are we currently playing?
 let startTime;              // The start time of the entire sequence.
 let currentStep;        // What note is currently last scheduled?
 let tempo = 120.0;          // tempo (in beats per minute)
-let lookahead = 25.0;       // How frequently to call scheduling function 
+let lookahead = 10.0;       // How frequently to call scheduling function 
                             //(in milliseconds)
-let scheduleAheadTime = 0.1;
+let scheduleAheadTime = 0.4;
                             // This is calculated from lookahead, and overlaps 
                             // with next interval (in case the timer is late)
 let nextNoteTime = 0.0;     // when the next note is due.
@@ -18,31 +18,34 @@ let notesInQueue = [];      // the notes that have been put into the web audio,
 let timerWorker = null;     // The Web Worker used to fire timer messages
 let loopBarLength = 1;
 let timeLinePosition = 0;
+const timing = {
+  normal: 0.25,
+  trap: 0.125,
+  real: 0.0625,
+}
+const SELECTED_TIMING = 'normal';
 
 let idCount = 0;
 
-const makeStep = (name, i, delay) => ({
+const makeStep = (name, i) => ({
   index: i || 0,
   id: Date.now() + idCount++,
   name,
-  delay: delay || 0,
 });
-const clickStep = (delay) => ({
+const clickStep = () => ({
   id: Date.now() + idCount++,
   name: 'click',
-  delay: delay || 0,
 });
-const cluckStep = (delay) => ({
+const cluckStep = () => ({
   id: Date.now() + idCount++,
   name: 'cluck',
-  delay: delay || 0,
 });
 
 let sequence = {
-  0:  [makeStep('kick', 0, 0), makeStep('click', 0, 0)],  1:  null,  2: [makeStep('cluck', 2, 0), makeStep('click', 2, 0)],  3: null,
-  4:  [makeStep('sn', 4, 0), makeStep('click', 4, 0)],  5:  null,  6: [makeStep('click', 6, 0)],  7: null,
-  8:  [makeStep('kick', 1, 0), makeStep('click', 5, 0)],  9:  null, 10: [makeStep('click', 10, 0)], 11: null,
-  12: [makeStep('sn', 12, 0),makeStep('click', 12, 0)],  13: null, 14: null, 15: null,
+  0:  [makeStep('kick')],  1:  null,  2: [makeStep('kick')],  3: null,
+  4:  [makeStep('sn')],  5:  null,  6: [makeStep('kick')],  7: null,
+  8:  null,  9:  [makeStep('kick')], 10: null, 11: [makeStep('kick')],
+  12: [makeStep('sn')],  13: [makeStep('kick')], 14: null, 15: null,
 };
 
 let samples = {};
@@ -62,12 +65,14 @@ function createBitPlayer(length, mapBuffer) {
     }
   }
   let source;
-  return function player(cueTime, startTime, endTime) {
+  return function prepare(cueTime) {
     source = audioCtx.createBufferSource();
     source.buffer = audioBuffer;
     source.connect(audioCtx.destination);
-    source.start(cueTime, startTime, endTime);
-    return source;
+    return (cueTime) => {
+      source.start(cueTime);
+      return prepare;
+    }
   }
 }
 
@@ -77,17 +82,19 @@ function createFetchPlayer(url) {
   .then(res => res.arrayBuffer())
   .then(buffer => context.decodeAudioData(buffer))
   .then(async audioBuffer => {
-    return (time) => {
+    return function prepare() {
       const source = context.createBufferSource();
       source.buffer = audioBuffer;
       source.connect(context.destination);
-      source.start(time);
-      return source;
+      return (time) => {
+        source.start(time)
+        return prepare;
+      }
     };
   })
 }
 
-const calcStepLength = () => 0.25 * (60.0 / tempo);
+const calcStepLength = () => timing[SELECTED_TIMING] * (60.0 / tempo);
 
 // CLOCK
 function nextNote() {
@@ -105,10 +112,16 @@ function nextNote() {
 function scheduleNote( beatNumber, time ) {
   // push the note on the queue, even if we're not playing.
   notesInQueue.push( { note: beatNumber, time: time } );
-  if (sequence[beatNumber]) {
-    sequence[beatNumber].map(step => samples[step.name](time + (calcStepLength() * step.delay)));
+  if (sequence[beatNumber]?.length) {
+    for (let i=0;i<sequence[beatNumber].length;i++) {
+      const step = sequence[beatNumber][i];
+      const prepare = samples[step.name](time);
+      samples[step.name] = prepare();
+    }
   }
 }
+
+let countWhile = 0
 
 function scheduler() {
   // while there are notes that will need to play before the next interval, 
@@ -138,13 +151,12 @@ function play() {
     timerWorker.postMessage('start');
     return 'stop';
   } else {
-    console.log(`@FILTER stop!`)
     timerWorker.postMessage('stop');
     return 'play';
   }
 }
 
-function init(){
+async function init(){
   timerWorker = new Worker('./clock-worker.js');
   timerWorker.onmessage = function(e) {
     if (e.data == 'tick') {
@@ -161,27 +173,29 @@ function init(){
       return Math.random() * 2 - 1
     }
     return 0
-  })
+  })()
 
   const cluck = createBitPlayer(2, i => {
     if (i < 100) {
       return Math.random() * 2 - 1
     }
     return 0
-  })
+  })()
 
   samples = {
     click,
     cluck,
   };
 
-  createFetchPlayer('/__test/two-clocks-clock/sn.wav').then(sn => samples.sn = sn).then(() => console.log(samples));
-  createFetchPlayer('/__test/two-clocks-clock/kick.wav').then(kick => samples.kick = kick).then(() => console.log(samples));
-  createFetchPlayer('/__test/two-clocks-clock/hat2.wav').then(hat => samples.hat = hat).then(() => console.log(samples));
+  await createFetchPlayer('/__test/two-clocks-clock/sn.wav').then(sn => samples.sn = sn()).then(() => console.log(samples));
+  await createFetchPlayer('/__test/two-clocks-clock/kick.wav').then(kick => samples.kick = kick()).then(() => console.log(samples));
+  await createFetchPlayer('/__test/two-clocks-clock/hat2.wav').then(hat => samples.hat = hat()).then(() => console.log(samples));
 
   initTimeline();
   requestAnimationFrame(draw);
-  play();
+
+  // Weirldy, if I don't call play here, the micro timing will be ignored!
+  // play();
 }
 
 const [buttonInit, buttonPlay] = document.querySelectorAll('button');
@@ -247,6 +261,7 @@ const options = {
 };
 
 let timeline = {};
+let selectedSampleName = null;
 function initTimeline() {
   const items = new vis.DataSet(
     Object.values(sequence)
@@ -272,6 +287,25 @@ function initTimeline() {
     options.max,
   );
   timeline.addCustomTime(timeDate, 'steptime');
+  timeline.on('select', props => {
+    const { event } = props;
+    const { target } = event;
+    if (!target.classList.contains('vis-item-overflow')) return
+    Array.from(
+      document.querySelectorAll('.items-panel .vis-item.vis-selected')
+    ).forEach((el) => el.classList.remove('vis-selected'));
+    selectedSampleName = target.firstChild.innerHTML;
+  })
+  const sampleEls = Array.from(document.querySelectorAll('.vis-item'));
+  sampleEls.forEach(el => {
+    el.addEventListener('click', () => {
+      if (!el.classList.contains('vis-selected')) {
+        Array.from(document.querySelectorAll('.vis-item.vis-selected')).forEach(el => el.classList.remove('vis-selected'));
+        el.classList.add('vis-selected');
+        selectedSampleName = el.dataset.name;
+      }
+    });
+  });
   window.addEventListener('keydown', e => {
     if (e.key === 'Backspace') {
       const ids = timeline.getSelection();
@@ -289,18 +323,24 @@ function initTimeline() {
   );
 }
 function onMove(item, cb) {
-  console.log(`@FILTER item:`, item)
   const diff = vis.moment(item.start).diff(vis.moment(...startDateParams).add(item.index * beatPerDateMultiple, beatPerDateResolution), beatPerDateResolution);
   const position = item.index + (diff / beatPerDateMultiple)
   const newindex = Math.floor(position);
   sequence[item.index] = sequence[item.index]?.filter(step => step.id !== item.step.id);
   if (!sequence[newindex]) sequence[newindex] = [];
   item.index = newindex;
-  // The position will add .5 for 12th hour, we just want that decimal for the delay...
-  sequence[item.index].push({ ...item.step, delay: position - Math.floor(position) });
+  sequence[item.index].push(item.step);
   cb(item);
 }
 function onAdd(item, cb) {
+  const selectedSample = document.querySelector('.vis-item.vis-selected');
+  if (selectedSampleName) {
+    item.name = selectedSampleName;
+  } else if (selectedSample?.dataset?.name) {
+    item.name = selectedSample.dataset.name;
+  } else {
+    return;
+  }
   const diff = vis.moment(item.start).diff(vis.moment(...startDateParams), beatPerDateResolution);
   const position = 0 + (diff / beatPerDateMultiple)
   const newindex = Math.floor(position);
