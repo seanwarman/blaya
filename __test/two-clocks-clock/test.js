@@ -36,10 +36,21 @@ const makeStep = ({ name, index, delay, endTime }) => ({
 });
 
 let sequence = {
-  0:  null,  1:  null,  2: null,  3: null,
-  4:  null,  5:  null,  6: null,  7: null,
-  8:  null,  9:  null, 10: null, 11: null,
-  12: null,  13: null, 14: null, 15: null,
+  0: [ { index: 0, id: 1707891252190, name: "kick", endTime: 0.125, delay: 0 }, { index: 0, id: 1707891282349, name: "click", endTime: 0.125, delay: 0 } ],
+  1: [],
+  2: [ { index: 2, id: 1707891338463, name: "hat", endTime: 0.052083333333333336, delay: 0, } ],
+  3: [],
+  4: [{ index: 5, id: 1707891095836, name: "sn", endTime: 0.125, delay: 0 }],
+  5: [],
+  6: [ { index: 3, id: 1707891137733, name: "kick", endTime: 0.125, delay: 0 }, { index: 6, id: 1707891290113, name: "cluck", endTime: 0.125, delay: 0 }, { index: 6, id: 1707891291986, name: "cluck", endTime: 0.125, delay: 0.41666666666666696, }, { index: 6, id: 1707891350101, name: "hat", endTime: 0.052083333333333336, delay: 0, }, ], 7: [ { index: 7, id: 1707891154601, name: "loop", endTime: 0.125, delay: 0 }, { index: 2, id: 1707891260700, name: "cluck", endTime: 0.11458333333333333, delay: 0 } ],
+  8: [],
+  9: [ { index: 8, id: 1707891121909, name: "loop", endTime: 0.125, delay: 0 }, { index: 9, id: 1707891274490, name: "cluck", endTime: 0.125, delay: 0 }, ],
+  10: [ { index: 10, id: 1707891111186, name: "kick", endTime: 0.125, delay: 0 }, { index: 10, id: 1707891356372, name: "hat", endTime: 0.052083333333333336, delay: 0, }, ],
+  11: null,
+  12: [{ index: 12, id: 1707891107745, name: "sn", endTime: 0.125, delay: 0 }],
+  13: null,
+  14: [{ index: 14, id: 1707891361311, name: "hat", endTime: 0.125, delay: 0 }],
+  15: null,
 };
 
 let samples = {};
@@ -271,8 +282,10 @@ function initTimeline() {
           step,
           index: i,
           content: step.name,
-          start: vis.moment(...startDateParams).add(i * beatPerDateMultiple, beatPerDateResolution),
-          end: vis.moment(...startDateParams).add(((i+1) * beatPerDateMultiple), beatPerDateResolution),
+          start: vis.moment(...startDateParams).add((i+(step.delay)) * beatPerDateMultiple, beatPerDateResolution),
+          end: step.endTime
+            ? vis.moment(...startDateParams).add(((i+(step.delay)+(step.endTime*8)) * beatPerDateMultiple), beatPerDateResolution)
+            : vis.moment(...startDateParams).add(((i+step.delay) * beatPerDateMultiple), beatPerDateResolution),
         };
       })
     })
