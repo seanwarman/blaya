@@ -2,11 +2,11 @@ let audioContext = null;
 let unlocked = false;
 let isPlaying = false;      // Are we currently playing?
 let startTime;              // The start time of the entire sequence.
-let currentStep;        // What note is currently last scheduled?
+let currentStep = 0;        // What note is currently last scheduled?
 let tempo = 120.0;          // tempo (in beats per minute)
 let lookahead = 10.0;       // How frequently to call scheduling function 
                             //(in milliseconds)
-let scheduleAheadTime = 0.4;
+let scheduleAheadTime = 0.2;
                             // This is calculated from lookahead, and overlaps 
                             // with next interval (in case the timer is late)
 let nextNoteTime = 0.0;     // when the next note is due.
@@ -27,32 +27,37 @@ const SELECTED_TIMING = 'normal';
 
 let idCount = 0;
 
-const makeStep = (name, i) => ({
+const makeStep = (name, i, delay) => ({
   index: i || 0,
   id: Date.now() + idCount++,
   name,
+  delay: delay || 0,
 });
-const clickStep = () => ({
+const clickStep = (delay) => ({
   id: Date.now() + idCount++,
   name: 'click',
+  delay: delay || 0,
 });
-const cluckStep = () => ({
+const cluckStep = (delay) => ({
   id: Date.now() + idCount++,
   name: 'cluck',
+  delay: delay || 0,
 });
 
 let sequence = {
-  0:  [makeStep('kick')],  1:  null,  2: [makeStep('kick')],  3: null,
-  4:  [makeStep('sn')],  5:  null,  6: [makeStep('kick')],  7: null,
-  8:  null,  9:  [makeStep('kick')], 10: null, 11: [makeStep('kick')],
-  12: [makeStep('sn')],  13: [makeStep('kick')], 14: null, 15: null,
+  0:  [makeStep('kick',0,0)],  1:  null,  2: [makeStep('kick',0,0)],  3: null,
+  4:  [makeStep('sn',0,0)],  5:  null,  6: [makeStep('kick',0,0)],  7: null,
+  8:  null,  9:  [makeStep('kick',0,0)], 10: null, 11: [makeStep('kick',0,0)],
+  12: [makeStep('sn',0,0)],  13: [makeStep('kick',0,0)], 14: null, 15: null,
 };
 
 let samples = {};
 
 // PLAYER
 function createBitPlayer(length, mapBuffer) {
-  const audioCtx = new AudioContext();
+  if (!audioContext)
+    audioContext = new AudioContext();
+  const audioCtx = audioContext;
   const audioBuffer = audioCtx.createBuffer(
     2,
     audioCtx.sampleRate * length,
@@ -77,7 +82,9 @@ function createBitPlayer(length, mapBuffer) {
 }
 
 function createFetchPlayer(url) {
-  const context = new AudioContext();
+  if (!audioContext)
+    audioContext = new AudioContext();
+  const context = audioContext;
   return fetch(url)
   .then(res => res.arrayBuffer())
   .then(buffer => context.decodeAudioData(buffer))
@@ -98,9 +105,6 @@ const calcStepLength = () => timing[SELECTED_TIMING] * (60.0 / tempo);
 
 // CLOCK
 function nextNote() {
-  // const secondsPerBeat = 60.0 / tempo;
-  // nextNoteTime += 0.25 * secondsPerBeat;
-  //
   nextNoteTime += calcStepLength();
 
   currentStep++;    // Advance the beat number, wrap to zero
@@ -115,7 +119,7 @@ function scheduleNote( beatNumber, time ) {
   if (sequence[beatNumber]?.length) {
     for (let i=0;i<sequence[beatNumber].length;i++) {
       const step = sequence[beatNumber][i];
-      const prepare = samples[step.name](time);
+      const prepare = samples[step.name](time + (calcStepLength() * step.delay));
       samples[step.name] = prepare();
     }
   }
@@ -160,7 +164,6 @@ async function init(){
   timerWorker = new Worker('./clock-worker.js');
   timerWorker.onmessage = function(e) {
     if (e.data == 'tick') {
-      // console.log('tick!');
       scheduler();
     }
     else
@@ -187,9 +190,9 @@ async function init(){
     cluck,
   };
 
-  await createFetchPlayer('/__test/two-clocks-clock/sn.wav').then(sn => samples.sn = sn()).then(() => console.log(samples));
-  await createFetchPlayer('/__test/two-clocks-clock/kick.wav').then(kick => samples.kick = kick()).then(() => console.log(samples));
-  await createFetchPlayer('/__test/two-clocks-clock/hat2.wav').then(hat => samples.hat = hat()).then(() => console.log(samples));
+  await createFetchPlayer('/__test/two-clocks-clock/sn.wav').then(sn => samples.sn = sn());
+  await createFetchPlayer('/__test/two-clocks-clock/kick.wav').then(kick => samples.kick = kick());
+  await createFetchPlayer('/__test/two-clocks-clock/hat2.wav').then(hat => samples.hat = hat());
 
   initTimeline();
   requestAnimationFrame(draw);
@@ -329,7 +332,8 @@ function onMove(item, cb) {
   sequence[item.index] = sequence[item.index]?.filter(step => step.id !== item.step.id);
   if (!sequence[newindex]) sequence[newindex] = [];
   item.index = newindex;
-  sequence[item.index].push(item.step);
+  // The position will add .5 for 12th hour, we just want that decimal for the delay...
+  sequence[item.index].push({ ...item.step, delay: position - Math.floor(position) });
   cb(item);
 }
 function onAdd(item, cb) {
