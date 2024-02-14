@@ -27,28 +27,19 @@ const SELECTED_TIMING = 'normal';
 
 let idCount = 0;
 
-const makeStep = (name, i, delay) => ({
-  index: i || 0,
+const makeStep = ({ name, index, delay, endTime }) => ({
+  index: index || 0,
   id: Date.now() + idCount++,
   name,
-  delay: delay || 0,
-});
-const clickStep = (delay) => ({
-  id: Date.now() + idCount++,
-  name: 'click',
-  delay: delay || 0,
-});
-const cluckStep = (delay) => ({
-  id: Date.now() + idCount++,
-  name: 'cluck',
+  endTime,
   delay: delay || 0,
 });
 
 let sequence = {
-  0:  [makeStep('kick',0,0)],  1:  null,  2: [makeStep('kick',0,0)],  3: null,
-  4:  [makeStep('sn',0,0)],  5:  null,  6: [makeStep('kick',0,0)],  7: null,
-  8:  null,  9:  [makeStep('kick',0,0)], 10: null, 11: [makeStep('kick',0,0)],
-  12: [makeStep('sn',0,0)],  13: [makeStep('kick',0,0)], 14: null, 15: null,
+  0:  null,  1:  null,  2: null,  3: null,
+  4:  null,  5:  null,  6: null,  7: null,
+  8:  null,  9:  null, 10: null, 11: null,
+  12: null,  13: null, 14: null, 15: null,
 };
 
 let samples = {};
@@ -93,8 +84,9 @@ function createFetchPlayer(url) {
       const source = context.createBufferSource();
       source.buffer = audioBuffer;
       source.connect(context.destination);
-      return (time) => {
-        source.start(time)
+      return (startTime, endTime) => {
+        source.start(startTime);
+        if (endTime) source.stop(endTime);
         return prepare;
       }
     };
@@ -119,7 +111,8 @@ function scheduleNote( beatNumber, time ) {
   if (sequence[beatNumber]?.length) {
     for (let i=0;i<sequence[beatNumber].length;i++) {
       const step = sequence[beatNumber][i];
-      const prepare = samples[step.name](time + (calcStepLength() * step.delay));
+      const startTime = time + (calcStepLength() * step.delay);
+      const prepare = samples[step.name](startTime, startTime + step.endTime);
       samples[step.name] = prepare();
     }
   }
@@ -190,6 +183,7 @@ async function init(){
     cluck,
   };
 
+  await createFetchPlayer('/__test/two-clocks-clock/88_BrokenBapDrums_14_827.wav').then(loop => samples.loop = loop());
   await createFetchPlayer('/__test/two-clocks-clock/sn.wav').then(sn => samples.sn = sn());
   await createFetchPlayer('/__test/two-clocks-clock/kick.wav').then(kick => samples.kick = kick());
   await createFetchPlayer('/__test/two-clocks-clock/hat2.wav').then(hat => samples.hat = hat());
@@ -331,12 +325,20 @@ function onMove(item, cb) {
   const newindex = Math.floor(position);
   sequence[item.index] = sequence[item.index]?.filter(step => step.id !== item.step.id);
   if (!sequence[newindex]) sequence[newindex] = [];
+  const diffFromItemStart = vis.moment(item.end).diff(vis.moment(item.start), beatPerDateResolution);
+  const endPosition = diffFromItemStart / beatPerDateMultiple;
   item.index = newindex;
   // The position will add .5 for 12th hour, we just want that decimal for the delay...
-  sequence[item.index].push({ ...item.step, delay: position - Math.floor(position) });
+  sequence[item.index].push({
+    ...item.step,
+    delay: position - Math.floor(position),
+    endTime: calcStepLength() * endPosition,
+  });
   cb(item);
 }
 function onAdd(item, cb) {
+  // item.end is wrong when adding for some reason...
+  item.end = vis.moment(item.start).add(beatPerDateMultiple, beatPerDateResolution);
   const selectedSample = document.querySelector('.vis-item.vis-selected');
   if (selectedSampleName) {
     item.name = selectedSampleName;
@@ -345,13 +347,22 @@ function onAdd(item, cb) {
   } else {
     return;
   }
-  const diff = vis.moment(item.start).diff(vis.moment(...startDateParams), beatPerDateResolution);
-  const position = 0 + (diff / beatPerDateMultiple)
+  const diffFromSeqStart = vis.moment(item.start).diff(vis.moment(...startDateParams), beatPerDateResolution);
+  const position = 0 + (diffFromSeqStart / beatPerDateMultiple)
   const newindex = Math.floor(position);
   if (!sequence[newindex]) sequence[newindex] = [];
   item.index = newindex;
-  item.step = makeStep(item.name, newindex, position - Math.floor(position));
-  item.end = vis.moment(item.start).add((1 * beatPerDateMultiple), beatPerDateResolution);
+  const diffFromItemStart = vis.moment(item.end).diff(vis.moment(item.start), beatPerDateResolution);
+  const endPosition = diffFromItemStart / beatPerDateMultiple;
+  item.step = makeStep({
+    name: item.name,
+    index: newindex,
+    delay: position - Math.floor(position),
+    endTime: calcStepLength() * endPosition,
+  });
+  item.end = vis
+    .moment(item.start)
+    .add(1 * beatPerDateMultiple, beatPerDateResolution);
   item.content = item.name;
   item.id = item.id;
   sequence[item.index].push(item.step);
