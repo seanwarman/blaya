@@ -9,8 +9,11 @@
 </head>
 <body style="font-family: Arial, Helvetica, sans-serif;">
   <h1>Clock Worker</h1>
-  <button>Init</button>
+
   <button>start</button>
+  <label for="tempo">Tempo: <span id="show-tempo">120</span></label>
+  <br>
+  <input id="tempo" type="range" value="120" step="1" min="30.0" max="160.0" onInput="tempo = event.target.value; document.getElementById('show-tempo').innerText=tempo;" />
   <div id="visualization"></div>
 
   <div class="items-panel" style="position:absolute;">

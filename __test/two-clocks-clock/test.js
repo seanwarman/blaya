@@ -72,7 +72,7 @@ function createBitPlayer(length, mapBuffer) {
     }
   }
   let source;
-  return function prepare(cueTime) {
+  return function prepare() {
     source = audioCtx.createBufferSource();
     source.buffer = audioBuffer;
     source.connect(audioCtx.destination);
@@ -206,8 +206,7 @@ async function init(){
   // play();
 }
 
-const [buttonInit, buttonPlay] = document.querySelectorAll('button');
-buttonInit.addEventListener('click', init)
+const [buttonPlay] = document.querySelectorAll('button');
 buttonPlay.addEventListener('click', play)
 
 // TIMELINE
@@ -383,7 +382,7 @@ function onAdd(item, cb) {
 }
 const timeDate = vis.moment(...startDateParams);
 function setTimeline() {
-  document.querySelector('.vis-custom-time.steptime').style.transition = 'left 0.3s';
+  document.querySelector('.vis-custom-time.steptime').style.transition = 'left 0.3s linear 0s';
   if (currentStep === 0)  {
     document.querySelector('.vis-custom-time.steptime').style.transition = 'none';
     document.querySelector('.vis-custom-time.steptime').style.left = '0px';
@@ -428,4 +427,8 @@ function handleDragStart(event) {
     content: event.target.dataset.name,
   };
   event.dataTransfer.setData('text', JSON.stringify(item));
+}
+
+if (confirm('Initialise audio?')) {
+  init();
 }
