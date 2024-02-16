@@ -24,12 +24,13 @@ import {
 } from './helpers/events.js'
 import * as f from './helpers/functional-utils.js'
 import * as dom from './helpers/dom.js'
+import Sequencer from './elements/Sequencer.js'
 
 import io from './node_modules/socket.io/client-dist/socket.io.esm.min.js'
 
 // Service Worker (mainly for offline cacheing)
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/worker-offline.js').then(
+  navigator.serviceWorker.register('/workers/worker-offline.js').then(
   (registration) => {
 
     // Dom events that need the worker...
@@ -101,6 +102,7 @@ build(state => {
 
   window.state = state
 
+  Sequencer();
 //   onScrollThisTrack(window.state.trackList, getTrackSearchQuery(window.location.search))()
 
   // Socket events

@@ -1030,6 +1030,13 @@ div#current-playing-text {
   z-index: 2;
 }
 
+[data-show-sequencer="true"] #track-loader-loading,
+[data-show-sequencer="true"] #track-loader {
+  top: unset;
+  bottom: 0;
+  z-index: 4;
+}
+
 #track-loader {
   cursor: crosshair;
   background: linear-gradient(to right, #6dffb2, #d5ffe9);

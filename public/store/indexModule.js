@@ -6,6 +6,7 @@ import * as dom from '../helpers/dom.js'
 import * as utils from '../helpers/utils.js'
 
 import { playModule } from './playModule.js'
+import { sequencerModule } from './sequencerModule.js'
 
 export default (postHook) => {
   const state = {
@@ -155,7 +156,8 @@ export default (postHook) => {
   }
 
   // Add other modules...
-  state.playModule = playModule
+  state.playModule = playModule;
+  state.sequencerModule = sequencerModule;
 
   // BEGIN
   state.page = appendTracksByPage(state.trackList)(state.page)
