@@ -74,7 +74,7 @@ if (TEST) {
 app.use('/node_modules', express.static('node_modules', options), redirectWithExt)
 app.use('/node_modules', express.static('node_modules', options), redirectWithExt)
 
-if (TEST) {
+if (!TEST) {
   app.use((req, _, next) => {
     const s3 = new S3Client({ region: 'eu-west-2' })
     req.context = {

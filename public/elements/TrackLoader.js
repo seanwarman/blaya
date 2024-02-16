@@ -106,36 +106,24 @@ function segmentEvents(peaks) {
     }
     stopPropagation = false
   })
+  document.getElementById('zoomview-container').addEventListener('dragstart', () => {
+    if (!stopPropagation) {
+      segments
+        .getSegments()
+        .slice(0, -1)
+        .forEach((seg) => segments.removeById(seg.id))
+    }
+    stopPropagation = false
+  })
   peaks.on('segments.mousedown', () => {
     stopPropagation = true
   })
 
-  document.body.addEventListener('click', () => {
-    Tone.start()
-  })
   peaks.on('segments.click', e => {
     const { segment } = e
-    const { startTime, endTime } = segment
-    // repeated event every 8th note
-    const plyr = new Tone.Player('Black-Mountain.mp3', () => {
-      console.log(`@FILTER plyr:`, plyr)
-      window.plyr = plyr
-    }).toDestination()
-
-    new Tone.Loop(time => {
-      // use the callback time to schedule events
-      console.log(`@FILTER startTime:`, startTime)
-      plyr.start(time).stop(time + endTime);
-      plyr.seek(startTime)
-    }, '4n').start(0)
-    // transport must be started before it starts invoking events
-
-    Tone.loaded().then(() => {
-      Tone.Transport.start();
-    })
+    player.play()
+    player.seek(segment.startTime)
   })
-
-
   peaks.on('segments.exit', (e) => {
     const { segment } = e
     const button = document.getElementById('loop-region')
@@ -167,7 +155,7 @@ function segmentEvents(peaks) {
   })
 }
 
-export default function TrackLoader(mediaUrl, initFinished) {
+export default function TrackLoader(mediaUrl, initFinished = () => {}) {
   (function(Peaks) {
     document.getElementById('peaks-audio').src = mediaUrl
     const zoomview = document.getElementById('zoomview-container')
@@ -187,9 +175,7 @@ export default function TrackLoader(mediaUrl, initFinished) {
 
       peaks.segments.removeAll()
       document.getElementById('play-pause-track-loader').dataset.trackLoaderPlaying = false
-      if (initFinished) {
-        initFinished(peaks)
-      }
+      initFinished(peaks)
     })
   })(peaks)
 }
