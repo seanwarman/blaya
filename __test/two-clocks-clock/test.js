@@ -54,6 +54,7 @@ let sequence = {
 };
 
 let samples = {};
+let triggers = {};
 
 // PLAYER
 function createBitPlayer(length, mapBuffer) {
@@ -189,15 +190,29 @@ async function init(){
     return 0
   })()
 
+  triggers = {};
+
   samples = {
     click,
     cluck,
   };
 
-  await createFetchPlayer('/__test/two-clocks-clock/88_BrokenBapDrums_14_827.wav').then(loop => samples.loop = loop());
-  await createFetchPlayer('/__test/two-clocks-clock/sn.wav').then(sn => samples.sn = sn());
-  await createFetchPlayer('/__test/two-clocks-clock/kick.wav').then(kick => samples.kick = kick());
-  await createFetchPlayer('/__test/two-clocks-clock/hat2.wav').then(hat => samples.hat = hat());
+  await createFetchPlayer('/__test/two-clocks-clock/88_BrokenBapDrums_14_827.wav').then(loop => {
+    samples.loop = loop();
+    triggers.loop = loop();
+  });
+  await createFetchPlayer('/__test/two-clocks-clock/sn.wav').then(sn => {
+    samples.sn = sn();
+    triggers.sn = sn();
+  });
+  await createFetchPlayer('/__test/two-clocks-clock/kick.wav').then(kick => {
+    samples.kick = kick();
+    triggers.kick = kick();
+  });
+  await createFetchPlayer('/__test/two-clocks-clock/hat2.wav').then(hat => {
+    samples.hat = hat();
+    triggers.hat = hat();
+  });
 
   initTimeline();
   requestAnimationFrame(draw);
@@ -206,8 +221,20 @@ async function init(){
   // play();
 }
 
-const [buttonPlay] = document.querySelectorAll('button');
+const [buttonPlay, buttonKick, buttonSn] = document.querySelectorAll('button');
 buttonPlay.addEventListener('click', play)
+function trigger(name) {
+  const prepare = triggers[name]();
+  triggers[name] = prepare();
+}
+buttonKick.addEventListener('click', () => {
+  trigger('kick');
+});
+buttonSn.addEventListener('click', () => {
+  trigger('sn');
+});
+window.addEventListener('keydown', (e) => e.key === 'q' ? trigger('kick') : null)
+window.addEventListener('keydown', (e) => e.key === 'w' ? trigger('sn') : null)
 
 // TIMELINE
 const beatPerDateResolution = 'month';
@@ -418,9 +445,8 @@ function draw() {
 }
 
 function handleDragStart(event) {
-  var dragSrcEl = event.target;
   event.dataTransfer.effectAllowed = 'move';
-  var item = {
+  const item = {
     id: 0,
     type: 'range',
     name: event.target.dataset.name,
