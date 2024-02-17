@@ -1,4 +1,3 @@
-let audioContext = null;
 let unlocked = false;
 let isPlaying = false;      // Are we currently playing?
 let startTime;              // The start time of the entire sequence.
@@ -35,75 +34,25 @@ const makeStep = ({ name, index, delay, endTime }) => ({
   delay: delay || 0,
 });
 
-let sequence = {
-  0: [ { index: 0, id: 1707891252190, name: "kick", endTime: 0.125, delay: 0 }, { index: 0, id: 1707891282349, name: "click", endTime: 0.125, delay: 0 } ],
-  1: [],
-  2: [ { index: 2, id: 1707891338463, name: "hat", endTime: 0.052083333333333336, delay: 0, } ],
-  3: [],
-  4: [{ index: 5, id: 1707891095836, name: "sn", endTime: 0.125, delay: 0 }],
-  5: [],
-  6: [ { index: 3, id: 1707891137733, name: "kick", endTime: 0.125, delay: 0 }, { index: 6, id: 1707891290113, name: "cluck", endTime: 0.125, delay: 0 }, { index: 6, id: 1707891291986, name: "cluck", endTime: 0.125, delay: 0.41666666666666696, }, { index: 6, id: 1707891350101, name: "hat", endTime: 0.052083333333333336, delay: 0, }, ], 7: [ { index: 7, id: 1707891154601, name: "loop", endTime: 0.125, delay: 0 }, { index: 2, id: 1707891260700, name: "cluck", endTime: 0.11458333333333333, delay: 0 } ],
-  8: [],
-  9: [ { index: 8, id: 1707891121909, name: "loop", endTime: 0.125, delay: 0 }, { index: 9, id: 1707891274490, name: "cluck", endTime: 0.125, delay: 0 }, ],
-  10: [ { index: 10, id: 1707891111186, name: "kick", endTime: 0.125, delay: 0 }, { index: 10, id: 1707891356372, name: "hat", endTime: 0.052083333333333336, delay: 0, }, ],
-  11: null,
-  12: [{ index: 12, id: 1707891107745, name: "sn", endTime: 0.125, delay: 0 }],
-  13: null,
-  14: [{ index: 14, id: 1707891361311, name: "hat", endTime: 0.125, delay: 0 }],
-  15: null,
-};
+let sequence = {};
 
-let samples = {};
-let triggers = {};
-
-// PLAYER
-function createBitPlayer(length, mapBuffer) {
-  if (!audioContext)
-    audioContext = new AudioContext();
-  const audioCtx = audioContext;
-  const audioBuffer = audioCtx.createBuffer(
-    2,
-    audioCtx.sampleRate * length,
-    audioCtx.sampleRate,
-  );
-  for (let channel = 0; channel < audioBuffer.numberOfChannels; channel++) {
-    const nowBuffering = audioBuffer.getChannelData(channel);
-    for (let i = 0; i < audioBuffer.length; i++) {
-      nowBuffering[i] = mapBuffer(i)
-    }
-  }
-  let source;
-  return function prepare() {
-    source = audioCtx.createBufferSource();
-    source.buffer = audioBuffer;
-    source.connect(audioCtx.destination);
-    return (cueTime) => {
-      source.start(cueTime);
-      return prepare;
-    }
-  }
-}
-
-function createFetchPlayer(url) {
-  if (!audioContext)
-    audioContext = new AudioContext();
-  const context = audioContext;
-  return fetch(url)
-  .then(res => res.arrayBuffer())
-  .then(buffer => context.decodeAudioData(buffer))
-  .then(async audioBuffer => {
-    return function prepare() {
-      const source = context.createBufferSource();
-      source.buffer = audioBuffer;
-      source.connect(context.destination);
-      return (startTime, endTime) => {
-        source.start(startTime);
-        if (endTime) source.stop(endTime);
-        return prepare;
-      }
-    };
-  })
-}
+// let sequence = {
+//   0: [ { index: 0, id: 1707891252190, name: "kick", endTime: 0.125, delay: 0 }, { index: 0, id: 1707891282349, name: "click", endTime: 0.125, delay: 0 } ],
+//   1: [],
+//   2: [ { index: 2, id: 1707891338463, name: "hat", endTime: 0.052083333333333336, delay: 0, } ],
+//   3: [],
+//   4: [{ index: 5, id: 1707891095836, name: "sn", endTime: 0.125, delay: 0 }],
+//   5: [],
+//   6: [ { index: 3, id: 1707891137733, name: "kick", endTime: 0.125, delay: 0 }, { index: 6, id: 1707891290113, name: "cluck", endTime: 0.125, delay: 0 }, { index: 6, id: 1707891291986, name: "cluck", endTime: 0.125, delay: 0.41666666666666696, }, { index: 6, id: 1707891350101, name: "hat", endTime: 0.052083333333333336, delay: 0, }, ], 7: [ { index: 7, id: 1707891154601, name: "loop", endTime: 0.125, delay: 0 }, { index: 2, id: 1707891260700, name: "cluck", endTime: 0.11458333333333333, delay: 0 } ],
+//   8: [],
+//   9: [ { index: 8, id: 1707891121909, name: "loop", endTime: 0.125, delay: 0 }, { index: 9, id: 1707891274490, name: "cluck", endTime: 0.125, delay: 0 }, ],
+//   10: [ { index: 10, id: 1707891111186, name: "kick", endTime: 0.125, delay: 0 }, { index: 10, id: 1707891356372, name: "hat", endTime: 0.052083333333333336, delay: 0, }, ],
+//   11: null,
+//   12: [{ index: 12, id: 1707891107745, name: "sn", endTime: 0.125, delay: 0 }],
+//   13: null,
+//   14: [{ index: 14, id: 1707891361311, name: "hat", endTime: 0.125, delay: 0 }],
+//   15: null,
+// };
 
 const calcStepLength = () => timing[SELECTED_TIMING] * (60.0 / tempo);
 
@@ -124,8 +73,8 @@ function scheduleNote( beatNumber, time ) {
     for (let i=0;i<sequence[beatNumber].length;i++) {
       const step = sequence[beatNumber][i];
       const startTime = time + (calcStepLength() * step.delay);
-      const prepare = samples[step.name](startTime, startTime + step.endTime);
-      samples[step.name] = prepare();
+      const prepare = window.state.sequencerModule.samples[step.name](startTime, startTime + step.endTime);
+      window.state.sequencerModule.samples[step.name] = prepare();
     }
   }
 }
@@ -135,19 +84,19 @@ let countWhile = 0
 function scheduler() {
   // while there are notes that will need to play before the next interval, 
   // schedule them and advance the pointer.
-  while (nextNoteTime < audioContext.currentTime + scheduleAheadTime ) {
+  while (nextNoteTime < window.state.sequencerModule.audioContext.currentTime + scheduleAheadTime ) {
     scheduleNote( currentStep, nextNoteTime );
     nextNote();
   }
 }
 
 function play() {
-  if (!audioContext)
-    audioContext = new AudioContext();
+  if (!window.state.sequencerModule.audioContext)
+    window.state.sequencerModule.setAudioContext(new AudioContext());
   if (!unlocked) {
     // play silent buffer to unlock the audio
-    var buffer = audioContext.createBuffer(1, 1, 22050);
-    var node = audioContext.createBufferSource();
+    var buffer = window.state.sequencerModule.audioContext.createBuffer(1, 1, 22050);
+    var node = window.state.sequencerModule.audioContext.createBufferSource();
     node.buffer = buffer;
     node.start(0);
     unlocked = true;
@@ -156,7 +105,7 @@ function play() {
   if (isPlaying) { // start playing
     currentStep = 0;
     timeLinePosition = 0;
-    nextNoteTime = audioContext.currentTime;
+    nextNoteTime = window.state.sequencerModule.audioContext.currentTime;
     timerWorker.postMessage('start');
     return 'stop';
   } else {
@@ -175,63 +124,12 @@ async function init(){
       console.log('message: ' + e.data);
   };
   timerWorker.postMessage({'interval':lookahead});
-
-  const click = createBitPlayer(3, i => {
-    if (i < 100) {
-      return Math.random() * 2 - 1
-    }
-    return 0
-  })()
-
-  const cluck = createBitPlayer(2, i => {
-    if (i < 100) {
-      return Math.random() * 2 - 1
-    }
-    return 0
-  })()
-
-  triggers = {};
-
-  samples = {
-    click,
-    cluck,
-  };
-
-  await createFetchPlayer('/__test/two-clocks-clock/88_BrokenBapDrums_14_827.wav').then(loop => {
-    samples.loop = loop();
-    triggers.loop = loop();
-  });
-  await createFetchPlayer('/__test/two-clocks-clock/sn.wav').then(sn => {
-    samples.sn = sn();
-    triggers.sn = sn();
-  });
-  await createFetchPlayer('/__test/two-clocks-clock/kick.wav').then(kick => {
-    samples.kick = kick();
-    triggers.kick = kick();
-  });
-  await createFetchPlayer('/__test/two-clocks-clock/hat2.wav').then(hat => {
-    samples.hat = hat();
-    triggers.hat = hat();
-  });
-
   initTimeline();
   requestAnimationFrame(draw);
 }
 
-const [buttonPlay, buttonKick, buttonSn] = document.querySelectorAll('#sequencer-container button');
+const [buttonPlay] = document.querySelectorAll('#sequencer-container button');
 buttonPlay.addEventListener('click', play)
-function trigger(name) {
-  const prepare = triggers[name]();
-  triggers[name] = prepare();
-}
-buttonKick.addEventListener('click', () => {
-  trigger('kick');
-});
-buttonSn.addEventListener('click', () => {
-  trigger('sn');
-});
-window.addEventListener('keydown', (e) => e.key === 'q' ? trigger('kick') : null)
-window.addEventListener('keydown', (e) => e.key === 'w' ? trigger('sn') : null)
 
 // TIMELINE
 const beatPerDateResolution = 'month';
@@ -292,7 +190,6 @@ const options = {
 };
 
 let timeline = {};
-let selectedSampleName = null;
 function initTimeline() {
   const items = new vis.DataSet(
     Object.values(sequence)
@@ -327,18 +224,8 @@ function initTimeline() {
     Array.from(
       document.querySelectorAll('.items-panel .vis-item.vis-selected')
     ).forEach((el) => el.classList.remove('vis-selected'));
-    selectedSampleName = target.firstChild.innerHTML;
+    window.state.sequencerModule.selectedSampleName = target.firstChild.innerHTML;
   })
-  const sampleEls = Array.from(document.querySelectorAll('.vis-item'));
-  sampleEls.forEach(el => {
-    el.addEventListener('click', () => {
-      if (!el.classList.contains('vis-selected')) {
-        Array.from(document.querySelectorAll('.vis-item.vis-selected')).forEach(el => el.classList.remove('vis-selected'));
-        el.classList.add('vis-selected');
-        selectedSampleName = el.dataset.name;
-      }
-    });
-  });
   window.addEventListener('keydown', e => {
     if (e.key === 'Backspace') {
       const ids = timeline.getSelection();
@@ -351,9 +238,6 @@ function initTimeline() {
       items.remove(timeline.getSelection())
     }
   })
-  Array.from(document.querySelectorAll('.items-panel li .item')).map((item) =>
-    item.addEventListener('dragstart', handleDragStart.bind(this), false)
-  );
 }
 function onMove(item, cb) {
   const diff = vis.moment(item.start).diff(vis.moment(...startDateParams).add(item.index * beatPerDateMultiple, beatPerDateResolution), beatPerDateResolution);
@@ -376,8 +260,8 @@ function onAdd(item, cb) {
   // item.end is wrong when adding for some reason...
   item.end = vis.moment(item.start).add(beatPerDateMultiple, beatPerDateResolution);
   const selectedSample = document.querySelector('.vis-item.vis-selected');
-  if (selectedSampleName) {
-    item.name = selectedSampleName;
+  if (window.state.sequencerModule.selectedSampleName) {
+    item.name = window.state.sequencerModule.selectedSampleName;
   } else if (selectedSample?.dataset?.name) {
     item.name = selectedSample.dataset.name;
   } else {
@@ -423,8 +307,8 @@ function setTimeline() {
 
 function draw() {
   var currentNote = last16thNoteDrawn;
-  if (audioContext) {
-    var currentTime = audioContext.currentTime;
+  if (window.state.sequencerModule.audioContext) {
+    var currentTime = window.state.sequencerModule.audioContext.currentTime;
 
     while (notesInQueue.length && notesInQueue[0].time < currentTime) {
       currentNote = notesInQueue[0].note;

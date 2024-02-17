@@ -96,29 +96,6 @@ function segmentEvents(peaks) {
 
   const { segments, player } = peaks
 
-  let stopPropagation = false
-  document.getElementById('zoomview-container').addEventListener('mousedown', () => {
-    if (!stopPropagation) {
-      segments
-        .getSegments()
-        .slice(0, -1)
-        .forEach((seg) => segments.removeById(seg.id))
-    }
-    stopPropagation = false
-  })
-  document.getElementById('zoomview-container').addEventListener('dragstart', () => {
-    if (!stopPropagation) {
-      segments
-        .getSegments()
-        .slice(0, -1)
-        .forEach((seg) => segments.removeById(seg.id))
-    }
-    stopPropagation = false
-  })
-  peaks.on('segments.mousedown', () => {
-    stopPropagation = true
-  })
-
   peaks.on('segments.click', e => {
     const { segment } = e
     player.play()
@@ -153,30 +130,57 @@ function segmentEvents(peaks) {
       italic.dataset.selectorActive = true
     }
   })
+  peaks.on('segments.add', e => {
+    segments
+      .getSegments()
+      .slice(0, -1)
+      .forEach((seg) => segments.removeById(seg.id))
+  })
+  peaks.on('segments.insert', e => {
+    window.state.sequencerModule.updateCurrentSegment(e.segment);
+  })
 }
 
 export default function TrackLoader(mediaUrl, initFinished = () => {}) {
   (function(Peaks) {
-    document.getElementById('peaks-audio').src = mediaUrl
-    const zoomview = document.getElementById('zoomview-container')
-    const overview = document.getElementById('overview-container')
-    const scrollbar = document.getElementById('scrollbar-container')
-    options.zoomview.container = zoomview
-    options.overview.container = overview
-    options.scrollbar.container = scrollbar
-    Peaks.init(options, function(err, peaks) {
-      if (err) {
-        console.error(`Failed to initialize Peaks instance: ${err.message}`)
-        return
-      }
-      playerEvents(peaks)
-      zoomEvents(peaks)
-      segmentEvents(peaks)
+    // We want the sample rate of the mp3 so have to attach the audio to a
+    // context as well as adding it to the audio element...
+    const audioContext = new AudioContext();
+    fetch(mediaUrl)
+      .then(r => r.arrayBuffer())
+      .then(arrayBuffer => {
+        const blob = new Blob([arrayBuffer], { type: 'audio/wav' });
+        const url = window.URL.createObjectURL(blob);
+        document.getElementById('peaks-audio').src = url;
+        return arrayBuffer;
+      })
+      .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
+      .then(audioData => {
+        window.state.sequencerModule.setTrackLoaderSampleRate(audioData.sampleRate);
+      })
+      .finally(() => {
+        const zoomview = document.getElementById('zoomview-container')
+        const overview = document.getElementById('overview-container')
+        const scrollbar = document.getElementById('scrollbar-container')
+        options.zoomview.container = zoomview
+        options.overview.container = overview
+        options.scrollbar.container = scrollbar
+        const audioContext = new AudioContext();
+        Peaks.init(options, function(err, peaks) {
+          if (err) {
+            console.error(`Failed to initialize Peaks instance: ${err.message}`)
+            return
+          }
+          playerEvents(peaks)
+          zoomEvents(peaks)
+          segmentEvents(peaks)
 
-      peaks.segments.removeAll()
-      document.getElementById('play-pause-track-loader').dataset.trackLoaderPlaying = false
-      initFinished(peaks)
-    })
+          peaks.segments.removeAll()
+          document.getElementById('play-pause-track-loader').dataset.trackLoaderPlaying = false
+          initFinished(peaks)
+        })
+      });
+
   })(peaks)
 }
 
