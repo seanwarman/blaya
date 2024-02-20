@@ -1,11 +1,12 @@
-import '../node_modules/peaks.js/dist/peaks.js'
+import '../node_modules/peaks.js/dist/peaks.js';
+import { createPlayer } from '../store/sequencerModule';
 
 const options = {
   emitCueEvents: true,
   zoomLevels: [
-    50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130,
-    135, 140, 150, 155, 160, 165, 170, 175, 180, 185, 190, 195, 200, 205, 210,
-    215, 220, 225, 230, 235, 240, 250, 255, 260, 265, 270, 275, 280, 285, 290,
+    // 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130,
+    // 135, 140, 150, 155, 160, 165, 170, 175, 180, 185, 190, 195, 200, 205, 210,
+    // 215, 220, 225, 230, 235, 240, 250, 255, 260, 265, 270, 275, 280, 285, 290,
     295, 300, 305, 310, 315, 320, 325, 330, 335, 340, 345, 350, 355, 360, 365,
     370, 375, 380, 385, 390, 395, 400, 405, 410, 415, 420, 425, 430, 435, 440,
     445, 450, 455, 460, 465, 470, 475, 480, 485, 490, 495, 500, 505, 510, 515,
@@ -39,26 +40,70 @@ const options = {
   wheelMode: 'scroll',
   axisGridlineColor: 'white',
   playheadColor: 'grey',
+  player: {
+    source: null,
+    startTime: 0,
+    timeId: null,
+    init(eventEmitter) {
+      return createPlayer('/track.mp3').then(source => {
+        this.eventEmitter = eventEmitter;
+        this.source = source;
+        this.eventEmitter.emit('player.canplay');
+      });
+    },
+    destroy:        function() {  },
+    play() {
+      console.log(`@FILTER this.getCurrentTime():`, this.getCurrentTime())
+      this.source.start(0, 0);
+      this.eventEmitter.emit('player.playing', this.getCurrentTime());
+    },
+    pause() {
+      console.log(`@FILTER pause`)
+      this.source.stop(0);
+      this.eventEmitter.emit('player.pause', this.getCurrentTime());
+    },
+    seek(time) {
+      console.log(`@FILTER time:`, time)
+      this.seeking = true;
+      this.source.seek(time);
+      this.seeking = false;
+      this.eventEmitter.emit('player.seeked', this.getCurrentTime());
+      this.eventEmitter.emit('player.timeupdate', this.getCurrentTime());
+    },
+    isPlaying() {
+      return this.source.playing;
+    },
+    isSeeking() {
+      return this.seeking;
+    },
+    getCurrentTime() {
+      return this.source.getCurrentTime();
+    },
+    getDuration:    function() {  },
+  },
 }
 
-function playerEvents({ player }) {
+function playerEvents(peaks) {
+  const { player } = peaks;
   const audioElement = document.getElementById('peaks-audio')
+  console.log(`@FILTER audioElement:`, audioElement)
   document.getElementById('play-pause-track-loader').addEventListener('click', () => {
-    if (!audioElement.paused) {
+    if (player.isPlaying()) {
       player.pause()
     } else {
       player.play()
     }
   })
-  audioElement.onplay = () => {
+  peaks.on('player.playing', () => {
     document.getElementById('play-pause-track-loader').dataset.trackLoaderPlaying = true
-  }
-  audioElement.onpause = () => {
+  });
+  peaks.on('player.pause', () => {
     document.getElementById('play-pause-track-loader').dataset.trackLoaderPlaying = false
-  }
-  audioElement.onended = () => {
-    document.getElementById('play-pause-track-loader').dataset.trackLoaderPlaying = false
-  }
+  });
+  // TODO...
+  // audioElement.onended = () => {
+  //   document.getElementById('play-pause-track-loader').dataset.trackLoaderPlaying = false
+  // }
 }
 
 function zoomEvents({ zoom }) {
@@ -91,8 +136,14 @@ function zoomEvents({ zoom }) {
 }
 
 function segmentEvents(peaks) {
+  const italic = document.getElementById('italic-track-loader')
+  if (italic.dataset.selectorActive === 'true') {
+    peaks.views.getView('zoomview').setWaveformDragMode('insert-segment')
+  } else {
+    peaks.views.getView('zoomview').setWaveformDragMode('scroll')
+  }
+
   peaks.views.getView('zoomview').enableSegmentDragging(true)
-  peaks.views.getView('zoomview').setWaveformDragMode('insert-segment')
 
   const { segments, player } = peaks
 
@@ -121,7 +172,6 @@ function segmentEvents(peaks) {
     peaks.views.getView('zoomview').setWaveformDragMode('scroll')
   })
   document.getElementById('italic-track-loader').addEventListener('click', () => {
-    const italic = document.getElementById('italic-track-loader')
     if (italic.dataset.selectorActive === 'true') {
       peaks.views.getView('zoomview').setWaveformDragMode('scroll')
       italic.dataset.selectorActive = false
@@ -176,5 +226,3 @@ export default function TrackLoader(mediaUrl, initFinished = () => {}) {
 
   })(peaks)
 }
-
-TrackLoader("track.mp3")

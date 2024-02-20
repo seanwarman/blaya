@@ -1,4 +1,4 @@
-import build from './store/indexModule.js'
+import build from './store/indexModule.js';
 import {
   onClearSearch,
   onSearch,
@@ -21,12 +21,13 @@ import {
   onCopyPlaylist,
   onSelectUp,
   onSelectDown,
-} from './helpers/events.js'
-import * as f from './helpers/functional-utils.js'
-import * as dom from './helpers/dom.js'
-import Sequencer from './elements/Sequencer.js'
+} from './helpers/events.js';
+import * as f from './helpers/functional-utils.js';
+import * as dom from './helpers/dom.js';
+import Sequencer from './elements/Sequencer.js';
+import TrackLoader from './elements/TrackLoader.js';
 
-import io from './node_modules/socket.io/client-dist/socket.io.esm.min.js'
+import io from './node_modules/socket.io/client-dist/socket.io.esm.min.js';
 
 // Service Worker (mainly for offline cacheing)
 if ('serviceWorker' in navigator) {
@@ -102,7 +103,9 @@ build(state => {
 
   window.state = state
 
+  TrackLoader("track.mp3")
   Sequencer();
+
 //   onScrollThisTrack(window.state.trackList, getTrackSearchQuery(window.location.search))()
 
   // Socket events

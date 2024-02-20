@@ -28,7 +28,63 @@ function createBitPlayer(length, mapBuffer) {
   }
 }
 
-function createFetchPlayer(url, range, cueStart, duration) {
+export function createPlayer(url, range, cueStart, duration) {
+  if (!window.state.sequencerModule.audioContext)
+    window.state.sequencerModule.setAudioContext(new AudioContext());
+  function _updateTrackSource(url, range) {
+    return fetch(url, {
+      headers: new Headers({ Range: range || 'bytes=0-' }),
+    })
+    .then(res => res.arrayBuffer())
+    .then(buffer => window.state.sequencerModule.audioContext.decodeAudioData(buffer));
+  }
+  function Player(audioBuffer) {
+    this.audioBuffer = audioBuffer;
+    this.initBuffer = () => {
+      const source = window.state.sequencerModule.audioContext.createBufferSource();
+      source.buffer = audioBuffer;
+      source.connect(window.state.sequencerModule.audioContext.destination);
+      return source;
+    };
+    this.source = this.initBuffer();
+    this.start = (cueTime = 0, startTime, duration) => {
+      this.startTime = window.state.sequencerModule.audioContext.currentTime + startTime;
+      this.source.start(cueTime, startTime, duration);
+      this.playing = true;
+    };
+    this.seek = (time) => {
+      this.startTime = window.state.sequencerModule.audioContext.currentTime - time;
+      if (!this.playing) return;
+      this.source.stop(0);
+      this.source = this.initBuffer();
+      this.source.start(0, time);
+    };
+    this.stop = (when) => {
+      this.startTime = window.state.sequencerModule.audioContext.currentTime + when;
+      this.source.stop(when || 0);
+      this.playing = false;
+      this.source = this.initBuffer();
+    };
+    this.startTime = window.state.sequencerModule.audioContext.currentTime;
+    this.getCurrentTime = () => {
+      return window.state.sequencerModule.audioContext.currentTime - this.startTime;
+    };
+    this.updateTrackSource = (url, range) => {
+      _updateTrackSource(url, range)
+        .then(audioBuffer => {
+          this.audioBuffer = audioBuffer;
+          this.source = this.initBuffer();
+          return this;
+        });
+    };
+  }
+  return _updateTrackSource(url, range)
+    .then(audioBuffer => {
+      return new Player(audioBuffer);
+    });
+}
+
+export function createFetchPlayer(url, range, cueStart, duration) {
   if (!window.state.sequencerModule.audioContext)
     window.state.sequencerModule.setAudioContext(new AudioContext());
   const context = window.state.sequencerModule.audioContext;
@@ -48,6 +104,8 @@ function createFetchPlayer(url, range, cueStart, duration) {
         return prepare;
       }
     };
+  }).catch(e => {
+    console.log(`Error in createFetchPlayer deconding: `, e)
   })
 }
 
@@ -85,6 +143,7 @@ export const sequencerModule = {
   },
   currentSegment: null,
   updateCurrentSegment(segment) {
+    console.log(`@FILTER segment:`, segment)
     this.currentSegment = segment;
 
     const audioEl = document.getElementById('peaks-audio');
@@ -108,25 +167,25 @@ export const sequencerModule = {
     // The peaks code needs some work before it can be fit for purpose.
     // This first method is awful for getting the right part of the clip at the
     // moment, but it's the ideal way of doing it...
-    createFetchPlayer(
-      src,
-      `bytes=${Math.trunc(bytesPerSecond * segment.startTime)}-${Math.trunc(bytesPerSecond * segment.endTime)}`
-    ).then((prepareLoop) => {
-      this.setSamples({ loop: prepareLoop() });
-    });
+    // createFetchPlayer(
+    //   src,
+    //   `bytes=${Math.trunc(bytesPerSecond * segment.startTime)}-${Math.trunc(bytesPerSecond * segment.endTime)}`
+    // ).then((prepareLoop) => {
+    //   this.setSamples({ loop: prepareLoop() });
+    // });
     //
     // This way is not as bad for the first 10 seconds of the track it's pretty
     // accurate but after that it's also aweful.  Also it has to pull in the
     // full track rather than just requesting a small snippet, so really not
     // ideal...
-    // createFetchPlayer(
-    //   src,
-    //   null, // `bytes=${Math.trunc(bytesPerSecond * segment.startTime)}-${Math.trunc(bytesPerSecond * segment.endTime)}`
-    //   segment.startTime,
-    //   segment.endTime - segment.startTime,
-    // ).then((prepareLoop) => {
-    //   this.setSamples({ loop: prepareLoop() });
-    // });
+    createFetchPlayer(
+      src,
+      null, // `bytes=${Math.trunc(bytesPerSecond * segment.startTime)}-${Math.trunc(bytesPerSecond * segment.endTime)}`
+      segment.startTime,
+      segment.endTime - segment.startTime,
+    ).then((prepareLoop) => {
+      this.setSamples({ loop: prepareLoop() });
+    });
   },
   setSamples(samples) {
     this.samples = {
