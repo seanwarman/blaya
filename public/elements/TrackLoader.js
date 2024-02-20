@@ -138,50 +138,43 @@ function segmentEvents(peaks) {
   })
   peaks.on('segments.insert', e => {
     window.state.sequencerModule.updateCurrentSegment(e.segment);
-  })
+  });
+  peaks.on('segments.dragend', e => {
+    window.state.sequencerModule.updateCurrentSegment(e.segment);
+  });
 }
 
 export default function TrackLoader(mediaUrl, initFinished = () => {}) {
   (function(Peaks) {
-    // We want the sample rate of the mp3 so have to attach the audio to a
-    // context as well as adding it to the audio element...
-    const audioContext = new AudioContext();
+    document.getElementById('peaks-audio').src = mediaUrl
+    // We want the bytelength of the sample so fetch it as an array buffer as well...
     fetch(mediaUrl)
       .then(r => r.arrayBuffer())
       .then(arrayBuffer => {
-        const blob = new Blob([arrayBuffer], { type: 'audio/wav' });
-        const url = window.URL.createObjectURL(blob);
-        document.getElementById('peaks-audio').src = url;
-        return arrayBuffer;
+        window.state.sequencerModule.setTrackLoaderByteLength(arrayBuffer.byteLength);
       })
-      .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
-      .then(audioData => {
-        window.state.sequencerModule.setTrackLoaderSampleRate(audioData.sampleRate);
-      })
-      .finally(() => {
-        const zoomview = document.getElementById('zoomview-container')
-        const overview = document.getElementById('overview-container')
-        const scrollbar = document.getElementById('scrollbar-container')
-        options.zoomview.container = zoomview
-        options.overview.container = overview
-        options.scrollbar.container = scrollbar
-        const audioContext = new AudioContext();
-        Peaks.init(options, function(err, peaks) {
-          if (err) {
-            console.error(`Failed to initialize Peaks instance: ${err.message}`)
-            return
-          }
-          playerEvents(peaks)
-          zoomEvents(peaks)
-          segmentEvents(peaks)
 
-          peaks.segments.removeAll()
-          document.getElementById('play-pause-track-loader').dataset.trackLoaderPlaying = false
-          initFinished(peaks)
-        })
-      });
+    const zoomview = document.getElementById('zoomview-container')
+    const overview = document.getElementById('overview-container')
+    const scrollbar = document.getElementById('scrollbar-container')
+    options.zoomview.container = zoomview
+    options.overview.container = overview
+    options.scrollbar.container = scrollbar
+    Peaks.init(options, function(err, peaks) {
+      if (err) {
+        console.error(`Failed to initialize Peaks instance: ${err.message}`)
+        return
+      }
+      playerEvents(peaks)
+      zoomEvents(peaks)
+      segmentEvents(peaks)
+
+      peaks.segments.removeAll()
+      document.getElementById('play-pause-track-loader').dataset.trackLoaderPlaying = false
+      initFinished(peaks)
+    })
 
   })(peaks)
 }
 
-TrackLoader('Black-Mountain.mp3')
+TrackLoader("track.mp3")
