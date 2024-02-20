@@ -1,3 +1,4 @@
+import '../node_modules/peaks.js/dist/peaks.js';
 import * as dom from '../helpers/dom.js'
 
 function handleDragStart(event) {
@@ -35,7 +36,9 @@ export default function Samples(samples) {
       style: 'width: 64.206px;',
       innerHTML: `
         <div class="vis-item-overflow">
-          <div class="vis-item-content" style="transform: translateX(0px);">${name}</div>
+          <div class="vis-item-content" style="transform: translateX(0px);">
+            <canvas id="canvas"></canvas>
+          </div>
         </div>
         <div class="vis-item-visible-frame"></div>
         <div class="vis-drag-center" style="touch-action: pan-y; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">

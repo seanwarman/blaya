@@ -1,4 +1,5 @@
 import Samples from '../elements/Samples';
+import * as WaveFormData from '../node_modules/waveform-data/dist/waveform-data.js';
 //
 // PLAYER
 function createBitPlayer(length, mapBuffer) {
@@ -59,8 +60,8 @@ export function createPlayer(url, range, cueStart, duration) {
       this.source = this.initBuffer();
       this.source.start(0, time);
     };
-    this.stop = (when) => {
-      this.startTime = window.state.sequencerModule.audioContext.currentTime + when;
+    this.stop = (when = 0) => {
+      this.startTime = this.startTime + when;
       this.source.stop(when || 0);
       this.playing = false;
       this.source = this.initBuffer();
@@ -84,6 +85,39 @@ export function createPlayer(url, range, cueStart, duration) {
     });
 }
 
+function drawWaveform(waveform) {
+  const scaleY = (amplitude, height) => {
+    const range = 256;
+    const offset = 128;
+
+    return height - ((amplitude + offset) * height) / range;
+  }
+
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  ctx.beginPath();
+
+  const channel = waveform.channel(0);
+
+  // Loop forwards, drawing the upper half of the waveform
+  for (let x = 0; x < waveform.length; x++) {
+    const val = channel.max_sample(x);
+
+    ctx.lineTo(x + 0.5, scaleY(val, canvas.height) + 0.5);
+  }
+
+  // Loop backwards, drawing the lower half of the waveform
+  for (let x = waveform.length - 1; x >= 0; x--) {
+    const val = channel.min_sample(x);
+
+    ctx.lineTo(x + 0.5, scaleY(val, canvas.height) + 0.5);
+  }
+
+  ctx.closePath();
+  ctx.stroke();
+  ctx.fill();
+}
+
 export function createFetchPlayer(url, range, cueStart, duration) {
   if (!window.state.sequencerModule.audioContext)
     window.state.sequencerModule.setAudioContext(new AudioContext());
@@ -95,6 +129,15 @@ export function createFetchPlayer(url, range, cueStart, duration) {
   .then(buffer => context.decodeAudioData(buffer))
   .then(async audioBuffer => {
     return function prepare() {
+      WaveformData.createFromAudio({
+        audio_context: context,
+        audio_buffer: audioBuffer,
+        scale: 50,
+      }, (error, waveform) => {
+        console.log(`@FILTER error:`, error)
+        console.log(`@FILTER waveform:`, waveform)
+        drawWaveform(waveform);
+      });
       const source = context.createBufferSource();
       source.buffer = audioBuffer;
       source.connect(context.destination);
@@ -106,7 +149,7 @@ export function createFetchPlayer(url, range, cueStart, duration) {
     };
   }).catch(e => {
     console.log(`Error in createFetchPlayer deconding: `, e)
-  })
+  });
 }
 
 // const click = createBitPlayer(3, i => {
@@ -153,36 +196,14 @@ export const sequencerModule = {
     //
     // ** CUING SAMPLES **
     //
-    // Seems like the segments coming from peaks aren't accurate enough, which
-    // would be weird because I'd assume they're also using the AudioContext.
-    // It's probably because peaks is using an audio element rather than
-    // directly using an AudioBufferNode, might be worth checking to see how
-    // low level I can get with peakss audio source. If I can have full control
-    // of it I could just pull in the same node that peaks is using to trigger
-    // my sample. That might also help me to get better byte values for
-    // fetching as well.
+    // Using a custom player in peaks made it way more accurate.
     //
-    // See: https://github.com/bbc/peaks.js/blob/master/doc/customizing.md#media-playback
-    //
-    // The peaks code needs some work before it can be fit for purpose.
-    // This first method is awful for getting the right part of the clip at the
-    // moment, but it's the ideal way of doing it...
-    // createFetchPlayer(
-    //   src,
-    //   `bytes=${Math.trunc(bytesPerSecond * segment.startTime)}-${Math.trunc(bytesPerSecond * segment.endTime)}`
-    // ).then((prepareLoop) => {
-    //   this.setSamples({ loop: prepareLoop() });
-    // });
-    //
-    // This way is not as bad for the first 10 seconds of the track it's pretty
-    // accurate but after that it's also aweful.  Also it has to pull in the
-    // full track rather than just requesting a small snippet, so really not
-    // ideal...
+    // I don't need to call this fetch player function any more, I can just use the
+    // sample slice directly from peaks, I'll have to work out how to fetch a range later on.
+    // For now this createFetchPlayer function has a canvas drawing block in it that we want...
     createFetchPlayer(
       src,
-      null, // `bytes=${Math.trunc(bytesPerSecond * segment.startTime)}-${Math.trunc(bytesPerSecond * segment.endTime)}`
-      segment.startTime,
-      segment.endTime - segment.startTime,
+      `bytes=${Math.trunc(bytesPerSecond * segment.startTime)}-${Math.trunc(bytesPerSecond * segment.endTime)}`
     ).then((prepareLoop) => {
       this.setSamples({ loop: prepareLoop() });
     });
