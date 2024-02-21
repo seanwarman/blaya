@@ -73,8 +73,7 @@ function scheduleNote( beatNumber, time ) {
     for (let i=0;i<sequence[beatNumber].length;i++) {
       const step = sequence[beatNumber][i];
       const startTime = time + (calcStepLength() * step.delay);
-      const prepare = window.state.sequencerModule.samples[step.name](startTime, startTime + step.endTime);
-      window.state.sequencerModule.samples[step.name] = prepare();
+      window.state.sequencerModule.samples[step.name](startTime, startTime + step.endTime);
     }
   }
 }

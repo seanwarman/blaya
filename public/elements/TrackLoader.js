@@ -41,43 +41,41 @@ const options = {
   axisGridlineColor: 'white',
   playheadColor: 'grey',
   player: {
-    source: null,
+    samplePlayer: null,
     startTime: 0,
     timeId: null,
     init(eventEmitter) {
-      return createPlayer('/track.mp3').then(source => {
+      return createPlayer('/track.mp3').then(samplePlayer => {
+        window.state.sequencerModule.setTrackLoaderSamplePlayer(samplePlayer);
         this.eventEmitter = eventEmitter;
-        this.source = source;
+        this.samplePlayer = samplePlayer;
         this.eventEmitter.emit('player.canplay');
       });
     },
     destroy:        function() {  },
     play() {
-      console.log(`@FILTER this.getCurrentTime():`, this.getCurrentTime())
-      this.source.start(0, 0);
+      this.samplePlayer.start(0, 0);
       this.eventEmitter.emit('player.playing', this.getCurrentTime());
     },
     pause() {
-      console.log(`@FILTER pause`)
-      this.source.stop(0);
+      this.samplePlayer.stop(0);
       this.eventEmitter.emit('player.pause', this.getCurrentTime());
     },
     seek(time) {
-      console.log(`@FILTER time:`, time)
       this.seeking = true;
-      this.source.seek(time);
+      this.samplePlayer.seek(time);
       this.seeking = false;
       this.eventEmitter.emit('player.seeked', this.getCurrentTime());
       this.eventEmitter.emit('player.timeupdate', this.getCurrentTime());
     },
     isPlaying() {
-      return this.source.playing;
+      return this.samplePlayer.playing;
     },
     isSeeking() {
       return this.seeking;
     },
     getCurrentTime() {
-      return this.source.getCurrentTime();
+      return this.samplePlayer.getCurrentTime();
     },
     getDuration:    function() {  },
   },
@@ -86,7 +84,6 @@ const options = {
 function playerEvents(peaks) {
   const { player } = peaks;
   const audioElement = document.getElementById('peaks-audio')
-  console.log(`@FILTER audioElement:`, audioElement)
   document.getElementById('play-pause-track-loader').addEventListener('click', () => {
     if (player.isPlaying()) {
       player.pause()
@@ -187,10 +184,10 @@ function segmentEvents(peaks) {
       .forEach((seg) => segments.removeById(seg.id))
   })
   peaks.on('segments.insert', e => {
-    window.state.sequencerModule.updateCurrentSegment(e.segment);
+    window.state.sequencerModule.updateCurrentSegment(e.segment, player);
   });
   peaks.on('segments.dragend', e => {
-    window.state.sequencerModule.updateCurrentSegment(e.segment);
+    window.state.sequencerModule.updateCurrentSegment(e.segment, player);
   });
 }
 
