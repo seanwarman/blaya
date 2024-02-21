@@ -115,7 +115,10 @@ export function createPlayer(url, range, cueStart, duration) {
     window.state.sequencerModule.setAudioContext(new AudioContext());
   function _updateTrackSource(url, range) {
     return fetch(url, {
-      headers: new Headers({ Range: range || 'bytes=0-' }),
+      headers: new Headers({
+        'content-type': 'audio/mpeg',
+        Range: range || 'bytes=0-',
+      }),
     })
     .then(res => res.arrayBuffer())
     .then(buffer => window.state.sequencerModule.audioContext.decodeAudioData(buffer));
@@ -130,9 +133,10 @@ export function createFetchPlayer(url, range, cueStart, duration) {
   if (!window.state.sequencerModule.audioContext)
     window.state.sequencerModule.setAudioContext(new AudioContext());
   const context = window.state.sequencerModule.audioContext;
-  return fetch(url, {
-    headers: new Headers({ Range: range || 'bytes=0-' }),
-  })
+  // return fetch(url, {
+  //   headers: new Headers({ Range: range || 'bytes=0-' }),
+  // })
+  return fetch(url)
   .then(res => res.arrayBuffer())
   .then(buffer => context.decodeAudioData(buffer))
   .then(async audioBuffer => {
@@ -198,43 +202,56 @@ export const sequencerModule = {
   },
   currentSegment: null,
   updateCurrentSegment(segment) {
+    console.log(`@FILTER segment:`, segment)
     this.currentSegment = segment;
 
     ////
     //// ** CUING SAMPLES **
     ////
-    // Here's where you want to add the audio buffer, but looks like I can't use the one from trackLoaderSamplePlayer
-    // Work out how to get an accurate drawing of the sample, at the right point in the track...
-//     WaveformData.createFromAudio({
-//       audio_context: this.audioContext,
-//       audio_buffer: this.trackLoaderSamplePlayer.source.buffer,
-//       scale: 50,
-//     }, (error, waveform) => {
-//       console.log(`@FILTER error:`, error)
-//       console.log(`@FILTER waveform:`, waveform)
-//       drawWaveform(waveform);
-//     });
-
-    this.setSamples({ loop: (cueTime, stopTime) => {
-      this.trackLoaderSamplePlayer.trigger(cueTime, segment.startTime, stopTime - cueTime);
-    }});
-
-    //const audioEl = document.getElementById('peaks-audio');
-
-    //const { src, duration } = audioEl;
-    //const bytesPerSecond = this.trackLoaderByteLength / duration;
-    ////
-    //// Using a custom player in peaks made it way more accurate.
-    ////
-    //// I don't need to call this fetch player function any more, I can just use the
-    //// sample slice directly from peaks, I'll have to work out how to fetch a range later on.
-    //// For now this createFetchPlayer function has a canvas drawing block in it that we want...
-    //createFetchPlayer(
-    //  src,
-    //  `bytes=${Math.trunc(bytesPerSecond * segment.startTime)}-${Math.trunc(bytesPerSecond * segment.endTime)}`
-    //).then((prepareLoop) => {
-    //  this.setSamples({ loop: prepareLoop() });
-    //});
+    // I can get byte information from ffprobe, a binary bundled with ffmpeg:
+    // $ cat track.mp3 | ffprobe -show_entries packet=pos,pts_time -
+    // 
+    // Output:
+    //
+    // ...
+    // pts_time=233.325714
+    // pos=7640153
+    // [/PACKET]
+    // [PACKET]
+    // pts_time=233.351837
+    // pos=7640518
+    // [/PACKET]
+    // [PACKET]
+    // pts_time=233.377959
+    // pos=7640935
+    // [/PACKET]
+    // [PACKET]
+    // pts_time=233.404082
+    // pos=7641352
+    // [SIDE_DATA]
+    // [/SIDE_DATA]
+    // [/PACKET]
+    // ...
+    //
+    // When the trackloader loads in the track, do another call which gets the
+    // track from s3 again but this time pipes it into the above ffprobe
+    // command and sends the client a list of all times and byte positions for
+    // the file.
+    createPlayer('/track.mp3', 'bytes=410642-426093').then(samplePlayer => {
+      console.log(`@FILTER samplePlayer:`, samplePlayer)
+      WaveformData.createFromAudio({
+        audio_context: this.audioContext,
+        audio_buffer: samplePlayer.source.buffer,
+        scale: 50,
+      }, (error, waveform) => {
+        console.log(`@FILTER error:`, error)
+        console.log(`@FILTER waveform:`, waveform)
+        drawWaveform(waveform);
+      });
+      this.setSamples({ loop: (cueTime, stopTime) => {
+        samplePlayer.trigger(cueTime, 0, stopTime);
+      }});
+    });
   },
   setSamples(samples) {
     this.samples = {
