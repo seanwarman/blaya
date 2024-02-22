@@ -8,6 +8,7 @@ import instantiateHttps from 'https'
 import { Server } from 'socket.io'
 import * as dotenv from 'dotenv'
 import router from './router.js'
+import testRoutes from './__test/test-routes.js'
 
 dotenv.config()
 
@@ -103,6 +104,9 @@ if (!TEST) {
 }
 
 router(app)
+if (TEST) {
+  testRoutes(app);
+}
 
 const listen = () => {
 	console.log(`Blaya listening on port ${PORT}`)
