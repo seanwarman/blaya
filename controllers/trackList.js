@@ -100,6 +100,51 @@ export const mvFile = (req, res) => {
   })
 }
 
+export const loadTrackPackets = async (req, res) => {
+  const { s3 } = req.context
+	const filePath = req.params[0]
+  try {
+    const command = new GetObjectCommand({
+      Bucket: 'everest-files',
+      Key: 'music/' + filePath,
+      Range: 'bytes=0-',
+    });
+
+    const { Body: readStream } = await s3.send(command);
+
+    const process = spawn('ffprobe', [
+      '-v', 'quiet', '-of', 'json', '-show_entries', 'packet=pos,pts_time', '-hide_banner', '-',
+    ]);
+    readStream.on('data', (data) => {
+      process.stdin.write(data);
+    });
+    readStream.on('close', (code) => {
+      if (code !== 0) {
+        console.log(`s3 process exited with code ${code}`);
+      }
+      process.stdin.end();
+    });
+    let chunks = '';
+    process.stdout.on('data', (data) => {
+      chunks += data;
+    });
+    process.stderr.on('data', (data) => {
+      console.error(`process stderr: ${data}`);
+      chunks += data;
+    });
+    process.on('close', (code) => {
+      if (code !== 0) {
+        console.log(`ffprobe process exited with code ${code}`);
+      }
+      res.send(chunks);
+    }); 
+
+  } catch (error) {
+    console.log(`S3 read error: `, error)
+    res.status(500).send(error.message)
+  }
+};
+
 export const loadTrack = async (req, res) => {
   const { s3 } = req.context
 	const filePath = req.params[0]
