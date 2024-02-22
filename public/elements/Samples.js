@@ -35,7 +35,7 @@ export default function Samples(samples) {
       ondragstart: handleDragStart,
       style: 'width: 64.206px;',
       innerHTML: `
-        <div class="vis-item-overflow">
+        <div class="vis-item-overflow" style="width:300px">
           <div class="vis-item-content" style="transform: translateX(0px);">
             <canvas id="canvas"></canvas>
           </div>
