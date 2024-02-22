@@ -131,7 +131,7 @@ export function pipeFFprobe(req, res) {
 // THIS IS IT!!!!
 export function pipe(req, res) {
   const readStream = fs.createReadStream(path('../../public/track.mp3'));
-  const process = spawn('ffprobe', ['-of', 'json', '-show_entries', 'packet=pos,pts_time', '-hide_banner', '-']);
+  const process = spawn('ffprobe', ['-v', 'quiet', '-of', 'json', '-show_entries', 'packet=pos,pts_time', '-hide_banner', '-']);
   readStream.on('data', (data) => {
     process.stdin.write(data);
   });
