@@ -3,6 +3,7 @@ import * as h from '../helpers/index.js'
 import * as dom from '../helpers/dom.js'
 import { convertTracksToPlaylistFormat } from './SelectionContainer.js'
 import TrackLoader from './TrackLoader.js'
+import { fetchPackets } from '../store/sequencerModule.js';
 
 export default function Menu() {
   const id = 'menu-container'
@@ -46,14 +47,16 @@ function LoadTrack() {
       document.body.dataset.showTrackLoader = true
       const els = document.querySelectorAll('#selection-container .track-non-tab')
       if (window.state.trackLoader) window.state.trackLoader.destroy()
-      TrackLoader('download/' + els[0].dataset.href
+      const trackUrl = els[0].dataset.href
         .split('/')
         .map((s) => encodeURIComponent(s))
-        .join('/'),
+        .join('/');
+      TrackLoader('download/' + trackUrl,
       (trackLoader) => {
         window.state.trackLoader = trackLoader
         window.state.loadingTrack = false
-      })
+      });
+      fetchPackets('packets/' + trackUrl);
     }),
   });
 }

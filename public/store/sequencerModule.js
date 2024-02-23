@@ -1,34 +1,35 @@
 import Samples from '../elements/Samples';
-import * as WaveFormData from '../node_modules/waveform-data/dist/waveform-data.js';
+import '../node_modules/waveform-data/dist/waveform-data.js';
+
+export function fetchPackets(url) {
+  return fetch(url)
+    .then(r => r.json())
+    .then(data => {
+      console.log(`@FILTER data.packets:`, data.packets);
+      window.state.sequencerModule.setPackets(data.packets);
+    });
+}
 
 function drawWaveform(waveform) {
   const scaleY = (amplitude, height) => {
     const range = 256;
     const offset = 128;
-
     return height - ((amplitude + offset) * height) / range;
   }
-
   const canvas = document.getElementById('canvas');
   const ctx = canvas.getContext('2d');
   ctx.beginPath();
-
   const channel = waveform.channel(0);
-
   // Loop forwards, drawing the upper half of the waveform
   for (let x = 0; x < waveform.length; x++) {
     const val = channel.max_sample(x);
-
     ctx.lineTo(x + 0.5, scaleY(val, canvas.height) + 0.5);
   }
-
   // Loop backwards, drawing the lower half of the waveform
   for (let x = waveform.length - 1; x >= 0; x--) {
     const val = channel.min_sample(x);
-
     ctx.lineTo(x + 0.5, scaleY(val, canvas.height) + 0.5);
   }
-
   ctx.closePath();
   ctx.stroke();
   ctx.fill();
@@ -62,94 +63,18 @@ function createBitPlayer(length, mapBuffer) {
   }
 }
 
-export function Player(audioBuffer) {
-  this.audioBuffer = audioBuffer;
-  this.initBuffer = () => {
-    const source = window.state.sequencerModule.audioContext.createBufferSource();
-    source.buffer = audioBuffer;
-    source.connect(window.state.sequencerModule.audioContext.destination);
-    return source;
-  };
-  this.source = this.initBuffer();
-  this.trigger = (cueTime = 0, startTime, duration) => {
-    this.startTime = window.state.sequencerModule.audioContext.currentTime + startTime;
-    this.source.start(cueTime, startTime, duration);
-    if (duration) {
-      this.stop(duration + cueTime);
-    }
-  };
-  this.start = (cueTime = 0, startTime, duration) => {
-    this.startTime = window.state.sequencerModule.audioContext.currentTime + startTime;
-    this.source.start(cueTime, startTime, duration);
-    this.playing = true;
-  };
-  this.seek = (time) => {
-    this.startTime = window.state.sequencerModule.audioContext.currentTime - time;
-    if (!this.playing) return;
-    this.source.stop(0);
-    this.source = this.initBuffer();
-    this.source.start(0, time);
-  };
-  this.stop = (when = 0) => {
-    this.startTime = this.startTime + when;
-    this.source.stop(when || 0);
-    this.playing = false;
-    this.source = this.initBuffer();
-  };
-  this.startTime = window.state.sequencerModule.audioContext.currentTime;
-  this.getCurrentTime = () => {
-    return window.state.sequencerModule.audioContext.currentTime - this.startTime;
-  };
-  this.updateTrackSource = (url, range) => {
-    _updateTrackSource(url, range)
-      .then(audioBuffer => {
-        this.audioBuffer = audioBuffer;
-        this.source = this.initBuffer();
-        return this;
-      });
-  };
-}
-
-export function createPlayer(url, range, cueStart, duration) {
-  if (!window.state.sequencerModule.audioContext)
-    window.state.sequencerModule.setAudioContext(new AudioContext());
-  function _updateTrackSource(url, range) {
-    return fetch(url, {
-      headers: new Headers({
-        'content-type': 'audio/mpeg',
-        Range: range || 'bytes=0-',
-      }),
-    })
-    .then(res => res.arrayBuffer())
-    .then(buffer => window.state.sequencerModule.audioContext.decodeAudioData(buffer));
-  }
-  return _updateTrackSource(url, range)
-    .then(audioBuffer => {
-      return new Player(audioBuffer);
-    });
-}
-
-export function createFetchPlayer(url, range, cueStart, duration) {
+export function createFetchPlayer({ url, range, cueStart, duration }, responseHandler) {
   if (!window.state.sequencerModule.audioContext)
     window.state.sequencerModule.setAudioContext(new AudioContext());
   const context = window.state.sequencerModule.audioContext;
-  // return fetch(url, {
-  //   headers: new Headers({ Range: range || 'bytes=0-' }),
-  // })
-  return fetch(url)
+  return fetch(url, {
+    headers: new Headers({ Range: range || 'bytes=0-' }),
+  })
+  .then(responseHandler)
   .then(res => res.arrayBuffer())
   .then(buffer => context.decodeAudioData(buffer))
   .then(async audioBuffer => {
     return function prepare() {
-      WaveformData.createFromAudio({
-        audio_context: context,
-        audio_buffer: audioBuffer,
-        scale: 50,
-      }, (error, waveform) => {
-        console.log(`@FILTER error:`, error)
-        console.log(`@FILTER waveform:`, waveform)
-        drawWaveform(waveform);
-      });
       const source = context.createBufferSource();
       source.buffer = audioBuffer;
       source.connect(context.destination);
@@ -200,58 +125,49 @@ export const sequencerModule = {
   setTrackLoaderDuration(duration) {
     this.duration = duration;
   },
+  packets: null,
+  setPackets(packets) {
+    this.packets = packets;
+  },
   currentSegment: null,
   updateCurrentSegment(segment) {
-    console.log(`@FILTER segment:`, segment)
     this.currentSegment = segment;
 
-    ////
-    //// ** CUING SAMPLES **
-    ////
-    // I can get byte information from ffprobe, a binary bundled with ffmpeg:
-    // $ cat track.mp3 | ffprobe -show_entries packet=pos,pts_time -
-    // 
-    // Output:
-    //
-    // ...
-    // pts_time=233.325714
-    // pos=7640153
-    // [/PACKET]
-    // [PACKET]
-    // pts_time=233.351837
-    // pos=7640518
-    // [/PACKET]
-    // [PACKET]
-    // pts_time=233.377959
-    // pos=7640935
-    // [/PACKET]
-    // [PACKET]
-    // pts_time=233.404082
-    // pos=7641352
-    // [SIDE_DATA]
-    // [/SIDE_DATA]
-    // [/PACKET]
-    // ...
-    //
-    // When the trackloader loads in the track, do another call which gets the
-    // track from s3 again but this time pipes it into the above ffprobe
-    // command and sends the client a list of all times and byte positions for
-    // the file.
-    createPlayer('/track.mp3', 'bytes=410642-426093').then(samplePlayer => {
-      console.log(`@FILTER samplePlayer:`, samplePlayer)
-      WaveformData.createFromAudio({
-        audio_context: this.audioContext,
-        audio_buffer: samplePlayer.source.buffer,
-        scale: 50,
-      }, (error, waveform) => {
-        console.log(`@FILTER error:`, error)
-        console.log(`@FILTER waveform:`, waveform)
-        drawWaveform(waveform);
-      });
-      this.setSamples({ loop: (cueTime, stopTime) => {
-        samplePlayer.trigger(cueTime, 0, stopTime);
-      }});
+    const startI = this.packets.findIndex(packet => {
+      return packet.pts_time > segment.startTime;
     });
+    const endI = this.packets.findIndex(packet => {
+      return packet.pts_time > segment.endTime;
+    });
+
+    const startByte = this.packets[startI === 0 ? 0 : startI - 1]?.pos;
+    const endByte = this.packets[endI - 1]?.pos;
+
+    createFetchPlayer({
+      url: window.TRACK_URL,
+      range: `bytes=${startByte}-${endByte}`,
+    }, response => {
+      const r = response.clone();
+      const ctx = new AudioContext();
+      r.arrayBuffer()
+        .then(b => ctx.decodeAudioData(b))
+        .then(audioBuffer => {
+          WaveformData.createFromAudio({
+            audio_context: ctx,
+            audio_buffer: audioBuffer,
+            scale: 50,
+          }, (error, waveform) => {
+            if (error) throw error;
+            drawWaveform(waveform);
+          });
+        });
+      return response;
+    }).then(prepare => {
+      this.setSamples({
+        loop: prepare(),
+      });
+    });
+
   },
   setSamples(samples) {
     this.samples = {

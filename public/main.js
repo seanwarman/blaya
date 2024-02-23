@@ -26,6 +26,7 @@ import * as f from './helpers/functional-utils.js';
 import * as dom from './helpers/dom.js';
 import Sequencer from './elements/Sequencer.js';
 import TrackLoader from './elements/TrackLoader.js';
+import { fetchPackets } from './store/sequencerModule.js';
 
 import io from './node_modules/socket.io/client-dist/socket.io.esm.min.js';
 
@@ -103,8 +104,27 @@ build(state => {
 
   window.state = state
 
-  TrackLoader("track.mp3")
   Sequencer();
+
+
+  const trackUrl = '05 - Sucka Nigga (Prod. A Tribe Called Quest).mp3';
+  window.TRACK_URL = '__test/packets-test/' + trackUrl;
+  TrackLoader('__test/packets-test/' + trackUrl,
+    (trackLoader) => {
+      window.state.trackLoader = trackLoader
+      window.state.loadingTrack = false
+    });
+  fetchPackets('__test/packets-test/packets/' + trackUrl);
+
+
+
+
+
+
+
+
+
+
 
 //   onScrollThisTrack(window.state.trackList, getTrackSearchQuery(window.location.search))()
 
