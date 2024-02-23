@@ -56,9 +56,6 @@ const options = {
   dotfiles: 'ignore',
   fallthrough: true,
   extensions: ['js'],
-  setHeaders: (res) => {
-    res.set('Cache-Control', 'private, max-age=0')
-  },
 }
 
 function redirectWithExt(req, res) {

@@ -1,15 +1,6 @@
 import Samples from '../elements/Samples';
 import '../node_modules/waveform-data/dist/waveform-data.js';
 
-export function fetchPackets(url) {
-  return fetch(url)
-    .then(r => r.json())
-    .then(data => {
-      console.log(`@FILTER data.packets:`, data.packets);
-      window.state.sequencerModule.setPackets(data.packets);
-    });
-}
-
 function drawWaveform(waveform) {
   const scaleY = (amplitude, height) => {
     const range = 256;
@@ -130,7 +121,7 @@ export const sequencerModule = {
     this.packets = packets;
   },
   currentSegment: null,
-  updateCurrentSegment(segment) {
+  updateCurrentSegment(segment, mediaUrl) {
     this.currentSegment = segment;
 
     const startI = this.packets.findIndex(packet => {
@@ -144,7 +135,7 @@ export const sequencerModule = {
     const endByte = this.packets[endI - 1]?.pos;
 
     createFetchPlayer({
-      url: window.TRACK_URL,
+      url: mediaUrl,
       range: `bytes=${startByte}-${endByte}`,
     }, response => {
       const r = response.clone();

@@ -1,5 +1,14 @@
 import '../node_modules/peaks.js/dist/peaks.js';
 
+export function fetchPackets(url) {
+  return fetch(url)
+    .then(r => r.json())
+    .then(data => {
+      console.log(`@FILTER data.packets:`, data.packets);
+      window.state.sequencerModule.setPackets(data.packets);
+    });
+}
+
 const options = {
   emitCueEvents: true,
   zoomLevels: [
@@ -44,7 +53,6 @@ const options = {
 
 function playerEvents(peaks) {
   const { player } = peaks;
-  const audioElement = document.getElementById('peaks-audio')
   document.getElementById('play-pause-track-loader').addEventListener('click', () => {
     if (player.isPlaying()) {
       player.pause()
@@ -58,10 +66,6 @@ function playerEvents(peaks) {
   peaks.on('player.pause', () => {
     document.getElementById('play-pause-track-loader').dataset.trackLoaderPlaying = false
   });
-  // TODO...
-  // audioElement.onended = () => {
-  //   document.getElementById('play-pause-track-loader').dataset.trackLoaderPlaying = false
-  // }
 }
 
 function zoomEvents({ zoom }) {
@@ -93,7 +97,7 @@ function zoomEvents({ zoom }) {
   }
 }
 
-function segmentEvents(peaks) {
+function segmentEvents(peaks, mediaUrl) {
   const italic = document.getElementById('italic-track-loader')
   if (italic.dataset.selectorActive === 'true') {
     peaks.views.getView('zoomview').setWaveformDragMode('insert-segment')
@@ -145,10 +149,11 @@ function segmentEvents(peaks) {
       .forEach((seg) => segments.removeById(seg.id))
   })
   peaks.on('segments.dragend', e => {
-    window.state.sequencerModule.updateCurrentSegment(e.segment, player);
+    window.state.sequencerModule.updateCurrentSegment(e.segment, mediaUrl);
   });
 }
 
+// TODO remove, not used
 export function createPlayer(url, range, cueStart, duration) {
   if (!window.state.sequencerModule.audioContext)
     window.state.sequencerModule.setAudioContext(new AudioContext());
@@ -168,6 +173,7 @@ export function createPlayer(url, range, cueStart, duration) {
     });
 }
 
+// TODO remove, not used
 export function Player(audioBuffer) {
   this.audioBuffer = audioBuffer;
   this.initBuffer = () => {
@@ -177,13 +183,6 @@ export function Player(audioBuffer) {
     return source;
   };
   this.source = this.initBuffer();
-  this.trigger = (cueTime = 0, startTime, duration) => {
-    this.startTime = window.state.sequencerModule.audioContext.currentTime + startTime;
-    this.source.start(cueTime, startTime, duration);
-    if (duration) {
-      this.stop(duration + cueTime);
-    }
-  };
   this.start = (cueTime = 0, startTime, duration) => {
     this.startTime = window.state.sequencerModule.audioContext.currentTime + startTime;
     this.source.start(cueTime, startTime, duration);
@@ -216,6 +215,7 @@ export function Player(audioBuffer) {
   };
 }
 
+// TODO remove, not used
 function createCustomPlayer(mediaUrl) {
   return {
     samplePlayer: null,
@@ -257,10 +257,12 @@ function createCustomPlayer(mediaUrl) {
   }
 }
 
-export default function TrackLoader(mediaUrl, initFinished = () => {}) {
+export default function TrackLoader(trackUrl, initFinished = () => {}) {
+  fetchPackets('__test/packets-test/packets/' + trackUrl);
+  const mediaUrl = '__test/packets-test/' + trackUrl;
+
   (function(Peaks) {
     document.getElementById('peaks-audio').src = mediaUrl
-    options.player = createCustomPlayer(mediaUrl);
     const zoomview = document.getElementById('zoomview-container')
     const overview = document.getElementById('overview-container')
     const scrollbar = document.getElementById('scrollbar-container')
@@ -274,7 +276,7 @@ export default function TrackLoader(mediaUrl, initFinished = () => {}) {
       }
       playerEvents(peaks)
       zoomEvents(peaks)
-      segmentEvents(peaks)
+      segmentEvents(peaks, mediaUrl)
       peaks.segments.removeAll()
       document.getElementById('play-pause-track-loader').dataset.trackLoaderPlaying = false
       initFinished(peaks)
