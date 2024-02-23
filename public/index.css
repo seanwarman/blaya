@@ -181,6 +181,7 @@ input#search-input:focus {
 }
 
 #playlist-container {
+  z-index: 5;
   position: fixed;
   overflow-y: scroll;
   overflow-x: hidden;
@@ -209,7 +210,7 @@ input#search-input:focus {
   bottom: 6.5rem;
   left: 0;
   right: 0;
-  z-index: 3;
+  /* z-index: 3; */
 }
 
 #playlist {
@@ -1034,7 +1035,7 @@ div#current-playing-text {
 [data-show-sequencer="true"] #track-loader {
   top: unset;
   bottom: 0;
-  z-index: 4;
+  z-index: 5;
 }
 
 #track-loader {
@@ -1055,7 +1056,7 @@ div#current-playing-text {
 }
 
 [data-show-track-loader="false"] #track-loader {
-  transform: translateY(-110%);
+  transform: translateY(110%);
 }
 
 #track-loader-header {
@@ -1143,10 +1144,11 @@ div#current-playing-text {
 }
 
 #close-track-loader {
+  transform: rotate(180deg);
   width: 1rem;
   position: absolute;
-  right: 1rem;
-  bottom: 1rem;
+  right: 2.1rem;
+  top: 1.5rem;
   cursor: pointer;
   z-index: 2;
 }
@@ -1307,7 +1309,7 @@ div#current-playing-text {
     height: 3rem;
     display: flex;
     align-items: center;
-    justify-content: space-evenly;
+    justify-content: end;
     width: 30%;
     min-width: 368px;
     translate: 0 -3rem;

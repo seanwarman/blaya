@@ -2,7 +2,6 @@ import Samples from '../elements/Samples';
 import '../node_modules/waveform-data/dist/waveform-data.js';
 
 function drawWaveform(waveform, sampleName) {
-  console.log(`@FILTER sampleName:`, sampleName)
   const scaleY = (amplitude, height) => {
     const range = 256;
     const offset = 128;
@@ -125,6 +124,15 @@ export const sequencerModule = {
     real: 0.0625,
   },
   sequence: {},
+  samples: {},
+  setSamples(samples) {
+    this.samples = {
+      ...this.samples,
+      ...samples,
+    };
+    // Add samples to ui
+    Samples(samples);
+  },
   selectedSampleName: null,
   trackLoaderSamplePlayer: null,
   setTrackLoaderSamplePlayer(samplePlayer) {
@@ -195,13 +203,4 @@ export const sequencerModule = {
     });
 
   },
-  setSamples(samples) {
-    this.samples = {
-      ...this.samples,
-      ...samples,
-    };
-    // Add samples to ui
-    Samples(samples);
-  },
-  samples: {},
 };

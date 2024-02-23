@@ -50,11 +50,11 @@
     <div id="track-list-container"></div>
 
     <div tabindex="-1" id="track-loader">
-      <div id="track-loader-header">
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
+      <!-- <div id="track-loader-header"> -->
+      <!--   <div></div> -->
+      <!--   <div></div> -->
+      <!--   <div></div> -->
+      <!-- </div> -->
       <div tabindex="-1" id="track-loader-loading" data-track-loading="false">
         <img src="/public/icons/loading.svg" />
       </div>
@@ -74,17 +74,19 @@
     </div>
 
     <div id="sequencer-container">
-      <link href="/elements/Sequencer.css" rel="stylesheet"></style>
-      <button id="start-sequencer">start</button>
-      <label for="tempo">Tempo: <span id="show-tempo">120</span></label>
-      <br>
-      <input id="tempo" type="range" value="120" step="1" min="30.0" max="160.0" onInput="tempo = event.target.value; document.getElementById('show-tempo').innerText=tempo;" />
-      <div id="visualization"></div>
-      <div class="items-panel">
-        <div class="side">
-          <div id="samples-container" class="items" style="display: grid; grid-gap: 1rem; grid-template-columns: repeat(auto-fill, 63px);">
+      <div class="container">
+        <link href="/elements/Sequencer.css" rel="stylesheet"></style>
+          <button id="start-sequencer">start</button>
+          <label for="tempo">Tempo: <span id="show-tempo">120</span></label>
+          <br>
+          <input id="sequencer-tempo" type="range" value="120" step="1" min="10.0" max="300" onInput="window.state.sequencerModule.tempo = event.target.value; document.getElementById('show-tempo').innerText=event.target.value;" />
+          <div id="sequencer"></div>
+          <div class="items-panel">
+            <div class="side">
+              <div id="samples-container" class="items" style="display: grid; grid-gap: 1rem; grid-template-columns: repeat(auto-fill, 63px);">
+              </div>
+            </div>
           </div>
-        </div>
       </div>
     </div>
 
