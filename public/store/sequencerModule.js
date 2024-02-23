@@ -98,6 +98,33 @@ export function createFetchPlayer({ url, range, cueStart, duration }, responseHa
 // })()
 
 export const sequencerModule = {
+  unlocked: false,
+  isPlaying: false,       // Are we currently playing?
+                          //
+  startTime: undefined,   // The start time of the entire sequence.
+                          //
+  currentStep: 0,         // What note is currently last scheduled?
+  tempo: 120.0,           // tempo (in beats per minute)
+  lookahead: 10.0,        // How frequently to call scheduling function 
+                          // (in milliseconds)
+  scheduleAheadTime: 0.2, // This is calculated from lookahead, and overlaps 
+                          // with next interval (in case the timer is late)
+  nextNoteTime: 0.0,      // when the next note is due.
+  noteResolution: 16,     //
+  last16thNoteDrawn: -1,  // the last "box" we drew on the screen
+  notesInQueue: [],       // the notes that have been put into the web audio,
+                          // and may or may not have played yet. {note, time}
+                          //
+  timerWorker: null,      // The Web Worker used to fire timer messages
+                          //
+  loopBarLength: 1,
+  timeLinePosition: 0,
+  timing: {
+    normal: 0.25,
+    trap: 0.125,
+    real: 0.0625,
+  },
+  sequence: {},
   selectedSampleName: null,
   trackLoaderSamplePlayer: null,
   setTrackLoaderSamplePlayer(samplePlayer) {
