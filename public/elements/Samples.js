@@ -15,10 +15,10 @@ function handleDragStart(event) {
 export default function Samples(samples) {
   const id = 'samples-container';
   let itemsElement = document.querySelector('#' + id)
-  if (itemsElement.children?.length) {
-    Array.from(itemsElement.children).forEach(child => itemsElement.removeChild(child));
-  }
-  const children = Object.keys(samples).map((name, i) => {
+  const children = Object.keys(samples).filter(name => samples[name]).map((name) => {
+    if (document.getElementById(name)) {
+      itemsElement.removeChild(Array.from(itemsElement.children).find(child => child.id === name));
+    }
     const visItem = dom.div({
       draggable: true,
       dataset: {
@@ -33,11 +33,10 @@ export default function Samples(samples) {
         }
       },
       ondragstart: handleDragStart,
-      style: 'width: 64.206px;',
       innerHTML: `
-        <div class="vis-item-overflow" style="width:300px">
+        <div class="vis-item-overflow">
           <div class="vis-item-content" style="transform: translateX(0px);">
-            <canvas id="canvas"></canvas>
+            <canvas data-sample-name="${name}" style="width:65px"></canvas>
           </div>
         </div>
         <div class="vis-item-visible-frame"></div>
@@ -48,9 +47,9 @@ export default function Samples(samples) {
         <div class="vis-drag-right"></div>
       `,
     });
-    return dom.li({
-      id: name + i,
-      style: 'margin-top:1rem',
+    return dom.div({
+      id: name,
+      style: 'margin-top:1rem;height:35px',
       children: [visItem],
     })
   });

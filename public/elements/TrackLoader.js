@@ -142,12 +142,12 @@ function segmentEvents(peaks, mediaUrl) {
       italic.dataset.selectorActive = true
     }
   })
-  peaks.on('segments.add', e => {
-    segments
-      .getSegments()
-      .slice(0, -1)
-      .forEach((seg) => segments.removeById(seg.id))
-  })
+  // peaks.on('segments.add', e => {
+  //   segments
+  //     .getSegments()
+  //     .slice(0, -1)
+  //     .forEach((seg) => segments.removeById(seg.id))
+  // })
   peaks.on('segments.dragend', e => {
     window.state.sequencerModule.updateCurrentSegment(e.segment, mediaUrl);
   });

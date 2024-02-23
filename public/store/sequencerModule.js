@@ -1,13 +1,15 @@
 import Samples from '../elements/Samples';
 import '../node_modules/waveform-data/dist/waveform-data.js';
 
-function drawWaveform(waveform) {
+function drawWaveform(waveform, sampleName) {
   const scaleY = (amplitude, height) => {
     const range = 256;
     const offset = 128;
     return height - ((amplitude + offset) * height) / range;
   }
-  const canvas = document.getElementById('canvas');
+  console.log(`@FILTER sampleName:`, sampleName)
+  const canvas = document.querySelector(`[data-sample-name="${sampleName}"]`);
+  console.log(`@FILTER canvas:`, canvas)
   const ctx = canvas.getContext('2d');
   ctx.beginPath();
   const channel = waveform.channel(0);
@@ -120,10 +122,9 @@ export const sequencerModule = {
   setPackets(packets) {
     this.packets = packets;
   },
-  currentSegment: null,
   updateCurrentSegment(segment, mediaUrl) {
-    this.currentSegment = segment;
-
+    console.log(`@FILTER segment:`, segment)
+    const sampleName = segment.id;
     const startI = this.packets.findIndex(packet => {
       return packet.pts_time > segment.startTime;
     });
@@ -133,12 +134,17 @@ export const sequencerModule = {
 
     const startByte = this.packets[startI === 0 ? 0 : startI - 1]?.pos;
     const endByte = this.packets[endI - 1]?.pos;
-
     createFetchPlayer({
       url: mediaUrl,
       range: `bytes=${startByte}-${endByte}`,
     }, response => {
+      // Set samples so the canvas exists for drawWaveform
+      this.setSamples({
+        [sampleName]: null,
+      });
+      // Response gets consumed so clone it first
       const r = response.clone();
+      // This context is just for the waveform image
       const ctx = new AudioContext();
       r.arrayBuffer()
         .then(b => ctx.decodeAudioData(b))
@@ -149,13 +155,13 @@ export const sequencerModule = {
             scale: 50,
           }, (error, waveform) => {
             if (error) throw error;
-            drawWaveform(waveform);
+            drawWaveform(waveform, sampleName);
           });
         });
       return response;
     }).then(prepare => {
       this.setSamples({
-        loop: prepare(),
+        [sampleName]: prepare(),
       });
     });
 
@@ -166,7 +172,7 @@ export const sequencerModule = {
       ...samples,
     };
     // Add samples to ui
-    Samples(this.samples);
+    Samples(samples);
   },
   samples: {},
 };
