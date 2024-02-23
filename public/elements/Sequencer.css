@@ -14,3 +14,12 @@
   background: #f4f4f4;
 }
 
+.vis-time-axis .vis-grid {
+  border: white !important;
+}
+
+.vis-custom-time.steptime {
+  pointer-events: none !important;
+  background-color: #545454;
+  width: 1px;
+}
