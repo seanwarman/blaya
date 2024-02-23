@@ -80,9 +80,9 @@
       <br>
       <input id="tempo" type="range" value="120" step="1" min="30.0" max="160.0" onInput="tempo = event.target.value; document.getElementById('show-tempo').innerText=tempo;" />
       <div id="visualization"></div>
-      <div class="items-panel" style="position:absolute;">
+      <div class="items-panel">
         <div class="side">
-          <div id="samples-container" class="items">
+          <div id="samples-container" class="items" style="display: grid; grid-gap: 1rem; grid-template-columns: repeat(auto-fill, 63px);">
           </div>
         </div>
       </div>
