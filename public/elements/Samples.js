@@ -16,9 +16,6 @@ export default function Samples(samples) {
   const id = 'samples-container';
   let itemsElement = document.querySelector('#' + id)
   const children = Object.keys(samples).filter(name => samples[name]).map((name) => {
-    if (document.getElementById(name)) {
-      itemsElement.removeChild(Array.from(itemsElement.children).find(child => child.id === name));
-    }
     const visItem = dom.div({
       draggable: true,
       dataset: {
@@ -36,7 +33,7 @@ export default function Samples(samples) {
       innerHTML: `
         <div class="vis-item-overflow">
           <div class="vis-item-content" style="transform: translateX(0px);">
-            <canvas data-sample-name="${name}" style="width:65px"></canvas>
+            <canvas data-sample-name="${name}" style="width:65px;margin-left:-12px;margin-right-5px"></canvas>
           </div>
         </div>
         <div class="vis-item-visible-frame"></div>
@@ -47,11 +44,23 @@ export default function Samples(samples) {
         <div class="vis-drag-right"></div>
       `,
     });
-    return dom.div({
-      id: name,
+    const newElement = dom.div({
+      className: 'sample',
+      dataset: {
+        name: name,
+      },
       style: 'margin-top:1rem;height:35px',
       children: [visItem],
-    })
-  });
-  return dom.appendChildren(children)(itemsElement);
+    });
+    const originalElement = document.querySelector(`.sample[data-name="${name}"]`);
+    if (originalElement) {
+      originalElement.replaceWith(newElement);
+      return null;
+    } else {
+      return newElement;
+    }
+  }).filter(Boolean);
+  if (children.length) {
+    dom.appendChildren(children)(itemsElement);
+  }
 }

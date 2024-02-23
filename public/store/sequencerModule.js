@@ -7,10 +7,9 @@ function drawWaveform(waveform, sampleName) {
     const offset = 128;
     return height - ((amplitude + offset) * height) / range;
   }
-  console.log(`@FILTER sampleName:`, sampleName)
   const canvas = document.querySelector(`[data-sample-name="${sampleName}"]`);
-  console.log(`@FILTER canvas:`, canvas)
   const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.beginPath();
   const channel = waveform.channel(0);
   // Loop forwards, drawing the upper half of the waveform
@@ -123,7 +122,6 @@ export const sequencerModule = {
     this.packets = packets;
   },
   updateCurrentSegment(segment, mediaUrl) {
-    console.log(`@FILTER segment:`, segment)
     const sampleName = segment.id;
     const startI = this.packets.findIndex(packet => {
       return packet.pts_time > segment.startTime;
@@ -139,9 +137,11 @@ export const sequencerModule = {
       range: `bytes=${startByte}-${endByte}`,
     }, response => {
       // Set samples so the canvas exists for drawWaveform
-      this.setSamples({
-        [sampleName]: null,
-      });
+      if (!this.samples[sampleName]) {
+        this.setSamples({
+          [sampleName]: null,
+        });
+      }
       // Response gets consumed so clone it first
       const r = response.clone();
       // This context is just for the waveform image

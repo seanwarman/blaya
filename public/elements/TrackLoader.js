@@ -4,7 +4,6 @@ export function fetchPackets(url) {
   return fetch(url)
     .then(r => r.json())
     .then(data => {
-      console.log(`@FILTER data.packets:`, data.packets);
       window.state.sequencerModule.setPackets(data.packets);
     });
 }
