@@ -2,29 +2,31 @@ import Samples from '../elements/Samples';
 import '../node_modules/waveform-data/dist/waveform-data.js';
 
 function drawWaveform(waveform, sampleName) {
+  console.log(`@FILTER sampleName:`, sampleName)
   const scaleY = (amplitude, height) => {
     const range = 256;
     const offset = 128;
     return height - ((amplitude + offset) * height) / range;
   }
-  const canvas = document.querySelector(`[data-sample-name="${sampleName}"]`);
-  const ctx = canvas.getContext('2d');
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.beginPath();
-  const channel = waveform.channel(0);
-  // Loop forwards, drawing the upper half of the waveform
-  for (let x = 0; x < waveform.length; x++) {
-    const val = channel.max_sample(x);
-    ctx.lineTo(x + 0.5, scaleY(val, canvas.height) + 0.5);
-  }
-  // Loop backwards, drawing the lower half of the waveform
-  for (let x = waveform.length - 1; x >= 0; x--) {
-    const val = channel.min_sample(x);
-    ctx.lineTo(x + 0.5, scaleY(val, canvas.height) + 0.5);
-  }
-  ctx.closePath();
-  ctx.stroke();
-  ctx.fill();
+  Array.from(document.querySelectorAll(`canvas[data-sample-name="${sampleName}"]`)).forEach(canvas => {
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.beginPath();
+    const channel = waveform.channel(0);
+    // Loop forwards, drawing the upper half of the waveform
+    for (let x = 0; x < waveform.length; x++) {
+      const val = channel.max_sample(x);
+      ctx.lineTo(x + 0.5, scaleY(val, canvas.height) + 0.5);
+    }
+    // Loop backwards, drawing the lower half of the waveform
+    for (let x = waveform.length - 1; x >= 0; x--) {
+      const val = channel.min_sample(x);
+      ctx.lineTo(x + 0.5, scaleY(val, canvas.height) + 0.5);
+    }
+    ctx.closePath();
+    ctx.stroke();
+    ctx.fill();
+  })
 }
 //
 // PLAYER

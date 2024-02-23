@@ -256,10 +256,25 @@ function onMove(item, cb) {
   });
   cb(item);
 }
+function cloneCanvas(oldCanvas) {
+  //create a new canvas
+  var newCanvas = oldCanvas.cloneNode(true);
+  var context = newCanvas.getContext('2d');
+  //set dimensions
+  newCanvas.width = oldCanvas.width;
+  newCanvas.height = oldCanvas.height;
+  //apply the old canvas to the new one
+  context.drawImage(oldCanvas, 0, 0);
+  //return the new canvas
+  return newCanvas;
+}
+
 function onAdd(item, cb) {
   // item.end is wrong when adding for some reason...
   item.end = vis.moment(item.start).add(beatPerDateMultiple, beatPerDateResolution);
   const selectedSample = document.querySelector('.vis-item.vis-selected');
+  const waveImgCanvas = cloneCanvas(selectedSample.querySelector('canvas'));
+  waveImgCanvas.style = 'width:65px;margin-left:-12px';
   if (window.state.sequencerModule.selectedSampleName) {
     item.name = window.state.sequencerModule.selectedSampleName;
   } else if (selectedSample?.dataset?.name) {
@@ -283,11 +298,12 @@ function onAdd(item, cb) {
   item.end = vis
     .moment(item.start)
     .add(1 * beatPerDateMultiple, beatPerDateResolution);
-  item.content = item.name;
+  item.content = waveImgCanvas;
   item.id = item.id;
   sequence[item.index].push(item.step);
   cb(item);
 }
+
 const timeDate = vis.moment(...startDateParams);
 function setTimeline() {
   document.querySelector('.vis-custom-time.steptime').style.transition = 'left 0.3s linear 0s';
