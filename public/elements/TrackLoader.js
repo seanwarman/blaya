@@ -1,5 +1,16 @@
 import '../node_modules/peaks.js/dist/peaks.js';
 
+const MIN_PIX_PER_SEC = 30;
+let scale = 0.5,
+    maxZoom = undefined,
+    deltaThreshold = 2,
+    accumulatedDelta = 0;
+
+function calculateNewZoom(oldZoom, delta) {
+  const newZoom = Math.max(0, oldZoom + delta * scale)
+  return typeof maxZoom === 'undefined' ? newZoom : Math.min(newZoom, maxZoom)
+}
+
 export function fetchPackets(url) {
   return fetch(url)
     .then(r => r.json())
@@ -10,7 +21,7 @@ export function fetchPackets(url) {
 
 const options = {
   emitCueEvents: true,
-  zoomLevels: Array(4500).fill().map((_,i) => ((i+1) * 1)).slice(30),
+  zoomLevels: Array(4500).fill().map((_,i) => ((i+1) * 1)).slice(MIN_PIX_PER_SEC),
   wheelMode: 'scroll',
   scrollbar: {},
   zoomview: {
@@ -70,12 +81,19 @@ function zoomEvents(peaks) {
       zoom.setZoom(index + incr)
     }
   })
-  // This still sucks, copy the wavesurfer zoom plugin code:
-  // https://github.com/katspaugh/wavesurfer.js/blob/main/src/plugins/zoom.ts
+
   document.getElementById('zoomview-container').onwheel = e => {
+    if (Math.abs(e.deltaX) >= Math.abs(e.deltaY)) {
+      return;
+    }
     e.preventDefault()
-    if (e.deltaX > 2 || e.deltaX < -2) {
-      return
+    accumulatedDelta += -Math.round(e.deltaY * 0.1);
+
+    if (deltaThreshold === 0 || Math.abs(accumulatedDelta) >= deltaThreshold) {
+      requestAnimationFrame(() => {
+        zoom.setZoom(zoom.getZoom() + accumulatedDelta);
+        accumulatedDelta = 0;
+      });
     }
 
     // const view = peaks.views.getView('zoomview');
@@ -85,17 +103,6 @@ function zoomEvents(peaks) {
     //   view.scrollWaveform({ pixels: scroll() });
     // });
 
-    if (e.deltaY > 0) {
-      // out
-      requestAnimationFrame(() => {
-        zoom.setZoom(zoom.getZoom() + Math.round(e.deltaY * 0.2));
-      });
-    } else {
-      // in
-      requestAnimationFrame(() => {
-        zoom.setZoom(zoom.getZoom() + Math.round(e.deltaY * 0.2));
-      });
-    }
   }
 }
 
