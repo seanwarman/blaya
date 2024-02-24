@@ -10,20 +10,9 @@ export function fetchPackets(url) {
 
 const options = {
   emitCueEvents: true,
-  zoomLevels: [
-    50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130,
-    135, 140, 150, 155, 160, 165, 170, 175, 180, 185, 190, 195, 200, 205, 210,
-    215, 220, 225, 230, 235, 240, 250, 255, 260, 265, 270, 275, 280, 285, 290,
-    295, 300, 305, 310, 315, 320, 325, 330, 335, 340, 345, 350, 355, 360, 365,
-    370, 375, 380, 385, 390, 395, 400, 405, 410, 415, 420, 425, 430, 435, 440,
-    445, 450, 455, 460, 465, 470, 475, 480, 485, 490, 495, 500, 505, 510, 515,
-    520, 525, 530, 535, 540, 545, 550, 555, 560, 565, 570, 575, 580, 585, 590,
-    595, 600, 605, 610, 615, 620, 630, 640, 650, 660, 670, 680, 690, 700, 710,
-    720, 730, 740, 750, 760, 770, 780, 790, 800, 810, 820, 830, 840, 850, 860,
-    870, 880, 890, 900, 910, 930, 950, 1000, 1050, 1100, 1150, 1200, 1250, 1300,
-    1350, 1400, 1450, 1500, 1600, 1700, 1800, 1900, 2000, 2200, 2400, 2600,
-    2800, 3000, 3300, 3600, 3900, 4200,
-  ],
+  zoomLevels: Array(4500).fill().map((_,i) => ((i+1) * 1)).slice(30),
+  wheelMode: 'scroll',
+  scrollbar: {},
   zoomview: {
     waveformColor: '#c801c8',
     axisGridlineColor: 'transparent',
@@ -38,13 +27,11 @@ const options = {
     overlayOffset: 0,
     markers: false,
   },
-  scrollbar: {},
   mediaElement: document.getElementById('peaks-audio'),
   webAudio: {
     audioContext: new AudioContext(),
   },
   showAxisLabels: false,
-  wheelMode: 'scroll',
   axisGridlineColor: 'white',
   playheadColor: 'grey',
   player: null,
@@ -67,9 +54,10 @@ function playerEvents(peaks) {
   });
 }
 
-function zoomEvents({ zoom }) {
-  zoom.setZoom(75)
-  const incr = 4
+function zoomEvents(peaks) {
+  const { zoom } = peaks;
+  zoom.setZoom(200);
+  const incr = 15;
   document.getElementById('zoom-in-track-loader').addEventListener('click', () => {
     const index = zoom.getZoom()
     if (index - incr > -1) {
@@ -82,16 +70,31 @@ function zoomEvents({ zoom }) {
       zoom.setZoom(index + incr)
     }
   })
+  // This still sucks, copy the wavesurfer zoom plugin code:
+  // https://github.com/katspaugh/wavesurfer.js/blob/main/src/plugins/zoom.ts
   document.getElementById('zoomview-container').onwheel = e => {
     e.preventDefault()
-    // TODO: fine tune this, use the delta values in combo with getZoom and
-    // setZoom instead
-    if (e.deltaX > 2) return
-    if (e.deltaX < -2) return
-    if (e.deltaY < 0) {
-      zoom.zoomIn()
+    if (e.deltaX > 2 || e.deltaX < -2) {
+      return
+    }
+
+    // const view = peaks.views.getView('zoomview');
+    // const pageX = e.pageX - (window.innerWidth / 2)
+    // const scroll = () => Math.round(pageX * 0.009);
+    // requestAnimationFrame(() => {
+    //   view.scrollWaveform({ pixels: scroll() });
+    // });
+
+    if (e.deltaY > 0) {
+      // out
+      requestAnimationFrame(() => {
+        zoom.setZoom(zoom.getZoom() + Math.round(e.deltaY * 0.2));
+      });
     } else {
-      zoom.zoomOut()
+      // in
+      requestAnimationFrame(() => {
+        zoom.setZoom(zoom.getZoom() + Math.round(e.deltaY * 0.2));
+      });
     }
   }
 }
