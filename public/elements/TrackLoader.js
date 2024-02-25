@@ -167,13 +167,14 @@ function segmentEvents(peaks, mediaUrl) {
       italic.dataset.selectorActive = true
     }
   })
-  // peaks.on('segments.add', e => {
-  //   segments
-  //     .getSegments()
-  //     .slice(0, -1)
-  //     .forEach((seg) => segments.removeById(seg.id))
-  // })
+  // peaks.on('segments.insert', e => {
+  //   e.segment.update({ color: 'blue', borderColor: 'blue' });
+  // });
   peaks.on('segments.dragend', e => {
+    if (e.segment.startTime === e.segment.endTime) {
+      peaks.segments.removeById(e.segment.id);
+      return
+    }
     window.state.sequencerModule.updateCurrentSegment(e.segment, mediaUrl);
   });
 }
@@ -260,7 +261,6 @@ export default function TrackLoader(trackUrl, initFinished = () => {}) {
       const overview = peaks.views.getView('overview');
       const zoomview = peaks.views.getView('zoomview');
       overview.enableSeek(false);
-      zoomview.setSegmentDragMode('no-overlap');
 
       playerEvents(peaks);
       zoomEvents(peaks, zoomview);
