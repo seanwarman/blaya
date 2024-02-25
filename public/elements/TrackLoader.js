@@ -1,15 +1,6 @@
 import '../node_modules/peaks.js/dist/peaks.js';
 
 const MIN_PIX_PER_SEC = 30;
-let scale = 0.5,
-    maxZoom = undefined,
-    deltaThreshold = 2,
-    accumulatedDelta = 0;
-
-function calculateNewZoom(oldZoom, delta) {
-  const newZoom = Math.max(0, oldZoom + delta * scale)
-  return typeof maxZoom === 'undefined' ? newZoom : Math.min(newZoom, maxZoom)
-}
 
 export function fetchPackets(url) {
   return fetch(url)
@@ -82,12 +73,15 @@ function zoomEvents(peaks) {
     }
   })
 
+  let accumulatedDelta = 0;
+  const zoomSpeed = 0.2;
   document.getElementById('zoomview-container').onwheel = e => {
+    const deltaThreshold = 2;
     if (Math.abs(e.deltaX) >= Math.abs(e.deltaY)) {
       return;
     }
     e.preventDefault()
-    accumulatedDelta += -Math.round(e.deltaY * 0.1);
+    accumulatedDelta += -Math.round(e.deltaY * zoomSpeed);
 
     if (deltaThreshold === 0 || Math.abs(accumulatedDelta) >= deltaThreshold) {
       requestAnimationFrame(() => {
