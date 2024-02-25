@@ -56,10 +56,11 @@ function playerEvents(peaks) {
   });
 }
 
-function zoomEvents(peaks) {
+function zoomEvents(peaks, zoomview) {
   const { zoom } = peaks;
   zoom.setZoom(200);
   const incr = 15;
+
   document.getElementById('zoom-in-track-loader').addEventListener('click', () => {
     const index = zoom.getZoom()
     if (index - incr > -1) {
@@ -81,7 +82,7 @@ function zoomEvents(peaks) {
       return;
     }
     e.preventDefault()
-    accumulatedDelta += -Math.round(e.deltaY * zoomSpeed);
+    accumulatedDelta += Math.round(e.deltaY * zoomSpeed);
 
     if (deltaThreshold === 0 || Math.abs(accumulatedDelta) >= deltaThreshold) {
       requestAnimationFrame(() => {
@@ -121,27 +122,29 @@ function segmentEvents(peaks, mediaUrl) {
   const italic = document.getElementById('italic-track-loader')
   if (italic.dataset.selectorActive === 'true') {
     peaks.views.getView('zoomview').setWaveformDragMode('insert-segment')
+    peaks.views.getView('zoomview').enableSeek(false);
   } else {
     peaks.views.getView('zoomview').setWaveformDragMode('scroll')
+    peaks.views.getView('zoomview').enableSeek(true);
   }
 
   peaks.views.getView('zoomview').enableSegmentDragging(true)
 
   const { segments, player } = peaks
-
+  let playingSegment = false;
   peaks.on('segments.click', e => {
-    const { segment } = e
-    player.play()
-    player.seek(segment.startTime)
+    playingSegment = true;
+    player.playSegment(e.segment);
   })
   peaks.on('segments.exit', (e) => {
+    if (!playingSegment) return;
     const { segment } = e
     const button = document.getElementById('loop-region')
     if (button.dataset.loopRegion === 'true') {
       player.seek(segment.startTime)
     } else {
       player.pause()
-      player.seek(segment.startTime)
+      playingSegment = false;
     }
   })
   peaks.on('segments.mouseleave', () => {
@@ -156,9 +159,11 @@ function segmentEvents(peaks, mediaUrl) {
   document.getElementById('italic-track-loader').addEventListener('click', () => {
     if (italic.dataset.selectorActive === 'true') {
       peaks.views.getView('zoomview').setWaveformDragMode('scroll')
+      peaks.views.getView('zoomview').enableSeek(true);
       italic.dataset.selectorActive = false
     } else {
       peaks.views.getView('zoomview').setWaveformDragMode('insert-segment')
+      peaks.views.getView('zoomview').enableSeek(false);
       italic.dataset.selectorActive = true
     }
   })
@@ -235,48 +240,6 @@ export function Player(audioBuffer) {
   };
 }
 
-// TODO remove, not used
-function createCustomPlayer(mediaUrl) {
-  return {
-    samplePlayer: null,
-    startTime: 0,
-    timeId: null,
-    init(eventEmitter) {
-      return createPlayer(mediaUrl).then(samplePlayer => {
-        this.eventEmitter = eventEmitter;
-        this.samplePlayer = samplePlayer;
-        this.eventEmitter.emit('player.canplay');
-      });
-    },
-    destroy:        function() {  },
-    play() {
-      this.samplePlayer.start(0, 0);
-      this.eventEmitter.emit('player.playing', this.getCurrentTime());
-    },
-    pause() {
-      this.samplePlayer.stop(0);
-      this.eventEmitter.emit('player.pause', this.getCurrentTime());
-    },
-    seek(time) {
-      this.seeking = true;
-      this.samplePlayer.seek(time);
-      this.seeking = false;
-      this.eventEmitter.emit('player.seeked', this.getCurrentTime());
-      this.eventEmitter.emit('player.timeupdate', this.getCurrentTime());
-    },
-    isPlaying() {
-      return this.samplePlayer.playing;
-    },
-    isSeeking() {
-      return this.seeking;
-    },
-    getCurrentTime() {
-      return this.samplePlayer.getCurrentTime();
-    },
-    getDuration:    function() {  },
-  }
-}
-
 export default function TrackLoader(trackUrl, initFinished = () => {}) {
   fetchPackets('__test/packets-test/packets/' + trackUrl);
   const mediaUrl = '__test/packets-test/' + trackUrl;
@@ -294,12 +257,17 @@ export default function TrackLoader(trackUrl, initFinished = () => {}) {
         console.error(`Failed to initialize Peaks instance: ${err.message}`)
         return
       }
-      playerEvents(peaks)
-      zoomEvents(peaks)
-      segmentEvents(peaks, mediaUrl)
-      peaks.segments.removeAll()
-      document.getElementById('play-pause-track-loader').dataset.trackLoaderPlaying = false
-      initFinished(peaks)
+      const overview = peaks.views.getView('overview');
+      const zoomview = peaks.views.getView('zoomview');
+      overview.enableSeek(false);
+      zoomview.setSegmentDragMode('no-overlap');
+
+      playerEvents(peaks);
+      zoomEvents(peaks, zoomview);
+      segmentEvents(peaks, mediaUrl);
+      peaks.segments.removeAll();
+      document.getElementById('play-pause-track-loader').dataset.trackLoaderPlaying = false;
+      initFinished(peaks);
     })
   })(peaks)
 }
