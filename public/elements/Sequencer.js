@@ -115,7 +115,7 @@ const startDate = vis.moment(...startDateParams);
 let timeline = {};
 function initTimeline() {
   const options = {
-    height: 200,
+    height: 250,
     start: vis.moment(...startDateParams),
     min: vis.moment(...startDateParams),
     max: vis.moment(...startDateParams).add(window.state.sequencerModule.noteResolution * window.state.sequencerModule.loopBarLength, 'year'),
