@@ -91,18 +91,35 @@ function zoomEvents(peaks) {
 
     if (deltaThreshold === 0 || Math.abs(accumulatedDelta) >= deltaThreshold) {
       requestAnimationFrame(() => {
-        zoom.setZoom(zoom.getZoom() + accumulatedDelta);
+        const view = peaks.views.getView('zoomview');
+        const container = document.getElementById('zoomview-container')
+
+        // Work out what position the pointer is at in samples
+        // Then scroll the wave to keep it at the same point
+        //
+        // First find out how many smps per px we're at
+        const smpsPerPx = options.zoomLevels[zoom.getZoom()];
+        // Then find the container's width in px
+        const containerWidthPx = container.clientWidth;
+        // Then the pointer's x position in px from the center of the container
+        // (negative numbers are to the left)
+        const pointerPositionPx = e.clientX - (containerWidthPx / 2);
+        // The pointer's position in samples
+        const pointerPositionInSmps = smpsPerPx * pointerPositionPx;
+        // The next smps per px after zooming
+        const newSmpsPerPx = options.zoomLevels[zoom.getZoom() + accumulatedDelta];
+        // Recalibrate the pointer position to match the new sample rate
+        const newPointerPositionPx = pointerPositionInSmps / newSmpsPerPx;
+        // Minus off the the old pointer position to find the difference...
+        const pxToScrollTo = newPointerPositionPx - pointerPositionPx;
+
+        if (!isNaN(pxToScrollTo)) {
+          zoom.setZoom(zoom.getZoom() + accumulatedDelta);
+          view.scrollWaveform({ pixels: pxToScrollTo });
+        }
         accumulatedDelta = 0;
       });
     }
-
-    // const view = peaks.views.getView('zoomview');
-    // const pageX = e.pageX - (window.innerWidth / 2)
-    // const scroll = () => Math.round(pageX * 0.009);
-    // requestAnimationFrame(() => {
-    //   view.scrollWaveform({ pixels: scroll() });
-    // });
-
   }
 }
 
