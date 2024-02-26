@@ -10,24 +10,82 @@ export function fetchPackets(url) {
     });
 }
 
+// const themeColours = [
+//   '#70A2FF',
+//   '#9A70FF',
+//   '#7075FF',
+//   '#70CFFF',
+//   '#C970FF',
+//   '#A3A6FF',
+//   '#8499BF',
+//   '#9584BF',
+//   '#84ABBF',
+//   '#A984BF',
+//   // '#D6D8FF',
+//   '#796E80',
+// ];
+
+// const themeColours = [
+//   '#70FFA1',
+//   '#FFE370',
+//   '#7075FF',
+//   '#FF7570',
+//   '#8184D5',
+//   '#83CC9C',
+//   '#CCBE83',
+//   '#CC8583',
+//   '#8385AA',
+//   '#819989',
+//   '#999481',
+//   '#998181',
+//   '#6E6E80',
+//   '#4E6656',
+//   '#66614E',
+//   '#664E4E',
+//   '#3B3C55',
+//   '#1D3324',
+//   '#332F1D',
+//   '#331D1D',
+// ];
+
+const themeColours = [
+  'red',
+  'blue',
+  'purple',
+  'seagreen',
+  'firebrick',
+  'slateblue',
+  'mediumblue',
+  'rebeccapurple',
+  'crimson',
+  'navy',
+  'lightseagreen',
+  'darkviolet',
+  'darkblue',
+  'darkslategrey',
+  'darkmagenta',
+]
+
 const options = {
   emitCueEvents: true,
   zoomLevels: Array(4500).fill().map((_,i) => ((i+1) * 1)).slice(MIN_PIX_PER_SEC),
   wheelMode: 'scroll',
   scrollbar: {},
   zoomview: {
-    waveformColor: '#c801c8',
+    // waveformColor: '#c801c8',
+    waveformColor: '#353535',
     axisGridlineColor: 'transparent',
     autoScroll: false,
   },
-  overview: {
-    axisGridlineColor: 'transparent',
-    waveformColor: 'rgba(0,0,0,0.1)',
-  },
+  // overview: {
+  //   axisGridlineColor: 'transparent',
+  //   waveformColor: 'rgba(0,0,0,0.1)',
+  // },
   segmentOptions: {
     overlay: true,
-    overlayOffset: 0,
+    overlayOffset: 4,
     markers: false,
+    overlayBorderColor: '#00000000',
   },
   mediaElement: document.getElementById('peaks-audio'),
   webAudio: {
@@ -167,9 +225,17 @@ function segmentEvents(peaks, mediaUrl) {
       italic.dataset.selectorActive = true
     }
   })
-  // peaks.on('segments.insert', e => {
-  //   e.segment.update({ color: 'blue', borderColor: 'blue' });
-  // });
+  let segmentColourIteration = 0;
+  peaks.on('segments.add', e => {
+    const { segments } = e;
+    const [segment] = segments;
+    peaks.segments.getSegments().map(s => { s.update({ labelText: '' }); });
+    segment.update({ labelText: '↓', color: themeColours[segmentColourIteration] });
+    segmentColourIteration++
+    if (segmentColourIteration+1 > themeColours.length) {
+      segmentColourIteration = 0;
+    }
+  });
   peaks.on('segments.dragend', e => {
     if (e.segment.startTime === e.segment.endTime) {
       peaks.segments.removeById(e.segment.id);
@@ -248,19 +314,19 @@ export default function TrackLoader(trackUrl, initFinished = () => {}) {
   (function(Peaks) {
     document.getElementById('peaks-audio').src = mediaUrl
     const zoomview = document.getElementById('zoomview-container')
-    const overview = document.getElementById('overview-container')
+    // const overview = document.getElementById('overview-container')
     const scrollbar = document.getElementById('scrollbar-container')
     options.zoomview.container = zoomview
-    options.overview.container = overview
+    // options.overview.container = overview
     options.scrollbar.container = scrollbar
     Peaks.init(options, function(err, peaks) {
       if (err) {
         console.error(`Failed to initialize Peaks instance: ${err.message}`)
         return
       }
-      const overview = peaks.views.getView('overview');
+      // const overview = peaks.views.getView('overview');
       const zoomview = peaks.views.getView('zoomview');
-      overview.enableSeek(false);
+      // overview.enableSeek(false);
 
       playerEvents(peaks);
       zoomEvents(peaks, zoomview);

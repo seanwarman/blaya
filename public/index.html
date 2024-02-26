@@ -50,6 +50,7 @@
     <div id="track-list-container"></div>
 
     <div tabindex="-1" id="track-loader">
+      <link href="/elements/TrackLoader.css" rel="stylesheet"></style>
       <!-- <div id="track-loader-header"> -->
       <!--   <div></div> -->
       <!--   <div></div> -->
@@ -65,11 +66,13 @@
       <audio id="peaks-audio"></audio>
 
       <img id="close-track-loader" src="./icons/caret-up.svg" />
-      <div id="track-loader-controls">
-        <img id="play-pause-track-loader" data-track-loader-playing="false" />
-        <img id="italic-track-loader" data-selector-active="true" />
-        <img id="zoom-in-track-loader" />
-        <img id="zoom-out-track-loader" />
+      <div id="track-loader-controls-container">
+        <div id="track-loader-controls">
+          <img id="play-pause-track-loader" data-track-loader-playing="false" />
+          <img id="italic-track-loader" data-selector-active="true" />
+          <img id="zoom-in-track-loader" />
+          <img id="zoom-out-track-loader" />
+        </div>
       </div>
     </div>
 
