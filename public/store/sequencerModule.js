@@ -125,13 +125,14 @@ export const sequencerModule = {
   },
   sequence: {},
   samples: {},
+  segmentData: {},
   setSamples(samples) {
     this.samples = {
       ...this.samples,
       ...samples,
     };
     // Add samples to ui
-    Samples(samples);
+    Samples(samples, this.segmentData);
   },
   selectedSampleName: null,
   trackLoaderSamplePlayer: null,
@@ -160,6 +161,11 @@ export const sequencerModule = {
   },
   updateCurrentSegment(segment, mediaUrl) {
     const sampleName = segment.id;
+    this.segmentData = {
+      [segment.id]: {
+        color: segment.color,
+      },
+    };
     const startI = this.packets.findIndex(packet => {
       return packet.pts_time > segment.startTime;
     });

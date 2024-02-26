@@ -12,7 +12,7 @@ function handleDragStart(event) {
   event.dataTransfer.setData('text', JSON.stringify(item));
 }
 
-export default function Samples(samples) {
+export default function Samples(samples, segmentData) {
   const id = 'samples-container';
   let itemsElement = document.querySelector('#' + id)
   const children = Object.keys(samples).filter(name => samples[name]).map((name) => {
@@ -21,6 +21,7 @@ export default function Samples(samples) {
       dataset: {
         name: name,
       },
+      style: 'border:none;background-color:white',
       className: 'item vis-item vis-range vis-editable',
       onclick: () => {
         if (!visItem.classList.contains('vis-selected')) {
@@ -37,7 +38,7 @@ export default function Samples(samples) {
           </div>
         </div>
         <div class="vis-item-visible-frame"></div>
-        <div class="vis-drag-center" style="touch-action: pan-y; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+        <div class="vis-drag-center" style="background-color:${segmentData[name].color};opacity:0.3;border-radius:5px;touch-action: pan-y; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
         </div>
         <div class="vis-drag-left">
         </div>
