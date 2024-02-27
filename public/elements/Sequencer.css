@@ -10,6 +10,10 @@
   height: 100%;
 }
 
+.vis-content {
+  height: 100%;
+}
+
 .vis-odd {
   background: #f4f4f4;
 }

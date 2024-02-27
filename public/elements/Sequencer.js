@@ -115,6 +115,7 @@ const startDate = vis.moment(...startDateParams);
 let timeline = {};
 function initTimeline() {
   const options = {
+    orientation: 'top',
     height: 250,
     start: vis.moment(...startDateParams),
     min: vis.moment(...startDateParams),
