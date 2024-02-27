@@ -197,7 +197,7 @@ function initTimeline() {
     const { target } = event;
     if (!target.classList.contains('vis-item-overflow')) return
     Array.from(
-      document.querySelectorAll('.items-panel .vis-item.vis-selected')
+      document.querySelectorAll('.vis-selected')
     ).forEach((el) => el.classList.remove('vis-selected'));
     window.state.sequencerModule.selectedSampleName = target.firstChild.innerHTML;
   })
@@ -245,10 +245,10 @@ function cloneCanvas(oldCanvas) {
 }
 
 function onAdd(item, cb) {
-  console.log(`@FILTER item:`, item)
+  const { name } = item;
   // item.end is wrong when adding for some reason...
   item.end = vis.moment(item.start).add(beatPerDateMultiple, beatPerDateResolution);
-  const selectedSample = document.querySelector('.vis-item.vis-selected');
+  const selectedSample = document.querySelector(`#samples-container .item[data-name="${name}"]`);
   const waveImgCanvas = cloneCanvas(selectedSample.querySelector('canvas'));
   waveImgCanvas.style = 'width:65px;margin-left:-12px';
   item.className = selectedSample.dataset.colourClass;
