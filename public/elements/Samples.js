@@ -20,8 +20,8 @@ export default function Samples(samples, segmentData) {
       draggable: true,
       dataset: {
         name: name,
+        colourClass: segmentData[name].className + '-light',
       },
-      style: `border:none;border-radius:5px;`,
       className: `item vis-item vis-range vis-editable ${segmentData[name].className}-light`,
       onclick: () => {
         if (!visItem.classList.contains('vis-selected')) {

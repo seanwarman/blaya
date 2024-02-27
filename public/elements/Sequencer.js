@@ -250,7 +250,7 @@ function onAdd(item, cb) {
   const selectedSample = document.querySelector('.vis-item.vis-selected');
   const waveImgCanvas = cloneCanvas(selectedSample.querySelector('canvas'));
   waveImgCanvas.style = 'width:65px;margin-left:-12px';
-  item.className = selectedSample.className;
+  item.className = selectedSample.dataset.colourClass;
   if (window.state.sequencerModule.selectedSampleName) {
     item.name = window.state.sequencerModule.selectedSampleName;
   } else if (selectedSample?.dataset?.name) {

@@ -23,3 +23,16 @@
   background-color: #545454;
   width: 1px;
 }
+
+.vis-item {
+  border-color: transparent;
+  border-width: 3px;
+}
+
+.vis-item.vis-range {
+  border-radius: 5px;
+}
+
+.vis-item.vis-selected {
+  border-color: #484848;
+}
