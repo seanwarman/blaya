@@ -244,11 +244,13 @@ function cloneCanvas(oldCanvas) {
 }
 
 function onAdd(item, cb) {
+  console.log(`@FILTER item:`, item)
   // item.end is wrong when adding for some reason...
   item.end = vis.moment(item.start).add(beatPerDateMultiple, beatPerDateResolution);
   const selectedSample = document.querySelector('.vis-item.vis-selected');
   const waveImgCanvas = cloneCanvas(selectedSample.querySelector('canvas'));
   waveImgCanvas.style = 'width:65px;margin-left:-12px';
+  item.className = selectedSample.className;
   if (window.state.sequencerModule.selectedSampleName) {
     item.name = window.state.sequencerModule.selectedSampleName;
   } else if (selectedSample?.dataset?.name) {

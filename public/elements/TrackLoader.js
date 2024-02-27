@@ -1,4 +1,5 @@
 import '../node_modules/peaks.js/dist/peaks.js';
+import * as dom from '../helpers/dom';
 
 const MIN_PIX_PER_SEC = 30;
 
@@ -230,7 +231,31 @@ function segmentEvents(peaks, mediaUrl) {
     const { segments } = e;
     const [segment] = segments;
     peaks.segments.getSegments().map(s => { s.update({ labelText: '' }); });
-    segment.update({ labelText: '↓', color: themeColours[segmentColourIteration] });
+    function rndm() {
+      const min = 0;
+      const max = 48;
+      return Math.floor(Math.random() * (max - min + 1) + min)
+    }
+    const className = 'sample-colour-' + rndm();
+    const colourPicker = document.getElementById('colour-picker');
+    const newColourPicker = dom.div({
+      id: 'colour-picker',
+      className,
+      style: 'display:none',
+    });
+    if (colourPicker) {
+      colourPicker.replaceWith(newColourPicker);
+    } else {
+      document.body.prepend(newColourPicker);
+    }
+    const compStyle = window.getComputedStyle(document.getElementById('colour-picker'));
+    segment.update(
+      {
+        labelText:'↓',
+        color: compStyle.getPropertyValue('background-color'),
+        className,
+      }
+    );
     segmentColourIteration++
     if (segmentColourIteration+1 > themeColours.length) {
       segmentColourIteration = 0;

@@ -164,6 +164,7 @@ export const sequencerModule = {
     this.segmentData = {
       [segment.id]: {
         color: segment.color,
+        className: segment.className,
       },
     };
     const startI = this.packets.findIndex(packet => {

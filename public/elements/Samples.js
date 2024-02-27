@@ -1,7 +1,7 @@
 import '../node_modules/peaks.js/dist/peaks.js';
 import * as dom from '../helpers/dom.js'
 
-function handleDragStart(event) {
+function onDragStart(event) {
   event.dataTransfer.effectAllowed = 'move';
   const item = {
     id: 0,
@@ -21,8 +21,8 @@ export default function Samples(samples, segmentData) {
       dataset: {
         name: name,
       },
-      style: 'border:none;background-color:white',
-      className: 'item vis-item vis-range vis-editable',
+      style: `border:none;border-radius:5px;`,
+      className: `item vis-item vis-range vis-editable ${segmentData[name].className}-light`,
       onclick: () => {
         if (!visItem.classList.contains('vis-selected')) {
           Array.from(document.querySelectorAll('.vis-item.vis-selected')).forEach(el => el.classList.remove('vis-selected'));
@@ -30,7 +30,7 @@ export default function Samples(samples, segmentData) {
           window.state.sequencerModule.selectedSampleName = name;
         }
       },
-      ondragstart: handleDragStart,
+      ondragstart: onDragStart,
       innerHTML: `
         <div class="vis-item-overflow">
           <div class="vis-item-content" style="transform: translateX(0px);">
@@ -38,7 +38,7 @@ export default function Samples(samples, segmentData) {
           </div>
         </div>
         <div class="vis-item-visible-frame"></div>
-        <div class="vis-drag-center" style="background-color:${segmentData[name].color};opacity:0.3;border-radius:5px;touch-action: pan-y; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+        <div class="vis-drag-center" style="touch-action: pan-y; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
         </div>
         <div class="vis-drag-left">
         </div>
