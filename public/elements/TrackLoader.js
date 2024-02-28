@@ -307,6 +307,11 @@ export default function TrackLoader(trackUrl, initFinished = () => {}) {
   fetchPackets('__test/packets-test/packets/' + trackUrl);
   const mediaUrl = '__test/packets-test/' + trackUrl;
   options = {
+    mediaUrl,
+    mediaElement: document.getElementById('peaks-audio'),
+    webAudio: {
+      audioContext: new AudioContext(),
+    },
     emitCueEvents: true,
     zoomLevels: Array(4500).fill().map((_,i) => ((i+1) * 1)).slice(MIN_PIX_PER_SEC),
     wheelMode: 'scroll',
@@ -327,52 +332,9 @@ export default function TrackLoader(trackUrl, initFinished = () => {}) {
       markers: false,
       overlayBorderColor: '#00000000',
     },
-    mediaElement: document.getElementById('peaks-audio'),
-    webAudio: {
-      audioContext: new AudioContext(),
-    },
     showAxisLabels: false,
     axisGridlineColor: 'white',
     playheadColor: 'grey',
-    player: {
-      samplePlayer: null,
-      startTime: 0,
-      timeId: null,
-      init(eventEmitter) {
-        return createPlayer(mediaUrl).then(samplePlayer => {
-          window.state.sequencerModule.setTrackLoaderSamplePlayer(samplePlayer);
-          this.eventEmitter = eventEmitter;
-          this.samplePlayer = samplePlayer;
-          this.eventEmitter.emit('player.canplay');
-        });
-      },
-      destroy:        function() {  },
-      play() {
-        this.samplePlayer.start(0, 0);
-        this.eventEmitter.emit('player.playing', this.getCurrentTime());
-      },
-      pause() {
-        this.samplePlayer.stop(0);
-        this.eventEmitter.emit('player.pause', this.getCurrentTime());
-      },
-      seek(time) {
-        this.seeking = true;
-        this.samplePlayer.seek(time);
-        this.seeking = false;
-        this.eventEmitter.emit('player.seeked', this.getCurrentTime());
-        this.eventEmitter.emit('player.timeupdate', this.getCurrentTime());
-      },
-      isPlaying() {
-        return this.samplePlayer.playing;
-      },
-      isSeeking() {
-        return this.seeking;
-      },
-      getCurrentTime() {
-        return this.samplePlayer.getCurrentTime();
-      },
-      getDuration:    function() {  },
-    },
   }
 
 

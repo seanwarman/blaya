@@ -105,7 +105,7 @@ build(state => {
 
   Sequencer();
 
-  const trackUrl = '05 - Sucka Nigga (Prod. A Tribe Called Quest).mp3';
+  const trackUrl = 'constant-bitrate.mp3';
   TrackLoader(trackUrl, (trackLoader) => {
     window.state.trackLoader = trackLoader
     window.state.loadingTrack = false
