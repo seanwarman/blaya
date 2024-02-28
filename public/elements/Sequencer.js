@@ -245,10 +245,15 @@ function cloneCanvas(oldCanvas) {
 }
 
 function onAdd(item, cb) {
-  const { name } = item;
   // item.end is wrong when adding for some reason...
   item.end = vis.moment(item.start).add(beatPerDateMultiple, beatPerDateResolution);
-  const selectedSample = document.querySelector(`#samples-container .item[data-name="${name}"]`);
+  const { name } = item;
+  let selectedSample;
+  if (!name) {
+    selectedSample = document.querySelector(`#samples-container .vis-selected`);
+  } else {
+    selectedSample = document.querySelector(`#samples-container .item[data-name="${name}"]`);
+  }
   const waveImgCanvas = cloneCanvas(selectedSample.querySelector('canvas'));
   waveImgCanvas.style = 'height:30px;margin-left:-12px';
   item.className = selectedSample.dataset.colourClass;
