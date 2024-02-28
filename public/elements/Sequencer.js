@@ -250,7 +250,7 @@ function onAdd(item, cb) {
   item.end = vis.moment(item.start).add(beatPerDateMultiple, beatPerDateResolution);
   const selectedSample = document.querySelector(`#samples-container .item[data-name="${name}"]`);
   const waveImgCanvas = cloneCanvas(selectedSample.querySelector('canvas'));
-  waveImgCanvas.style = 'width:65px;margin-left:-12px';
+  waveImgCanvas.style = 'height:30px;margin-left:-12px';
   item.className = selectedSample.dataset.colourClass;
   if (window.state.sequencerModule.selectedSampleName) {
     item.name = window.state.sequencerModule.selectedSampleName;

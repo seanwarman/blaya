@@ -10,6 +10,7 @@ function drawWaveform(waveform, sampleName) {
   Array.from(document.querySelectorAll(`canvas[data-sample-name="${sampleName}"]`)).forEach(canvas => {
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    canvas.width = Math.max(370, waveform.length);
     ctx.beginPath();
     const channel = waveform.channel(0);
     // Loop forwards, drawing the upper half of the waveform
@@ -199,6 +200,7 @@ export const sequencerModule = {
             scale: 50,
           }, (error, waveform) => {
             if (error) throw error;
+            console.log(`@FILTER waveform:`, waveform)
             drawWaveform(waveform, sampleName);
           });
         });

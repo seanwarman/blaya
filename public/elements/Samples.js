@@ -33,8 +33,8 @@ export default function Samples(samples, segmentData) {
       ondragstart: onDragStart,
       innerHTML: `
         <div class="vis-item-overflow">
-          <div class="vis-item-content" style="transform: translateX(0px);">
-            <canvas data-sample-name="${name}" style="width:65px;margin-left:-12px;margin-right-5px"></canvas>
+          <div class="vis-item-content" style="width:65px;transform: translateX(0px);">
+            <canvas width="10000" data-sample-name="${name}" style="height:30px;margin-left:-12px;margin-right-5px"></canvas>
           </div>
         </div>
         <div class="vis-item-visible-frame"></div>
