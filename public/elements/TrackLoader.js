@@ -14,6 +14,9 @@ export function fetchPackets(url) {
 }
 
 // const themeColours = [
+//   '#70FFA1',
+//   '#FFE370',
+//   '#7075FF',
 //   '#70A2FF',
 //   '#9A70FF',
 //   '#7075FF',
@@ -24,14 +27,8 @@ export function fetchPackets(url) {
 //   '#9584BF',
 //   '#84ABBF',
 //   '#A984BF',
-//   // '#D6D8FF',
+//   '#D6D8FF',
 //   '#796E80',
-// ];
-
-// const themeColours = [
-//   '#70FFA1',
-//   '#FFE370',
-//   '#7075FF',
 //   '#FF7570',
 //   '#8184D5',
 //   '#83CC9C',
