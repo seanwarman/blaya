@@ -1,4 +1,3 @@
-const SELECTED_TIMING = 'normal';
 
 
 let idCount = 0;
@@ -28,11 +27,9 @@ const makeStep = ({ name, index, delay, endTime }) => ({
 //   15: null,
 // };
 
-const calcStepLength = () => window.state.sequencerModule.timing[SELECTED_TIMING] * (60.0 / window.state.sequencerModule.tempo);
-
 // CLOCK
 function nextNote() {
-  window.state.sequencerModule.nextNoteTime += calcStepLength();
+  window.state.sequencerModule.nextNoteTime += window.state.sequencerModule.getStepLength();
 
   window.state.sequencerModule.currentStep++;    // Advance the beat number, wrap to zero
   if (window.state.sequencerModule.currentStep == window.state.sequencerModule.loopBarLength * window.state.sequencerModule.noteResolution) {
@@ -46,7 +43,7 @@ function scheduleNote( beatNumber, time ) {
   if (window.state.sequencerModule.sequence[beatNumber]?.length) {
     for (let i=0;i<window.state.sequencerModule.sequence[beatNumber].length;i++) {
       const step = window.state.sequencerModule.sequence[beatNumber][i];
-      const startTime = time + (calcStepLength() * step.delay);
+      const startTime = time + (window.state.sequencerModule.getStepLength() * step.delay);
       const prepare = window.state.sequencerModule.samples[step.name](startTime, startTime + step.endTime);
       window.state.sequencerModule.samples[step.name] = prepare();
     }
@@ -227,7 +224,7 @@ function onMove(item, cb) {
   window.state.sequencerModule.sequence[item.index].push({
     ...item.step,
     delay: position - Math.floor(position),
-    endTime: calcStepLength() * endPosition,
+    endTime: window.state.sequencerModule.getStepLength() * endPosition,
   });
   cb(item);
 }
@@ -257,13 +254,8 @@ function onAdd(item, cb) {
   const waveImgCanvas = cloneCanvas(selectedSample.querySelector('canvas'));
   waveImgCanvas.style = 'height:30px;margin-left:-12px';
   item.className = selectedSample.dataset.colourClass;
-  if (window.state.sequencerModule.selectedSampleName) {
-    item.name = window.state.sequencerModule.selectedSampleName;
-  } else if (selectedSample?.dataset?.name) {
-    item.name = selectedSample.dataset.name;
-  } else {
-    return;
-  }
+  item.name = selectedSample.dataset.name;
+
   const diffFromSeqStart = vis.moment(item.start).diff(vis.moment(...startDateParams), beatPerDateResolution);
   const position = 0 + (diffFromSeqStart / beatPerDateMultiple)
   const newindex = Math.floor(position);
@@ -275,7 +267,7 @@ function onAdd(item, cb) {
     name: item.name,
     index: newindex,
     delay: position - Math.floor(position),
-    endTime: calcStepLength() * endPosition,
+    endTime: window.state.sequencerModule.getStepLength() * endPosition,
   });
   item.end = vis
     .moment(item.start)

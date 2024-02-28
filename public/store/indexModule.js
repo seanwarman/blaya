@@ -7,6 +7,7 @@ import * as utils from '../helpers/utils.js'
 
 import { playModule } from './playModule.js'
 import { sequencerModule } from './sequencerModule.js'
+import { stepRecordModule } from './stepRecordModule.js'
 
 export default (postHook) => {
   const state = {
@@ -158,6 +159,7 @@ export default (postHook) => {
   // Add other modules...
   state.playModule = playModule;
   state.sequencerModule = sequencerModule;
+  state.stepRecordModule = stepRecordModule;
 
   // BEGIN
   state.page = appendTracksByPage(state.trackList)(state.page)

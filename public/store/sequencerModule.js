@@ -124,6 +124,10 @@ export const sequencerModule = {
     trap: 0.125,
     real: 0.0625,
   },
+  selectedTiming: 'normal',
+  getStepLength() {
+    return this.timing[this.selectedTiming] * (60.0 / this.tempo);
+  },
   sequence: {},
   samples: {},
   segmentData: {},
