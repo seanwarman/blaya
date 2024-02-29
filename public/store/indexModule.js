@@ -9,8 +9,11 @@ import { playModule } from './playModule.js'
 import { sequencerModule } from './sequencerModule.js'
 import { stepRecordModule } from './stepRecordModule.js'
 
+const modes = ['sequencer', 'track-player'];
+
 export default (postHook) => {
   const state = {
+    mode: 'sequencer',
     loadingTrackState: false,
     set loadingTrack(bool) {
       document.getElementById('track-loader-loading').dataset.trackLoading = bool

@@ -131,14 +131,6 @@ export const sequencerModule = {
   sequence: {},
   samples: {},
   segmentData: {},
-  setSamples(samples) {
-    this.samples = {
-      ...this.samples,
-      ...samples,
-    };
-    // Add samples to ui
-    Samples(samples, this.segmentData);
-  },
   selectedSampleName: null,
   trackLoaderSamplePlayer: null,
   setTrackLoaderSamplePlayer(samplePlayer) {
@@ -164,9 +156,20 @@ export const sequencerModule = {
   setPackets(packets) {
     this.packets = packets;
   },
+  sampleCount: 1,
+  setSamples(samples) {
+    this.samples = {
+      ...this.samples,
+      ...samples,
+    };
+    window.state.stepRecordModule.setKeymaps(this.samples);
+    // Add samples to ui
+    Samples(this.samples, this.segmentData);
+  },
   updateCurrentSegment(segment, mediaUrl) {
     const sampleName = segment.id;
     this.segmentData = {
+      ...this.segmentData,
       [segment.id]: {
         color: segment.color,
         className: segment.className,
@@ -204,7 +207,6 @@ export const sequencerModule = {
             scale: 50,
           }, (error, waveform) => {
             if (error) throw error;
-            console.log(`@FILTER waveform:`, waveform)
             drawWaveform(waveform, sampleName);
           });
         });

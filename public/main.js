@@ -194,6 +194,7 @@ build(state => {
   // Key commands...
   const onKey = (...maps) => e => {
     maps.forEach(([key, cb]) => {
+      if (window.state.mode !== 'track-player') return;
       if(
         (typeof key === 'string' && e.key === key)
         || (key.key === e.key && key.ctrlKey === e.ctrlKey)

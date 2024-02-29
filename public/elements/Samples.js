@@ -14,26 +14,35 @@ function onDragStart(event) {
 
 export default function Samples(samples, segmentData) {
   const id = 'samples-container';
-  let itemsElement = document.querySelector('#' + id)
-  const children = Object.keys(samples).filter(name => samples[name]).map((name) => {
-    const visItem = dom.div({
-      draggable: true,
-      dataset: {
-        name: name,
-        colourClass: segmentData[name].className + '-light',
-      },
-      className: `item vis-item vis-range vis-editable ${segmentData[name].className}-light`,
-      onclick: () => {
-        if (!visItem.classList.contains('vis-selected')) {
-          Array.from(document.querySelectorAll('.vis-item.vis-selected')).forEach(el => el.classList.remove('vis-selected'));
-          visItem.classList.add('vis-selected');
-          window.state.sequencerModule.selectedSampleName = name;
-        }
-      },
-      ondragstart: onDragStart,
-      innerHTML: `
+  const itemsElement = dom.div({
+    id,
+    className: 'items',
+    children: Object.keys(samples).filter(name => samples[name]).map((name, i) => {
+      const visItem = dom.div({
+        draggable: true,
+        dataset: {
+          name: name,
+          colourClass: segmentData[name].className + '-light',
+        },
+        className: `item vis-item vis-range vis-editable ${segmentData[name].className}-light`,
+        onclick: () => {
+          if (!visItem.classList.contains('vis-selected')) {
+            Array.from(document.querySelectorAll('.vis-item.vis-selected')).forEach(el => el.classList.remove('vis-selected'));
+            visItem.classList.add('vis-selected');
+            window.state.sequencerModule.selectedSampleName = name;
+          }
+        },
+        ondragstart: onDragStart,
+        innerHTML: `
         <div class="vis-item-overflow">
-          <div class="vis-item-content" style="width:65px;transform: translateX(0px);">
+          <div class="vis-item-content" style="width:47px;transform: translateX(0px);">
+            <span style="
+              position: absolute;
+              color: white;
+              top: 0;
+              left: 2px;
+              font-size: 0.8rem;
+            ">${window.state.stepRecordModule.keysToMapNumbers[i].toUpperCase()}</span>
             <canvas width="10000" data-sample-name="${name}" style="height:30px;margin-left:-12px;margin-right-5px"></canvas>
           </div>
         </div>
@@ -44,24 +53,38 @@ export default function Samples(samples, segmentData) {
         </div>
         <div class="vis-drag-right"></div>
       `,
-    });
-    const newElement = dom.div({
-      className: 'sample',
-      dataset: {
-        name: name,
-      },
-      style: 'margin-top:1rem;height:35px',
-      children: [visItem],
-    });
-    const originalElement = document.querySelector(`.sample[data-name="${name}"]`);
-    if (originalElement) {
-      originalElement.replaceWith(newElement);
-      return null;
-    } else {
-      return newElement;
-    }
-  }).filter(Boolean);
-  if (children.length) {
-    dom.appendChildren(children)(itemsElement);
+      });
+      const newElement = dom.div({
+        className: 'sample',
+        dataset: {
+          name: name,
+        },
+        style: 'height:35px',
+        children: [visItem],
+      });
+      // Keeps the original element to avoid wiping the canvas image
+      const originalElement = document.querySelector(`.sample[data-name="${name}"]`);
+      if (originalElement) {
+        // originalElement.replaceWith(newElement);
+        return originalElement;
+      } else {
+        return newElement;
+      }
+    }).filter(Boolean)
+  });
+
+  const originalEl = document.getElementById(id);
+  if (originalEl) {
+    originalEl.replaceWith(itemsElement);
+  } else {
+    document.querySelector('#sequencer-container .side').appendChild(itemsElement);
   }
+//     if (originalElement) {
+//       return null;
+//     } else {
+//       return newElement;
+//     }
+
+//     dom.appendChildren(children)(itemsElement);
+  // }
 }

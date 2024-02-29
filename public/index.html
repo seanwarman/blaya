@@ -3,6 +3,7 @@
 	<head>
 		<link rel="stylesheet" href="index.css">
 		<link rel="stylesheet" href="colours.css">
+		<link rel="stylesheet" href="elements/Samples.css">
     <link href="https://unpkg.com/vis-timeline@latest/styles/vis-timeline-graph2d.min.css" rel="stylesheet" type="text/css" />
     <script type="text/javascript" src="https://unpkg.com/vis-timeline@latest/standalone/umd/vis-timeline-graph2d.min.js"></script>
     <script src="/tone/index.js"></script>
@@ -85,10 +86,8 @@
           <br>
           <input id="sequencer-tempo" type="range" value="120" step="1" min="10.0" max="300" onInput="window.state.sequencerModule.tempo = event.target.value; document.getElementById('show-tempo').innerText=event.target.value;" />
           <div id="sequencer"></div>
-          <div class="items-panel">
+          <div class="items-panel" style="margin-top:2rem;">
             <div class="side">
-              <div id="samples-container" class="items" style="display: grid; grid-gap: 1rem; grid-template-columns: repeat(auto-fill, 63px);">
-              </div>
             </div>
           </div>
       </div>
