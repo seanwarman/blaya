@@ -361,3 +361,4 @@ export default function TrackLoader(trackUrl, initFinished = () => {}) {
     })
   })(peaks)
 }
+

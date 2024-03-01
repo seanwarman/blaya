@@ -1,88 +1,6 @@
 import Samples from '../elements/Samples';
 import '../node_modules/waveform-data/dist/waveform-data.js';
 
-function drawWaveform(waveform, sampleName) {
-  const scaleY = (amplitude, height) => {
-    const range = 256;
-    const offset = 128;
-    return height - ((amplitude + offset) * height) / range;
-  }
-  Array.from(document.querySelectorAll(`canvas[data-sample-name="${sampleName}"]`)).forEach(canvas => {
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    canvas.width = Math.max(370, waveform.length);
-    ctx.beginPath();
-    const channel = waveform.channel(0);
-    // Loop forwards, drawing the upper half of the waveform
-    for (let x = 0; x < waveform.length; x++) {
-      const val = channel.max_sample(x);
-      ctx.lineTo(x + 0.5, scaleY(val, canvas.height) + 0.5);
-    }
-    // Loop backwards, drawing the lower half of the waveform
-    for (let x = waveform.length - 1; x >= 0; x--) {
-      const val = channel.min_sample(x);
-      ctx.lineTo(x + 0.5, scaleY(val, canvas.height) + 0.5);
-    }
-    ctx.closePath();
-    ctx.stroke();
-    ctx.fill();
-  })
-}
-//
-// PLAYER
-function createBitPlayer(length, mapBuffer) {
-  if (!window.state.sequencerModule.audioContext)
-    window.state.sequencerModule.setAudioContext(new AudioContext());
-  const audioCtx = window.state.sequencerModule.audioContext;
-  const audioBuffer = audioCtx.createBuffer(
-    2,
-    audioCtx.sampleRate * length,
-    audioCtx.sampleRate,
-  );
-  for (let channel = 0; channel < audioBuffer.numberOfChannels; channel++) {
-    const nowBuffering = audioBuffer.getChannelData(channel);
-    for (let i = 0; i < audioBuffer.length; i++) {
-      nowBuffering[i] = mapBuffer(i)
-    }
-  }
-  let source;
-  return function prepare() {
-    source = audioCtx.createBufferSource();
-    source.buffer = audioBuffer;
-    source.connect(audioCtx.destination);
-    return (cueTime) => {
-      source.start(cueTime);
-      return prepare;
-    }
-  }
-}
-
-export function createFetchPlayer({ url, range, cueStart, duration }, responseHandler) {
-  if (!window.state.sequencerModule.audioContext)
-    window.state.sequencerModule.setAudioContext(new AudioContext());
-  const context = window.state.sequencerModule.audioContext;
-  return fetch(url, {
-    headers: new Headers({ Range: range || 'bytes=0-' }),
-  })
-  .then(responseHandler)
-  .then(res => res.arrayBuffer())
-  .then(buffer => context.decodeAudioData(buffer))
-  .then(async audioBuffer => {
-    return function prepare() {
-      const source = context.createBufferSource();
-      source.buffer = audioBuffer;
-      source.connect(context.destination);
-      return (startTime, endTime) => {
-        source.start(startTime, cueStart, duration);
-        if (endTime) source.stop(endTime);
-        return prepare;
-      }
-    };
-  }).catch(e => {
-    console.log(`Error in createFetchPlayer deconding: `, e)
-  });
-}
-
 // const click = createBitPlayer(3, i => {
 //   if (i < 100) {
 //     return Math.random() * 2 - 1
@@ -107,10 +25,10 @@ export const sequencerModule = {
   tempo: 120.0,           // tempo (in beats per minute)
   lookahead: 10.0,        // How frequently to call scheduling function 
                           // (in milliseconds)
-  scheduleAheadTime: 0.2, // This is calculated from lookahead, and overlaps 
+  scheduleAheadTime: 0.01,// This is calculated from lookahead, and overlaps 
                           // with next interval (in case the timer is late)
   nextNoteTime: 0.0,      // when the next note is due.
-  noteResolution: 16,     //
+  noteResolution: 256,     //
   last16thNoteDrawn: -1,  // the last "box" we drew on the screen
   notesInQueue: [],       // the notes that have been put into the web audio,
                           // and may or may not have played yet. {note, time}
@@ -126,9 +44,16 @@ export const sequencerModule = {
   },
   selectedTiming: 'normal',
   getStepLength() {
-    return this.timing[this.selectedTiming] * (60.0 / this.tempo);
+    return this.timing[this.selectedTiming] * (60.0 / (this.tempo * 16));
   },
-  sequence: {},
+
+  metronome: null,
+  metronomeOn: false,
+
+  sequence: [
+    // [ { index: 0, id: 1707891252190, name: "click", endTime: 0.125, delay: 0 } ],
+    // ...
+  ],
   samples: {},
   segmentData: {},
   selectedSampleName: null,
@@ -219,3 +144,59 @@ export const sequencerModule = {
 
   },
 };
+
+function drawWaveform(waveform, sampleName) {
+  const scaleY = (amplitude, height) => {
+    const range = 256;
+    const offset = 128;
+    return height - ((amplitude + offset) * height) / range;
+  }
+  Array.from(document.querySelectorAll(`canvas[data-sample-name="${sampleName}"]`)).forEach(canvas => {
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    canvas.width = Math.max(370, waveform.length);
+    ctx.beginPath();
+    const channel = waveform.channel(0);
+    // Loop forwards, drawing the upper half of the waveform
+    for (let x = 0; x < waveform.length; x++) {
+      const val = channel.max_sample(x);
+      ctx.lineTo(x + 0.5, scaleY(val, canvas.height) + 0.5);
+    }
+    // Loop backwards, drawing the lower half of the waveform
+    for (let x = waveform.length - 1; x >= 0; x--) {
+      const val = channel.min_sample(x);
+      ctx.lineTo(x + 0.5, scaleY(val, canvas.height) + 0.5);
+    }
+    ctx.closePath();
+    ctx.stroke();
+    ctx.fill();
+  })
+}
+
+// PLAYER
+export function createFetchPlayer({ url, range, cueStart, duration }, responseHandler) {
+  if (!window.state.sequencerModule.audioContext)
+    window.state.sequencerModule.setAudioContext(new AudioContext());
+  const context = window.state.sequencerModule.audioContext;
+  return fetch(url, {
+    headers: new Headers({ Range: range || 'bytes=0-' }),
+  })
+  .then(responseHandler)
+  .then(res => res.arrayBuffer())
+  .then(buffer => context.decodeAudioData(buffer))
+  .then(async audioBuffer => {
+    return function prepare() {
+      const source = context.createBufferSource();
+      source.buffer = audioBuffer;
+      source.connect(context.destination);
+      return (startTime, endTime) => {
+        source.start(startTime, cueStart, duration);
+        if (endTime) source.stop(endTime);
+        return prepare;
+      }
+    };
+  }).catch(e => {
+    console.log(`Error in createFetchPlayer deconding: `, e)
+  });
+}
+

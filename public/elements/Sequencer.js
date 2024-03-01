@@ -40,21 +40,30 @@ function nextNote() {
 function scheduleNote( beatNumber, time ) {
   // push the note on the queue, even if we're not playing.
   window.state.sequencerModule.notesInQueue.push( { note: beatNumber, time: time } );
+
   if (window.state.sequencerModule.sequence[beatNumber]?.length) {
     for (let i=0;i<window.state.sequencerModule.sequence[beatNumber].length;i++) {
       const step = window.state.sequencerModule.sequence[beatNumber][i];
       const startTime = time + (window.state.sequencerModule.getStepLength() * step.delay);
-      const prepare = window.state.sequencerModule.samples[step.name](startTime, startTime + step.endTime);
-      window.state.sequencerModule.samples[step.name] = prepare();
+      if (window.state.sequencerModule.samples[step.name]) {
+        const prepare = window.state.sequencerModule.samples[step.name](startTime, startTime + step.endTime);
+        window.state.sequencerModule.samples[step.name] = prepare();
+      }
+    }
+  }
+  if (window.state.sequencerModule.metronomeOn) {
+    if (
+      beatNumber === 0
+      || beatNumber === (window.state.sequencerModule.noteResolution / 4) * 1
+      || beatNumber === (window.state.sequencerModule.noteResolution / 4) * 2
+      || beatNumber === (window.state.sequencerModule.noteResolution / 4) * 3
+    ) {
+      window.state.sequencerModule.metronome = window.state.sequencerModule.metronome(time)();
     }
   }
 }
 
-let countWhile = 0
-
 function scheduler() {
-  // while there are notes that will need to play before the next interval, 
-  // schedule them and advance the pointer.
   while (window.state.sequencerModule.nextNoteTime < window.state.sequencerModule.audioContext.currentTime + window.state.sequencerModule.scheduleAheadTime ) {
     scheduleNote( window.state.sequencerModule.currentStep, window.state.sequencerModule.nextNoteTime );
     nextNote();
@@ -87,16 +96,24 @@ function play() {
 
 async function init(){
   window.state.sequencerModule.timerWorker = new Worker('../workers/clock-worker.js');
-  window.state.sequencerModule.timerWorker.onmessage = function(e) {
+  window.state.sequencerModule.timerWorker.addEventListener('message', (e) => {
     if (e.data == 'tick') {
       scheduler();
     }
     else
       console.log('message: ' + e.data);
-  };
+  });
   window.state.sequencerModule.timerWorker.postMessage({'interval':window.state.sequencerModule.lookahead});
   initTimeline();
   requestAnimationFrame(draw);
+
+  window.state.sequencerModule.metronome = createBitPlayer(3, i => {   
+    if (i < 100) {                    
+      return Math.random() * 2 - 1    
+    }                                 
+    return 0                          
+  });
+
 }
 
 const [buttonPlay] = document.querySelectorAll('#sequencer-container button');
@@ -331,3 +348,31 @@ export default function Sequencer() {
     init();
   }
 }
+
+function createBitPlayer(length, mapBuffer) {
+  if (!window.state.sequencerModule.audioContext)
+    window.state.sequencerModule.setAudioContext(new AudioContext());
+  const audioCtx = window.state.sequencerModule.audioContext;
+  const audioBuffer = audioCtx.createBuffer(
+    2,
+    audioCtx.sampleRate * length,
+    audioCtx.sampleRate,
+  );
+  for (let channel = 0; channel < audioBuffer.numberOfChannels; channel++) {
+    const nowBuffering = audioBuffer.getChannelData(channel);
+    for (let i = 0; i < audioBuffer.length; i++) {
+      nowBuffering[i] = mapBuffer(i)
+    }
+  }
+  let source;
+  return function prepare() {
+    source = audioCtx.createBufferSource();
+    source.buffer = audioBuffer;
+    source.connect(audioCtx.destination);
+    return (cueTime) => {
+      source.start(cueTime);
+      return prepare;
+    }
+  }
+}
+
