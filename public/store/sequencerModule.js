@@ -57,7 +57,20 @@ export const sequencerModule = {
     // ...
   ],
   beatPerDateResolution: 'millisecond',
-  beatPerDateMultiple: 3.1,
+  // 256 notes resolution times 3.125 is 800 (the length in ms for 16 beats on
+  // the vis timeline)
+  beatPerDateMultiple: 3.125,
+  snapSelected: '16ths',
+  snaps: {
+    '16ths': 50,
+    '32ths': 25,
+    '64ths': 12.5,
+    '128ths': 6.25,
+    '256ths': 3.125,
+  },
+  get beatInMMs() {
+    return this.snaps[this.snapSelected];
+  },
   setSequence(currentStep, sampleName) {
     if (!this.isPlaying) return;
     const step = { id: this.makeId(), index: currentStep, name: sampleName, endTime: 1, delay: 0 };

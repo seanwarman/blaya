@@ -40,24 +40,22 @@ function initTimeline() {
     },
     margin: { item: { horizontal: 0, vertical: 1 } },
     snap: (date, scale, step) => {
-      const clone = vis.moment(date);
-      clone.date(1);
-      if (clone.month() > 5) {
-        clone.month(5);
+      const floor = (n,d) => d * ((n / d) - ((n % d) / d));
+      const ceil = (n,d) => d * ((n / d) + (1 - ((n % d / d))));
+      const beatInMMs = window.state.sequencerModule.beatInMMs;
+      // Snap to 16ths
+      const mm = vis.moment(date).millisecond();
+      if (mm / beatInMMs < 0.5) {
+        return vis.moment(date).millisecond(floor(mm, beatInMMs));
       } else {
-        clone.month(0);
+        return vis.moment(date).millisecond(ceil(mm, beatInMMs));
       }
-      clone.hours(0);
-      clone.minutes(0);
-      clone.seconds(0);
-      clone.milliseconds(0);
-      return clone;
     },
     showWeekScale: true,
     showMajorLabels: false,
     // showMinorLabels: false,
     format: {
-      minorLabels: (date) => (Number(date.format('SSS')) + 50) / 50,
+      minorLabels: (date) => (Number(date.format('SSS')) + window.state.sequencerModule.beatInMMs) / window.state.sequencerModule.beatInMMs,
     },
     onAdd,
     onMove,
