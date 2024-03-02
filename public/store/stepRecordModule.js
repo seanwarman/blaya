@@ -40,9 +40,9 @@ export const stepRecordModule = {
   //
   // Make the sequencer as fine grained as you can get it DONE
   // Get the tempo saying the right thing DONE
-  // Add a metronome <-- (sort of done, but needs to init with the sequencer)
-  // Add a record button
-  // Make the sample trigger call vis's onAdd event hanlder
+  // Add a metronome DONE
+  // Make the sample trigger call vis's onAdd event hanlder DONE
+  // Add a record button DONE
   nextNoteTime: 0,
   latency: 0.2,
   currentStep: 0,
@@ -83,14 +83,17 @@ window.addEventListener('keydown', (e) => {
 
   // End with space key
   if (e.key === 'Enter') { 
-    return recordSequence();
+    // return recordSequence();
   }
 
   window.state.stepRecordModule.keymaps[
     window.state.stepRecordModule.keysToMapNumbers.findIndex((l) => l === e.key)
   ]?.forEach((sampleName) => {
+    if (window.state.sequencerModule.isRecording) {
+      window.state.sequencerModule.setSequence(window.state.sequencerModule.currentStep, sampleName);
+    }
     playSample(sampleName);
-    recordSequence(sampleName);
+    // recordSequence(sampleName);
   });
 });
 

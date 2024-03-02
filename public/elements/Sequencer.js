@@ -1,139 +1,26 @@
+import { START_DATE_PARAMS } from '../../public/constants';
 
-
-let idCount = 0;
 const makeStep = ({ name, index, delay, endTime }) => ({
   index: index || 0,
-  id: Date.now() + idCount++,
+  id: window.state.sequencerModule.makeId(),
   name,
   endTime,
   delay: delay || 0,
 });
 
-// let sequence = {
-//   0: [ { index: 0, id: 1707891252190, name: "kick", endTime: 0.125, delay: 0 }, { index: 0, id: 1707891282349, name: "click", endTime: 0.125, delay: 0 } ],
-//   1: [],
-//   2: [ { index: 2, id: 1707891338463, name: "hat", endTime: 0.052083333333333336, delay: 0, } ],
-//   3: [],
-//   4: [{ index: 5, id: 1707891095836, name: "sn", endTime: 0.125, delay: 0 }],
-//   5: [],
-//   6: [ { index: 3, id: 1707891137733, name: "kick", endTime: 0.125, delay: 0 }, { index: 6, id: 1707891290113, name: "cluck", endTime: 0.125, delay: 0 }, { index: 6, id: 1707891291986, name: "cluck", endTime: 0.125, delay: 0.41666666666666696, }, { index: 6, id: 1707891350101, name: "hat", endTime: 0.052083333333333336, delay: 0, }, ], 7: [ { index: 7, id: 1707891154601, name: "loop", endTime: 0.125, delay: 0 }, { index: 2, id: 1707891260700, name: "cluck", endTime: 0.11458333333333333, delay: 0 } ],
-//   8: [],
-//   9: [ { index: 8, id: 1707891121909, name: "loop", endTime: 0.125, delay: 0 }, { index: 9, id: 1707891274490, name: "cluck", endTime: 0.125, delay: 0 }, ],
-//   10: [ { index: 10, id: 1707891111186, name: "kick", endTime: 0.125, delay: 0 }, { index: 10, id: 1707891356372, name: "hat", endTime: 0.052083333333333336, delay: 0, }, ],
-//   11: null,
-//   12: [{ index: 12, id: 1707891107745, name: "sn", endTime: 0.125, delay: 0 }],
-//   13: null,
-//   14: [{ index: 14, id: 1707891361311, name: "hat", endTime: 0.125, delay: 0 }],
-//   15: null,
-// };
-
-// CLOCK
-function nextNote() {
-  window.state.sequencerModule.nextNoteTime += window.state.sequencerModule.getStepLength();
-
-  window.state.sequencerModule.currentStep++;    // Advance the beat number, wrap to zero
-  if (window.state.sequencerModule.currentStep == window.state.sequencerModule.loopBarLength * window.state.sequencerModule.noteResolution) {
-    window.state.sequencerModule.currentStep = 0;
-  }
-}
-
-function scheduleNote( beatNumber, time ) {
-  // push the note on the queue, even if we're not playing.
-  window.state.sequencerModule.notesInQueue.push( { note: beatNumber, time: time } );
-
-  if (window.state.sequencerModule.sequence[beatNumber]?.length) {
-    for (let i=0;i<window.state.sequencerModule.sequence[beatNumber].length;i++) {
-      const step = window.state.sequencerModule.sequence[beatNumber][i];
-      const startTime = time + (window.state.sequencerModule.getStepLength() * step.delay);
-      if (window.state.sequencerModule.samples[step.name]) {
-        const prepare = window.state.sequencerModule.samples[step.name](startTime, startTime + step.endTime);
-        window.state.sequencerModule.samples[step.name] = prepare();
-      }
-    }
-  }
-  if (window.state.sequencerModule.metronomeOn) {
-    if (
-      beatNumber === 0
-      || beatNumber === (window.state.sequencerModule.noteResolution / 4) * 1
-      || beatNumber === (window.state.sequencerModule.noteResolution / 4) * 2
-      || beatNumber === (window.state.sequencerModule.noteResolution / 4) * 3
-    ) {
-      window.state.sequencerModule.metronome = window.state.sequencerModule.metronome(time)();
-    }
-  }
-}
-
-function scheduler() {
-  while (window.state.sequencerModule.nextNoteTime < window.state.sequencerModule.audioContext.currentTime + window.state.sequencerModule.scheduleAheadTime ) {
-    scheduleNote( window.state.sequencerModule.currentStep, window.state.sequencerModule.nextNoteTime );
-    nextNote();
-  }
-}
-
-function play() {
-  if (!window.state.sequencerModule.audioContext)
-    window.state.sequencerModule.setAudioContext(new AudioContext());
-  if (!window.state.sequencerModule.unlocked) {
-    // play silent buffer to unlock the audio
-    var buffer = window.state.sequencerModule.audioContext.createBuffer(1, 1, 22050);
-    var node = window.state.sequencerModule.audioContext.createBufferSource();
-    node.buffer = buffer;
-    node.start(0);
-    window.state.sequencerModule.unlocked = true;
-  }
-  window.state.sequencerModule.isPlaying = !window.state.sequencerModule.isPlaying;
-  if (window.state.sequencerModule.isPlaying) { // start playing
-    window.state.sequencerModule.currentStep = 0;
-    window.state.sequencerModule.timeLinePosition = 0;
-    window.state.sequencerModule.nextNoteTime = window.state.sequencerModule.audioContext.currentTime;
-    window.state.sequencerModule.timerWorker.postMessage('start');
-    return 'stop';
-  } else {
-    window.state.sequencerModule.timerWorker.postMessage('stop');
-    return 'play';
-  }
-}
-
-async function init(){
-  window.state.sequencerModule.timerWorker = new Worker('../workers/clock-worker.js');
-  window.state.sequencerModule.timerWorker.addEventListener('message', (e) => {
-    if (e.data == 'tick') {
-      scheduler();
-    }
-    else
-      console.log('message: ' + e.data);
-  });
-  window.state.sequencerModule.timerWorker.postMessage({'interval':window.state.sequencerModule.lookahead});
-  initTimeline();
-  requestAnimationFrame(draw);
-
-  window.state.sequencerModule.metronome = createBitPlayer(3, i => {   
-    if (i < 100) {                    
-      return Math.random() * 2 - 1    
-    }                                 
-    return 0                          
-  });
-
-}
-
-const [buttonPlay] = document.querySelectorAll('#sequencer-container button');
-buttonPlay.addEventListener('click', play)
-
-// TIMELINE
-const beatPerDateResolution = 'month';
-const beatPerDateMultiple   = 12;
 const container = document.getElementById('sequencer');
-const startDateParams = ['01/01/0001', 'DD/MM/YYYY']
-const startDate = vis.moment(...startDateParams);
+const startDate = vis.moment(...START_DATE_PARAMS);
 
-let timeline = {};
 function initTimeline() {
+  const [buttonPlay] = document.querySelectorAll('#sequencer-container button');
+  buttonPlay.addEventListener('click', () => window.state.sequencerModule.play());
+
   const options = {
     orientation: 'top',
     height: 250,
-    start: vis.moment(...startDateParams),
-    min: vis.moment(...startDateParams),
-    max: vis.moment(...startDateParams).add(window.state.sequencerModule.noteResolution * window.state.sequencerModule.loopBarLength, 'year'),
+    start: vis.moment(...START_DATE_PARAMS),
+    min: vis.moment(...START_DATE_PARAMS),
+    max: vis.moment(...START_DATE_PARAMS).add(window.state.sequencerModule.noteResolution * window.state.sequencerModule.loopBarLength, 'year'),
     itemsAlwaysDraggable: true,
     zoomFriction: 25,
     // zoomMin: 49597000000,
@@ -191,22 +78,22 @@ function initTimeline() {
           step,
           index: i,
           content: step.name,
-          start: vis.moment(...startDateParams).add((i+(step.delay)) * beatPerDateMultiple, beatPerDateResolution),
+          start: vis.moment(...START_DATE_PARAMS).add((i+(step.delay)) * window.state.sequencerModule.beatPerDateMultiple, window.state.sequencerModule.beatPerDateResolution),
           end: step.endTime
-            ? vis.moment(...startDateParams).add(((i+(step.delay)+(step.endTime*8)) * beatPerDateMultiple), beatPerDateResolution)
-            : vis.moment(...startDateParams).add(((i+step.delay) * beatPerDateMultiple), beatPerDateResolution),
+            ? vis.moment(...START_DATE_PARAMS).add(((i+(step.delay)+(step.endTime*8)) * window.state.sequencerModule.beatPerDateMultiple), window.state.sequencerModule.beatPerDateResolution)
+            : vis.moment(...START_DATE_PARAMS).add(((i+step.delay) * window.state.sequencerModule.beatPerDateMultiple), window.state.sequencerModule.beatPerDateResolution),
         };
       })
     })
     .filter(Boolean)
   );
-  timeline = new vis.Timeline(container, items, options);
-  timeline.setWindow(
+  window.state.sequencerModule.timeline = new vis.Timeline(container, items, options);
+  window.state.sequencerModule.timeline.setWindow(
     options.min,
     options.max,
   );
-  timeline.addCustomTime(timeDate, 'steptime');
-  timeline.on('select', props => {
+  window.state.sequencerModule.timeline.addCustomTime(timeDate, 'steptime');
+  window.state.sequencerModule.timeline.on('select', props => {
     const { event } = props;
     const { target } = event;
     if (!target.classList.contains('vis-item-overflow')) return
@@ -217,25 +104,25 @@ function initTimeline() {
   })
   window.addEventListener('keydown', e => {
     if (e.key === 'Backspace') {
-      const ids = timeline.getSelection();
+      const ids = window.state.sequencerModule.timeline.getSelection();
       ids.map(id => {
         const item = items.get(id);
         if (window.state.sequencerModule.sequence[item.index]) {
           window.state.sequencerModule.sequence[item.index] = window.state.sequencerModule.sequence[item.index].filter(s => s.id !== item.step.id);
         }
       })
-      items.remove(timeline.getSelection())
+      items.remove(window.state.sequencerModule.timeline.getSelection())
     }
   })
 }
 function onMove(item, cb) {
-  const diff = vis.moment(item.start).diff(vis.moment(...startDateParams).add(item.index * beatPerDateMultiple, beatPerDateResolution), beatPerDateResolution);
-  const position = item.index + (diff / beatPerDateMultiple)
+  const diff = vis.moment(item.start).diff(vis.moment(...START_DATE_PARAMS).add(item.index * window.state.sequencerModule.beatPerDateMultiple, window.state.sequencerModule.beatPerDateResolution), window.state.sequencerModule.beatPerDateResolution);
+  const position = item.index + (diff / window.state.sequencerModule.beatPerDateMultiple)
   const newindex = Math.floor(position);
   window.state.sequencerModule.sequence[item.index] = window.state.sequencerModule.sequence[item.index]?.filter(step => step.id !== item.step.id);
   if (!window.state.sequencerModule.sequence[newindex]) window.state.sequencerModule.sequence[newindex] = [];
-  const diffFromItemStart = vis.moment(item.end).diff(vis.moment(item.start), beatPerDateResolution);
-  const endPosition = diffFromItemStart / beatPerDateMultiple;
+  const diffFromItemStart = vis.moment(item.end).diff(vis.moment(item.start), window.state.sequencerModule.beatPerDateResolution);
+  const endPosition = diffFromItemStart / window.state.sequencerModule.beatPerDateMultiple;
   item.index = newindex;
   // The position will add .5 for 12th hour, we just want that decimal for the delay...
   window.state.sequencerModule.sequence[item.index].push({
@@ -245,22 +132,9 @@ function onMove(item, cb) {
   });
   cb(item);
 }
-function cloneCanvas(oldCanvas) {
-  //create a new canvas
-  var newCanvas = oldCanvas.cloneNode(true);
-  var context = newCanvas.getContext('2d');
-  //set dimensions
-  newCanvas.width = oldCanvas.width;
-  newCanvas.height = oldCanvas.height;
-  //apply the old canvas to the new one
-  context.drawImage(oldCanvas, 0, 0);
-  //return the new canvas
-  return newCanvas;
-}
-
 function onAdd(item, cb) {
   // item.end is wrong when adding for some reason...
-  item.end = vis.moment(item.start).add(beatPerDateMultiple, beatPerDateResolution);
+  item.end = vis.moment(item.start).add(window.state.sequencerModule.beatPerDateMultiple, window.state.sequencerModule.beatPerDateResolution);
   const { name } = item;
   let selectedSample;
   if (!name) {
@@ -268,18 +142,18 @@ function onAdd(item, cb) {
   } else {
     selectedSample = document.querySelector(`#samples-container .item[data-name="${name}"]`);
   }
-  const waveImgCanvas = cloneCanvas(selectedSample.querySelector('canvas'));
+  const waveImgCanvas = window.state.sequencerModule.cloneCanvas(selectedSample.querySelector('canvas'));
   waveImgCanvas.style = 'height:30px;margin-left:-12px';
   item.className = selectedSample.dataset.colourClass;
   item.name = selectedSample.dataset.name;
 
-  const diffFromSeqStart = vis.moment(item.start).diff(vis.moment(...startDateParams), beatPerDateResolution);
-  const position = 0 + (diffFromSeqStart / beatPerDateMultiple)
+  const diffFromSeqStart = vis.moment(item.start).diff(vis.moment(...START_DATE_PARAMS), window.state.sequencerModule.beatPerDateResolution);
+  const position = 0 + (diffFromSeqStart / window.state.sequencerModule.beatPerDateMultiple)
   const newindex = Math.floor(position);
   if (!window.state.sequencerModule.sequence[newindex]) window.state.sequencerModule.sequence[newindex] = [];
   item.index = newindex;
-  const diffFromItemStart = vis.moment(item.end).diff(vis.moment(item.start), beatPerDateResolution);
-  const endPosition = diffFromItemStart / beatPerDateMultiple;
+  const diffFromItemStart = vis.moment(item.end).diff(vis.moment(item.start), window.state.sequencerModule.beatPerDateResolution);
+  const endPosition = diffFromItemStart / window.state.sequencerModule.beatPerDateMultiple;
   item.step = makeStep({
     name: item.name,
     index: newindex,
@@ -288,22 +162,22 @@ function onAdd(item, cb) {
   });
   item.end = vis
     .moment(item.start)
-    .add(1 * beatPerDateMultiple, beatPerDateResolution);
+    .add(1 * window.state.sequencerModule.beatPerDateMultiple, window.state.sequencerModule.beatPerDateResolution);
   item.content = waveImgCanvas;
   item.id = item.id;
   window.state.sequencerModule.sequence[item.index].push(item.step);
   cb(item);
 }
 
-const timeDate = vis.moment(...startDateParams);
+const timeDate = vis.moment(...START_DATE_PARAMS);
 function setTimeline() {
   document.querySelector('.vis-custom-time.steptime').style.transition = 'left 0.3s linear 0s';
   if (window.state.sequencerModule.currentStep === 0)  {
     document.querySelector('.vis-custom-time.steptime').style.transition = 'none';
     document.querySelector('.vis-custom-time.steptime').style.left = '0px';
   }
-  timeline.setCustomTime(
-    vis.moment(...startDateParams).add(window.state.sequencerModule.currentStep * beatPerDateMultiple, beatPerDateResolution),
+  window.state.sequencerModule.timeline.setCustomTime(
+    vis.moment(...START_DATE_PARAMS).add(window.state.sequencerModule.currentStep * window.state.sequencerModule.beatPerDateMultiple, window.state.sequencerModule.beatPerDateResolution),
     'steptime'
   );
   // window.state.sequencerModule.timeLinePosition++;
@@ -345,34 +219,10 @@ function handleDragStart(event) {
 
 export default function Sequencer() {
   if (confirm('Initialise audio?')) {
-    init();
-  }
-}
-
-function createBitPlayer(length, mapBuffer) {
-  if (!window.state.sequencerModule.audioContext)
-    window.state.sequencerModule.setAudioContext(new AudioContext());
-  const audioCtx = window.state.sequencerModule.audioContext;
-  const audioBuffer = audioCtx.createBuffer(
-    2,
-    audioCtx.sampleRate * length,
-    audioCtx.sampleRate,
-  );
-  for (let channel = 0; channel < audioBuffer.numberOfChannels; channel++) {
-    const nowBuffering = audioBuffer.getChannelData(channel);
-    for (let i = 0; i < audioBuffer.length; i++) {
-      nowBuffering[i] = mapBuffer(i)
-    }
-  }
-  let source;
-  return function prepare() {
-    source = audioCtx.createBufferSource();
-    source.buffer = audioBuffer;
-    source.connect(audioCtx.destination);
-    return (cueTime) => {
-      source.start(cueTime);
-      return prepare;
-    }
+    window.state.sequencerModule.init(() => {
+      initTimeline();
+      requestAnimationFrame(draw);
+    });
   }
 }
 

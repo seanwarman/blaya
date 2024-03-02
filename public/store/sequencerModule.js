@@ -1,4 +1,5 @@
 import Samples from '../elements/Samples';
+import { START_DATE_PARAMS } from '../constants';
 import '../node_modules/waveform-data/dist/waveform-data.js';
 
 // const click = createBitPlayer(3, i => {
@@ -18,6 +19,7 @@ import '../node_modules/waveform-data/dist/waveform-data.js';
 export const sequencerModule = {
   unlocked: false,
   isPlaying: false,       // Are we currently playing?
+  isRecording: false,
                           //
   startTime: undefined,   // The start time of the entire sequence.
                           //
@@ -54,7 +56,39 @@ export const sequencerModule = {
     // [ { index: 0, id: 1707891252190, name: "click", endTime: 0.125, delay: 0 } ],
     // ...
   ],
+  beatPerDateResolution: 'month',
+  beatPerDateMultiple: 12,
+  setSequence(currentStep, sampleName) {
+    if (!this.isPlaying) return;
+    const step = { id: this.makeId(), index: currentStep, name: sampleName, endTime: 1, delay: 0 };
+    setTimeout(() => {
+      if (this.sequence[currentStep]) {
+        this.sequence[currentStep].push([step]);
+      } else {
+        this.sequence[currentStep] = [step]
+      }
+    }, 10);
+    const selectedSample = document.querySelector(`#samples-container .item[data-name="${sampleName}"]`);
+    const waveImgCanvas = this.cloneCanvas(selectedSample.querySelector('canvas'));
+    waveImgCanvas.style = 'height:30px;margin-left:-12px';
+    this.timeline.itemsData.add({
+      className: selectedSample.dataset.colourClass,
+      name: selectedSample.dataset.name,
+      content: waveImgCanvas,
+      id: step.id,
+      step,
+      index: step.index,
+      start: vis.moment(...START_DATE_PARAMS).add(currentStep * this.beatPerDateMultiple, this.beatPerDateResolution),
+      end: vis.moment(...START_DATE_PARAMS).add(((currentStep+(step.endTime*8)) * this.beatPerDateMultiple), this.beatPerDateResolution),
+    });
+  },
+  // vis.Timeline
+  timeline: {},
   samples: {},
+  idCount: 0,
+  makeId() {
+    return Date.now() + this.idCount++;
+  },
   segmentData: {},
   selectedSampleName: null,
   trackLoaderSamplePlayer: null,
@@ -143,7 +177,125 @@ export const sequencerModule = {
     });
 
   },
+
+  async init(cb) {
+    this.timerWorker = new Worker('../workers/clock-worker.js');
+    this.timerWorker.addEventListener('message', (e) => {
+      if (e.data == 'tick') {
+        this.scheduler();
+      }
+      else
+        console.log('message: ' + e.data);
+    });
+    this.timerWorker.postMessage({'interval':this.lookahead});
+    cb();
+    this.metronome = createBitPlayer(3, i => {   
+      if (i < 100) {                    
+        return Math.random() * 2 - 1    
+      }                                 
+      return 0                          
+    });
+  },
+  play() {
+    if (!this.audioContext)
+      this.setAudioContext(new AudioContext());
+    if (!this.unlocked) {
+      // play silent buffer to unlock the audio
+      var buffer = this.audioContext.createBuffer(1, 1, 22050);
+      var node = this.audioContext.createBufferSource();
+      node.buffer = buffer;
+      node.start(0);
+      this.unlocked = true;
+    }
+    this.isPlaying = !this.isPlaying;
+    if (this.isPlaying) { // start playing
+      this.currentStep = 0;
+      this.timeLinePosition = 0;
+      this.nextNoteTime = this.audioContext.currentTime;
+      this.timerWorker.postMessage('start');
+      return 'stop';
+    } else {
+      this.timerWorker.postMessage('stop');
+      return 'play';
+    }
+  },
+  scheduler() {
+    while (this.nextNoteTime < this.audioContext.currentTime + this.scheduleAheadTime) {
+      this.scheduleNote(this.currentStep, this.nextNoteTime);
+      this.nextNote();
+    }
+  },
+  nextNote() {
+    this.nextNoteTime += this.getStepLength();
+    this.currentStep++;    // Advance the beat number, wrap to zero
+    if (this.currentStep == this.loopBarLength * this.noteResolution) {
+      this.currentStep = 0;
+    }
+  },
+  scheduleNote(currentStep, time) {
+    // push the note on the queue, even if we're not playing.
+    this.notesInQueue.push({ note: currentStep, time: time });
+    if (this.sequence[currentStep]?.length) {
+      for (let i=0;i<this.sequence[currentStep].length;i++) {
+        const step = this.sequence[currentStep][i];
+        const startTime = time + (this.getStepLength() * step.delay);
+        if (this.samples[step.name]) {
+          const prepare = this.samples[step.name](startTime, startTime + step.endTime);
+          this.samples[step.name] = prepare();
+        }
+      }
+    }
+    if (this.metronomeOn) {
+      if (
+        currentStep === 0
+        || currentStep === (this.noteResolution / 4) * 1
+        || currentStep === (this.noteResolution / 4) * 2
+        || currentStep === (this.noteResolution / 4) * 3
+      ) {
+        this.metronome = this.metronome(time)();
+      }
+    }
+  },
+  cloneCanvas(oldCanvas) {
+    //create a new canvas
+    var newCanvas = oldCanvas.cloneNode(true);
+    var context = newCanvas.getContext('2d');
+    //set dimensions
+    newCanvas.width = oldCanvas.width;
+    newCanvas.height = oldCanvas.height;
+    //apply the old canvas to the new one
+    context.drawImage(oldCanvas, 0, 0);
+    //return the new canvas
+    return newCanvas;
+  },
 };
+
+function createBitPlayer(length, mapBuffer) {
+  if (!window.state.sequencerModule.audioContext)
+    window.state.sequencerModule.setAudioContext(new AudioContext());
+  const audioCtx = window.state.sequencerModule.audioContext;
+  const audioBuffer = audioCtx.createBuffer(
+    2,
+    audioCtx.sampleRate * length,
+    audioCtx.sampleRate,
+  );
+  for (let channel = 0; channel < audioBuffer.numberOfChannels; channel++) {
+    const nowBuffering = audioBuffer.getChannelData(channel);
+    for (let i = 0; i < audioBuffer.length; i++) {
+      nowBuffering[i] = mapBuffer(i)
+    }
+  }
+  let source;
+  return function prepare() {
+    source = audioCtx.createBufferSource();
+    source.buffer = audioBuffer;
+    source.connect(audioCtx.destination);
+    return (cueTime) => {
+      source.start(cueTime);
+      return prepare;
+    }
+  }
+}
 
 function drawWaveform(waveform, sampleName) {
   const scaleY = (amplitude, height) => {

@@ -82,9 +82,11 @@
       <div class="container">
         <link href="/elements/Sequencer.css" rel="stylesheet"></style>
           <button id="start-sequencer">start</button>
-          <label>Metr</label>
-          <input type="checkbox" onchange="window.state.sequencerModule.metronomeOn = event.target.checked" />
-          <label for="tempo">Tempo: <span id="show-tempo">120</span></label>
+          <label for="sequencer-metronome">Metr</label>
+          <input id="sequencer-metronome" type="checkbox" onchange="window.state.sequencerModule.metronomeOn = event.target.checked" />
+          <label for="sequencer-record">Rec</label>
+          <input id="sequencer-record" type="checkbox" onchange="window.state.sequencerModule.isRecording = event.target.checked" />
+          <label for="sequencer-tempo">Tempo: <span id="show-tempo">120</span></label>
           <br>
           <input id="sequencer-tempo" type="range" value="120" step="1" min="10.0" max="300" onInput="window.state.sequencerModule.tempo = event.target.value; document.getElementById('show-tempo').innerText=event.target.value;" />
           <div id="sequencer"></div>
