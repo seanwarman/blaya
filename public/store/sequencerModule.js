@@ -63,11 +63,11 @@ export const sequencerModule = {
     const step = { id: this.makeId(), index: currentStep, name: sampleName, endTime: 1, delay: 0 };
     setTimeout(() => {
       if (this.sequence[currentStep]) {
-        this.sequence[currentStep].push([step]);
+        this.sequence[currentStep].push(step);
       } else {
         this.sequence[currentStep] = [step]
       }
-    }, 10);
+    }, 100);
     const selectedSample = document.querySelector(`#samples-container .item[data-name="${sampleName}"]`);
     const waveImgCanvas = this.cloneCanvas(selectedSample.querySelector('canvas'));
     waveImgCanvas.style = 'height:30px;margin-left:-12px';
