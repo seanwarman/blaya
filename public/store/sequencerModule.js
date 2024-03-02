@@ -25,7 +25,7 @@ export const sequencerModule = {
                           //
   currentStep: 0,         // What note is currently last scheduled?
   tempo: 120.0,           // tempo (in beats per minute)
-  lookahead: 10.0,        // How frequently to call scheduling function 
+  lookahead: 5.0,        // How frequently to call scheduling function 
                           // (in milliseconds)
   scheduleAheadTime: 0.01,// This is calculated from lookahead, and overlaps 
                           // with next interval (in case the timer is late)
@@ -71,8 +71,8 @@ export const sequencerModule = {
   get beatInMMs() {
     return this.snaps[this.snapSelected];
   },
-  setSequence(currentStep, sampleName) {
-    if (!this.isPlaying) return;
+  setSequence(currentStep, sampleName, ignoreIsPlaying) {
+    if (!ignoreIsPlaying && !this.isPlaying) return;
     const step = { id: this.makeId(), index: currentStep, name: sampleName, endTime: 1, delay: 0 };
     setTimeout(() => {
       if (this.sequence[currentStep]) {

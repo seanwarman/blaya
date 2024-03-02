@@ -45,7 +45,7 @@ function initTimeline() {
       const beatInMMs = window.state.sequencerModule.beatInMMs;
       // Snap to 16ths
       const mm = vis.moment(date).millisecond();
-      if (mm / beatInMMs < 0.5) {
+      if (mm / beatInMMs - Math.floor(mm / beatInMMs) < 0.5) {
         return vis.moment(date).millisecond(floor(mm, beatInMMs));
       } else {
         return vis.moment(date).millisecond(ceil(mm, beatInMMs));
@@ -55,7 +55,8 @@ function initTimeline() {
     showMajorLabels: false,
     // showMinorLabels: false,
     format: {
-      minorLabels: (date) => (Number(date.format('SSS')) + window.state.sequencerModule.snaps['16ths']) / window.state.sequencerModule.snaps['16ths'],
+      // minorLabels: (date) => (Number(date.format('SSS')) + window.state.sequencerModule.snaps['16ths']) / window.state.sequencerModule.snaps['16ths'],
+      minorLabels: { millisecond: 'SSS' },
     },
     onAdd,
     onMove,
@@ -126,41 +127,13 @@ function onMove(item, cb) {
   });
   cb(item);
 }
-function onAdd(item, cb) {
-  // item.end is wrong when adding for some reason...
-  item.end = vis.moment(item.start).add(32 * window.state.sequencerModule.beatPerDateMultiple, window.state.sequencerModule.beatPerDateResolution);
-  const { name } = item;
-  let selectedSample;
-  if (!name) {
-    selectedSample = document.querySelector(`#samples-container .vis-selected`);
-  } else {
-    selectedSample = document.querySelector(`#samples-container .item[data-name="${name}"]`);
+function onAdd(item) {
+  if (!item.name) {
+    item.name = document.querySelector(`#samples-container .vis-selected`)?.dataset.name;
   }
-  const waveImgCanvas = window.state.sequencerModule.cloneCanvas(selectedSample.querySelector('canvas'));
-  waveImgCanvas.style = 'height:30px;margin-left:-12px';
-  item.className = selectedSample.dataset.colourClass;
-  item.name = selectedSample.dataset.name;
-
-  const diffFromSeqStart = vis.moment(item.start).diff(vis.moment(...START_DATE_PARAMS), window.state.sequencerModule.beatPerDateResolution);
-  const position = 0 + (diffFromSeqStart / window.state.sequencerModule.beatPerDateMultiple)
-  const newindex = Math.floor(position);
-  if (!window.state.sequencerModule.sequence[newindex]) window.state.sequencerModule.sequence[newindex] = [];
-  item.index = newindex;
-  const diffFromItemStart = vis.moment(item.end).diff(vis.moment(item.start), window.state.sequencerModule.beatPerDateResolution);
-  const endPosition = diffFromItemStart / window.state.sequencerModule.beatPerDateMultiple;
-  item.step = makeStep({
-    name: item.name,
-    index: newindex,
-    delay: position - Math.floor(position),
-    endTime: window.state.sequencerModule.getStepLength() * endPosition,
-  });
-  item.end = vis
-    .moment(item.start)
-    .add(32 * window.state.sequencerModule.beatPerDateMultiple, window.state.sequencerModule.beatPerDateResolution);
-  item.content = waveImgCanvas;
-  item.id = item.id;
-  window.state.sequencerModule.sequence[item.index].push(item.step);
-  cb(item);
+  const startMM = vis.moment(item.start).format('SSS');
+  const currentStep = startMM / window.state.sequencerModule.beatPerDateMultiple;
+  window.state.sequencerModule.setSequence(currentStep, item.name, true);
 }
 
 const timeDate = vis.moment(...START_DATE_PARAMS);

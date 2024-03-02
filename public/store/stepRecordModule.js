@@ -45,11 +45,12 @@ export const stepRecordModule = {
   // Add a record button DONE
   //
   // Fix vis issues
-  // Make the time represent seconds <--
-  // Make the drag snap 16ths
-  // Add a select to change the snap
-  // Set left anf right keys to shift the selected sample
+  // Make the time represent seconds DONE
+  // Make the drag snap 16ths DONE
+  // Add a select to change the snap DONE
   //
+  // Fix double click onAdd <--
+  // Make samples flash when played
   // 
   nextNoteTime: 0,
   latency: 0.2,
