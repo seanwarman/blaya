@@ -56,8 +56,8 @@ export const sequencerModule = {
     // [ { index: 0, id: 1707891252190, name: "click", endTime: 0.125, delay: 0 } ],
     // ...
   ],
-  beatPerDateResolution: 'month',
-  beatPerDateMultiple: 12,
+  beatPerDateResolution: 'millisecond',
+  beatPerDateMultiple: 3.1,
   setSequence(currentStep, sampleName) {
     if (!this.isPlaying) return;
     const step = { id: this.makeId(), index: currentStep, name: sampleName, endTime: 1, delay: 0 };

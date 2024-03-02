@@ -9,26 +9,29 @@ const makeStep = ({ name, index, delay, endTime }) => ({
 });
 
 const container = document.getElementById('sequencer');
-const startDate = vis.moment(...START_DATE_PARAMS);
 
 function initTimeline() {
   const [buttonPlay] = document.querySelectorAll('#sequencer-container button');
   buttonPlay.addEventListener('click', () => window.state.sequencerModule.play());
 
   const options = {
-    orientation: 'top',
+    orientation: "top",
     height: 250,
     start: vis.moment(...START_DATE_PARAMS),
     min: vis.moment(...START_DATE_PARAMS),
-    max: vis.moment(...START_DATE_PARAMS).add(window.state.sequencerModule.noteResolution * window.state.sequencerModule.loopBarLength, 'year'),
+    max: vis
+      .moment(...START_DATE_PARAMS)
+      .add(
+        window.state.sequencerModule.noteResolution *
+          window.state.sequencerModule.beatPerDateMultiple,
+        window.state.sequencerModule.beatPerDateResolution
+      ),
     itemsAlwaysDraggable: true,
     zoomFriction: 25,
-    // zoomMin: 49597000000,
-    // autoResize: false,
-    moveable: false,
+    // moveable: false,
+    // zoomable: false,
     horizontalScroll: true,
-    zoomable: false,
-    type: 'range',
+    type: "range",
     multiselect: true,
     stack: true,
     editable: {
@@ -52,16 +55,9 @@ function initTimeline() {
     },
     showWeekScale: true,
     showMajorLabels: false,
+    // showMinorLabels: false,
     format: {
-      minorLabels: {
-        month: 'YY:MM',
-        year: 'YY',
-      },
-      //   majorLabels: {
-      //     millisecond:'SSS', second:     's', minute:     'HH:mm',
-      //     hour:       'HH:mm', weekday:    'DD', day:        'DD',
-      //     week:       'WW', month:      'MM', year:       'YY'
-      //   },
+      minorLabels: (date) => (Number(date.format('SSS')) + 50) / 50,
     },
     onAdd,
     onMove,
@@ -80,8 +76,8 @@ function initTimeline() {
           content: step.name,
           start: vis.moment(...START_DATE_PARAMS).add((i+(step.delay)) * window.state.sequencerModule.beatPerDateMultiple, window.state.sequencerModule.beatPerDateResolution),
           end: step.endTime
-            ? vis.moment(...START_DATE_PARAMS).add(((i+(step.delay)+(step.endTime*8)) * window.state.sequencerModule.beatPerDateMultiple), window.state.sequencerModule.beatPerDateResolution)
-            : vis.moment(...START_DATE_PARAMS).add(((i+step.delay) * window.state.sequencerModule.beatPerDateMultiple), window.state.sequencerModule.beatPerDateResolution),
+          ? vis.moment(...START_DATE_PARAMS).add(((i+(step.delay)+(step.endTime*8)) * window.state.sequencerModule.beatPerDateMultiple), window.state.sequencerModule.beatPerDateResolution)
+          : vis.moment(...START_DATE_PARAMS).add(((i+step.delay) * window.state.sequencerModule.beatPerDateMultiple), window.state.sequencerModule.beatPerDateResolution),
         };
       })
     })

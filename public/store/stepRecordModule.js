@@ -43,6 +43,14 @@ export const stepRecordModule = {
   // Add a metronome DONE
   // Make the sample trigger call vis's onAdd event hanlder DONE
   // Add a record button DONE
+  //
+  // Fix vis issues
+  // Make the time represent seconds <--
+  // Make the drag snap 16ths
+  // Add a select to change the snap
+  // Set left anf right keys to shift the selected sample
+  //
+  // 
   nextNoteTime: 0,
   latency: 0.2,
   currentStep: 0,
