@@ -41,7 +41,7 @@ function initTimeline() {
     margin: { item: { horizontal: 0, vertical: 1 } },
     snap: (date, scale, step) => {
       const floor = (n,d) => d * ((n / d) - ((n % d) / d));
-      const ceil = (n,d) => d * ((n / d) + (1 - ((n % d / d))));
+      const ceil  = (n,d) => d * ((n / d) + (1 - ((n % d / d))));
       const beatInMMs = window.state.sequencerModule.beatInMMs;
       // Snap to 16ths
       const mm = vis.moment(date).millisecond();
@@ -55,7 +55,7 @@ function initTimeline() {
     showMajorLabels: false,
     // showMinorLabels: false,
     format: {
-      minorLabels: (date) => (Number(date.format('SSS')) + window.state.sequencerModule.beatInMMs) / window.state.sequencerModule.beatInMMs,
+      minorLabels: (date) => (Number(date.format('SSS')) + window.state.sequencerModule.snaps['16ths']) / window.state.sequencerModule.snaps['16ths'],
     },
     onAdd,
     onMove,
