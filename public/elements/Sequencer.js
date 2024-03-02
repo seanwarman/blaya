@@ -134,7 +134,7 @@ function onMove(item, cb) {
 }
 function onAdd(item, cb) {
   // item.end is wrong when adding for some reason...
-  item.end = vis.moment(item.start).add(window.state.sequencerModule.beatPerDateMultiple, window.state.sequencerModule.beatPerDateResolution);
+  item.end = vis.moment(item.start).add(32 * window.state.sequencerModule.beatPerDateMultiple, window.state.sequencerModule.beatPerDateResolution);
   const { name } = item;
   let selectedSample;
   if (!name) {
@@ -162,7 +162,7 @@ function onAdd(item, cb) {
   });
   item.end = vis
     .moment(item.start)
-    .add(1 * window.state.sequencerModule.beatPerDateMultiple, window.state.sequencerModule.beatPerDateResolution);
+    .add(32 * window.state.sequencerModule.beatPerDateMultiple, window.state.sequencerModule.beatPerDateResolution);
   item.content = waveImgCanvas;
   item.id = item.id;
   window.state.sequencerModule.sequence[item.index].push(item.step);
