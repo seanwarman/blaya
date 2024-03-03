@@ -55,8 +55,8 @@ function initTimeline() {
     showMajorLabels: false,
     // showMinorLabels: false,
     format: {
-      // minorLabels: (date) => (Number(date.format('SSS')) + window.state.sequencerModule.snaps['16ths']) / window.state.sequencerModule.snaps['16ths'],
-      minorLabels: { millisecond: 'SSS' },
+      minorLabels: (date) => (Number(date.format('SSS')) + window.state.sequencerModule.snaps['16ths']) / window.state.sequencerModule.snaps['16ths'],
+      // minorLabels: { millisecond: 'SSS' },
     },
     onAdd,
     onMove,
