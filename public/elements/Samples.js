@@ -1,6 +1,14 @@
 import '../node_modules/peaks.js/dist/peaks.js';
 import * as dom from '../helpers/dom.js'
 
+window.addEventListener('playsample', e => {
+  const el = document.querySelector(`#samples-container [data-name="${e.sampleName}"]`);
+  el.classList.add('trigger');
+  setTimeout(() => {
+    el.classList.remove('trigger');
+  }, 10);
+});
+
 function onDragStart(event) {
   event.dataTransfer.effectAllowed = 'move';
   const item = {

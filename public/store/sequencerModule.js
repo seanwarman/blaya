@@ -156,7 +156,7 @@ export const sequencerModule = {
 
     const startByte = this.packets[startI === 0 ? 0 : startI - 1]?.pos;
     const endByte = this.packets[endI - 1]?.pos;
-    createFetchPlayer({
+    createFetchPlayer(sampleName, {
       url: mediaUrl,
       range: `bytes=${startByte}-${endByte}`,
     }, response => {
@@ -338,8 +338,9 @@ function drawWaveform(waveform, sampleName) {
   })
 }
 
+const playEvent = new Event('playsample', { bubbles: true });
 // PLAYER
-export function createFetchPlayer({ url, range, cueStart, duration }, responseHandler) {
+export function createFetchPlayer(sampleName, { url, range, cueStart, duration }, responseHandler) {
   if (!window.state.sequencerModule.audioContext)
     window.state.sequencerModule.setAudioContext(new AudioContext());
   const context = window.state.sequencerModule.audioContext;
@@ -355,6 +356,7 @@ export function createFetchPlayer({ url, range, cueStart, duration }, responseHa
       source.buffer = audioBuffer;
       source.connect(context.destination);
       return (startTime, endTime) => {
+        window.dispatchEvent(Object.assign(playEvent, { sampleName }));
         source.start(startTime, cueStart, duration);
         if (endTime) source.stop(endTime);
         return prepare;
