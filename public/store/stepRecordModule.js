@@ -49,8 +49,8 @@ export const stepRecordModule = {
   // Make the drag snap 16ths DONE
   // Add a select to change the snap DONE
   //
-  // Fix double click onAdd <--
-  // Make samples flash when played
+  // Fix double click onAdd DONE
+  // Make samples flash when played <--
   // 
   nextNoteTime: 0,
   latency: 0.2,

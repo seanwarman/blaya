@@ -1,12 +1,19 @@
 import '../node_modules/peaks.js/dist/peaks.js';
 import * as dom from '../helpers/dom.js'
 
+const id = 'samples-container';
+const timeoutRefs = {};
+
 window.addEventListener('playsample', e => {
-  const el = document.querySelector(`#samples-container [data-name="${e.sampleName}"]`);
-  el.classList.add('trigger');
-  setTimeout(() => {
-    el.classList.remove('trigger');
-  }, 10);
+  requestAnimationFrame(() => {
+    const sampleEl = Array.from(document.getElementById(id).children).find(el => el.dataset.name === e.sampleName);
+    clearTimeout(timeoutRefs[e.sampleName]);
+    sampleEl.classList.remove('trigger');
+    sampleEl.classList.add('trigger');
+    timeoutRefs[e.sampleName] = setTimeout(() => {
+      sampleEl.classList.remove('trigger');
+    }, 10);
+  });
 });
 
 function onDragStart(event) {
@@ -21,7 +28,6 @@ function onDragStart(event) {
 }
 
 export default function Samples(samples, segmentData) {
-  const id = 'samples-container';
   const itemsElement = dom.div({
     id,
     className: 'items',
@@ -67,7 +73,7 @@ export default function Samples(samples, segmentData) {
         dataset: {
           name: name,
         },
-        style: 'height:35px',
+        style: 'height:46px;',
         children: [visItem],
       });
       // Keeps the original element to avoid wiping the canvas image
