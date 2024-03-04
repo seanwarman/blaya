@@ -50,7 +50,7 @@ export const stepRecordModule = {
   // Add a select to change the snap DONE
   //
   // Fix double click onAdd DONE
-  // Make samples flash when played <--
+  // Make samples flash when played DONE
   // 
   nextNoteTime: 0,
   latency: 0.2,

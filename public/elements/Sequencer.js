@@ -147,15 +147,15 @@ function onAdd(item) {
 
 const timeDate = vis.moment(...START_DATE_PARAMS);
 function setTimeline() {
-  document.querySelector('.vis-custom-time.steptime').style.transition = 'left 0.3s linear 0s';
-  if (window.state.sequencerModule.currentStep === 0)  {
-    document.querySelector('.vis-custom-time.steptime').style.transition = 'none';
-    document.querySelector('.vis-custom-time.steptime').style.left = '0px';
-  }
-  window.state.sequencerModule.timeline.setCustomTime(
-    vis.moment(...START_DATE_PARAMS).add(window.state.sequencerModule.currentStep * window.state.sequencerModule.beatPerDateMultiple, window.state.sequencerModule.beatPerDateResolution),
-    'steptime'
-  );
+  requestAnimationFrame(() => {
+    if (window.state.sequencerModule.currentStep === 0)  {
+      document.querySelector('.vis-custom-time.steptime').style.left = '0px';
+    }
+    window.state.sequencerModule.timeline.setCustomTime(
+      vis.moment(...START_DATE_PARAMS).add(window.state.sequencerModule.currentStep * window.state.sequencerModule.beatPerDateMultiple, window.state.sequencerModule.beatPerDateResolution),
+      'steptime'
+    );
+  })
   // window.state.sequencerModule.timeLinePosition++;
   // if (window.state.sequencerModule.timeLinePosition == window.state.sequencerModule.loopBarLength * window.state.sequencerModule.noteResolution) {
   //   window.state.sequencerModule.timeLinePosition = 0;

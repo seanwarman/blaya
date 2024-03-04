@@ -61,11 +61,6 @@ export default function Samples(samples, segmentData) {
           </div>
         </div>
         <div class="vis-item-visible-frame"></div>
-        <div class="vis-drag-center" style="touch-action: pan-y; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
-        </div>
-        <div class="vis-drag-left">
-        </div>
-        <div class="vis-drag-right"></div>
       `,
       });
       const newElement = dom.div({

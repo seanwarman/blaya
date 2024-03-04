@@ -33,3 +33,7 @@
   opacity: 1;
   transition: 0s;
 }
+
+#samples-container .vis-item.vis-selected {
+  border-color: #484848;
+}
