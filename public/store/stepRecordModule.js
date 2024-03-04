@@ -100,7 +100,7 @@ window.addEventListener('keydown', (e) => {
   ]?.forEach((sampleName) => {
     if (window.state.sequencerModule.isRecording) {
       window.state.sequencerModule.setSequence(
-        window.state.sequencerModule.currentStep,
+        window.state.sequencerModule.currentStepSnapped,
         window.state.sequencerModule.getSelectedStepLengthFromTimeSeconds(window.state.sequencerModule.samples[sampleName].duration),
         sampleName
       );

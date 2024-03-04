@@ -1,4 +1,5 @@
 import { START_DATE_PARAMS } from '../../public/constants';
+import { ceil, floor } from '../helpers/utils';
 
 const makeStep = ({ name, index, delay, endTime }) => ({
   index: index || 0,
@@ -40,8 +41,6 @@ function initTimeline() {
     },
     margin: { item: { horizontal: 0, vertical: 1 } },
     snap: (date, scale, step) => {
-      const floor = (n,d) => d * ((n / d) - ((n % d) / d));
-      const ceil  = (n,d) => d * ((n / d) + (1 - ((n % d / d))));
       const beatInMMs = window.state.sequencerModule.beatInMMs;
       // Snap to 16ths
       const mm = vis.moment(date).millisecond();

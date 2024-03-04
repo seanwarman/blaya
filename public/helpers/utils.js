@@ -25,3 +25,6 @@ export const setDebounce = () => {
   window.state.lazyLoadDebounce = true
   setTimeout(() => { window.state.lazyLoadDebounce = false }, 500)
 }
+
+export const floor = (n,d) => d * ((n / d) - ((n % d) / d));
+export const ceil  = (n,d) => d * ((n / d) + (1 - ((n % d / d))));

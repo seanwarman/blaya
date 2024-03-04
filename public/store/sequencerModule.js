@@ -1,6 +1,7 @@
 import Samples from '../elements/Samples';
 import { START_DATE_PARAMS } from '../constants';
 import '../node_modules/waveform-data/dist/waveform-data.js';
+import { floor, ceil } from '../helpers/utils';
 
 // const click = createBitPlayer(3, i => {
 //   if (i < 100) {
@@ -75,35 +76,45 @@ export const sequencerModule = {
     '128ths': 6.25,
     '256ths': 3.125,
   },
+  get stepSelected() {
+    return this.steps[this.snapSelected];
+  },
   get beatInMMs() {
     return this.snaps[this.snapSelected];
   },
   get beatInTime() {
     return this.getStepLength() * this.steps[this.snapSelected];
   },
+  get currentStepSnapped() {
+    if (this.currentStep / this.stepSelected - Math.floor(this.currentStep / this.stepSelected) < 0.5) {
+      return floor(this.currentStep, this.stepSelected);
+    } else {
+      return ceil(this.currentStep, this.stepSelected);
+    }
+  },
   getSelectedStepLengthFromTimeSeconds(seconds) {
     return Math.ceil(seconds / this.beatInTime);
   },
-  setSequence(currentStep, stepLength, sampleName, ignoreIsPlaying) {
+  setSequence(startStep, stepLength, sampleName, ignoreIsPlaying) {
     if (!ignoreIsPlaying && !this.isPlaying) return;
     const step = {
       id: this.makeId(),
-      index: currentStep,
+      index: startStep,
       name: sampleName,
       endTime: this.beatInTime * stepLength,
       delay: 0,
     };
     setTimeout(() => {
-      if (this.sequence[currentStep]) {
-        this.sequence[currentStep].push(step);
+      if (this.sequence[startStep]) {
+        this.sequence[startStep].push(step);
       } else {
-        this.sequence[currentStep] = [step]
+        this.sequence[startStep] = [step]
       }
     }, 100);
     const selectedSample = document.querySelector(`#samples-container .item[data-name="${sampleName}"]`);
     const waveImgCanvas = this.cloneCanvas(selectedSample.querySelector('canvas'));
     waveImgCanvas.style = 'height:30px;margin-left:-12px';
-    const start = vis.moment(...START_DATE_PARAMS).add(currentStep * this.beatPerDateMultiple, this.beatPerDateResolution);
+    const start = vis.moment(...START_DATE_PARAMS).add(startStep * this.beatPerDateMultiple, this.beatPerDateResolution);
     this.timeline.itemsData.add({
       className: selectedSample.dataset.colourClass,
       name: selectedSample.dataset.name,
