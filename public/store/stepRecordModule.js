@@ -99,7 +99,11 @@ window.addEventListener('keydown', (e) => {
     window.state.stepRecordModule.keysToMapNumbers.findIndex((l) => l === e.key)
   ]?.forEach((sampleName) => {
     if (window.state.sequencerModule.isRecording) {
-      window.state.sequencerModule.setSequence(window.state.sequencerModule.currentStep, sampleName);
+      window.state.sequencerModule.setSequence(
+        window.state.sequencerModule.currentStep,
+        window.state.sequencerModule.getSelectedStepLengthFromTimeSeconds(window.state.sequencerModule.samples[sampleName].duration),
+        sampleName
+      );
     }
     playSample(sampleName);
     // recordSequence(sampleName);

@@ -111,11 +111,19 @@ function initTimeline() {
   })
 }
 function onMove(item, cb) {
-  const diff = vis.moment(item.start).diff(vis.moment(...START_DATE_PARAMS).add(item.index * window.state.sequencerModule.beatPerDateMultiple, window.state.sequencerModule.beatPerDateResolution), window.state.sequencerModule.beatPerDateResolution);
-  const position = item.index + (diff / window.state.sequencerModule.beatPerDateMultiple)
-  const newindex = Math.floor(position);
+  const diff = vis.moment(item.start).diff(
+    vis.moment(...START_DATE_PARAMS).add(
+      item.index * window.state.sequencerModule.beatPerDateMultiple,
+      window.state.sequencerModule.beatPerDateResolution
+    ),
+    window.state.sequencerModule.beatPerDateResolution);
+  const position =
+    item.index + diff / window.state.sequencerModule.beatPerDateMultiple;
+  const newindex = Math.floor(position) + 1;
+
   window.state.sequencerModule.sequence[item.index] = window.state.sequencerModule.sequence[item.index]?.filter(step => step.id !== item.step.id);
   if (!window.state.sequencerModule.sequence[newindex]) window.state.sequencerModule.sequence[newindex] = [];
+
   const diffFromItemStart = vis.moment(item.end).diff(vis.moment(item.start), window.state.sequencerModule.beatPerDateResolution);
   const endPosition = diffFromItemStart / window.state.sequencerModule.beatPerDateMultiple;
   item.index = newindex;
@@ -127,13 +135,15 @@ function onMove(item, cb) {
   });
   cb(item);
 }
+
 function onAdd(item) {
   if (!item.name) {
     item.name = document.querySelector(`#samples-container .vis-selected`)?.dataset.name;
   }
   const startMM = vis.moment(item.start).format('SSS');
   const currentStep = startMM / window.state.sequencerModule.beatPerDateMultiple;
-  window.state.sequencerModule.setSequence(currentStep, item.name, true);
+  const stepLength = 1;
+  window.state.sequencerModule.setSequence(currentStep, stepLength, item.name, true);
 }
 
 const timeDate = vis.moment(...START_DATE_PARAMS);

@@ -60,6 +60,13 @@ export const sequencerModule = {
   // 256 notes resolution times 3.125 is 800 (the length in ms for 16 beats on
   // the vis timeline)
   beatPerDateMultiple: 3.125,
+  steps: {
+    '16ths': 16,
+    '32ths': 8,
+    '64ths': 4,
+    '128ths': 2,
+    '256ths': 1,
+  },
   snapSelected: '16ths',
   snaps: {
     '16ths': 50,
@@ -71,9 +78,21 @@ export const sequencerModule = {
   get beatInMMs() {
     return this.snaps[this.snapSelected];
   },
-  setSequence(currentStep, sampleName, ignoreIsPlaying) {
+  get beatInTime() {
+    return this.getStepLength() * this.steps[this.snapSelected];
+  },
+  getSelectedStepLengthFromTimeSeconds(seconds) {
+    return Math.ceil(seconds / this.beatInTime);
+  },
+  setSequence(currentStep, stepLength, sampleName, ignoreIsPlaying) {
     if (!ignoreIsPlaying && !this.isPlaying) return;
-    const step = { id: this.makeId(), index: currentStep, name: sampleName, endTime: 1, delay: 0 };
+    const step = {
+      id: this.makeId(),
+      index: currentStep,
+      name: sampleName,
+      endTime: this.beatInTime * stepLength,
+      delay: 0,
+    };
     setTimeout(() => {
       if (this.sequence[currentStep]) {
         this.sequence[currentStep].push(step);
@@ -84,6 +103,7 @@ export const sequencerModule = {
     const selectedSample = document.querySelector(`#samples-container .item[data-name="${sampleName}"]`);
     const waveImgCanvas = this.cloneCanvas(selectedSample.querySelector('canvas'));
     waveImgCanvas.style = 'height:30px;margin-left:-12px';
+    const start = vis.moment(...START_DATE_PARAMS).add(currentStep * this.beatPerDateMultiple, this.beatPerDateResolution);
     this.timeline.itemsData.add({
       className: selectedSample.dataset.colourClass,
       name: selectedSample.dataset.name,
@@ -91,8 +111,8 @@ export const sequencerModule = {
       id: step.id,
       step,
       index: step.index,
-      start: vis.moment(...START_DATE_PARAMS).add(currentStep * this.beatPerDateMultiple, this.beatPerDateResolution),
-      end: vis.moment(...START_DATE_PARAMS).add(((currentStep+(step.endTime*8)) * this.beatPerDateMultiple), this.beatPerDateResolution),
+      start,
+      end: vis.moment(start).add(this.beatInMMs * stepLength, this.beatPerDateResolution),
     });
   },
   // vis.Timeline
@@ -340,7 +360,7 @@ function drawWaveform(waveform, sampleName) {
 
 const playEvent = new Event('playsample', { bubbles: true });
 // PLAYER
-export function createFetchPlayer(sampleName, { url, range, cueStart, duration }, responseHandler) {
+export function createFetchPlayer(sampleName, { url, range }, responseHandler) {
   if (!window.state.sequencerModule.audioContext)
     window.state.sequencerModule.setAudioContext(new AudioContext());
   const context = window.state.sequencerModule.audioContext;
@@ -353,14 +373,17 @@ export function createFetchPlayer(sampleName, { url, range, cueStart, duration }
   .then(async audioBuffer => {
     return function prepare() {
       const source = context.createBufferSource();
+      const duration = audioBuffer.duration;
       source.buffer = audioBuffer;
       source.connect(context.destination);
-      return (startTime, endTime) => {
+      let start = function(startTime, endTime) {
         window.dispatchEvent(Object.assign(playEvent, { sampleName }));
-        source.start(startTime, cueStart, duration);
+        source.start(startTime /*, cueStart */);
         if (endTime) source.stop(endTime);
         return prepare;
-      }
+      };
+      start.duration = duration;
+      return start;
     };
   }).catch(e => {
     console.log(`Error in createFetchPlayer deconding: `, e)
