@@ -948,6 +948,10 @@ div#current-playing-text {
   display: none;
 }
 
+[data-show-sequencer="true"] #track-list-container {
+  padding-top: calc(100vh - 346px);
+}
+
 #track-list-container {
   padding-bottom: 11rem;
 }

@@ -108,9 +108,10 @@
   right: 0;
   z-index: 1;
   height: 346px;
-  backdrop-filter: blur(13px);
+  /* backdrop-filter: blur(13px); */
   box-shadow: 0px -4px 20px #00000047;
   transition: transform .5s;
+  background: white;
 }
 
 @media (min-width: 768px) {
