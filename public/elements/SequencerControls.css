@@ -1,0 +1,13 @@
+#sequencer-controls {
+  background: white;
+  z-index: 1;
+  left: 0;
+  right: 0;
+  display: grid;
+  padding: 1rem;
+  justify-content: center;
+  grid-template-columns: repeat(12, auto);
+  grid-gap: 6px;
+  box-shadow: 0px 3px 11px #00000017;
+  position: relative;
+}
