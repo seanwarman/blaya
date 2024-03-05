@@ -37,3 +37,7 @@
 #samples-container .vis-item.vis-selected {
   border-color: #484848;
 }
+
+#samples-container .sample .vis-item.sample-colour-grey {
+  box-shadow: inset 0px 0px 0px 2px #cbcbcb73;
+}

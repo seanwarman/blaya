@@ -12,12 +12,9 @@ const makeStep = ({ name, index, delay, endTime }) => ({
 const container = document.getElementById('sequencer');
 
 function initTimeline() {
-  const [buttonPlay] = document.querySelectorAll('#sequencer-container button');
-  buttonPlay.addEventListener('click', () => window.state.sequencerModule.play());
-
   const options = {
-    orientation: "top",
-    height: 250,
+    orientation: 'top',
+    height: 350,
     start: vis.moment(...START_DATE_PARAMS),
     min: vis.moment(...START_DATE_PARAMS),
     max: vis

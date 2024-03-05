@@ -25,7 +25,9 @@ import {
 import * as f from './helpers/functional-utils.js';
 import * as dom from './helpers/dom.js';
 import Sequencer from './elements/Sequencer.js';
+import SequencerControls from './elements/SequencerControls.js';
 import TrackLoader from './elements/TrackLoader.js';
+import Samples from './elements/Samples.js';
 
 import io from './node_modules/socket.io/client-dist/socket.io.esm.min.js';
 
@@ -104,6 +106,8 @@ build(state => {
   window.state = state
 
   Sequencer();
+  SequencerControls();
+  Samples();
 
   const trackUrl = 'constant-bitrate.mp3';
   TrackLoader(trackUrl, (trackLoader) => {

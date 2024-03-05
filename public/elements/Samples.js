@@ -27,27 +27,24 @@ function onDragStart(event) {
   event.dataTransfer.setData('text', JSON.stringify(item));
 }
 
-export default function Samples(samples, segmentData) {
-  const itemsElement = dom.div({
-    id,
-    className: 'items',
-    children: Object.keys(samples).filter(name => samples[name]).map((name, i) => {
-      const visItem = dom.div({
-        draggable: true,
-        dataset: {
-          name: name,
-          colourClass: segmentData[name].className + '-light',
-        },
-        className: `item vis-item vis-range vis-editable ${segmentData[name].className}-light`,
-        onclick: () => {
-          if (!visItem.classList.contains('vis-selected')) {
-            Array.from(document.querySelectorAll('.vis-item.vis-selected')).forEach(el => el.classList.remove('vis-selected'));
-            visItem.classList.add('vis-selected');
-            window.state.sequencerModule.selectedSampleName = name;
-          }
-        },
-        ondragstart: onDragStart,
-        innerHTML: `
+export default function Samples(samples = [], segmentData = {}) {
+  const makeRealSample = (name, i) => {
+    const visItem = dom.div({
+      draggable: true,
+      dataset: {
+        name: name,
+        colourClass: segmentData[name].className + '-light',
+      },
+      className: `item vis-item vis-range vis-editable ${segmentData[name].className}-light`,
+      onclick: () => {
+        if (!visItem.classList.contains('vis-selected')) {
+          Array.from(document.querySelectorAll('.vis-item.vis-selected')).forEach(el => el.classList.remove('vis-selected'));
+          visItem.classList.add('vis-selected');
+          window.state.sequencerModule.selectedSampleName = name;
+        }
+      },
+      ondragstart: onDragStart,
+      innerHTML: `
         <div class="vis-item-overflow">
           <div class="vis-item-content" style="width:47px;transform: translateX(0px);">
             <span style="
@@ -62,24 +59,43 @@ export default function Samples(samples, segmentData) {
         </div>
         <div class="vis-item-visible-frame"></div>
       `,
-      });
-      const newElement = dom.div({
-        className: 'sample',
-        dataset: {
-          name: name,
-        },
-        style: 'height:46px;',
-        children: [visItem],
-      });
-      // Keeps the original element to avoid wiping the canvas image
-      const originalElement = document.querySelector(`.sample[data-name="${name}"]`);
-      if (originalElement) {
-        // originalElement.replaceWith(newElement);
-        return originalElement;
-      } else {
-        return newElement;
-      }
-    }).filter(Boolean)
+    });
+    const newElement = dom.div({
+      className: 'sample',
+      dataset: {
+        name: name,
+      },
+      style: 'height:46px;',
+      children: [visItem],
+    });
+    // Keeps the original element to avoid wiping the canvas image
+    const originalElement = document.querySelector(`.sample[data-name="${name}"]`);
+    if (originalElement) {
+      // originalElement.replaceWith(newElement);
+      return originalElement;
+    } else {
+      return newElement;
+    }
+  };
+  const makeFakeSample = (key, i) => {
+    return dom.div({
+      className: 'sample',
+      style: 'height: 46px',
+      innerHTML: `
+        <div class="item vis-item vis-range vis-editable sample-colour-grey"> <div class="vis-item-overflow"> <div class="vis-item-content" style="width:47px;transform: translateX(0px);"> <span style=" position: absolute; color: white; top: 0; left: 2px; font-size: 0.8rem; ">
+          ${key}
+        </span> <div style="width:415px;height:30px"></div> </div> </div> <div class="vis-item-visible-frame"></div> </div>
+      `
+    });
+  };
+  const sampleNames = Object.keys(samples).filter(name => samples[name]);
+  const itemsElement = dom.div({
+    id,
+    className: 'items',
+    children: ['Q','W','E','R','T','Y','U','I','O','P','A','S','D','F','G','H','J','K','L','Z','X','C','V','B','N','M'].map((k,i) => {
+      if (sampleNames[i]) return makeRealSample(sampleNames[i], i);
+      return makeFakeSample(k, i);
+    }).filter(Boolean),
   });
 
   const originalEl = document.getElementById(id);
