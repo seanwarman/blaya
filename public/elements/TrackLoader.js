@@ -198,7 +198,8 @@ function segmentEvents(peaks, mediaUrl) {
   peaks.on('segments.add', e => {
     const { segments } = e;
     const [segment] = segments;
-    peaks.segments.getSegments().map(s => { s.update({ labelText: '' }); });
+    console.log(`@FILTER segment:`, segment)
+    // peaks.segments.getSegments().map((s,i) => { s.update({ labelText: '' }); });
     function rndm() {
       const min = 0;
       const max = 48;
@@ -219,7 +220,7 @@ function segmentEvents(peaks, mediaUrl) {
     const compStyle = window.getComputedStyle(document.getElementById('colour-picker'));
     segment.update(
       {
-        // labelText:'↓',
+        labelText: window.state.stepRecordModule.keysToMapNumbers[segment.pid].toUpperCase(),
         color: compStyle.getPropertyValue('background-color'),
         className,
       }
@@ -324,7 +325,9 @@ export default function TrackLoader(trackUrl, initFinished = () => {}) {
     //   waveformColor: 'rgba(0,0,0,0.1)',
     // },
     segmentOptions: {
+      overlayLabelColor: 'white',
       overlay: true,
+      overlayFontSize: 13,
       overlayOffset: 4,
       markers: false,
       overlayBorderColor: '#00000000',

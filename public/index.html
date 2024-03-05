@@ -6,7 +6,6 @@
 		<link rel="stylesheet" href="elements/Samples.css">
     <link href="https://unpkg.com/vis-timeline@latest/styles/vis-timeline-graph2d.min.css" rel="stylesheet" type="text/css" />
     <script type="text/javascript" src="https://unpkg.com/vis-timeline@latest/standalone/umd/vis-timeline-graph2d.min.js"></script>
-    <script src="/tone/index.js"></script>
 	</head>
 	<body data-searching="false" data-uploading="false" data-downloading="false" data-playlist-minimised="true" data-show-track-loader="true" data-show-sequencer="true">
     <header>
@@ -99,7 +98,8 @@
           </select>
           <br>
           <input id="sequencer-tempo" type="range" value="120" step="1" min="10.0" max="300" onInput="window.state.sequencerModule.tempo = event.target.value; document.getElementById('show-tempo').innerText=event.target.value;" />
-          <div id="sequencer"></div>
+          <div id="sequencer">
+          </div>
           <div class="items-panel" style="margin-top:2rem;">
             <div class="side">
             </div>
