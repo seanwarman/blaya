@@ -101,16 +101,30 @@
   transition: transform .5s;
 }
 
+#track-loader-background {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  height: 346px;
+  backdrop-filter: blur(13px);
+  box-shadow: 0px -4px 20px #00000047;
+  transition: transform .5s;
+}
+
 @media (min-width: 768px) {
   #track-loader {
     /* box-shadow: 0px 7px 20px 5px #00000021; */
   }
 }
 
+[data-show-track-loader="true"] #track-loader-background,
 [data-show-track-loader="true"] #track-loader {
   transform: translateY(0%);
 }
 
+[data-show-track-loader="false"] #track-loader-background,
 [data-show-track-loader="false"] #track-loader {
   transform: translateY(110%);
 }
