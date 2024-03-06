@@ -158,6 +158,22 @@ export const loadTrack = async (req, res) => {
     });
     const { Body: readStream } = await s3.send(command);
 
+    //
+    //
+    //
+    // **** Make a proper development/test environment ****
+    // Add a mock version of s3 to req.context that uses fs.createReadStream
+    // Create a dir with some mp3's inside and have the track list file create
+    // from reading that dir.
+    //
+    // The you can go ahead and fix the issues from live with the track loader
+    // locally:
+    // - Only partial tracks getting loaded in from loadTrack
+    // - Track loader seems to run the ffmpeg command twice
+    // - Selecting segments from various tracks causes the qwerty keys to get confused
+    // - Peaks is recreating segments rather than dragging them
+
+
     // const readStream = createReadStream(__dirname + '/../public/track.mp3');
 
     // cat ../public/track.mp3 | ffmpeg -i pipe:0 -vn -ar 44100 -ac 2 -b:a 192k -f mp3 pipe:1 > cool.mp3
