@@ -6,7 +6,7 @@ let options = {};
 const MIN_PIX_PER_SEC = 30;
 
 export function fetchPackets(url) {
-  return fetch(url)
+  return fetch('/packets/' + url)
     .then(r => r.json())
     .then(data => {
       window.state.sequencerModule.setPackets(data.packets);
@@ -145,7 +145,7 @@ function zoomEvents(peaks, zoomview) {
   }
 }
 
-function segmentEvents(peaks, mediaUrl) {
+function segmentEvents(peaks, trackUrl) {
   const italic = document.getElementById('italic-track-loader')
   if (italic.dataset.selectorActive === 'true') {
     peaks.views.getView('zoomview').setWaveformDragMode('insert-segment')
@@ -235,7 +235,7 @@ function segmentEvents(peaks, mediaUrl) {
       peaks.segments.removeById(e.segment.id);
       return
     }
-    window.state.sequencerModule.updateCurrentSegment(e.segment, mediaUrl);
+    window.state.sequencerModule.updateCurrentSegment(e.segment, trackUrl);
   });
 }
 
@@ -302,8 +302,8 @@ export function Player(audioBuffer) {
 }
 
 export default function TrackLoader(trackUrl, initFinished = () => {}) {
-  fetchPackets('__test/packets-test/packets/' + trackUrl);
-  const mediaUrl = '__test/packets-test/' + trackUrl;
+  fetchPackets(trackUrl);
+  const mediaUrl = '/load-track/' + trackUrl;
   options = {
     mediaUrl,
     mediaElement: document.getElementById('peaks-audio'),
@@ -357,7 +357,7 @@ export default function TrackLoader(trackUrl, initFinished = () => {}) {
 
       playerEvents(peaks);
       zoomEvents(peaks, zoomview);
-      segmentEvents(peaks, mediaUrl);
+      segmentEvents(peaks, trackUrl);
       peaks.segments.removeAll();
       document.getElementById('play-pause-track-loader').dataset.trackLoaderPlaying = false;
       initFinished(peaks);
