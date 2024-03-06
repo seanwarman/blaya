@@ -168,17 +168,14 @@ export const loadTrack = async (req, res) => {
     //
     // The you can go ahead and fix the issues from live with the track loader
     // locally:
-    // - Only partial tracks getting loaded in from loadTrack
-    // - Track loader seems to run the ffmpeg command twice
+    // - Only partial tracks getting loaded in from loadTrack FIXED
+    // - Track loader seems to run the ffmpeg command twice FIXED?
     // - Selecting segments from various tracks causes the qwerty keys to get confused
     // - Peaks is recreating segments rather than dragging them
 
-
-    // const readStream = createReadStream(__dirname + '/../public/track.mp3');
-
-    // cat ../public/track.mp3 | ffmpeg -i pipe:0 -vn -ar 44100 -ac 2 -b:a 192k -f mp3 pipe:1 > cool.mp3
     const process = spawn('ffmpeg', [
-      '-i', 'pipe:0', '-vn', '-ar', '44100', '-ac', '2', '-b:a', '192k', '-f', 'mp3', 'pipe:1',
+   // pipe in            no video     audio bitrate 192k     format mp3     pipe out
+      '-i', 'pipe:0',    '-vn',       '-b:a', '192k',        '-f', 'mp3',   'pipe:1',
     ]);
     readStream.on('data', (data) => {
       process.stdin.write(data);
@@ -191,20 +188,16 @@ export const loadTrack = async (req, res) => {
     });
     let chunks = [];
     process.stdout.on('data', (data) => {
-      // res.write(data);
-      chunks.push(data);
+      res.write(data);
     });
     process.stderr.on('data', (data) => {
       console.error(`process stderr: ${data}`);
-      // res.write(data);
-      chunks.push(data);
     });
     process.on('close', (code) => {
       if (code !== 0) {
         console.log(`ffmpeg process exited with code ${code}`);
       }
-      res.send(Buffer.concat(chunks));
-      // res.status(200).end();
+      res.status(200).end();
     }); 
 
   } catch (error) {
