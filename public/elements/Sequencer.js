@@ -192,11 +192,9 @@ function handleDragStart(event) {
 }
 
 export default function Sequencer() {
-  if (confirm('Initialise audio?')) {
-    window.state.sequencerModule.init(() => {
-      initTimeline();
-      requestAnimationFrame(draw);
-    });
-  }
+  window.state.sequencerModule.init(() => {
+    initTimeline();
+    requestAnimationFrame(draw);
+  });
 }
 
