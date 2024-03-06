@@ -1,5 +1,5 @@
 import { GetObjectCommand } from '@aws-sdk/client-s3'
-import { readdir } from 'fs'
+import { readdir, createReadStream, createWriteStream } from 'fs'
 import { spawn } from 'child_process'
 import ffmpeg from 'fluent-ffmpeg'
 import { fileURLToPath } from 'url'
@@ -148,21 +148,49 @@ export const loadTrackPackets = async (req, res) => {
 export const loadTrack = async (req, res) => {
   const { s3 } = req.context
 	const filePath = req.params[0]
+  res.set('Content-Type', 'audio/mpeg');
+
   try {
     const command = new GetObjectCommand({
       Bucket: 'everest-files',
       Key: 'music/' + filePath,
       Range: 'bytes=0-',
-    })
-    const { Body } = await s3.send(command)
+    });
+    const { Body: readStream } = await s3.send(command);
 
-    ffmpeg(Body).audioBitrate(128)
-    .on('data', chunk => {
-      res.write(chunk)
-    })
-    .on('end', () => {
-      res.status(200).send();
-    })
+    // const readStream = createReadStream(__dirname + '/../public/track.mp3');
+
+    // cat ../public/track.mp3 | ffmpeg -i pipe:0 -vn -ar 44100 -ac 2 -b:a 192k -f mp3 pipe:1 > cool.mp3
+    const process = spawn('ffmpeg', [
+      '-i', 'pipe:0', '-vn', '-ar', '44100', '-ac', '2', '-b:a', '192k', '-f', 'mp3', 'pipe:1',
+    ]);
+    readStream.on('data', (data) => {
+      process.stdin.write(data);
+    });
+    readStream.on('close', (code) => {
+      if (code !== 0) {
+        console.log(`s3 process exited with code ${code}`);
+      }
+      process.stdin.end();
+    });
+    let chunks = [];
+    process.stdout.on('data', (data) => {
+      // res.write(data);
+      chunks.push(data);
+    });
+    process.stderr.on('data', (data) => {
+      console.error(`process stderr: ${data}`);
+      // res.write(data);
+      chunks.push(data);
+    });
+    process.on('close', (code) => {
+      if (code !== 0) {
+        console.log(`ffmpeg process exited with code ${code}`);
+      }
+      res.send(Buffer.concat(chunks));
+      // res.status(200).end();
+    }); 
+
   } catch (error) {
     console.log(`S3 read error: `, error)
     res.status(500).send(error.message)

@@ -109,11 +109,11 @@ build(state => {
   SequencerControls();
   Samples();
 
-  const trackUrl = 'constant-bitrate.mp3';
-  TrackLoader(trackUrl, (trackLoader) => {
-    window.state.trackLoader = trackLoader
-    window.state.loadingTrack = false
-  });
+//   const trackUrl = 'constant-bitrate.mp3';
+//   TrackLoader(trackUrl, (trackLoader) => {
+//     window.state.trackLoader = trackLoader
+//     window.state.loadingTrack = false
+//   });
 
 
 

@@ -169,7 +169,7 @@ export const sequencerModule = {
     // Add samples to ui
     Samples(this.samples, this.segmentData);
   },
-  updateCurrentSegment(segment, mediaUrl) {
+  updateCurrentSegment(segment, trackUrl) {
     const sampleName = segment.id;
     this.segmentData = {
       ...this.segmentData,
@@ -188,7 +188,7 @@ export const sequencerModule = {
     const startByte = this.packets[startI === 0 ? 0 : startI - 1]?.pos;
     const endByte = this.packets[endI - 1]?.pos;
     createFetchPlayer(sampleName, {
-      url: mediaUrl,
+      url: trackUrl,
       range: `bytes=${startByte}-${endByte}`,
     }, response => {
       // Set samples so the canvas exists for drawWaveform
