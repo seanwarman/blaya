@@ -9,6 +9,10 @@ import { Server } from 'socket.io'
 import * as dotenv from 'dotenv'
 import router from './router.js'
 import testRoutes from './__test/test-routes.js'
+import { fileURLToPath } from 'url'
+import { dirname } from 'path'
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 dotenv.config()
 
@@ -68,6 +72,7 @@ app.use(express.static('public', options))
 app.use('/public', express.static('public', options))
 if (TEST) {
   app.use('/__test', express.static('__test', options))
+  app.use('/music', express.static('music', options))
 }
 app.use('/node_modules', express.static('node_modules', options), redirectWithExt)
 app.use('/node_modules', express.static('node_modules', options), redirectWithExt)
@@ -84,12 +89,12 @@ if (!TEST) {
 } else {
   app.use((req, _, next) => {
     const s3 = {
-      send: async () => ({
+      send: async (command) => ({
         AcceptRanges: '',
         ContentLength: '',
         ContentType: '',
         ContentRange: '',
-        Body: { on: (type, cb) => { type === 'end' ? cb() : null } },
+        Body: fs.createReadStream(__dirname + '/' + command.input.Key),
       }),
     };
     req.context = {
