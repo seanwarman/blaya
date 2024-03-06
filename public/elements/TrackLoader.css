@@ -178,8 +178,8 @@
 }
 
 #track-loader-loading img {
-  margin-top: 25px;
-  margin-bottom: 25px;
+  /* margin-top: 25px; */
+  /* margin-bottom: 25px; */
   height: 100px;
 }
 
@@ -195,7 +195,7 @@
 #track-loader-loading[data-track-loading="true"] {
   cursor: progress;
   z-index: 3;
-  background-color: #0000008c;
+  /* background-color: #0000008c; */
   padding-bottom: 64px;
 }
 
