@@ -304,8 +304,8 @@ export function Player(audioBuffer) {
 export default function TrackLoader(trackUrl, initFinished = () => {}) {
   fetchPackets(trackUrl);
   const mediaUrl = '/load-track/' + trackUrl;
+  document.getElementById('peaks-audio').src = mediaUrl;
   options = {
-    mediaUrl,
     mediaElement: document.getElementById('peaks-audio'),
     webAudio: {
       audioContext: new AudioContext(),
@@ -339,7 +339,6 @@ export default function TrackLoader(trackUrl, initFinished = () => {}) {
 
 
   ;(function(Peaks) {
-    document.getElementById('peaks-audio').src = mediaUrl
     const zoomview = document.getElementById('zoomview-container')
     // const overview = document.getElementById('overview-container')
     const scrollbar = document.getElementById('scrollbar-container')

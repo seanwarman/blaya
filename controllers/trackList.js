@@ -165,11 +165,11 @@ export const loadTrack = async (req, res) => {
       ContentRange,
       Body: readStream,
     } = await s3.send(command)
-    res.writeHead(206, {
+    res.writeHead(200, {
       'Accept-Ranges': AcceptRanges,
       // This causes wavesurefer to crash because the content length will be
       // slightely different when it's converted by ffmpeg...
-      'Content-Length': ContentLength,
+      // 'Content-Length': ContentLength,
       'Content-Type': ContentType,
       'Content-Range': ContentRange,
     })
@@ -217,7 +217,7 @@ export const loadTrack = async (req, res) => {
       res.write(data);
     });
     process.stderr.on('data', (data) => {
-      console.error(`process stderr: ${data}`);
+      console.log(`@FILTER count++:`, count++)
     });
     process.on('close', (code) => {
       if (code !== 0) {
