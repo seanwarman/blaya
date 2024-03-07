@@ -217,7 +217,7 @@ export const loadTrack = async (req, res) => {
       res.write(data);
     });
     process.stderr.on('data', (data) => {
-      console.log(`@FILTER count++:`, count++)
+      console.error(`process stderr: ${data}`);
     });
     process.on('close', (code) => {
       if (code !== 0) {
