@@ -146,17 +146,33 @@ export const loadTrackPackets = async (req, res) => {
 };
 
 export const loadTrack = async (req, res) => {
+  let count = 0;
   const { s3 } = req.context
 	const filePath = req.params[0]
-  res.set('Content-Type', 'audio/mpeg');
+  const { range } = req.headers
 
   try {
     const command = new GetObjectCommand({
       Bucket: 'everest-files',
       Key: 'music/' + filePath,
-      Range: 'bytes=0-',
+      Range: range,
     });
-    const { Body: readStream } = await s3.send(command);
+
+    const {
+      AcceptRanges,
+      ContentLength,
+      ContentType,
+      ContentRange,
+      Body: readStream,
+    } = await s3.send(command)
+    res.writeHead(206, {
+      'Accept-Ranges': AcceptRanges,
+      // This causes wavesurefer to crash because the content length will be
+      // slightely different when it's converted by ffmpeg...
+      'Content-Length': ContentLength,
+      'Content-Type': ContentType,
+      'Content-Range': ContentRange,
+    })
 
     //
     //
