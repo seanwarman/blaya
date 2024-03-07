@@ -194,8 +194,11 @@ export const loadTrack = async (req, res) => {
       '-i', 'pipe:0',
       // no video 
       '-vn',
-      // audio bitrate 192k
-      '-b:a', '192k',
+      // not sure what this does...
+      // https://superuser.com/questions/552817/fastest-way-to-convert-any-audio-file-to-low-bitrate
+      '-map', '0:a:0',
+      // audio bitrate
+      '-b:a', '48k',
       // make it mono  
       '-ac', '1',
       // format mp3     
