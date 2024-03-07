@@ -30,7 +30,6 @@ export default app => {
   app.get('/api/mv/*', rmDir, mvFile)
   app.post('/api/upload', cleanDir(__dirname + '/workspace'), upload.array('files'), (req, res) => {
     const { files } = req
-    console.log(`Uploading: `, files)
     copy(0, files.map(({ originalname }) => originalname), () => {
       res.send('Uploaded')
     })

@@ -174,8 +174,18 @@ export const loadTrack = async (req, res) => {
     // - Peaks is recreating segments rather than dragging them
 
     const process = spawn('ffmpeg', [
-   // pipe in            no video     audio bitrate 192k     format mp3     pipe out
-      '-i', 'pipe:0',    '-vn',       '-b:a', '192k',        '-f', 'mp3',   'pipe:1',
+       // pipe in     
+      '-i', 'pipe:0',
+      // no video 
+      '-vn',
+      // audio bitrate 192k
+      '-b:a', '192k',
+      // make it mono  
+      '-ac', '1',
+      // format mp3     
+      '-f', 'mp3',  
+      // pipe out
+      'pipe:1',
     ]);
     readStream.on('data', (data) => {
       process.stdin.write(data);
