@@ -1,9 +1,4 @@
-import WaveSurfer from '../node_modules/wavesurfer.js/dist/wavesurfer.js';
-import ZoomPlugin from '../node_modules/wavesurfer.js/dist/plugins/zoom.esm.js'
-import Minimap from '../node_modules/wavesurfer.js/dist/plugins/minimap.esm.js'
-import RegionsPlugin from '../node_modules/wavesurfer.js/dist/plugins/regions.esm.js'
 import '../node_modules/peaks.js/dist/peaks.js';
-
 import * as dom from '../helpers/dom';
 
 let options = {};
@@ -17,6 +12,41 @@ export function fetchPackets(url) {
       window.state.sequencerModule.setPackets(data.packets);
     });
 }
+
+// const themeColours = [
+//   '#70FFA1',
+//   '#FFE370',
+//   '#7075FF',
+//   '#70A2FF',
+//   '#9A70FF',
+//   '#7075FF',
+//   '#70CFFF',
+//   '#C970FF',
+//   '#A3A6FF',
+//   '#8499BF',
+//   '#9584BF',
+//   '#84ABBF',
+//   '#A984BF',
+//   '#D6D8FF',
+//   '#796E80',
+//   '#FF7570',
+//   '#8184D5',
+//   '#83CC9C',
+//   '#CCBE83',
+//   '#CC8583',
+//   '#8385AA',
+//   '#819989',
+//   '#999481',
+//   '#998181',
+//   '#6E6E80',
+//   '#4E6656',
+//   '#66614E',
+//   '#664E4E',
+//   '#3B3C55',
+//   '#1D3324',
+//   '#332F1D',
+//   '#331D1D',
+// ];
 
 const themeColours = [
   'red',
@@ -271,92 +301,67 @@ export function Player(audioBuffer) {
   };
 }
 
-let wavesurfer;
-
 export default function TrackLoader(trackUrl, initFinished = () => {}) {
   fetchPackets(trackUrl);
   const mediaUrl = '/load-track/' + trackUrl;
-
-  if (wavesurfer) {
-    wavesurfer.destroy();
+  options = {
+    mediaUrl,
+    mediaElement: document.getElementById('peaks-audio'),
+    webAudio: {
+      audioContext: new AudioContext(),
+    },
+    emitCueEvents: true,
+    zoomLevels: Array(4500).fill().map((_,i) => ((i+1) * 1)).slice(MIN_PIX_PER_SEC),
+    wheelMode: 'scroll',
+    scrollbar: {},
+    zoomview: {
+      // waveformColor: '#c801c8',
+      waveformColor: '#353535',
+      axisGridlineColor: 'transparent',
+      autoScroll: false,
+    },
+    // overview: {
+    //   axisGridlineColor: 'transparent',
+    //   waveformColor: 'rgba(0,0,0,0.1)',
+    // },
+    segmentOptions: {
+      overlayLabelColor: 'white',
+      overlay: true,
+      overlayFontSize: 13,
+      overlayOffset: 4,
+      markers: false,
+      overlayBorderColor: '#00000000',
+    },
+    showAxisLabels: false,
+    axisGridlineColor: 'white',
+    playheadColor: 'grey',
   }
 
-  console.log(`@FILTER RegionsPlugin:`, RegionsPlugin)
-  const player = WaveSurfer.create({
-    container: document.getElementById('zoomview-container'),
-    waveColor: '#353535',
-    // progressColor: 'rgb(200, 0, 200)',
-    cursorColor: '#555555',
-    height: 150,
-    hideScrollbar: true,
-    autoScroll: false,
-    url: mediaUrl,
-    // interact: false,
-    plugins: [
-      Minimap.create({
-        height: 20,
-        waveColor: '#98b5a8c9',
-        progressColor: '#98b5a8c9',
-        cursorWidth: 0,
-        overlayColor: '#47a9755c',
-        interact: false,
-      }),
-    ],
-  });
-  player.registerPlugin(
-    ZoomPlugin.create({
-      scale: 0.4,
-      maxZoom: 2000,
-    }),
-  )
-  const wsRegions = player.registerPlugin(
-    RegionsPlugin.create()
-  )
-  wsRegions.enableDragSelection({
-    color: '#47a9755c',
-  })
 
-  wsRegions.on('region-clicked', (region, e) => {
-    e.stopPropagation()
-    region.play()
-  })
-  wsRegions.on('region-out', (region) => {
-    const button = document.getElementById('loop-region')
-    if (button.dataset.loopRegion === 'true') {
-      region.play()
-    } else {
-      player.stop()
-    }
-  })
-  player.on('click', () => {
-    const regions = wsRegions.getRegions()
-    regions.forEach(r => r.remove())
-    player.play()
-  })
-  wsRegions.on('region-created', region => {
-    const regions = wsRegions.getRegions()
-    regions.forEach(r => {
-      if (r === region) return;
-      r.remove()
+  ;(function(Peaks) {
+    document.getElementById('peaks-audio').src = mediaUrl
+    const zoomview = document.getElementById('zoomview-container')
+    // const overview = document.getElementById('overview-container')
+    const scrollbar = document.getElementById('scrollbar-container')
+    options.zoomview.container = zoomview
+    // options.overview.container = overview
+    options.scrollbar.container = scrollbar
+    Peaks.init(options, function(err, peaks) {
+      if (err) {
+        console.error(`Failed to initialize Peaks instance: ${err.message}`)
+        return
+      }
+      // const overview = peaks.views.getView('overview');
+      const zoomview = peaks.views.getView('zoomview');
+      // overview.enableSeek(false);
+
+      playerEvents(peaks);
+      zoomEvents(peaks, zoomview);
+      segmentEvents(peaks, trackUrl);
+      peaks.segments.removeAll();
+      document.getElementById('play-pause-track-loader').dataset.trackLoaderPlaying = false;
+      initFinished(peaks);
     })
-  })
-  // wavesurfer = WaveSurfer.create({
-  //   container: '#zoomview-container',
-  //   waveColor: '#4F4A85',
-  //   progressColor: '#383351',
-  //   url: mediaUrl,
-  // });
-  // // const wsRegions = wavesurfer.registerPlugin(RegionsPlugin.create())
-  // wavesurfer.registerPlugin(
-  //   ZoomPlugin.create({
-  //     // the amount of zoom per wheel step, e.g. 0.5 means a 50% magnification per scroll
-  //     scale: 0.5,
-  //     // Optionally, specify the maximum pixels-per-second factor while zooming
-  //     maxZoom: 100,
-  //   }),
-  // );
-  player.on('decode', () => {
-    console.log(`@FILTER done`)
-    initFinished();
-  });
+  })(peaks)
 }
+
