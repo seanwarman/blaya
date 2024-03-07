@@ -1,7 +1,7 @@
 import Samples from '../elements/Samples';
 import { START_DATE_PARAMS } from '../constants';
 import '../node_modules/waveform-data/dist/waveform-data.js';
-import { floor, ceil } from '../helpers/utils';
+import { floor, ceil, simpleHash } from '../helpers/utils';
 
 // const click = createBitPlayer(3, i => {
 //   if (i < 100) {
@@ -170,10 +170,10 @@ export const sequencerModule = {
     Samples(this.samples, this.segmentData);
   },
   updateCurrentSegment(segment, trackUrl) {
-    const sampleName = segment.id;
+    const sampleName = segment.id + '__' + simpleHash(trackUrl);
     this.segmentData = {
       ...this.segmentData,
-      [segment.id]: {
+      [sampleName]: {
         color: segment.color,
         className: segment.className,
       },

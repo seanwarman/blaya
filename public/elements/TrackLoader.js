@@ -220,7 +220,7 @@ function segmentEvents(peaks, trackUrl) {
     const compStyle = window.getComputedStyle(document.getElementById('colour-picker'));
     segment.update(
       {
-        labelText: window.state.stepRecordModule.keysToMapNumbers[segment.pid].toUpperCase(),
+        labelText: window.state.stepRecordModule.keysToMapNumbers[window.state.stepRecordModule.currentMapNumber++].toUpperCase(),
         color: compStyle.getPropertyValue('background-color'),
         className,
       }

@@ -13,6 +13,7 @@ export const stepRecordModule = {
       'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l',
         'z', 'x', 'c', 'v', 'b', 'n', 'm',
   ],
+  currentMapNumber: 0,
   nextNoteTime: 0,
   latency: 0.2,
   currentStep: 0,
