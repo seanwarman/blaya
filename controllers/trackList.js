@@ -155,7 +155,7 @@ export const loadTrack = async (req, res) => {
     const command = new GetObjectCommand({
       Bucket: 'everest-files',
       Key: 'music/' + filePath,
-      Range: range,
+      Range: range || 'bytes=0-',
     });
 
     const {
