@@ -198,7 +198,7 @@ export const loadTrack = async (req, res) => {
       // https://superuser.com/questions/552817/fastest-way-to-convert-any-audio-file-to-low-bitrate
       '-map', '0:a:0',
       // audio bitrate
-      '-b:a', '48k',
+      '-b:a', '16k',
       // make it mono  
       '-ac', '1',
       // format mp3     
