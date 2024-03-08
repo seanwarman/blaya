@@ -2,3 +2,4 @@ node_modules
 complete
 .env
 public/track-list.js
+watchlogs
