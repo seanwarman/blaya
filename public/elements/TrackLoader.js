@@ -3,7 +3,7 @@ import * as dom from '../helpers/dom';
 
 let options = {};
 
-const MIN_PIX_PER_SEC = 30;
+const MIN_PIX_PER_SEC = 256;
 
 export function fetchPackets(url) {
   return fetch('/packets/' + url)
@@ -68,24 +68,24 @@ const themeColours = [
 
 function playerEvents(peaks) {
   const { player } = peaks;
-  document.getElementById('play-pause-track-loader').addEventListener('click', () => {
-    if (player.isPlaying()) {
-      player.pause()
-    } else {
-      player.play()
-    }
-  })
-  peaks.on('player.playing', () => {
-    document.getElementById('play-pause-track-loader').dataset.trackLoaderPlaying = true
-  });
-  peaks.on('player.pause', () => {
-    document.getElementById('play-pause-track-loader').dataset.trackLoaderPlaying = false
-  });
+  // document.getElementById('play-pause-track-loader').addEventListener('click', () => {
+  //   if (player.isPlaying()) {
+  //     player.pause()
+  //   } else {
+  //     player.play()
+  //   }
+  // })
+  // peaks.on('player.playing', () => {
+  //   document.getElementById('play-pause-track-loader').dataset.trackLoaderPlaying = true
+  // });
+  // peaks.on('player.pause', () => {
+  //   document.getElementById('play-pause-track-loader').dataset.trackLoaderPlaying = false
+  // });
 }
 
 function zoomEvents(peaks, zoomview) {
   const { zoom } = peaks;
-  zoom.setZoom(200);
+  zoom.setZoom(256);
   const incr = 15;
 
   document.getElementById('zoom-in-track-loader').addEventListener('click', () => {
@@ -303,12 +303,11 @@ export function Player(audioBuffer) {
 
 export default function TrackLoader(trackUrl, initFinished = () => {}) {
   fetchPackets(trackUrl);
-  const mediaUrl = '/load-track/' + trackUrl;
-  document.getElementById('peaks-audio').src = mediaUrl;
+  const mediaUrl = '/load-track/' + trackUrl.replace('.mp3', '.dat');
   options = {
-    mediaElement: document.getElementById('peaks-audio'),
-    webAudio: {
-      audioContext: new AudioContext(),
+    // mediaElement: document.getElementById('peaks-audio'),
+    dataUri: {
+      arraybuffer: mediaUrl,
     },
     emitCueEvents: true,
     zoomLevels: Array(4500).fill().map((_,i) => ((i+1) * 1)).slice(MIN_PIX_PER_SEC),
@@ -358,7 +357,7 @@ export default function TrackLoader(trackUrl, initFinished = () => {}) {
       zoomEvents(peaks, zoomview);
       segmentEvents(peaks, trackUrl);
       peaks.segments.removeAll();
-      document.getElementById('play-pause-track-loader').dataset.trackLoaderPlaying = false;
+      // document.getElementById('play-pause-track-loader').dataset.trackLoaderPlaying = false;
       initFinished(peaks);
     })
   })(peaks)

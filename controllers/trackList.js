@@ -154,6 +154,64 @@ export const loadTrack = async (req, res) => {
   try {
     const command = new GetObjectCommand({
       Bucket: 'everest-files',
+      Key: 'music/' + filePath.replace('.dat', '.mp3'),
+      Range: range || 'bytes=0-',
+    });
+
+    const {
+      AcceptRanges,
+      ContentLength,
+      ContentType,
+      ContentRange,
+      Body: readStream,
+    } = await s3.send(command)
+    res.writeHead(200, {
+      'Content-Type': 'application/json',
+    });
+
+    const process = spawn('audiowaveform', [
+      '--input-format', 'mp3', '--output-format', 'dat', '-b', '8', '>'
+    ]);
+    // cat Black-Mountain.mp3 | audiowaveform --input-format mp3 --output-format json > thingy.json
+
+    readStream.on('data', (data) => {
+      process.stdin.write(data);
+    });
+    readStream.on('close', (code) => {
+      if (code !== 0) {
+        console.log(`s3 process exited with code ${code}`);
+      }
+      process.stdin.end();
+    });
+    let chunks = [];
+    process.stdout.on('data', (data) => {
+      res.write(data);
+    });
+    process.stderr.on('data', (data) => {
+      console.error(`process stderr: ${data}`);
+    });
+    process.on('close', (code) => {
+      if (code !== 0) {
+        console.log(`audiowaveform process exited with code ${code}`);
+      }
+      res.status(200).end();
+    }); 
+
+  } catch (error) {
+    console.log(`S3 read error: `, error)
+    res.status(500).send(error.message)
+  }
+}
+
+export const loadTrack_ = async (req, res) => {
+  let count = 0;
+  const { s3 } = req.context
+	const filePath = req.params[0]
+  const { range } = req.headers
+
+  try {
+    const command = new GetObjectCommand({
+      Bucket: 'everest-files',
       Key: 'music/' + filePath,
       Range: range || 'bytes=0-',
     });
@@ -177,17 +235,38 @@ export const loadTrack = async (req, res) => {
     //
     //
     //
-    // **** Make a proper development/test environment ****
-    // Add a mock version of s3 to req.context that uses fs.createReadStream
-    // Create a dir with some mp3's inside and have the track list file create
-    // from reading that dir.
     //
-    // The you can go ahead and fix the issues from live with the track loader
-    // locally:
-    // - Only partial tracks getting loaded in from loadTrack FIXED
-    // - Track loader seems to run the ffmpeg command twice FIXED?
-    // - Selecting segments from various tracks causes the qwerty keys to get confused
-    // - Peaks is recreating segments rather than dragging them
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    // **** Get the waveform loading faster ****
+    //
+    // - Install `audiowaveform` (https://github.com/bbc/peaks.js/tree/master?tab=readme-ov-file#generating-waveform-data)
+    // - Have this endpoint create waveform data .dat instead from the original mp3 (no conversion)
+    // - Only load the visual waveform data of the file
+    // - If it gets the times in the segments right, we don't need it to play any sound
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
 
     const process = spawn('ffmpeg', [
        // pipe in     
