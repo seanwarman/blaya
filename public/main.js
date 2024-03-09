@@ -28,6 +28,7 @@ import Sequencer from './elements/Sequencer.js';
 import SequencerControls from './elements/SequencerControls.js';
 import TrackLoader from './elements/TrackLoader.js';
 import Samples from './elements/Samples.js';
+import Router from './elements/Router.js';
 
 import io from './node_modules/socket.io/client-dist/socket.io.esm.min.js';
 
@@ -105,6 +106,7 @@ build(state => {
 
   window.state = state
 
+  Router();
   Sequencer();
   SequencerControls();
   Samples();
@@ -135,8 +137,8 @@ build(state => {
     window.state.focussed = e.target
   })
   window.addEventListener('scroll', onScroll([onUpScroll(window.state.trackList), onDownScroll(window.state.trackList)]), false)
-  document.getElementById('close-track-loader').addEventListener('keydown', onClickOrEnter(() => document.body.dataset.showTrackLoader = false));
-  document.getElementById('close-track-loader').addEventListener('click', onClickOrEnter(() => (document.body.dataset.showTrackLoader = false)));
+  document.getElementById('close-track-loader').addEventListener('keydown', onClickOrEnter(() => document.body.dataset.showTrackLoader = !document.body.dataset.showTrackLoader));
+  document.getElementById('close-track-loader').addEventListener('click', onClickOrEnter(() => (document.body.dataset.showTrackLoader = !document.body.dataset.showTrackLoader)));
   document.getElementById('player').onended = onEndNext;
   document.getElementById('loop-region').onclick = onClickOrEnter(() => {
     const button = document.getElementById('loop-region')

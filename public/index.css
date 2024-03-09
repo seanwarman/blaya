@@ -166,7 +166,7 @@ input#search-input:focus {
 }
 
 [data-show-track-loader="true"] #playlist-container {
-  bottom: -24px;
+  /* bottom: -24px; */
 }
 
 #playlist-container[data-playlist-minimised="true"] #playlist {
@@ -257,12 +257,10 @@ body[data-playlist-mode="true"] .mode-button-playlist {
 
 #playlist-container[data-playlist-minimised="true"] .button-playlist-container {
   background-color: transparent;
-  translate: 0;
 }
 
 #playlist-container[data-playlist-minimised="false"] .button-playlist-container {
   background-color: white;
-  translate: 0 -3rem;
 }
 
 #download-button-playlist,
@@ -948,9 +946,9 @@ div#current-playing-text {
   display: none;
 }
 
-[data-show-sequencer="true"] #track-list-container {
-  padding-top: calc(100vh - 346px);
-}
+/* [data-show-sequencer="true"] #track-list-container { */
+/*   padding-top: calc(100vh - 346px); */
+/* } */
 
 #track-list-container {
   padding-bottom: 11rem;
@@ -1033,7 +1031,7 @@ div#current-playing-text {
 
   #playlist-container {
     left: auto;
-    bottom: 4.5rem;
+    /* bottom: 4.5rem; */
     right: 1rem;
     width: 30%;
     min-width: 368px;
@@ -1041,9 +1039,9 @@ div#current-playing-text {
     overflow-y: auto;
     transition: height .6s, padding .6s, box-shadow .6s, background .6s;
     margin-left: 0;
-    bottom: 4.3rem;
     box-shadow: 1px 7px 17px 0px #00000024;
     top: unset;
+    bottom: 73px;
   }
 
   #playlist-container[data-playlist-minimised="true"] {
@@ -1051,11 +1049,11 @@ div#current-playing-text {
     height: 0;
     padding-bottom: 0;
     box-shadow: 1px 7px 17px 0px #00000000;
-    bottom: 54px;
+    bottom: 55px;
   }
 
   [data-show-track-loader="true"] #playlist-container {
-    bottom: 80px;
+    bottom: 55px;
   }
 
   #playlist-container[data-playlist-minimised="false"] {
@@ -1063,7 +1061,7 @@ div#current-playing-text {
     height: 70%;
     /* padding-bottom: 5rem; */
     box-shadow: 1px 7px 17px 0px #00000024;
-    bottom: 73px;
+    bottom: 55px;
     top: unset;
     left: unset;
     right: 1rem;
@@ -1127,7 +1125,6 @@ div#current-playing-text {
   }
 
   #playlist-container[data-playlist-minimised="true"] .button-playlist-container {
-    translate: 0 -3rem;
   }
 
   #maximise-button-playlist {

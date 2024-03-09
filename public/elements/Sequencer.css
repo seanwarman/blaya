@@ -1,11 +1,16 @@
 #sequencer-container {
-  position: absolute;
+  position: fixed;
   background-color: #ffffff;
-  top: 0;
-  height: calc(100% - 346px);
+  bottom: 0vh;
+  height: calc(100% - 350px);
   width: 100%;
   z-index: 4;
   overflow: hidden;
+  /* transition: bottom .3s; */
+}
+
+[data-show-track-loader="true"] #sequencer-container {
+  bottom: 0vh;
 }
 
 .vis-content {

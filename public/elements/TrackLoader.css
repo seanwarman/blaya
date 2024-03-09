@@ -20,6 +20,10 @@
   margin-right: 2.7rem;
 }
 
+#track-loader:focus-visible {
+  outline: none;
+}
+
 @media (min-width: 768px) {
   #track-loader-controls {
     bottom: 1.7rem;
@@ -76,23 +80,24 @@
 
 #track-loader-loading,
 #track-loader {
-  height: 346px;
+  height: 350px;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  padding: 7rem 0 4rem 0;
+  padding: 5rem 0 0rem 0;
   z-index: 2;
 }
 
 [data-show-sequencer="true"] #track-loader-loading,
 [data-show-sequencer="true"] #track-loader {
-  top: unset;
-  bottom: 0;
-  z-index: 5;
+  top: 0;
+  /* bottom: 0; */
+  z-index: 2;
 }
 
 #track-loader {
+  background: white;
   cursor: crosshair;
   /* background: linear-gradient(to right, #6dffb2, #d5ffe9); */
   /* background-color: white; */
@@ -127,7 +132,7 @@
 
 [data-show-track-loader="false"] #track-loader-background,
 [data-show-track-loader="false"] #track-loader {
-  transform: translateY(110%);
+  transform: translateY(-100%);
 }
 
 #track-loader-header {
@@ -217,11 +222,14 @@
 }
 
 #close-track-loader {
-  transform: rotate(180deg);
   width: 1rem;
   position: absolute;
-  left: 2.1rem;
-  top: 1.5rem;
+  right: 2.1rem;
+  bottom: 1.5rem;
   cursor: pointer;
   z-index: 2;
+}
+
+[data-show-track-loader="false"] #close-track-loader {
+  transform: rotate(180deg);
 }

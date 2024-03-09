@@ -1,0 +1,10 @@
+#router-container {
+  top: 0;
+  position: fixed;
+  height: 350px;
+  width: 100%;
+  background-color: white;
+}
+
+#router-container #router {
+}

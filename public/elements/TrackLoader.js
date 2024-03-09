@@ -329,7 +329,7 @@ export default function TrackLoader(trackUrl, initFinished = () => {}) {
       overlay: true,
       overlayFontSize: 13,
       overlayOffset: 4,
-      markers: false,
+      markers: true,
       overlayBorderColor: '#00000000',
     },
     showAxisLabels: false,
