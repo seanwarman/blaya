@@ -85,7 +85,7 @@ function playerEvents(peaks) {
 
 function zoomEvents(peaks, zoomview) {
   const { zoom } = peaks;
-  zoom.setZoom(256);
+  zoomview.setZoom({ seconds: 'auto' });
   const incr = 15;
 
   document.getElementById('zoom-in-track-loader').addEventListener('click', () => {
@@ -165,14 +165,8 @@ function segmentEvents(peaks, trackUrl) {
   })
   peaks.on('segments.exit', (e) => {
     if (!playingSegment) return;
-    const { segment } = e
-    const button = document.getElementById('loop-region')
-    if (button.dataset.loopRegion === 'true') {
-      player.seek(segment.startTime)
-    } else {
-      player.pause()
-      playingSegment = false;
-    }
+    player.pause()
+    playingSegment = false;
   })
   peaks.on('segments.mouseleave', () => {
     const italic = document.getElementById('italic-track-loader')
@@ -198,8 +192,6 @@ function segmentEvents(peaks, trackUrl) {
   peaks.on('segments.add', e => {
     const { segments } = e;
     const [segment] = segments;
-    console.log(`@FILTER segment:`, segment)
-    // peaks.segments.getSegments().map((s,i) => { s.update({ labelText: '' }); });
     function rndm() {
       const min = 0;
       const max = 48;
@@ -305,7 +297,7 @@ export default function TrackLoader(trackUrl, initFinished = () => {}) {
   fetchPackets(trackUrl);
   const mediaUrl = '/load-track/' + trackUrl.replace('.mp3', '.dat');
   options = {
-    // mediaElement: document.getElementById('peaks-audio'),
+    mediaElement: document.getElementById('peaks-audio'),
     dataUri: {
       arraybuffer: mediaUrl,
     },
@@ -328,7 +320,7 @@ export default function TrackLoader(trackUrl, initFinished = () => {}) {
       overlay: true,
       overlayFontSize: 13,
       overlayOffset: 4,
-      markers: true,
+      markers: false,
       overlayBorderColor: '#00000000',
     },
     showAxisLabels: false,

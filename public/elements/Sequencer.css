@@ -1,15 +1,15 @@
 #sequencer-container {
   position: fixed;
   background-color: #ffffff;
-  bottom: 0vh;
-  height: calc(100% - 350px);
+  bottom: -100vh;
+  height: calc(100% - var(--top-split-height));
   width: 100%;
   z-index: 4;
   overflow: hidden;
-  /* transition: bottom .3s; */
+  transition: bottom .5s;
 }
 
-[data-show-track-loader="true"] #sequencer-container {
+[data-show-sequencer="true"] #sequencer-container {
   bottom: 0vh;
 }
 
@@ -71,4 +71,12 @@
 .items-panel .side {
   display: flex;
   justify-content: center;
+}
+
+[data-show-sequencer="true"] #show-sequencer-toggle {
+  background-color: var(--brand);
+}
+
+[data-show-sequencer="false"] #show-sequencer-toggle {
+  background-color: var(--button-neutral-colour);
 }

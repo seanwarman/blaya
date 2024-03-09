@@ -1,16 +1,14 @@
 #track-loader-controls-container {
   width: 100%;
   border-top: 3px solid #6f73ff;
-  height: 100%;
-  margin-top: 1.3rem;
   background-color: white;
+  position: absolute;
+  bottom: 0;
+  align-items: center;
+  padding: 1.5rem;
 }
 
 #track-loader-controls {
-  position: absolute;
-  bottom: 1.2rem;
-  left: 1rem;
-  z-index: 2;
   display: flex;
 }
 
@@ -80,12 +78,12 @@
 
 #track-loader-loading,
 #track-loader {
-  height: 350px;
+  height: var(--top-split-height);
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  padding: 5rem 0 0rem 0;
+  padding: 6rem 0 0rem 0;
   z-index: 2;
 }
 
@@ -98,11 +96,11 @@
 
 #track-loader {
   background: white;
-  cursor: crosshair;
+  cursor: text;
   /* background: linear-gradient(to right, #6dffb2, #d5ffe9); */
   /* background-color: white; */
   /* border-top: 3px solid #6f73ff; */
-  /* box-shadow: 0px 7px 20px 5px #0000000d; */
+  box-shadow: 0px 7px 20px 5px #0000000d;
   transition: transform .5s;
 }
 
@@ -121,7 +119,7 @@
 
 @media (min-width: 768px) {
   #track-loader {
-    /* box-shadow: 0px 7px 20px 5px #00000021; */
+    box-shadow: 0px 7px 20px 5px #00000021;
   }
 }
 
@@ -132,7 +130,8 @@
 
 [data-show-track-loader="false"] #track-loader-background,
 [data-show-track-loader="false"] #track-loader {
-  transform: translateY(-100%);
+  /* This is 108 rather that 100 to hide the bottom box shadow */
+  transform: translateY(-108%);
 }
 
 #track-loader-header {
@@ -225,7 +224,7 @@
   width: 1rem;
   position: absolute;
   right: 2.1rem;
-  bottom: 1.5rem;
+  bottom: 1.8rem;
   cursor: pointer;
   z-index: 2;
 }

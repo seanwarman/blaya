@@ -140,10 +140,6 @@ build(state => {
   document.getElementById('close-track-loader').addEventListener('keydown', onClickOrEnter(() => document.body.dataset.showTrackLoader = !document.body.dataset.showTrackLoader));
   document.getElementById('close-track-loader').addEventListener('click', onClickOrEnter(() => (document.body.dataset.showTrackLoader = !document.body.dataset.showTrackLoader)));
   document.getElementById('player').onended = onEndNext;
-  document.getElementById('loop-region').onclick = onClickOrEnter(() => {
-    const button = document.getElementById('loop-region')
-    button.dataset.loopRegion = `${button.dataset.loopRegion !== 'true'}`
-  })
   document.getElementById('next-button').onclick = onClickOrEnter(onNext)
   document.getElementById('next-button').onkeydown = onClickOrEnter(onNext)
   document.getElementById('prev-button').onclick = onClickOrEnter(onPrev)
