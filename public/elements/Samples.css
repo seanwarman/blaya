@@ -1,7 +1,16 @@
 #samples-container.items {
   display: grid;
-  grid-gap: 1rem;
-  grid-template-columns: repeat(10, 47px);
+  grid-template-columns: repeat(30, 18px);
+  column-gap: 0.3rem;
+  row-gap: 1rem;
+}
+
+#samples-container.items .sample:nth-of-type(11) {
+  grid-column: 2 / span 3;
+}
+
+#samples-container.items .sample:nth-of-type(20) {
+  grid-column: 3 / span 3;
 }
 
 #samples-container.items .sample {
@@ -9,6 +18,7 @@
   width: 53px;
   height: 46px;
   overflow: hidden;
+  grid-column: auto / span 3;
 }
 
 #samples-container.items .sample:after {
