@@ -88,12 +88,12 @@ export default function Samples(samples = [], segmentData = {}) {
       `
     });
   };
-  const sampleNames = Object.keys(samples).filter(name => samples[name]);
+  const sampleNames = Object.keys(samples).filter(name => samples[name] || samples[name] === null);
   const itemsElement = dom.div({
     id,
     className: 'items',
     children: ['Q','W','E','R','T','Y','U','I','O','P','A','S','D','F','G','H','J','K','L','Z','X','C','V','B','N','M'].map((k,i) => {
-      if (sampleNames[i]) return makeRealSample(sampleNames[i], i);
+      if (sampleNames[i] && samples[sampleNames[i]]) return makeRealSample(sampleNames[i], i);
       return makeFakeSample(k, i);
     }).filter(Boolean),
   });

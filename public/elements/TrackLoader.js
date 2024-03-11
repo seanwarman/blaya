@@ -146,6 +146,11 @@ function zoomEvents(peaks, zoomview) {
 }
 
 function segmentEvents(peaks, trackUrl) {
+  window.addEventListener('deletesample', e => {
+    // This isn't really a segment, should rename it
+    const { segment } = e;
+    peaks.segments.removeById(segment.name.split('__')[0]);
+  });
   const italic = document.getElementById('italic-track-loader')
   if (italic.dataset.selectorActive === 'true') {
     peaks.views.getView('zoomview').setWaveformDragMode('insert-segment')

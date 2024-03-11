@@ -190,6 +190,8 @@ function handleDragStart(event) {
   event.dataTransfer.setData('text', JSON.stringify(item));
 }
 
+const deleteSampleE = new Event('deletesample', { bubbles: true });
+
 export default function Sequencer() {
   const id = 'sequencer-container';
   document.getElementById(id).replaceWith(div({
@@ -202,7 +204,12 @@ export default function Sequencer() {
         <div id="sequencer-controls"></div>
         <div class="items-panel">
           <div class="side-left">
-            <div class="drag-over-icon" ondragover="this.classList.add('highlight')" ondragleave="this.classList.remove('highlight')" ondragend="this.classList.remove('highlight')">
+            <div class="drag-over-icon"
+              ondragover="event.preventDefault();this.classList.add('highlight')"
+              ondragenter="event.preventDefault()"
+              ondragleave="this.classList.remove('highlight')"
+              ondragend="this.classList.remove('highlight')"
+            >
               <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" width="24" height="24"><defs><style>.cls-6374f8d9b67f094e4896c66b-1{fill:none;stroke:currentColor;stroke-miterlimit:10;}</style></defs><path class="cls-6374f8d9b67f094e4896c66b-1" d="M16.88,22.5H7.12a1.9,1.9,0,0,1-1.9-1.8L4.36,5.32H19.64L18.78,20.7A1.9,1.9,0,0,1,16.88,22.5Z"></path><line class="cls-6374f8d9b67f094e4896c66b-1" x1="2.45" y1="5.32" x2="21.55" y2="5.32"></line><path class="cls-6374f8d9b67f094e4896c66b-1" d="M10.09,1.5h3.82a1.91,1.91,0,0,1,1.91,1.91V5.32a0,0,0,0,1,0,0H8.18a0,0,0,0,1,0,0V3.41A1.91,1.91,0,0,1,10.09,1.5Z"></path><line class="cls-6374f8d9b67f094e4896c66b-1" x1="12" y1="8.18" x2="12" y2="19.64"></line><line class="cls-6374f8d9b67f094e4896c66b-1" x1="15.82" y1="8.18" x2="15.82" y2="19.64"></line><line class="cls-6374f8d9b67f094e4896c66b-1" x1="8.18" y1="8.18" x2="8.18" y2="19.64"></line></svg>
             </div>
           </div>
@@ -219,6 +226,11 @@ export default function Sequencer() {
     const container = document.getElementById('sequencer');
     initTimeline(container);
     requestAnimationFrame(draw);
+  });
+  document.querySelector('.drag-over-icon').addEventListener('drop', e => {
+    document.querySelector('.drag-over-icon').classList.remove('highlight');
+    const segment = JSON.parse(e.dataTransfer.getData('text'));
+    window.dispatchEvent(Object.assign(deleteSampleE, { segment }));
   });
 }
 

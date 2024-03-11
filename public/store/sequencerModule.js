@@ -159,6 +159,11 @@ export const sequencerModule = {
   setPackets(packets) {
     this.packets = packets;
   },
+  deleteSample(segmentId) {
+    this.samples[segmentId] = null;
+    window.state.stepRecordModule.setKeymaps(this.samples);
+    Samples(this.samples, this.segmentData);
+  },
   sampleCount: 1,
   setSamples(samples) {
     this.samples = {
@@ -170,7 +175,7 @@ export const sequencerModule = {
     Samples(this.samples, this.segmentData);
   },
   updateCurrentSegment(segment, trackUrl) {
-    const sampleName = segment.id + '__' + simpleHash(trackUrl);
+    const sampleName = segment.id + '__' + simpleHash(trackUrl) + String(Date.now());
     this.segmentData = {
       ...this.segmentData,
       [sampleName]: {
@@ -313,6 +318,10 @@ export const sequencerModule = {
     return newCanvas;
   },
 };
+
+window.addEventListener('deletesample', e => {
+  sequencerModule.deleteSample(e.segment.name);
+});
 
 function createBitPlayer(length, mapBuffer) {
   if (!window.state.sequencerModule.audioContext)

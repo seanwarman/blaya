@@ -73,6 +73,7 @@ window.addEventListener('keydown', (e) => {
 });
 
 function playSample(sampleName, time) {
+  if (!window.state.sequencerModule.samples[sampleName]) return;
   const prepare = window.state.sequencerModule.samples[sampleName](time);
   window.state.sequencerModule.samples[sampleName] = prepare();
 }
