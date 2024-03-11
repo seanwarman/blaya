@@ -4,6 +4,7 @@
   --brand-lighter: #9497ff;
   --button-neutral-colour: #f0f0f0;
   --green-gradient: linear-gradient(to right, #6dffb2, #d5ffe9);
+  --transition-time: .5s;
 }
 
 @media (min-width: 768px) {

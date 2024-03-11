@@ -42,8 +42,9 @@ function LoadTrack() {
       e.stopPropagation()
       Array.from(document.getElementsByClassName('menu-items')).map(el => el.classList?.add('closed'))
       document.getElementById('peaks-audio').pause()
-      window.state.loadingTrack = true
-      document.body.dataset.showTrackLoader = true
+      window.state.loadingTrack = true;
+      document.body.dataset.showTrackLoader = true;
+      document.body.dataset.showSequencer = true;
       const els = document.querySelectorAll('#selection-container .track-non-tab')
       if (window.state.trackLoader) window.state.trackLoader.destroy()
       const trackUrl = els[0].dataset.href

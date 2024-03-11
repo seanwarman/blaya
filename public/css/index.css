@@ -36,6 +36,7 @@ header {
   display: none;
 }
 
+[data-show-sequencer="true"] .open-upload-modal-button,
 [data-show-track-loader="true"] .open-upload-modal-button {
   display: none;
 }
@@ -221,6 +222,7 @@ button.button-circle-transparent {
   box-shadow: none;
 }
 
+[data-show-sequencer="true"] .mode-button-playlist,
 [data-show-track-loader="true"] .mode-button-playlist {
   display: none;
 }
@@ -239,7 +241,15 @@ button.button-circle-transparent {
 }
 
 body[data-playlist-mode="true"] .mode-button-playlist {
-  background: #9497ff;
+  background: var(--brand-lighter);
+}
+
+.open-track-loader {
+  margin-left: 1rem;
+}
+
+[data-show-track-loader="true"] .open-track-loader {
+  background: var(--brand-lighter);
 }
 
 .button-playlist-container {
@@ -950,12 +960,14 @@ div#current-playing-text {
   display: none;
 }
 
-[data-show-track-loader="true"] #track-list-container {
-  padding-top: var(--top-split-height);
-}
-
 #track-list-container {
   padding-bottom: 11rem;
+  padding-top: 0;
+  transition: padding-top var(--transition-time);
+}
+
+[data-show-track-loader="true"] #track-list-container {
+  padding-top: var(--top-split-height);
 }
 
 #track-list-container #playlist-remove-from-playlist-menu-item {
@@ -1008,6 +1020,8 @@ div#current-playing-text {
   #clear-search-button svg {
     width: 1rem;
   }
+
+
 
   .mode-button-playlist {
     width: 40px;

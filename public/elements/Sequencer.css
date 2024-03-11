@@ -83,7 +83,7 @@
   justify-content: center;
 }
 
-#show-sequencer-toggle {
+[data-show-sequencer="false"] #show-sequencer-toggle {
   display: none;
 }
 
