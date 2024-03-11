@@ -137,8 +137,6 @@ build(state => {
     window.state.focussed = e.target
   })
   window.addEventListener('scroll', onScroll([onUpScroll(window.state.trackList), onDownScroll(window.state.trackList)]), false)
-  document.getElementById('close-track-loader').addEventListener('keydown', onClickOrEnter(() => document.body.dataset.showTrackLoader = !document.body.dataset.showTrackLoader));
-  document.getElementById('close-track-loader').addEventListener('click', onClickOrEnter(() => (document.body.dataset.showTrackLoader = !document.body.dataset.showTrackLoader)));
   document.getElementById('player').onended = onEndNext;
   document.getElementById('next-button').onclick = onClickOrEnter(onNext)
   document.getElementById('next-button').onkeydown = onClickOrEnter(onNext)

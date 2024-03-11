@@ -32,6 +32,10 @@ header {
   z-index: 1000;
 }
 
+.button-container-left {
+  display: flex;
+}
+
 .open-upload-modal-button-container {
   display: none;
 }
@@ -246,6 +250,7 @@ body[data-playlist-mode="true"] .mode-button-playlist {
 
 .open-track-loader {
   margin-left: 1rem;
+  display: none;
 }
 
 [data-show-track-loader="true"] .open-track-loader {
@@ -513,7 +518,7 @@ body[data-playlist-mode="false"] .add-to-playlist {
 
 .add-to-playlist-icon {
   height:1rem;
-  content: url(public/icons/plus-solid.svg);
+  content: url(../icons/plus-solid.svg);
   -webkit-user-select: none;
   -moz-user-select: none;
   user-select: none;
@@ -521,7 +526,7 @@ body[data-playlist-mode="false"] .add-to-playlist {
 
 #selection-container .track-name-album-container + .add-to-playlist .add-to-playlist-icon,
 #selection-container .track-name-album-container:focus + .add-to-playlist .add-to-playlist-icon {
-  content: url(public/icons/plus-solid-white.svg);
+  content: url(../icons/plus-solid-white.svg);
   margin-left: -4px;
 }
 
@@ -532,17 +537,17 @@ body[data-playlist-mode="false"] .add-to-playlist {
 
 .downloaded .add-to-playlist-icon {
   height:1rem;
-  content: url(public/icons/plus-solid-white.svg);
+  content: url(../icons/plus-solid-white.svg);
 }
 
 .remove-from-playlist-icon {
-  content: url(public/icons/minus-solid.svg);
+  content: url(../icons/minus-solid.svg);
   height: 0.8rem;
 }
 
 #playlist #selection-container .track .remove-from-playlist-icon,
 .downloaded .remove-from-playlist-icon {
-  content: url(public/icons/minus-solid-white.svg);
+  content: url(../icons/minus-solid-white.svg);
   height: 0.8rem;
 }
 
@@ -873,20 +878,23 @@ div#current-playing-text {
   justify-content: center;
   align-items: center;
   position: fixed;
-  z-index: 4;
+  z-index: 1000;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   background-color: #00000024;
+  padding: 2rem;
 }
 
 #upload-modal form {
-  display: grid;
-  grid-template-rows: 4rem 67% 2rem 2rem;
+  /* display: grid; */
+  /* grid-template-rows: 4rem 67% 2rem 2rem; */
+  /* grid-gap: 1rem; */
+  display: flex;
+  flex-direction: column;
   width: 100%;
   height: 100%;
-  grid-gap: 1rem;
   box-shadow: 1px 7px 17px 0px #00000024;
   padding: 2rem;
   background-color: white;
@@ -900,6 +908,8 @@ div#current-playing-text {
   font-weight: 600;
   border: 1px solid #ededed;
   border-radius: 5px;
+  height: 100%;
+  margin-bottom: 2rem;
 }
 
 #upload-files-list ol {
@@ -940,6 +950,7 @@ div#current-playing-text {
   font-size: 13.333px;
   font-weight: 400;
   text-align: center;
+  margin-bottom: 1rem;
 }
 
 #upload-modal .choose-files-button input[type="file"] {
@@ -998,6 +1009,10 @@ div#current-playing-text {
   .open-upload-modal-button-container {
     display: flex;
     justify-content: end;
+  }
+
+  .open-track-loader {
+    display: block;
   }
 
   #upload-modal form {
@@ -1170,8 +1185,7 @@ div#current-playing-text {
   }
 
   #upload-modal form {
-    width: 50%;
-    max-height: 96%;
+    width: 690px;
     margin: unset;
   }
 }
