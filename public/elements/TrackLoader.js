@@ -215,9 +215,11 @@ function segmentEvents(peaks, trackUrl) {
       document.body.prepend(newColourPicker);
     }
     const compStyle = window.getComputedStyle(document.getElementById('colour-picker'));
+    const keyMap = window.state.stepRecordModule.getNextFreeKeyMap();
     segment.update(
       {
-        labelText: window.state.stepRecordModule.keysToMapNumbers[window.state.stepRecordModule.currentMapNumber++].toUpperCase(),
+        labelText: keyMap,
+        keyMap,
         color: compStyle.getPropertyValue('background-color'),
         className,
       }

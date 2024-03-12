@@ -161,7 +161,6 @@ export const sequencerModule = {
   },
   deleteSample(segmentId) {
     this.samples[segmentId] = null;
-    delete this.segmentData[segmentId];
     window.state.stepRecordModule.setKeymaps(this.samples);
     Samples(this.samples, this.segmentData);
   },
@@ -195,8 +194,11 @@ export const sequencerModule = {
     this.segmentData = {
       ...this.segmentData,
       [sampleName]: {
-        color: segment.color,
+        id: segment.id,
+        keyMap: segment.keyMap,
         className: segment.className,
+        color: segment.color,
+        sampleName,
       },
     };
     const startI = this.packets.findIndex(packet => {

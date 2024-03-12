@@ -46,7 +46,14 @@ export const stepRecordModule = {
   },
   getTime() {
     return window.state.sequencerModule.audioContext.currentTime;
-  }
+  },
+  getNextFreeKeyMap() {
+    const [sampleName] = Object.entries(window.state.sequencerModule.samples || {}).find(([,value]) => value === null) || [];
+    if (sampleName) {
+      return window.state.sequencerModule.segmentData[sampleName].keyMap;
+    }
+    return this.keysToMapNumbers[this.currentMapNumber++].toUpperCase();
+  },
 };
 
 window.addEventListener('keydown', (e) => {
