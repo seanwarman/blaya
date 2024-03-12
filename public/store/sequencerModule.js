@@ -169,15 +169,18 @@ export const sequencerModule = {
   setSamples(samples) {
     let newSamples = Object.entries(samples);
     let oldSamples = Object.entries(this.samples)
-    oldSamples.forEach(([, value], i) => {
-      if (value === null) {
+    oldSamples.forEach(([key, value], i) => {
+      if (samples[key]) {
+        oldSamples[i] = [key, samples[key]];
+        newSamples = newSamples.filter(([k]) => k !== key);
+      } else if (value === null) {
         oldSamples[i] = newSamples.pop();
       }
     });
     newSamples.forEach(([key, value]) => {
       oldSamples.push([key, value]);
     });
-    this.samples = oldSamples.reduce((samples, [key, value]) => {
+    this.samples = oldSamples.filter(Boolean).reduce((samples, [key, value]) => {
       return {
         ...samples,
         [key]: value,
@@ -188,7 +191,7 @@ export const sequencerModule = {
     Samples(this.samples, this.segmentData);
   },
   updateCurrentSegment(segment, trackUrl) {
-    const sampleName = segment.id + '__' + simpleHash(trackUrl) + String(Date.now());
+    const sampleName = segment.id + '__' + simpleHash(trackUrl);
     this.segmentData = {
       ...this.segmentData,
       [sampleName]: {
