@@ -229,7 +229,8 @@ export default function Sequencer() {
   });
   document.querySelector('.drag-over-icon').addEventListener('drop', e => {
     document.querySelector('.drag-over-icon').classList.remove('highlight');
-    const segment = JSON.parse(e.dataTransfer.getData('text'));
+    const visItem = JSON.parse(e.dataTransfer.getData('text'));
+    const segment = window.state.sequencerModule.segmentData[visItem.name];
     window.dispatchEvent(Object.assign(deleteSampleE, { segment }));
   });
 }

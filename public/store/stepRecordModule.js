@@ -1,3 +1,5 @@
+import { KEY_MAPS } from '../constants';
+
 export const stepRecordModule = {
   // { name: sampleName, time: number }[]
   looper: [],
@@ -48,9 +50,9 @@ export const stepRecordModule = {
     return window.state.sequencerModule.audioContext.currentTime;
   },
   getNextFreeKeyMap() {
-    const [sampleName] = Object.entries(window.state.sequencerModule.samples || {}).find(([,value]) => value === null) || [];
-    if (sampleName) {
-      return window.state.sequencerModule.segmentData[sampleName].keyMap;
+    const keyMap = KEY_MAPS.find(k => !window.state.sequencerModule.samples[k]);
+    if (keyMap) {
+      return keyMap;
     }
     return this.keysToMapNumbers[this.currentMapNumber++].toUpperCase();
   },
@@ -64,19 +66,16 @@ window.addEventListener('keydown', (e) => {
     // return recordSequence();
   }
 
-  window.state.stepRecordModule.keymaps[
-    window.state.stepRecordModule.keysToMapNumbers.findIndex((l) => l === e.key)
-  ]?.forEach((sampleName) => {
-    if (window.state.sequencerModule.isRecording) {
-      window.state.sequencerModule.setSequence(
-        window.state.sequencerModule.currentStepSnapped,
-        window.state.sequencerModule.getSelectedStepLengthFromTimeSeconds(window.state.sequencerModule.samples[sampleName].duration),
-        sampleName
-      );
-    }
-    playSample(sampleName);
-    // recordSequence(sampleName);
-  });
+  const keyMap = e.key.toUpperCase();
+
+  if (window.state.sequencerModule.isRecording) {
+    window.state.sequencerModule.setSequence(
+      window.state.sequencerModule.currentStepSnapped,
+      window.state.sequencerModule.getSelectedStepLengthFromTimeSeconds(window.state.sequencerModule.samples[keyMap].duration),
+      keyMap
+    );
+  }
+  playSample(keyMap);
 });
 
 function playSample(sampleName, time) {

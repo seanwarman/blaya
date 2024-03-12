@@ -1,5 +1,6 @@
 import '../node_modules/peaks.js/dist/peaks.js';
 import * as dom from '../helpers/dom.js'
+import { KEY_MAPS } from '../constants.js';
 
 const id = 'samples-container';
 const timeoutRefs = {};
@@ -28,7 +29,7 @@ function onDragStart(event) {
 }
 
 export default function Samples(samples = [], segmentData = {}) {
-  const makeRealSample = (name, i) => {
+  const makeActiveSample = (name) => {
     const visItem = dom.div({
       draggable: true,
       dataset: {
@@ -53,7 +54,7 @@ export default function Samples(samples = [], segmentData = {}) {
               top: 0;
               left: 2px;
               font-size: 0.8rem;
-            ">${window.state.stepRecordModule.keysToMapNumbers[i].toUpperCase()}</span>
+            ">${name}</span>
             <canvas width="10000" data-sample-name="${name}" style="height:30px;margin-left:-12px;margin-right-5px"></canvas>
           </div>
         </div>
@@ -77,7 +78,7 @@ export default function Samples(samples = [], segmentData = {}) {
       return newElement;
     }
   };
-  const makeFakeSample = (key, i) => {
+  const makeGreyedOutSample = (key, i) => {
     return dom.div({
       className: 'sample',
       style: 'height: 46px',
@@ -88,13 +89,12 @@ export default function Samples(samples = [], segmentData = {}) {
       `
     });
   };
-  const sampleNames = Object.keys(samples).filter(name => samples[name] || samples[name] === null);
   const itemsElement = dom.div({
     id,
     className: 'items',
-    children: ['Q','W','E','R','T','Y','U','I','O','P','A','S','D','F','G','H','J','K','L','Z','X','C','V','B','N','M'].map((k,i) => {
-      if (sampleNames[i] && samples[sampleNames[i]]) return makeRealSample(sampleNames[i], i);
-      return makeFakeSample(k, i);
+    children: KEY_MAPS.map((k,i) => {
+      if (samples[k]) return makeActiveSample(k);
+      return makeGreyedOutSample(k, i);
     }).filter(Boolean),
   });
 
