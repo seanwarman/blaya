@@ -161,15 +161,28 @@ export const sequencerModule = {
   },
   deleteSample(segmentId) {
     this.samples[segmentId] = null;
+    delete this.segmentData[segmentId];
     window.state.stepRecordModule.setKeymaps(this.samples);
     Samples(this.samples, this.segmentData);
   },
   sampleCount: 1,
   setSamples(samples) {
-    this.samples = {
-      ...this.samples,
-      ...samples,
-    };
+    let newSamples = Object.entries(samples);
+    let oldSamples = Object.entries(this.samples)
+    oldSamples.forEach(([, value], i) => {
+      if (value === null) {
+        oldSamples[i] = newSamples.pop();
+      }
+    });
+    newSamples.forEach(([key, value]) => {
+      oldSamples.push([key, value]);
+    });
+    this.samples = oldSamples.reduce((samples, [key, value]) => {
+      return {
+        ...samples,
+        [key]: value,
+      };
+    }, {});
     window.state.stepRecordModule.setKeymaps(this.samples);
     // Add samples to ui
     Samples(this.samples, this.segmentData);
