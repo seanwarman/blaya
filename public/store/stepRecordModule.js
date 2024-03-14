@@ -78,8 +78,13 @@ window.addEventListener('keydown', (e) => {
   Array.from(document.querySelectorAll('#samples-container .vis-selected')).forEach(el => el.classList.remove('vis-selected'));
   const sampleEl = document.querySelector(`#samples-container [data-name="${keyMap}"].vis-item`);
   sampleEl.classList.add('vis-selected');
+
+  // TODO: Put this in a listener
+  const gainRange = document.getElementById('sample-gain');
+  gainRange.value = window.state.sequencerModule.sampleParams[sampleEl.dataset.name].gain;
   const pitchRange = document.getElementById('sample-pitch');
   pitchRange.value = window.state.sequencerModule.sampleParams[sampleEl.dataset.name].detune;
+
   playSample(keyMap);
 });
 

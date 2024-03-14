@@ -218,12 +218,25 @@ export default function Sequencer() {
             </div>
           </div>
           <div class="side-right">
-            <input id="sample-pitch" type="range" step="1" min="-2000" max="2000" value="0" oninput="
-              const { value } = event.target;
-              const sampleName = document.getElementsByClassName('vis-selected')[0].dataset.name;
-              if (!sampleName) return;
-              window.state.sequencerModule.sampleParams[sampleName].detune = Number(value);
-            "/>
+            <div>
+              <div>Volume</div>
+              <input id="sample-gain" type="range" step="0.1" min="0" max="5" value="1" oninput="
+                const { value } = event.target;
+                console.log(value);
+                const sampleName = document.getElementsByClassName('vis-selected')[0].dataset.name;
+                if (!sampleName) return;
+                window.state.sequencerModule.sampleParams[sampleName].gain = Number(value);
+              "/>
+            </div>
+            <div>
+              <div>Pitch</div>
+              <input id="sample-pitch" type="range" step="1" min="-2000" max="2000" value="0" oninput="
+                const { value } = event.target;
+                const sampleName = document.getElementsByClassName('vis-selected')[0].dataset.name;
+                if (!sampleName) return;
+                window.state.sequencerModule.sampleParams[sampleName].detune = Number(value);
+              "/>
+            </div>
           </div>
         </div>
       </div>

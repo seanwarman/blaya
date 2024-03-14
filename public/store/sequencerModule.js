@@ -242,7 +242,7 @@ export const sequencerModule = {
       return response;
     }).then(prepare => {
       if (!this.sampleParams[sampleName]) {
-        this.sampleParams[sampleName] = { detune: 0 };
+        this.sampleParams[sampleName] = { detune: 0, gain: 1 };
       }
       this.setSamples({
         [sampleName]: prepare(),
@@ -417,11 +417,16 @@ export function createFetchPlayer(sampleName, { url, range }, responseHandler) {
   .then(async audioBuffer => {
     return function prepare() {
       const source = context.createBufferSource();
+      const gainNode = context.createGain();
       const duration = audioBuffer.duration;
       source.buffer = audioBuffer;
-      source.connect(context.destination);
-      let start = function(startTime, endTime, sampleParams = { detune: 0 }) {
+      source.connect(gainNode);
+      gainNode.connect(context.destination);
+      let start = function(startTime, endTime, sampleParams = { detune: 0, gain: 1 }) {
         window.dispatchEvent(Object.assign(playEvent, { sampleName }));
+        if (typeof sampleParams.gain === 'number') {
+          gainNode.gain.value = sampleParams.gain;
+        }
         if (typeof sampleParams.detune === 'number') {
           source.detune.value = sampleParams.detune;
         }
