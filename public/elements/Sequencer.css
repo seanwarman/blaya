@@ -113,19 +113,19 @@
   justify-content: center;
 }
 
-[data-show-track-loader="false"] #show-sequencer-toggle {
-  display: none;
+#show-sequencer-toggle {
+  display: block;
 }
 
 [data-show-sequencer="true"] #show-sequencer-toggle {
   display: block;
 }
 
-@media (min-width: 768px) {
-  [data-show-track-loader="true"] #show-sequencer-toggle {
-    display: block;
-  }
-}
+/* @media (min-width: 768px) { */
+/*   [data-show-track-loader="true"] #show-sequencer-toggle { */
+/*     display: block; */
+/*   } */
+/* } */
 
 [data-show-sequencer="true"] #show-sequencer-toggle {
   background-color: var(--brand-lighter);
@@ -134,3 +134,9 @@
 [data-show-sequencer="false"] #show-sequencer-toggle {
   background-color: var(--button-neutral-colour);
 }
+
+/* @media (min-width: 768px) { */
+/*   [data-show-track-loader="false"] #show-sequencer-toggle { */
+/*     display: none; */
+/*   } */
+/* } */

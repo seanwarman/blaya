@@ -189,6 +189,8 @@ export const sequencerModule = {
     // Add samples to ui
     Samples(this.samples, this.segmentData);
   },
+//sampleParams: { [sampleName]: { detune } }
+  sampleParams: {},
   updateCurrentSegment(segment, trackUrl) {
     const sampleName = segment.keyMap;
     this.segmentData = {
@@ -239,6 +241,9 @@ export const sequencerModule = {
         });
       return response;
     }).then(prepare => {
+      if (!this.sampleParams[sampleName]) {
+        this.sampleParams[sampleName] = { detune: 0 };
+      }
       this.setSamples({
         [sampleName]: prepare(),
       });
@@ -308,7 +313,7 @@ export const sequencerModule = {
         const step = this.sequence[currentStep][i];
         const startTime = time + (this.getStepLength() * step.delay);
         if (this.samples[step.name]) {
-          const prepare = this.samples[step.name](startTime, startTime + step.endTime);
+          const prepare = this.samples[step.name](startTime, startTime + step.endTime, this.sampleParams[step.name]);
           this.samples[step.name] = prepare();
         }
       }
@@ -415,8 +420,11 @@ export function createFetchPlayer(sampleName, { url, range }, responseHandler) {
       const duration = audioBuffer.duration;
       source.buffer = audioBuffer;
       source.connect(context.destination);
-      let start = function(startTime, endTime) {
+      let start = function(startTime, endTime, sampleParams = { detune: 0 }) {
         window.dispatchEvent(Object.assign(playEvent, { sampleName }));
+        if (typeof sampleParams.detune === 'number') {
+          source.detune.value = sampleParams.detune;
+        }
         source.start(startTime /*, cueStart */);
         if (endTime) source.stop(endTime);
         return prepare;

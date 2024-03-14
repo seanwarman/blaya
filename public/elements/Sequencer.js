@@ -217,7 +217,14 @@ export default function Sequencer() {
             <div id="samples-container" class="items">
             </div>
           </div>
-          <div class="side-right"></div>
+          <div class="side-right">
+            <input id="sample-pitch" type="range" step="1" min="-2000" max="2000" value="0" oninput="
+              const { value } = event.target;
+              const sampleName = document.getElementsByClassName('vis-selected')[0].dataset.name;
+              if (!sampleName) return;
+              window.state.sequencerModule.sampleParams[sampleName].detune = Number(value);
+            "/>
+          </div>
         </div>
       </div>
     `,

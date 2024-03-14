@@ -75,12 +75,17 @@ window.addEventListener('keydown', (e) => {
       keyMap
     );
   }
+  Array.from(document.querySelectorAll('#samples-container .vis-selected')).forEach(el => el.classList.remove('vis-selected'));
+  const sampleEl = document.querySelector(`#samples-container [data-name="${keyMap}"].vis-item`);
+  sampleEl.classList.add('vis-selected');
+  const pitchRange = document.getElementById('sample-pitch');
+  pitchRange.value = window.state.sequencerModule.sampleParams[sampleEl.dataset.name].detune;
   playSample(keyMap);
 });
 
 function playSample(sampleName, time) {
   if (!window.state.sequencerModule.samples[sampleName]) return;
-  const prepare = window.state.sequencerModule.samples[sampleName](time);
+  const prepare = window.state.sequencerModule.samples[sampleName](time, null, window.state.sequencerModule.sampleParams[sampleName]);
   window.state.sequencerModule.samples[sampleName] = prepare();
 }
 

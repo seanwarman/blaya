@@ -6,6 +6,8 @@
   --green-gradient: linear-gradient(to right, #6dffb2, #d5ffe9);
   --transition-time: .5s;
   --black: #353535;
+  --header-height-desktop: 82px;
+  --header-height-mobile: 105.59px;
 }
 
 @media (min-width: 768px) {

@@ -96,6 +96,7 @@ img.svg {
   position: relative;
   width: 100%;
   margin: 0.3rem 0;
+  padding: none;
 }
 
 input#search-input {
@@ -229,6 +230,11 @@ button.button-circle-transparent {
 [data-show-sequencer="true"] .mode-button-playlist,
 [data-show-track-loader="true"] .mode-button-playlist {
   display: none;
+}
+
+.mode-button-playlist {
+  display: none;
+  margin-left: 1rem;
 }
 
 .mode-button-playlist:hover {
@@ -974,11 +980,19 @@ div#current-playing-text {
 #track-list-container {
   padding-bottom: 11rem;
   padding-top: 0;
-  transition: padding-top var(--transition-time);
+  transition: margin-top var(--transition-time);
 }
 
 [data-show-track-loader="true"] #track-list-container {
-  padding-top: var(--top-split-height);
+  margin-top: calc(var(--top-split-height) - var(--header-height-mobile));
+  padding-top: 3px;
+}
+
+@media (min-width: 768px) {
+  [data-show-track-loader="true"] #track-list-container {
+    margin-top: calc(var(--top-split-height) - var(--header-height-desktop));
+    padding-top: 3px;
+  }
 }
 
 #track-list-container #playlist-remove-from-playlist-menu-item {
@@ -999,6 +1013,7 @@ div#current-playing-text {
   .search-container {
     grid-column: 2 / span 2;
     height: 2.5rem;
+    padding: 0 1rem;
   }
 
   button.button-circle {
@@ -1028,7 +1043,7 @@ div#current-playing-text {
   }
 
   #clear-search-button {
-    right: 0.2rem;
+    right: 1.2rem;
     top: 0.7rem;
   }
 
@@ -1039,6 +1054,7 @@ div#current-playing-text {
 
 
   .mode-button-playlist {
+    display: block;
     width: 40px;
     height: 40px;
   }
