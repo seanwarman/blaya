@@ -225,8 +225,9 @@ export default function Sequencer() {
                 if (!sampleName) return;
                 window.state.stepRecordModule.arpegg[sampleName] = event.target.value;
               ">
-                <option value="off">Off</option>
-                <option value="on">On</option>
+                ${Object.keys(window.state.stepRecordModule.arpPatterns).map(patternName => {
+                  return `<option value="${patternName}">${patternName}</option>`
+                })}
               </select>
             </div>
             <div>
