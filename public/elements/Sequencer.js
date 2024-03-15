@@ -251,6 +251,9 @@ export default function Sequencer() {
     document.querySelector('.drag-over-icon').classList.remove('highlight');
     const visItem = JSON.parse(e.dataTransfer.getData('text'));
     const segment = window.state.sequencerModule.segmentData[visItem.name];
+    Array.from(document.querySelectorAll(`#sequencer canvas[data-sample-name="${visItem.name}"]`)).forEach(canv => {
+      canv.getContext('2d').clearRect(0, 0, canv.width, canv.height);
+    });
     window.dispatchEvent(Object.assign(deleteSampleE, { segment }));
   });
 }

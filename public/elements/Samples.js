@@ -5,7 +5,7 @@ import { KEY_MAPS } from '../constants.js';
 const id = 'samples-container';
 const timeoutRefs = {};
 
-window.addEventListener('playsample', e => {
+export function onPlaySample(e) {
   requestAnimationFrame(() => {
     const sampleEl = Array.from(document.getElementById(id).children).find(el => el.dataset.name === e.sampleName);
     clearTimeout(timeoutRefs[e.sampleName]);
@@ -15,7 +15,34 @@ window.addEventListener('playsample', e => {
       sampleEl.classList.remove('trigger');
     }, 10);
   });
-});
+}
+
+export function onKeyDownSamples(e) {
+  if (window.state.mode !== "sequencer") return;
+  // End with space key
+  if (e.key === 'Enter') { 
+    // return recordSequence();
+  }
+  if (window.state.stepRecordModule.keysToMapNumbers.includes(e.key)) {
+    const keyMap = e.key.toUpperCase();
+    if (window.state.sequencerModule.isRecording) {
+      window.state.sequencerModule.setSequence(
+        window.state.sequencerModule.currentStepSnapped,
+        window.state.sequencerModule.getSelectedStepLengthFromTimeSeconds(window.state.sequencerModule.samples[keyMap].duration),
+        keyMap
+      );
+    }
+    selectSample(keyMap);
+    playSample(keyMap);
+  }
+}
+
+function playSample(sampleName, time) {
+  console.error(sampleName)
+  if (!window.state.sequencerModule.samples[sampleName]) return;
+  const prepare = window.state.sequencerModule.samples[sampleName](time, null, window.state.sequencerModule.sampleParams[sampleName]);
+  window.state.sequencerModule.samples[sampleName] = prepare();
+}
 
 function onDragStart(event) {
   event.dataTransfer.effectAllowed = 'move';
@@ -28,6 +55,18 @@ function onDragStart(event) {
   event.dataTransfer.setData('text', JSON.stringify(item));
 }
 
+function selectSample(keyMap) {
+  Array.from(document.querySelectorAll('#samples-container .vis-selected')).forEach(el => el.classList.remove('vis-selected'));
+  const sampleEl = document.querySelector(`#samples-container [data-name="${keyMap}"].vis-item`);
+  sampleEl.classList.add('vis-selected');
+  window.state.sequencerModule.selectedSampleName = keyMap;
+
+  const gainRange = document.getElementById('sample-gain');
+  gainRange.value = window.state.sequencerModule.sampleParams[sampleEl.dataset.name].gain;
+  const pitchRange = document.getElementById('sample-pitch');
+  pitchRange.value = window.state.sequencerModule.sampleParams[sampleEl.dataset.name].detune;
+}
+
 export default function Samples(samples = [], segmentData = {}) {
   const makeActiveSample = (name) => {
     const visItem = dom.div({
@@ -37,14 +76,11 @@ export default function Samples(samples = [], segmentData = {}) {
         colourClass: segmentData[name].className + '-light',
       },
       className: `item vis-item vis-range vis-editable ${segmentData[name].className}-light`,
-      onclick: () => {
-        if (!visItem.classList.contains('vis-selected')) {
-          Array.from(document.querySelectorAll('.vis-item.vis-selected')).forEach(el => el.classList.remove('vis-selected'));
-          visItem.classList.add('vis-selected');
-          window.state.sequencerModule.selectedSampleName = name;
-        }
+      onclick: () => selectSample(name),
+      ondragstart: e => {
+        selectSample(name);
+        onDragStart(e);
       },
-      ondragstart: onDragStart,
       innerHTML: `
         <div class="vis-item-overflow">
           <div class="vis-item-content" style="width:47px;transform: translateX(0px);">
@@ -97,19 +133,10 @@ export default function Samples(samples = [], segmentData = {}) {
       return makeGreyedOutSample(k, i);
     }).filter(Boolean),
   });
-
   const originalEl = document.getElementById(id);
   if (originalEl) {
     originalEl.replaceWith(itemsElement);
   } else {
     document.querySelector('#sequencer-container .side').appendChild(itemsElement);
   }
-//     if (originalElement) {
-//       return null;
-//     } else {
-//       return newElement;
-//     }
-
-//     dom.appendChildren(children)(itemsElement);
-  // }
 }

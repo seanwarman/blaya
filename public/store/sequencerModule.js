@@ -189,10 +189,13 @@ export const sequencerModule = {
     // Add samples to ui
     Samples(this.samples, this.segmentData);
   },
-//sampleParams: { [sampleName]: { detune } }
-  sampleParams: {},
-  updateCurrentSegment(segment, trackUrl) {
-    const sampleName = segment.keyMap;
+  setSegmentData(sampleName, segment, trackUrl) {
+    if (this.segmentData[sampleName] && this.segmentData[sampleName].color !== segment.color) {
+      Array.from(document.querySelectorAll(`#sequencer .vis-item.${this.segmentData[sampleName].className}-light`)).forEach(el => {
+        el.classList.remove(this.segmentData[sampleName].className + '-light');
+        el.classList.add(segment.className + '-light');
+      });
+    }
     this.segmentData = {
       ...this.segmentData,
       [sampleName]: {
@@ -204,6 +207,13 @@ export const sequencerModule = {
         sampleName,
       },
     };
+  },
+//sampleParams: { [sampleName]: { detune } }
+  sampleParams: {},
+  updateCurrentSegment(segment, trackUrl) {
+    const sampleName = segment.keyMap;
+    this.setSegmentData(sampleName, segment, trackUrl);
+
     const startI = this.packets.findIndex(packet => {
       return packet.pts_time > segment.startTime;
     });
@@ -217,7 +227,7 @@ export const sequencerModule = {
       url: trackUrl,
       range: `bytes=${startByte}-${endByte}`,
     }, response => {
-      // Set samples so the canvas exists for drawWaveform
+      // Set samples so the canvas exists for drawWaveforms
       if (!this.samples[sampleName]) {
         this.setSamples({
           [sampleName]: null,
@@ -236,7 +246,7 @@ export const sequencerModule = {
             scale: 50,
           }, (error, waveform) => {
             if (error) throw error;
-            drawWaveform(waveform, sampleName);
+            drawWaveforms(waveform, sampleName);
           });
         });
       return response;
@@ -374,7 +384,7 @@ function createBitPlayer(length, mapBuffer) {
   }
 }
 
-function drawWaveform(waveform, sampleName) {
+function drawWaveforms(waveform, sampleName) {
   const scaleY = (amplitude, height) => {
     const range = 256;
     const offset = 128;
