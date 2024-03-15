@@ -55,6 +55,7 @@ export function onKeyDownSamples(e) {
       !window.state.stepRecordModule.arpegg[keyMap]
       || window.state.stepRecordModule.arpegg[keyMap] === 'off'
     ) playSample(keyMap);
+    window.state.stepRecordModule.arpStarts[keyMap] = window.state.sequencerModule.currentStepSnapped;
     window.state.stepRecordModule.keyDowns.push(keyMap);
   }
 }
