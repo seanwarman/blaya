@@ -138,7 +138,7 @@ function onAdd(item) {
   }
   const startMM = vis.moment(item.start).format('SSS');
   const currentStep = startMM / window.state.sequencerModule.beatPerDateMultiple;
-  const stepLength = 1;
+  const stepLength = window.state.sequencerModule.onAddStepLengths[window.state.sequencerModule.snapSelected];
   window.state.sequencerModule.setSequence(currentStep, stepLength, item.name, true);
 }
 

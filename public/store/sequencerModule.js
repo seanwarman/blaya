@@ -68,6 +68,13 @@ export const sequencerModule = {
     '128ths': 2,
     '256ths': 1,
   },
+  onAddStepLengths: {
+    '16ths': 1,
+    '32ths': 2,
+    '64ths': 4,
+    '128ths': 8,
+    '256ths': 16,
+  },
   snapSelected: '16ths',
   snaps: {
     '16ths': 50,
