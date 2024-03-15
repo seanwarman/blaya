@@ -3,6 +3,7 @@
   grid-template-columns: repeat(30, 18px);
   column-gap: 0.3rem;
   row-gap: 1rem;
+  grid-template-rows: 40px 40px;
 }
 
 #samples-container.items .sample:nth-of-type(11) {
