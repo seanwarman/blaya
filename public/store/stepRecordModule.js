@@ -19,12 +19,22 @@ export const stepRecordModule = {
   },
   // sampleName[]
   keymaps: [],
-  keyDowns: {},
+  keyDowns: [],
   keysToMapNumbers: [
     'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p',
       'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l',
         'z', 'x', 'c', 'v', 'b', 'n', 'm',
   ],
+  arpPatterns: {
+    on: Array(256).fill().map((_,i) => i % 32 === 0 ? true : undefined),
+    off: [],
+  },
+  arpegg: {
+    Q: 'off',
+  },
+  checkArpStep(keyMap, currentStep) {
+    return this.arpPatterns[this.arpegg[keyMap]]?.[currentStep];
+  },
   currentMapNumber: 0,
   nextNoteTime: 0,
   latency: 0.2,

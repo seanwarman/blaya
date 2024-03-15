@@ -17,6 +17,8 @@ import { floor, ceil, simpleHash } from '../helpers/utils';
 //   return 0
 // })()
 
+const stepEvent = new Event('onstep', { bubbles: true });
+
 export const sequencerModule = {
   unlocked: false,
   isPlaying: false,       // Are we currently playing?
@@ -325,6 +327,7 @@ export const sequencerModule = {
   scheduleNote(currentStep, time) {
     // push the note on the queue, even if we're not playing.
     this.notesInQueue.push({ note: currentStep, time: time });
+    window.dispatchEvent(Object.assign(stepEvent, { currentStep, time }));
     if (this.sequence[currentStep]?.length) {
       for (let i=0;i<this.sequence[currentStep].length;i++) {
         const step = this.sequence[currentStep][i];

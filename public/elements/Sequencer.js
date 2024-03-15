@@ -219,6 +219,17 @@ export default function Sequencer() {
           </div>
           <div class="side-right">
             <div>
+              <div>Arp</div>
+              <select onchange="
+                const sampleName = document.getElementsByClassName('vis-selected')[0].dataset.name;
+                if (!sampleName) return;
+                window.state.stepRecordModule.arpegg[sampleName] = event.target.value;
+              ">
+                <option value="off">Off</option>
+                <option value="on">On</option>
+              </select>
+            </div>
+            <div>
               <div>Volume</div>
               <input id="sample-gain" type="range" step="0.1" min="0" max="5" value="1" oninput="
                 const { value } = event.target;

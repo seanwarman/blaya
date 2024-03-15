@@ -19,8 +19,25 @@ export function onPlaySample(e) {
 
 export function onKeyUpSamples(e) {
   const keyMap = e.key.toUpperCase();
-  window.state.stepRecordModule.keyDowns[keyMap] = false;
+  window.state.stepRecordModule.keyDowns = window.state.stepRecordModule.keyDowns.filter(k => k !== keyMap);
 }
+
+//
+//
+//
+//
+//
+// Add this to state, give it a selection of patterns to choose from,
+// add that to the side sample params...
+// Add this as a tick box, per sample
+// 
+// This will also need an onpress event for mobile
+//
+// Don't worry about this overlapping on record, that could actually be cool if
+// you can choose different patterns and overlap them
+//
+//
+//
 
 export function onKeyDownSamples(e) {
   if (window.state.mode !== "sequencer") return;
@@ -30,25 +47,35 @@ export function onKeyDownSamples(e) {
   }
   if (window.state.stepRecordModule.keysToMapNumbers.includes(e.key)) {
     const keyMap = e.key.toUpperCase();
-    if (window.state.stepRecordModule.keyDowns[keyMap]) {
+    if (window.state.stepRecordModule.keyDowns.includes(keyMap)) {
       return;
     }
-    if (window.state.sequencerModule.isRecording) {
-      window.state.sequencerModule.setSequence(
-        window.state.sequencerModule.currentStepSnapped,
-        window.state.sequencerModule.getSelectedStepLengthFromTimeSeconds(window.state.sequencerModule.samples[keyMap].duration),
-        keyMap
-      );
-    }
     selectSample(keyMap);
-    playSample(keyMap);
-    window.state.stepRecordModule.keyDowns[keyMap] = true;
+    if (
+      !window.state.stepRecordModule.arpegg[keyMap]
+      || window.state.stepRecordModule.arpegg[keyMap] === 'off'
+    ) playSample(keyMap);
+    window.state.stepRecordModule.keyDowns.push(keyMap);
+  }
+}
+
+export function onStep(e) {
+  if (window.state.stepRecordModule.keyDowns.length) {
+    window.state.stepRecordModule.keyDowns.forEach(k => {
+      if (window.state.stepRecordModule.checkArpStep(k, e.currentStep)) playSample(k);
+    });
   }
 }
 
 function playSample(sampleName, time) {
-  console.error(sampleName)
   if (!window.state.sequencerModule.samples[sampleName]) return;
+  if (window.state.sequencerModule.isRecording) {
+    window.state.sequencerModule.setSequence(
+      window.state.sequencerModule.currentStepSnapped,
+      window.state.sequencerModule.getSelectedStepLengthFromTimeSeconds(window.state.sequencerModule.samples[sampleName].duration),
+      sampleName,
+    );
+  }
   const prepare = window.state.sequencerModule.samples[sampleName](time, null, window.state.sequencerModule.sampleParams[sampleName]);
   window.state.sequencerModule.samples[sampleName] = prepare();
 }
