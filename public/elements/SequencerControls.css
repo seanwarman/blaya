@@ -3,7 +3,7 @@
   z-index: 1;
   left: 0;
   right: 0;
-  display: grid;
+  display: block;
   padding: 1rem;
   justify-content: center;
   grid-template-columns: repeat(12, auto);
@@ -11,4 +11,12 @@
   /* box-shadow: 0px 3px 11px #00000017; */
   /* position: absolute; */
   /* bottom: 0; */
+  font-size: .8rem;
+}
+
+@media (min-width: 768px) {
+  #sequencer-controls {
+    display: grid;
+    font-size: 1rem;
+  }
 }

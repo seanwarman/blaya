@@ -112,9 +112,8 @@ export const stepRecordModule = {
       // 128   144   160   176
       // 192   208   224   240
   },
-  arpegg: {
-    Q: 'off',
-  },
+  // { Q: 'Pattern10' },
+  arpegg: {},
   arpStarts: {},
   checkArpStep(keyMap, currentStep) {
     const step = currentStep + this.arpStarts[keyMap] > 256

@@ -53,7 +53,7 @@ export function onKeyDownSamples(e) {
     selectSample(keyMap);
     if (
       !window.state.stepRecordModule.arpegg[keyMap]
-      || window.state.stepRecordModule.arpegg[keyMap] === 'off'
+      || window.state.stepRecordModule.arpegg[keyMap] === 'Off'
     ) playSample(keyMap);
     window.state.stepRecordModule.arpStarts[keyMap] = window.state.sequencerModule.currentStepSnapped;
     window.state.stepRecordModule.keyDowns.push(keyMap);
@@ -114,6 +114,12 @@ export default function Samples(samples = [], segmentData = {}) {
       },
       className: `item vis-item vis-range vis-editable ${segmentData[name].className}-light`,
       onclick: () => selectSample(name),
+      ontouchstart: () => {
+        onKeyDownSamples({ key: name.toLowerCase() });
+      },
+      ontouchend: () => {
+        onKeyUpSamples({ key: name.toLowerCase() });
+      },
       ondragstart: e => {
         selectSample(name);
         onDragStart(e);
