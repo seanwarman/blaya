@@ -27,7 +27,7 @@ import * as dom from './helpers/dom.js';
 import Sequencer from './elements/Sequencer.js';
 import SequencerControls from './elements/SequencerControls.js';
 import TrackLoader from './elements/TrackLoader.js';
-import Samples, { onKeyDownSamples, onPlaySample } from './elements/Samples.js';
+import Samples, { onKeyDownSamples, onKeyUpSamples, onPlaySample } from './elements/Samples.js';
 import Router from './elements/Router.js';
 
 import io from './node_modules/socket.io/client-dist/socket.io.esm.min.js';
@@ -119,6 +119,7 @@ build(state => {
     window.state.focussed = e.target
   })
   window.addEventListener('keydown', onKeyDownSamples);
+  window.addEventListener('keyup', onKeyUpSamples);
   window.addEventListener('playsample', onPlaySample);
   window.addEventListener('scroll', onScroll([onUpScroll(window.state.trackList), onDownScroll(window.state.trackList)]), false)
   document.getElementById('player').onended = onEndNext;

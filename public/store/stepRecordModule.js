@@ -1,5 +1,14 @@
 import { KEY_MAPS } from '../constants';
 
+//
+// *** TODO ***
+//
+// Next couple of jobs are:
+//
+// - Arpeggiators when holding down keys (not keyboard retrigger, see game keydown on stack overflow)
+// - Mobile layout for sample keys
+//
+
 export const stepRecordModule = {
   // { name: sampleName, time: number }[]
   looper: [],
@@ -10,6 +19,7 @@ export const stepRecordModule = {
   },
   // sampleName[]
   keymaps: [],
+  keyDowns: {},
   keysToMapNumbers: [
     'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p',
       'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l',

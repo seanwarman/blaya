@@ -17,6 +17,11 @@ export function onPlaySample(e) {
   });
 }
 
+export function onKeyUpSamples(e) {
+  const keyMap = e.key.toUpperCase();
+  window.state.stepRecordModule.keyDowns[keyMap] = false;
+}
+
 export function onKeyDownSamples(e) {
   if (window.state.mode !== "sequencer") return;
   // End with space key
@@ -25,6 +30,9 @@ export function onKeyDownSamples(e) {
   }
   if (window.state.stepRecordModule.keysToMapNumbers.includes(e.key)) {
     const keyMap = e.key.toUpperCase();
+    if (window.state.stepRecordModule.keyDowns[keyMap]) {
+      return;
+    }
     if (window.state.sequencerModule.isRecording) {
       window.state.sequencerModule.setSequence(
         window.state.sequencerModule.currentStepSnapped,
@@ -34,6 +42,7 @@ export function onKeyDownSamples(e) {
     }
     selectSample(keyMap);
     playSample(keyMap);
+    window.state.stepRecordModule.keyDowns[keyMap] = true;
   }
 }
 
