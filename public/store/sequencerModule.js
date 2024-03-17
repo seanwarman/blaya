@@ -261,7 +261,7 @@ export const sequencerModule = {
       return response;
     }).then(prepare => {
       if (!this.sampleParams[sampleName]) {
-        this.sampleParams[sampleName] = { detune: 0, gain: 1 };
+        this.sampleParams[sampleName] = { detune: 0, gain: 1, arpegg: 'Off' };
       }
       this.setSamples({
         [sampleName]: prepare(),

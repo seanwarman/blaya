@@ -1,14 +1,5 @@
 import { KEY_MAPS } from '../constants';
 
-//
-// *** TODO ***
-//
-// Next couple of jobs are:
-//
-// - Arpeggiators when holding down keys (not keyboard retrigger, see game keydown on stack overflow)
-// - Mobile layout for sample keys
-//
-
 export const stepRecordModule = {
   // { name: sampleName, time: number }[]
   looper: [],
@@ -98,8 +89,6 @@ export const stepRecordModule = {
       // 128   144   160   176
       // 192   208   224   240
   },
-  // { Q: 'Pattern10' },
-  arpSelectedByKeyMap: {},
   arpStarts: {},
   checkArpStep(keyMap, currentStep) {
     const step = () => {
@@ -110,7 +99,7 @@ export const stepRecordModule = {
         return currentStep - arpStart;
       }
     }
-    return this.arpPatterns[this.arpSelectedByKeyMap[keyMap]][step()];
+    return this.arpPatterns[window.state.sequencerModule.sampleParams[keyMap].arpegg][step()];
   },
   currentMapNumber: 0,
   nextNoteTime: 0,

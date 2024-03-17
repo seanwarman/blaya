@@ -220,15 +220,19 @@ export default function Sequencer() {
           <div class="side-right">
             <div>
               <div>Arp</div>
-              <select onchange="
-                const sampleName = document.getElementsByClassName('vis-selected')[0].dataset.name;
-                if (!sampleName) return;
-                window.state.stepRecordModule.arpSelectedByKeyMap[sampleName] = event.target.value;
-              ">
-                ${Object.keys(window.state.stepRecordModule.arpPatterns).map(patternName => {
-                  return `<option value="${patternName}">${patternName}</option>`
-                })}
-              </select>
+              ${Object.keys(window.state.stepRecordModule.arpPatterns).map(patternName => {
+                return `
+                  <input
+                    onchange="window.state.sequencerModule.sampleParams[document.getElementsByClassName('vis-selected')[0].dataset.name].arpegg = '${patternName}'"
+                    id="${patternName}"
+                    type="radio"
+                    name="arpegg"
+                    value="${patternName}"
+                    ${patternName === 'Off' ? 'checked' : ''}
+                  />
+                  <label for="${patternName}">${patternName}</label>
+                `;
+              }).join('')}
             </div>
             <div>
               <div>Volume</div>

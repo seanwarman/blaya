@@ -35,8 +35,9 @@ export function onKeyDownSamples(e) {
     }
     selectSample(keyMap);
     if (
-      !window.state.stepRecordModule.arpSelectedByKeyMap[keyMap]
-      || window.state.stepRecordModule.arpSelectedByKeyMap[keyMap] === 'Off'
+      !window.state.sequencerModule.isPlaying
+      || !window.state.sequencerModule.sampleParams[keyMap].arpegg
+      || window.state.sequencerModule.sampleParams[keyMap].arpegg === 'Off'
     ) playSample(keyMap);
     window.state.stepRecordModule.arpStarts[keyMap] = window.state.sequencerModule.currentStepSnapped;
     window.state.stepRecordModule.keyDowns.push(keyMap);
@@ -87,6 +88,8 @@ function selectSample(keyMap) {
   gainRange.value = window.state.sequencerModule.sampleParams[sampleEl.dataset.name].gain;
   const pitchRange = document.getElementById('sample-pitch');
   pitchRange.value = window.state.sequencerModule.sampleParams[sampleEl.dataset.name].detune;
+  const arpegg = document.querySelector(`input[name="arpegg"][value="${window.state.sequencerModule.sampleParams[sampleEl.dataset.name].arpegg}"]`)
+  arpegg.checked = true;
 }
 
 export default function Samples(samples = [], segmentData = {}) {
