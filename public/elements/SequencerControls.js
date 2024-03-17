@@ -10,7 +10,6 @@ export default function SequencerControls() {
           onclick="window.state.sequencerModule.play()"
           id="start-sequencer"
         >Play</button>
-        <br>
         <label for="sequencer-metronome">Metr</label>
         <input
           id="sequencer-metronome"

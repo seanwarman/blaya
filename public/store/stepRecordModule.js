@@ -18,10 +18,10 @@ export const stepRecordModule = {
   ],
   arpPatterns: {
     Off: [],
-    Pattern1: Array(256).fill().map((_,i) => i % 64 === 0 ? true : undefined),
-    Pattern2: Array(256).fill().map((_,i) => i % 32 === 0 ? true : undefined),
-    Pattern3: Array(256).fill().map((_,i) => i % 16 === 0 ? true : undefined),
-    Pattern4: Array(256).fill().map((_,i) => 
+    1: Array(256).fill().map((_,i) => i % 64 === 0 ? true : undefined),
+    2: Array(256).fill().map((_,i) => i % 32 === 0 ? true : undefined),
+    3: Array(256).fill().map((_,i) => i % 16 === 0 ? true : undefined),
+    4: Array(256).fill().map((_,i) => 
       i === 0
       || i === 48
       || i === 96
@@ -29,7 +29,7 @@ export const stepRecordModule = {
       || i === 192
       || i === 240
     ),
-    Pattern5: Array(256).fill().map((_,i) => 
+    5: Array(256).fill().map((_,i) => 
       i === 0
       || i === 16
       || i === 80
@@ -37,7 +37,7 @@ export const stepRecordModule = {
       || i === 160
       || i === 208
     ),
-    Pattern6: Array(256).fill().map((_,i) => 
+    6: Array(256).fill().map((_,i) => 
       i === 0
       || i === 48
       || i === 96
@@ -45,7 +45,7 @@ export const stepRecordModule = {
       || i === 192
       || i === 240
     ),
-    Pattern7: Array(256).fill().map((_,i) => 
+    7: Array(256).fill().map((_,i) => 
       i === 0
       || i === 32
       || i === 80
@@ -55,7 +55,7 @@ export const stepRecordModule = {
       || i === 208
       || i === 240
     ),
-    Pattern8: Array(256).fill().map((_,i) => 
+    8: Array(256).fill().map((_,i) => 
       i === 0
       || i === 16
       || i === 48
@@ -68,7 +68,7 @@ export const stepRecordModule = {
       || i === 208
       || i === 240
     ),
-    Pattern9: Array(256).fill().map((_,i) => 
+    9: Array(256).fill().map((_,i) => 
       i === 0
       || i === 16
       || i === 32
@@ -76,7 +76,7 @@ export const stepRecordModule = {
       || i === 160
       || i === 224
     ),
-    Pattern10: Array(256).fill().map((_,i) => 
+    10: Array(256).fill().map((_,i) => 
       i === 0
       || i === 48
       || i === 96

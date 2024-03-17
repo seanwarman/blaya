@@ -243,8 +243,6 @@ export default function Sequencer() {
                 if (!sampleName) return;
                 window.state.sequencerModule.sampleParams[sampleName].gain = Number(value);
               "/>
-            </div>
-            <div>
               <div>Pitch</div>
               <input id="sample-pitch" type="range" step="1" min="-2000" max="2000" value="0" oninput="
                 const { value } = event.target;
