@@ -27,23 +27,9 @@ export const stepRecordModule = {
   ],
   arpPatterns: {
     Off: [],
-    Pattern1: Array(256).fill().map((_,i) => 
-      i === 0
-      || i === 64
-      || i === 128
-      || i === 192
-    ),
-    Pattern2: Array(256).fill().map((_,i) => 
-      i === 0
-      || i === 32
-      || i === 64
-      || i === 96
-      || i === 128
-      || i === 160
-      || i === 192
-      || i === 224
-    ),
-    Pattern3: Array(256).fill().map((_,i) => i % 32 === 0 ? true : undefined),
+    Pattern1: Array(256).fill().map((_,i) => i % 64 === 0 ? true : undefined),
+    Pattern2: Array(256).fill().map((_,i) => i % 32 === 0 ? true : undefined),
+    Pattern3: Array(256).fill().map((_,i) => i % 16 === 0 ? true : undefined),
     Pattern4: Array(256).fill().map((_,i) => 
       i === 0
       || i === 48
@@ -113,13 +99,18 @@ export const stepRecordModule = {
       // 192   208   224   240
   },
   // { Q: 'Pattern10' },
-  arpegg: {},
+  arpSelectedByKeyMap: {},
   arpStarts: {},
   checkArpStep(keyMap, currentStep) {
-    const step = currentStep + this.arpStarts[keyMap] > 256
-      ? (currentStep + this.arpStarts[keyMap]) - 256
-      : (currentStep + this.arpStarts[keyMap])
-    return this.arpPatterns[this.arpegg[keyMap]]?.[step];
+    const step = () => {
+      const arpStart = this.arpStarts[keyMap];
+      if (currentStep - arpStart < 0) {
+        return 256 + (currentStep - arpStart);
+      } else {
+        return currentStep - arpStart;
+      }
+    }
+    return this.arpPatterns[this.arpSelectedByKeyMap[keyMap]][step()];
   },
   currentMapNumber: 0,
   nextNoteTime: 0,

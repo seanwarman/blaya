@@ -22,23 +22,6 @@ export function onKeyUpSamples(e) {
   window.state.stepRecordModule.keyDowns = window.state.stepRecordModule.keyDowns.filter(k => k !== keyMap);
 }
 
-//
-//
-//
-//
-//
-// Add this to state, give it a selection of patterns to choose from,
-// add that to the side sample params...
-// Add this as a tick box, per sample
-// 
-// This will also need an onpress event for mobile
-//
-// Don't worry about this overlapping on record, that could actually be cool if
-// you can choose different patterns and overlap them
-//
-//
-//
-
 export function onKeyDownSamples(e) {
   if (window.state.mode !== "sequencer") return;
   // End with space key
@@ -52,8 +35,8 @@ export function onKeyDownSamples(e) {
     }
     selectSample(keyMap);
     if (
-      !window.state.stepRecordModule.arpegg[keyMap]
-      || window.state.stepRecordModule.arpegg[keyMap] === 'Off'
+      !window.state.stepRecordModule.arpSelectedByKeyMap[keyMap]
+      || window.state.stepRecordModule.arpSelectedByKeyMap[keyMap] === 'Off'
     ) playSample(keyMap);
     window.state.stepRecordModule.arpStarts[keyMap] = window.state.sequencerModule.currentStepSnapped;
     window.state.stepRecordModule.keyDowns.push(keyMap);
@@ -63,7 +46,9 @@ export function onKeyDownSamples(e) {
 export function onStep(e) {
   if (window.state.stepRecordModule.keyDowns.length) {
     window.state.stepRecordModule.keyDowns.forEach(k => {
-      if (window.state.stepRecordModule.checkArpStep(k, e.currentStep)) playSample(k);
+      if (window.state.stepRecordModule.checkArpStep(k, e.currentStep)) {
+        playSample(k);
+      }
     });
   }
 }

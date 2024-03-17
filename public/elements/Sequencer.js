@@ -223,7 +223,7 @@ export default function Sequencer() {
               <select onchange="
                 const sampleName = document.getElementsByClassName('vis-selected')[0].dataset.name;
                 if (!sampleName) return;
-                window.state.stepRecordModule.arpegg[sampleName] = event.target.value;
+                window.state.stepRecordModule.arpSelectedByKeyMap[sampleName] = event.target.value;
               ">
                 ${Object.keys(window.state.stepRecordModule.arpPatterns).map(patternName => {
                   return `<option value="${patternName}">${patternName}</option>`
