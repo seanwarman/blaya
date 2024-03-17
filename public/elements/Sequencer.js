@@ -219,22 +219,6 @@ export default function Sequencer() {
           </div>
           <div class="side-right">
             <div>
-              <div>Arp</div>
-              ${Object.keys(window.state.stepRecordModule.arpPatterns).map(patternName => {
-                return `
-                  <input
-                    onchange="window.state.sequencerModule.sampleParams[document.getElementsByClassName('vis-selected')[0].dataset.name].arpegg = '${patternName}'"
-                    id="${patternName}"
-                    type="radio"
-                    name="arpegg"
-                    value="${patternName}"
-                    ${patternName === 'Off' ? 'checked' : ''}
-                  />
-                  <label for="${patternName}">${patternName}</label>
-                `;
-              }).join('')}
-            </div>
-            <div>
               <div>Volume</div>
               <input id="sample-gain" type="range" step="0.1" min="0" max="5" value="1" oninput="
                 const { value } = event.target;
@@ -250,6 +234,22 @@ export default function Sequencer() {
                 if (!sampleName) return;
                 window.state.sequencerModule.sampleParams[sampleName].detune = Number(value);
               "/>
+            </div>
+            <div id="arpeggiator">
+              <div>Arp</div>
+              ${Object.keys(window.state.stepRecordModule.arpPatterns).map(patternName => {
+                return `
+                  <input
+                    onchange="window.state.sequencerModule.sampleParams[document.getElementsByClassName('vis-selected')[0].dataset.name].arpegg = '${patternName}'"
+                    id="${patternName}"
+                    type="radio"
+                    name="arpegg"
+                    value="${patternName}"
+                    ${patternName === 'Off' ? 'checked' : ''}
+                  />
+                  <label for="${patternName}">${patternName}</label>
+                `;
+              }).join('')}
             </div>
           </div>
         </div>
