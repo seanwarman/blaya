@@ -13,6 +13,10 @@ export function onKeyDownRecord(event) {
     window.state.sequencerModule.isRecording = !window.state.sequencerModule.isRecording
     const recordCheckbox = document.getElementById('sequencer-record');
     recordCheckbox.checked = window.state.sequencerModule.isRecording;
+    if (event.target.checked) {
+      window.state.stepRecordModule.clearMode = !event.target.checked;
+      document.getElementById('sequencer-clear').checked = !event.target.checked;
+    }
   }
 }
 
@@ -41,7 +45,28 @@ export default function SequencerControls() {
           tabindex="-1"
           id="sequencer-record"
           type="checkbox"
-          onchange="window.state.sequencerModule.isRecording = event.target.checked"
+          onchange="
+            window.state.sequencerModule.isRecording = event.target.checked;
+            if (event.target.checked) {
+              window.state.stepRecordModule.clearMode = !event.target.checked;
+              document.getElementById('sequencer-clear').checked = !event.target.checked;
+            }
+          "
+        />
+        <label
+          for="sequencer-clear"
+        >Clear</label>
+        <input
+          tabindex="-1"
+          id="sequencer-clear"
+          type="checkbox"
+          onchange="
+            window.state.stepRecordModule.clearMode = event.target.checked;
+            if (event.target.checked) {
+              window.state.sequencerModule.isRecording = !event.target.checked;
+              document.getElementById('sequencer-record').checked = !event.target.checked;
+            }
+          "
         />
         <br>
         <label

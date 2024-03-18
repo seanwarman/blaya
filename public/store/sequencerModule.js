@@ -18,6 +18,10 @@ import { floor, ceil, simpleHash } from '../helpers/utils';
 // })()
 
 const stepEvent = new Event('onstep', { bubbles: true });
+const stepRemovedEvent = new Event('stepremove', { bubbles: true });
+
+window.addEventListener('onstepsample', (e) => {
+});
 
 export const sequencerModule = {
   unlocked: false,
@@ -342,10 +346,19 @@ export const sequencerModule = {
     if (this.sequence[currentStep]?.length) {
       for (let i=0;i<this.sequence[currentStep].length;i++) {
         const step = this.sequence[currentStep][i];
-        const startTime = time + (this.getStepLength() * step.delay);
-        if (this.samples[step.name]) {
-          const prepare = this.samples[step.name](startTime, startTime + step.endTime, this.sampleParams[step.name]);
-          this.samples[step.name] = prepare();
+        if (
+          window.state.stepRecordModule.keyDowns.length
+          && window.state.stepRecordModule.clearMode
+          && window.state.stepRecordModule.keyDowns.includes(step.name)
+        ) {
+          window.dispatchEvent(Object.assign(stepRemovedEvent, { step }));
+          this.sequence[currentStep] = this.sequence[currentStep].filter(s => step.name !== s.name);
+        } else {
+          const startTime = time + (this.getStepLength() * step.delay);
+          if (this.samples[step.name]) {
+            const prepare = this.samples[step.name](startTime, startTime + step.endTime, this.sampleParams[step.name]);
+            this.samples[step.name] = prepare();
+          }
         }
       }
     }

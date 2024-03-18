@@ -44,11 +44,13 @@ export function onKeyDownSamples(e) {
 
     selectSample(keyMap);
 
-    if (
-      !window.state.sequencerModule.isPlaying
-      || !window.state.sequencerModule.sampleParams[keyMap].arpegg
-      || window.state.sequencerModule.sampleParams[keyMap].arpegg === 'Off'
-    ) playSample(keyMap);
+    if (!window.state.stepRecordModule.clearMode) {
+      if (
+        !window.state.sequencerModule.isPlaying
+        || !window.state.sequencerModule.sampleParams[keyMap].arpegg
+        || window.state.sequencerModule.sampleParams[keyMap].arpegg === 'Off'
+      ) playSample(keyMap);
+    }
 
     window.state.stepRecordModule.arpStarts[keyMap] = window.state.sequencerModule.currentStepSnapped;
 

@@ -93,16 +93,20 @@ function initTimeline(container) {
     ).forEach((el) => el.classList.remove('vis-selected'));
     window.state.sequencerModule.selectedSampleName = target.firstChild.innerHTML;
   })
+  window.addEventListener('stepremove', e => {
+    const { step } = e;
+    items.remove([step.id]);
+  });
   window.addEventListener('keydown', e => {
     if (e.key === 'Backspace') {
-      const ids = window.state.sequencerModule.timeline.getSelection();
-      ids.map(id => {
-        const item = items.get(id);
-        if (window.state.sequencerModule.sequence[item.index]) {
-          window.state.sequencerModule.sequence[item.index] = window.state.sequencerModule.sequence[item.index].filter(s => s.id !== item.step.id);
-        }
-      })
-      items.remove(window.state.sequencerModule.timeline.getSelection())
+    const ids = window.state.sequencerModule.timeline.getSelection();
+    ids.map(id => {
+      const item = items.get(id);
+      if (window.state.sequencerModule.sequence[item.index]) {
+        window.state.sequencerModule.sequence[item.index] = window.state.sequencerModule.sequence[item.index].filter(s => s.id !== item.step.id);
+      }
+    })
+    items.remove(window.state.sequencerModule.timeline.getSelection())
     }
   })
 }
