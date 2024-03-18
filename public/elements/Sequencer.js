@@ -133,6 +133,7 @@ function onMove(item, cb) {
 }
 
 function onAdd(item) {
+  console.log(`@FILTER item:`, item)
   if (!item.name) {
     item.name = document.querySelector(`#samples-container .vis-selected`)?.dataset.name;
   }

@@ -27,19 +27,31 @@ export function onKeyDownSamples(e) {
   // End with space key
   if (e.key === 'Enter') { 
     // return recordSequence();
+    return;
+  }
+  if (!isNaN(Number(e.key))) {
+    const input = document.querySelector(`#arpeggiator [value="${e.key === '0' ? 'Off' : e.key}"]`);
+    if (input) {
+      input.checked = true;
+      input.dispatchEvent(new Event('change'));
+    }
   }
   if (window.state.stepRecordModule.keysToMapNumbers.includes(e.key)) {
     const keyMap = e.key.toUpperCase();
     if (window.state.stepRecordModule.keyDowns.includes(keyMap)) {
       return;
     }
+
     selectSample(keyMap);
+
     if (
       !window.state.sequencerModule.isPlaying
       || !window.state.sequencerModule.sampleParams[keyMap].arpegg
       || window.state.sequencerModule.sampleParams[keyMap].arpegg === 'Off'
     ) playSample(keyMap);
+
     window.state.stepRecordModule.arpStarts[keyMap] = window.state.sequencerModule.currentStepSnapped;
+
     window.state.stepRecordModule.keyDowns.push(keyMap);
   }
 }
@@ -58,7 +70,9 @@ function playSample(sampleName, time) {
   if (!window.state.sequencerModule.samples[sampleName]) return;
   if (window.state.sequencerModule.isRecording) {
     window.state.sequencerModule.setSequence(
-      window.state.sequencerModule.currentStepSnapped,
+      window.state.sequencerModule.sampleParams[sampleName].arpegg !== 'Off'
+        ? window.state.sequencerModule.currentStep
+        : window.state.sequencerModule.currentStepSnapped,
       window.state.sequencerModule.getSelectedStepLengthFromTimeSeconds(window.state.sequencerModule.samples[sampleName].duration),
       sampleName,
     );
