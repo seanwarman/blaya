@@ -30,16 +30,27 @@ export const sequencerModule = {
   tempo: 120.0,           // tempo (in beats per minute)
   lookahead: 5.0,        // How frequently to call scheduling function 
                           // (in milliseconds)
-  scheduleAheadTime: 0.01,// This is calculated from lookahead, and overlaps 
-                          // with next interval (in case the timer is late)
-  nextNoteTime: 0.0,      // when the next note is due.
-  noteResolution: 256,     //
-  last16thNoteDrawn: -1,  // the last "box" we drew on the screen
-  notesInQueue: [],       // the notes that have been put into the web audio,
-                          // and may or may not have played yet. {note, time}
-                          //
-  timerWorker: null,      // The Web Worker used to fire timer messages
-                          //
+
+  scheduleAheadTime: /iphone|android/gi.test(navigator.userAgent) ? 0.05 : 0.01,
+                            // This is the latency. Make it a higher number for slower machines
+                            // My macbook can deal with it being 0.01. The
+                            // metronome tutorial has it as high as 0.4, but their other settings are
+                            // slightely different as well.
+                            //
+                            //
+                            // *** TODO ***
+                            // Make this a higher number for mobile (just make a guess for now).
+                            // - Update the arpegg so that it works with this latency number <-- DONE!
+                            // - Get mulitple touch events working on mobile
+                            // - Allow erasing notes by holding keyMap
+  nextNoteTime: 0.0,        //
+  noteResolution: 256,      //
+  last16thNoteDrawn: -1,    // the last "box" we drew on the screen
+  notesInQueue: [],         // the notes that have been put into the web audio,
+                            // and may or may not have played yet. {note, time}
+                            //
+  timerWorker: null,        // The Web Worker used to fire timer messages
+                            //
   loopBarLength: 1,
   timeLinePosition: 0,
   timing: {

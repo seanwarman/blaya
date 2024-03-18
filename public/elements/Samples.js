@@ -56,11 +56,12 @@ export function onKeyDownSamples(e) {
   }
 }
 
+// This runs from inside the scheduler, the main sequencer clock call
 export function onStep(e) {
   if (window.state.stepRecordModule.keyDowns.length) {
     window.state.stepRecordModule.keyDowns.forEach(k => {
       if (window.state.stepRecordModule.checkArpStep(k, e.currentStep)) {
-        playSample(k);
+        playSample(k, e.time);
       }
     });
   }
