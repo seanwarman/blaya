@@ -240,7 +240,7 @@ export default function Sequencer() {
               ${Object.keys(window.state.stepRecordModule.arpPatterns).map(patternName => {
                 return `
                   <input
-                    onchange="window.state.sequencerModule.sampleParams[document.getElementsByClassName('vis-selected')[0].dataset.name].arpegg = '${patternName}'"
+                    onchange="window.state.sequencerModule.sampleParams[document.querySelectorAll('#samples-container .vis-selected')[0].dataset.name].arpegg = '${patternName}'"
                     id="${patternName}"
                     type="radio"
                     name="arpegg"
