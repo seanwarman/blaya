@@ -18,8 +18,8 @@ export const stepRecordModule = {
   ],
   arpPatterns: {
     Off: [],
-    1: Array(256).fill().map((_,i) => i % 128 === 0 ? true : undefined),
-    2: Array(256).fill().map((_,i) => i % 64 === 0 ? true : undefined),
+    1: Array(256).fill().map((_,i) => i % 64 === 0 ? true : undefined),
+    2: Array(256).fill().map((_,i) => i % 48 === 0 ? true : undefined),
     3: Array(256).fill().map((_,i) => i % 32 === 0 ? true : undefined),
     4: Array(256).fill().map((_,i) => i % 16 === 0 ? true : undefined),
     5: Array(256).fill().map((_,i) => i % 8 === 0 ? true : undefined),
