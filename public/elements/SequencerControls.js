@@ -1,5 +1,21 @@
 import * as dom from '../helpers/dom';
 
+export function onKeyDownPlay(event) {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    window.state.sequencerModule.play()
+  }
+}
+
+export function onKeyDownRecord(event) {
+  if (event.key === ' ') {
+    event.preventDefault();
+    window.state.sequencerModule.isRecording = !window.state.sequencerModule.isRecording
+    const recordCheckbox = document.getElementById('sequencer-record');
+    recordCheckbox.checked = window.state.sequencerModule.isRecording;
+  }
+}
+
 export default function SequencerControls() {
   document.getElementById('sequencer-controls').replaceWith(
     dom.div({
@@ -7,11 +23,13 @@ export default function SequencerControls() {
       innerHTML: `
         <link href="/elements/SequencerControls.css" rel="stylesheet"></style>
         <button
+          tabindex="-1"
           onclick="window.state.sequencerModule.play()"
           id="start-sequencer"
         >Play</button>
         <label for="sequencer-metronome">Metr</label>
         <input
+          tabindex="-1"
           id="sequencer-metronome"
           type="checkbox"
           onchange="window.state.sequencerModule.metronomeOn = event.target.checked"
@@ -20,6 +38,7 @@ export default function SequencerControls() {
           for="sequencer-record"
         >Rec</label>
         <input
+          tabindex="-1"
           id="sequencer-record"
           type="checkbox"
           onchange="window.state.sequencerModule.isRecording = event.target.checked"
@@ -29,6 +48,7 @@ export default function SequencerControls() {
           for="sequencer-tempo"
         >Tempo: <span id="show-tempo">120</span></label>
         <input
+          tabindex="-1"
           id="sequencer-tempo"
           type="range"
           value="120"
@@ -42,6 +62,7 @@ export default function SequencerControls() {
         />
         <label for="sequencer-snap-select">Snap</label>
         <select
+          tabindex="-1"
           id="sequencer-snap-select"
           onchange="window.state.sequencerModule.snapSelected = event.target.selectedOptions[0].value"
         >

@@ -24,8 +24,8 @@ import {
 } from './helpers/events.js';
 import * as f from './helpers/functional-utils.js';
 import * as dom from './helpers/dom.js';
-import Sequencer from './elements/Sequencer.js';
-import SequencerControls from './elements/SequencerControls.js';
+import Sequencer, { onKeyDownGain, onKeyDownPitch } from './elements/Sequencer.js';
+import SequencerControls, { onKeyDownPlay, onKeyDownRecord } from './elements/SequencerControls.js';
 import TrackLoader from './elements/TrackLoader.js';
 import Samples, { onKeyDownSamples, onKeyUpSamples, onPlaySample, onStep } from './elements/Samples.js';
 import Router from './elements/Router.js';
@@ -110,16 +110,26 @@ build(state => {
   Sequencer();
   SequencerControls();
   Samples();
+  TrackLoader();
 
   // Socket events
   io().on('RELOAD', () => location.reload())
 
   // DOM events
+  // This is to prevent leaving, but doesn't work on android chrome...
+  // window.addEventListener('beforeunload', (e) => {
+  //   e.preventDefault();
+  //   e.returnValue = true;
+  // });
   document.addEventListener('focusin', (e) => {
     window.state.focussed = e.target
   })
   window.addEventListener('onstep', onStep);
   window.addEventListener('keydown', onKeyDownSamples);
+  window.addEventListener('keydown', onKeyDownGain);
+  window.addEventListener('keydown', onKeyDownPitch);
+  window.addEventListener('keydown', onKeyDownPlay);
+  window.addEventListener('keydown', onKeyDownRecord);
   window.addEventListener('keyup', onKeyUpSamples);
   window.addEventListener('playsample', onPlaySample);
   window.addEventListener('scroll', onScroll([onUpScroll(window.state.trackList), onDownScroll(window.state.trackList)]), false)

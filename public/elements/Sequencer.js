@@ -193,6 +193,32 @@ function handleDragStart(event) {
 
 const deleteSampleE = new Event('deletesample', { bubbles: true });
 
+export function onKeyDownGain(event) {
+  const target = document.getElementById('sample-gain');
+  if (event.key === '[') {
+    target.value = Number(target.value) - Number(target.step);
+  } else if (event.key === ']') {
+    target.value = Number(target.value) + Number(target.step);
+  }
+  if (!target) return;
+  const sampleName = document.querySelectorAll('#samples-container .vis-selected')[0].dataset.name;
+  if (!sampleName) return;
+  window.state.sequencerModule.sampleParams[sampleName].gain = Number(target.value);
+}
+
+export function onKeyDownPitch(event) {
+  const target = document.getElementById('sample-pitch');
+  if (event.key === '-') {
+    target.value = Number(target.value) - 40;
+  } else if (event.key === '=') {
+    target.value = Number(target.value) + 40;
+  }
+  if (!target) return;
+  const sampleName = document.querySelectorAll('#samples-container .vis-selected')[0].dataset.name;
+  if (!sampleName) return;
+  window.state.sequencerModule.sampleParams[sampleName].detune = Number(target.value);
+}
+
 export default function Sequencer() {
   const id = 'sequencer-container';
   document.getElementById(id).replaceWith(div({
@@ -223,7 +249,6 @@ export default function Sequencer() {
               <div>Volume</div>
               <input id="sample-gain" type="range" step="0.1" min="0" max="5" value="1" oninput="
                 const { value } = event.target;
-                console.log(value);
                 const sampleName = document.querySelectorAll('#samples-container .vis-selected')[0].dataset.name;
                 if (!sampleName) return;
                 window.state.sequencerModule.sampleParams[sampleName].gain = Number(value);
@@ -241,7 +266,21 @@ export default function Sequencer() {
               ${Object.keys(window.state.stepRecordModule.arpPatterns).map(patternName => {
                 return `
                   <input
-                    onchange="window.state.sequencerModule.sampleParams[document.querySelectorAll('#samples-container .vis-selected')[0].dataset.name].arpegg = '${patternName}'"
+                    onchange="
+                      window.state.sequencerModule.sampleParams[document.querySelectorAll('#samples-container .vis-selected')[0].dataset.name].arpegg = '${patternName}'
+                    "
+                    ontouchstart="
+                      event.target.checked = true;
+                      window.state.sequencerModule.sampleParams[document.querySelectorAll('#samples-container .vis-selected')[0].dataset.name].arpegg = '${patternName}'
+                    "
+                    ontouchend="
+                      event.target.checked = true;
+                      window.state.sequencerModule.sampleParams[document.querySelectorAll('#samples-container .vis-selected')[0].dataset.name].arpegg = '${patternName}'
+                    "
+                    ontouchcancel="
+                      event.target.checked = true;
+                      window.state.sequencerModule.sampleParams[document.querySelectorAll('#samples-container .vis-selected')[0].dataset.name].arpegg = '${patternName}'
+                    "
                     id="${patternName}"
                     type="radio"
                     name="arpegg"
