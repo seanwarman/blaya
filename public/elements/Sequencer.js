@@ -199,9 +199,9 @@ const deleteSampleE = new Event('deletesample', { bubbles: true });
 
 export function onKeyDownGain(event) {
   const target = document.getElementById('sample-gain');
-  if (event.key === '[') {
+  if (event.key === '-') {
     target.value = Number(target.value) - Number(target.step);
-  } else if (event.key === ']') {
+  } else if (event.key === '=') {
     target.value = Number(target.value) + Number(target.step);
   }
   if (!target) return;
@@ -212,9 +212,9 @@ export function onKeyDownGain(event) {
 
 export function onKeyDownPitch(event) {
   const target = document.getElementById('sample-pitch');
-  if (event.key === '-') {
+  if (event.key === '[') {
     target.value = Number(target.value) - 40;
-  } else if (event.key === '=') {
+  } else if (event.key === ']') {
     target.value = Number(target.value) + 40;
   }
   if (!target) return;
