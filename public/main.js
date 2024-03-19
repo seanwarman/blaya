@@ -110,7 +110,7 @@ build(state => {
   Sequencer();
   SequencerControls();
   Samples();
-  TrackLoader();
+  // TrackLoader('music/88_BrokenBapDrums_14_827.mp3');
 
   // Socket events
   io().on('RELOAD', () => location.reload())
