@@ -1,4 +1,4 @@
-import build from './store/indexModule.js'
+import build from './store/indexModule.js';
 import {
   onClearSearch,
   onSearch,
@@ -21,15 +21,20 @@ import {
   onCopyPlaylist,
   onSelectUp,
   onSelectDown,
-} from './helpers/events.js'
-import * as f from './helpers/functional-utils.js'
-import * as dom from './helpers/dom.js'
+} from './helpers/events.js';
+import * as f from './helpers/functional-utils.js';
+import * as dom from './helpers/dom.js';
+import Sequencer, { onKeyDownGain, onKeyDownPitch } from './elements/Sequencer.js';
+import SequencerControls, { onKeyDownPlay, onKeyDownRecord } from './elements/SequencerControls.js';
+import TrackLoader from './elements/TrackLoader.js';
+import Samples, { onKeyDownSamples, onKeyUpSamples, onPlaySample, onStep } from './elements/Samples.js';
+import Router from './elements/Router.js';
 
-import io from './node_modules/socket.io/client-dist/socket.io.esm.min.js'
+import io from './node_modules/socket.io/client-dist/socket.io.esm.min.js';
 
 // Service Worker (mainly for offline cacheing)
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/worker-offline.js').then(
+  navigator.serviceWorker.register('/workers/worker-offline.js').then(
   (registration) => {
 
     // Dom events that need the worker...
@@ -101,23 +106,34 @@ build(state => {
 
   window.state = state
 
-//   onScrollThisTrack(window.state.trackList, getTrackSearchQuery(window.location.search))()
+  Router();
+  Sequencer();
+  SequencerControls();
+  Samples();
+  // TrackLoader('music/88_BrokenBapDrums_14_827.mp3');
 
   // Socket events
   io().on('RELOAD', () => location.reload())
 
   // DOM events
+  // This is to prevent leaving, but doesn't work on android chrome...
+  // window.addEventListener('beforeunload', (e) => {
+  //   e.preventDefault();
+  //   e.returnValue = true;
+  // });
   document.addEventListener('focusin', (e) => {
     window.state.focussed = e.target
   })
+  window.addEventListener('onstep', onStep);
+  window.addEventListener('keydown', onKeyDownSamples);
+  window.addEventListener('keydown', onKeyDownGain);
+  window.addEventListener('keydown', onKeyDownPitch);
+  window.addEventListener('keydown', onKeyDownPlay);
+  window.addEventListener('keydown', onKeyDownRecord);
+  window.addEventListener('keyup', onKeyUpSamples);
+  window.addEventListener('playsample', onPlaySample);
   window.addEventListener('scroll', onScroll([onUpScroll(window.state.trackList), onDownScroll(window.state.trackList)]), false)
-  document.getElementById('close-track-loader').addEventListener('keydown', onClickOrEnter(() => document.body.dataset.showTrackLoader = false));
-  document.getElementById('close-track-loader').addEventListener('click', onClickOrEnter(() => (document.body.dataset.showTrackLoader = false)));
   document.getElementById('player').onended = onEndNext;
-  document.getElementById('loop-region').onclick = onClickOrEnter(() => {
-    const button = document.getElementById('loop-region')
-    button.dataset.loopRegion = `${button.dataset.loopRegion !== 'true'}`
-  })
   document.getElementById('next-button').onclick = onClickOrEnter(onNext)
   document.getElementById('next-button').onkeydown = onClickOrEnter(onNext)
   document.getElementById('prev-button').onclick = onClickOrEnter(onPrev)
@@ -174,6 +190,7 @@ build(state => {
   // Key commands...
   const onKey = (...maps) => e => {
     maps.forEach(([key, cb]) => {
+      if (window.state.mode !== 'track-player') return;
       if(
         (typeof key === 'string' && e.key === key)
         || (key.key === e.key && key.ctrlKey === e.ctrlKey)

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <script type="text/javascript" src="https://unpkg.com/vis-timeline@latest/standalone/umd/vis-timeline-graph2d.min.js"></script>
+  <link href="https://unpkg.com/vis-timeline@latest/styles/vis-timeline-graph2d.min.css" rel="stylesheet" type="text/css" />
+  <link href="./test.css" rel="stylesheet"></style>
+</head>
+<body style="font-family: Arial, Helvetica, sans-serif;">
+  <h1>Clock Worker</h1>
+
+  <button>start</button>
+  <label for="tempo">Tempo: <span id="show-tempo">120</span></label>
+  <br>
+  <input id="tempo" type="range" value="120" step="1" min="30.0" max="160.0" onInput="tempo = event.target.value; document.getElementById('show-tempo').innerText=tempo;" />
+  <div id="visualization"></div>
+
+  <div class="items-panel" style="position:absolute;">
+    <div class="side">
+      <ul class="items">
+        <li style="margin-top:1rem">
+          <div draggable="true" data-name="loop" class="selected item vis-item vis-range vis-editable" style="width: 64.206px;"><div class="vis-item-overflow"><div class="vis-item-content" style="transform: translateX(0px);">loop</div></div><div class="vis-item-visible-frame"></div><div class="vis-drag-center" style="touch-action: pan-y; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></div><div class="vis-drag-left"></div><div class="vis-drag-right"></div></div>
+        </li>
+        <li style="margin-top:1rem">
+          <div draggable="true" data-name="kick" class="selected item vis-item vis-range vis-editable" style="width: 64.206px;"><div class="vis-item-overflow"><div class="vis-item-content" style="transform: translateX(0px);">kick</div></div><div class="vis-item-visible-frame"></div><div class="vis-drag-center" style="touch-action: pan-y; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></div><div class="vis-drag-left"></div><div class="vis-drag-right"></div></div>
+        </li>
+        <li style="margin-top:1rem">
+          <div draggable="true" data-name="sn" class="item vis-item vis-range vis-editable" style="width: 64.206px;"><div class="vis-item-overflow"><div class="vis-item-content" style="transform: translateX(0px);">sn</div></div><div class="vis-item-visible-frame"></div><div class="vis-drag-center" style="touch-action: pan-y; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></div><div class="vis-drag-left"></div><div class="vis-drag-right"></div></div>
+        </li>
+        <li style="margin-top:1rem">
+          <div draggable="true" data-name="hat" class="item vis-item vis-range vis-editable" style="width: 64.206px;"><div class="vis-item-overflow"><div class="vis-item-content" style="transform: translateX(0px);">hat</div></div><div class="vis-item-visible-frame"></div><div class="vis-drag-center" style="touch-action: pan-y; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></div><div class="vis-drag-left"></div><div class="vis-drag-right"></div></div>
+        </li>
+        <li style="margin-top:1rem">
+          <div draggable="true" data-name="click" class="item vis-item vis-range vis-editable" style="width: 64.206px;"><div class="vis-item-overflow"><div class="vis-item-content" style="transform: translateX(0px);">click</div></div><div class="vis-item-visible-frame"></div><div class="vis-drag-center" style="touch-action: pan-y; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></div><div class="vis-drag-left"></div><div class="vis-drag-right"></div></div>
+        </li>
+        <li style="margin-top:1rem">
+          <div draggable="true" data-name="cluck" class="item vis-item vis-range vis-editable" style="width: 64.206px;"><div class="vis-item-overflow"><div class="vis-item-content" style="transform: translateX(0px);">cluck</div></div><div class="vis-item-visible-frame"></div><div class="vis-drag-center" style="touch-action: pan-y; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></div><div class="vis-drag-left"></div><div class="vis-drag-right"></div></div>
+        </li>
+      </ul>
+      <ul>
+        <li><button class="trigger" data-name="kick">Kick</button></li>
+        <li><button class="trigger" data-name="sn">Snare</button></li>
+      </ul>
+    </div>
+  </div>
+</body>
+<script src="./test.js"></script>
+</html>

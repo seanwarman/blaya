@@ -1,7 +1,7 @@
 import { spawn } from 'child_process'
 import { dirname } from 'path'
 import { fileURLToPath } from 'url'
-import multer from 'multer'
+import multer from 'multer';
 import {
   downloadFile,
   streamFile,
@@ -9,8 +9,9 @@ import {
   mvFile,
   rmDir,
   loadTrack,
-} from "./controllers/trackList.js";
-import { copy } from "./mover.mjs";
+  loadTrackPackets,
+} from './controllers/trackList.js';
+import { copy } from './mover.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -23,12 +24,12 @@ const upload = multer({
 
 export default app => {
   app.get('/music/*', streamFile)
+  app.get('/packets/music/*', loadTrackPackets);
   app.get('/load-track/music/*', loadTrack)
   app.get('/download/music/*', downloadFile)
   app.get('/api/mv/*', rmDir, mvFile)
   app.post('/api/upload', cleanDir(__dirname + '/workspace'), upload.array('files'), (req, res) => {
     const { files } = req
-    console.log(`Uploading: `, files)
     copy(0, files.map(({ originalname }) => originalname), () => {
       res.send('Uploaded')
     })

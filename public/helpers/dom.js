@@ -480,6 +480,8 @@ export const ul = element('ul')
 
 export const li = element('li')
 
+export const link = element('link')
+
 export function emptySelectionContainer({ reverseTracks }) {
   const trackListContainer = document.getElementById('track-list-container')
   const playlist = document.getElementById('playlist')

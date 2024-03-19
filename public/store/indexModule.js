@@ -6,9 +6,14 @@ import * as dom from '../helpers/dom.js'
 import * as utils from '../helpers/utils.js'
 
 import { playModule } from './playModule.js'
+import { sequencerModule } from './sequencerModule.js'
+import { stepRecordModule } from './stepRecordModule.js'
+
+const modes = ['sequencer', 'track-player'];
 
 export default (postHook) => {
   const state = {
+    mode: 'sequencer',
     loadingTrackState: false,
     set loadingTrack(bool) {
       document.getElementById('track-loader-loading').dataset.trackLoading = bool
@@ -155,7 +160,9 @@ export default (postHook) => {
   }
 
   // Add other modules...
-  state.playModule = playModule
+  state.playModule = playModule;
+  state.sequencerModule = sequencerModule;
+  state.stepRecordModule = stepRecordModule;
 
   // BEGIN
   state.page = appendTracksByPage(state.trackList)(state.page)

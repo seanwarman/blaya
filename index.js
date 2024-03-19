@@ -8,6 +8,11 @@ import instantiateHttps from 'https'
 import { Server } from 'socket.io'
 import * as dotenv from 'dotenv'
 import router from './router.js'
+import testRoutes from './__test/test-routes.js'
+import { fileURLToPath } from 'url'
+import { dirname } from 'path'
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 dotenv.config()
 
@@ -38,7 +43,6 @@ io.on('connection', () => {
   reloaded = true
 })
 
-
 if (!TEST) {
   app.use(basicAuth({
     users: BASIC_AUTH_USERS.split(',').reduce((acc, userpass) => {
@@ -54,14 +58,24 @@ if (!TEST) {
 
 const options = {
   dotfiles: 'ignore',
-  setHeaders: (res) => {
-    res.set('Cache-Control', 'private, max-age=0')
-  },
+  fallthrough: true,
+  extensions: ['js'],
+}
+
+function redirectWithExt(req, res) {
+  // Some node module files have extra extensions like 'worklet.js' which
+  // confuses express, manually add the .js to the end of these...
+  res.redirect('/node_modules' + req.path + '.js');
 }
 
 app.use(express.static('public', options))
 app.use('/public', express.static('public', options))
-app.use('/node_modules', express.static('node_modules', options))
+if (TEST) {
+  app.use('/__test', express.static('__test', options))
+}
+app.use('/node_modules', express.static('node_modules', options), redirectWithExt)
+app.use('/node_modules', express.static('node_modules', options), redirectWithExt)
+
 if (!TEST) {
   app.use((req, _, next) => {
     const s3 = new S3Client({ region: 'eu-west-2' })
@@ -74,13 +88,29 @@ if (!TEST) {
 } else {
   app.use((req, _, next) => {
     const s3 = {
-      send: async () => ({
-        AcceptRanges: '',
-        ContentLength: '',
-        ContentType: '',
-        ContentRange: '',
-        Body: { on: (type, cb) => { type === 'end' ? cb() : null } },
-      }),
+      send: async (command) => {
+        const path = __dirname + '/' + command.input.Key;
+        const range = command.input.Range;
+        const size = Buffer.byteLength(fs.readFileSync(path));
+        let [start, end] = range?.replace(/bytes=/, '').split('-') || ['0'];
+        start = parseInt(start, 10);
+        end = end ? parseInt(end, 10) : size - 1;
+        if (!isNaN(start) && isNaN(end)) {
+          start = start;
+          end = size - 1;
+        }
+        if (isNaN(start) && !isNaN(end)) {
+          start = size - end;
+          end = size - 1;
+        }
+        return {
+          AcceptRanges: 'bytes',
+          ContentLength: end - start + 1,
+          ContentType: 'audio/mpeg',
+          ContentRange: `bytes ${start}-${end}/${size}`,
+          Body: fs.createReadStream(path, ...(end ? [{ start, end }] : [])),
+        };
+      },
     };
     req.context = {
       io,
@@ -91,6 +121,9 @@ if (!TEST) {
 }
 
 router(app)
+if (TEST) {
+  testRoutes(app);
+}
 
 const listen = () => {
 	console.log(`Blaya listening on port ${PORT}`)
