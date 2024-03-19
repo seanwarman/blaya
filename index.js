@@ -60,7 +60,10 @@ const options = {
   dotfiles: 'ignore',
   fallthrough: true,
   extensions: ['js'],
-}
+  setHeaders: (res) => {
+    res.set('Cache-Control', 'max-age=0');
+  },
+};
 
 function redirectWithExt(req, res) {
   // Some node module files have extra extensions like 'worklet.js' which
