@@ -440,7 +440,7 @@ export const getTrackSearchQuery = (search) => {
 
 export const setDownloadedClassToOfflineTracks = offlineTracks => {
   offlineTracks.forEach(track => {
-    Array.from(document.querySelectorAll(`[data-href="${track}"]`)).forEach(el => el.classList.add('downloaded'))
+    Array.from(document.querySelectorAll(`[data-href="${decodeURIComponent(track)}"]`)).forEach(el => el.classList.add('downloaded'))
   })
 }
 
