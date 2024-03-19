@@ -18,6 +18,32 @@ export function onKeyDownRecord(event) {
       document.getElementById('sequencer-clear').checked = !event.target.checked;
     }
   }
+  if (event.key === 'C') {
+    const clearCheckbox = document.getElementById('sequencer-clear');
+    clearCheckbox.checked = !clearCheckbox.checked;
+    onChangeClear({ target: clearCheckbox });
+  }
+  if (event.key === 'M') {
+    const metroCheckbox = document.getElementById('sequencer-metronome');
+    metroCheckbox.checked = !metroCheckbox.checked;
+    onChangeMetro({ target: metroCheckbox });
+  }
+}
+
+function onChangeLoopBarLength(event) {
+  window.state.sequencerModule.setLoopBarLength(event.target.value);
+}
+
+function onChangeMetro(event) {
+  window.state.sequencerModule.metronomeOn = event.target.checked;
+}
+
+function onChangeClear(event) {
+  window.state.stepRecordModule.clearMode = event.target.checked;
+  if (event.target.checked) {
+    window.state.sequencerModule.isRecording = !event.target.checked;
+    document.getElementById('sequencer-record').checked = !event.target.checked;
+  }
 }
 
 export default function SequencerControls() {
@@ -36,7 +62,7 @@ export default function SequencerControls() {
           tabindex="-1"
           id="sequencer-metronome"
           type="checkbox"
-          onchange="window.state.sequencerModule.metronomeOn = event.target.checked"
+          onchange="${onChangeMetro.toString()} onChangeMetro(event);"
         />
         <label
           for="sequencer-record"
@@ -61,11 +87,7 @@ export default function SequencerControls() {
           id="sequencer-clear"
           type="checkbox"
           onchange="
-            window.state.stepRecordModule.clearMode = event.target.checked;
-            if (event.target.checked) {
-              window.state.sequencerModule.isRecording = !event.target.checked;
-              document.getElementById('sequencer-record').checked = !event.target.checked;
-            }
+            ${onChangeClear.toString()} onChangeClear(event);
           "
         />
         <br>
@@ -96,6 +118,28 @@ export default function SequencerControls() {
           <option value="64ths">64ths</option>
           <option value="128ths">128ths</option>
           <option value="256ths">256ths</option>
+        </select>
+        <select
+          tabindex="-1"
+          id="sequencer-loop-bar-length-select"
+          onchange="${onChangeLoopBarLength.toString()} onChangeLoopBarLength(event)"
+        >
+          <option value="1">1 bar</option>
+          <option value="2">2 bars</option>
+          <option value="3">3 bars</option>
+          <option value="4">4 bars</option>
+          <option value="5">5 bars</option>
+          <option value="6">6 bars</option>
+          <option value="7">7 bars</option>
+          <option value="8">8 bars</option>
+          <option value="9">9 bars</option>
+          <option value="10">10 bars</option>
+          <option value="11">11 bars</option>
+          <option value="12">12 bars</option>
+          <option value="13">13 bars</option>
+          <option value="14">14 bars</option>
+          <option value="15">15 bars</option>
+          <option value="16">16 bars</option>
         </select>
         <br>
     `,

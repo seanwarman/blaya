@@ -1,5 +1,5 @@
 import Samples from '../elements/Samples';
-import { START_DATE_PARAMS } from '../constants';
+import { START_DATE_PARAMS, LOOPBAR_LENGTH_DEFAULT } from '../constants';
 import '../node_modules/waveform-data/dist/waveform-data.js';
 import { floor, ceil, simpleHash } from '../helpers/utils';
 
@@ -19,9 +19,7 @@ import { floor, ceil, simpleHash } from '../helpers/utils';
 
 const stepEvent = new Event('onstep', { bubbles: true });
 const stepRemovedEvent = new Event('stepremove', { bubbles: true });
-
-window.addEventListener('onstepsample', (e) => {
-});
+const loopBarLengthEvent = new Event('changeloopbarlength', { bubbles: true });
 
 export const sequencerModule = {
   unlocked: false,
@@ -46,7 +44,8 @@ export const sequencerModule = {
                             // Make this a higher number for mobile (just make a guess for now).
                             // - Update the arpegg so that it works with this latency number <-- DONE!
                             // - Get mulitple touch events working on mobile
-                            // - Allow erasing notes by holding keyMap
+                            // - Allow erasing notes by holding keyMap <-- DONE!
+                            // - Allow a selection of pitches to raised or lowered together
   nextNoteTime: 0.0,        //
   noteResolution: 256,      //
   last16thNoteDrawn: -1,    // the last "box" we drew on the screen
@@ -55,7 +54,12 @@ export const sequencerModule = {
                             //
   timerWorker: null,        // The Web Worker used to fire timer messages
                             //
-  loopBarLength: 1,
+  loopBarLength: LOOPBAR_LENGTH_DEFAULT,
+  setLoopBarLength(loopBarLength) {
+    if (loopBarLength < 1) return;
+    this.loopBarLength = loopBarLength;
+    window.dispatchEvent(Object.assign(loopBarLengthEvent, { loopBarLength }))
+  },
   timeLinePosition: 0,
   timing: {
     normal: 0.25,

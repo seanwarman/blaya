@@ -10,19 +10,25 @@ const makeStep = ({ name, index, delay, endTime }) => ({
   delay: delay || 0,
 });
 
+function setMaxTime(vis) {
+  return vis
+    .moment(...START_DATE_PARAMS)
+    .add(
+      (
+        window.state.sequencerModule.noteResolution *
+        window.state.sequencerModule.beatPerDateMultiple
+      ) * window.state.sequencerModule.loopBarLength,
+      window.state.sequencerModule.beatPerDateResolution
+    )
+}
+
 function initTimeline(container) {
   const options = {
     orientation: 'top',
     height: 350,
     start: vis.moment(...START_DATE_PARAMS),
     min: vis.moment(...START_DATE_PARAMS),
-    max: vis
-      .moment(...START_DATE_PARAMS)
-      .add(
-        window.state.sequencerModule.noteResolution *
-          window.state.sequencerModule.beatPerDateMultiple,
-        window.state.sequencerModule.beatPerDateResolution
-      ),
+    max: setMaxTime(vis),
     itemsAlwaysDraggable: true,
     zoomFriction: 25,
     moveable: false,
@@ -58,27 +64,21 @@ function initTimeline(container) {
     onMove,
   };
 
-  const items = new vis.DataSet(
-    Object.values(window.state.sequencerModule.sequence)
-    .flatMap((steps, i) => {
-      if (!steps) return;
-      return steps.map(step => {
-        if (!step) return;
-        return {
-          id: step.id,
-          step,
-          index: i,
-          content: step.name,
-          start: vis.moment(...START_DATE_PARAMS).add((i+(step.delay)) * window.state.sequencerModule.beatPerDateMultiple, window.state.sequencerModule.beatPerDateResolution),
-          end: step.endTime
-          ? vis.moment(...START_DATE_PARAMS).add(((i+(step.delay)+(step.endTime*8)) * window.state.sequencerModule.beatPerDateMultiple), window.state.sequencerModule.beatPerDateResolution)
-          : vis.moment(...START_DATE_PARAMS).add(((i+step.delay) * window.state.sequencerModule.beatPerDateMultiple), window.state.sequencerModule.beatPerDateResolution),
-        };
-      })
-    })
-    .filter(Boolean)
-  );
+  const items = new vis.DataSet([]);
   window.state.sequencerModule.timeline = new vis.Timeline(container, items, options);
+
+  window.addEventListener('changeloopbarlength', event => {
+    const { loopBarLength } = event;
+    const max = setMaxTime(vis);
+    window.state.sequencerModule.timeline.setOptions({
+      max,
+    });
+    window.state.sequencerModule.timeline.setWindow(
+      options.min,
+      max,
+    );
+  });
+
   window.state.sequencerModule.timeline.setWindow(
     options.min,
     options.max,

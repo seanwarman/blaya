@@ -1,4 +1,9 @@
-import { KEY_MAPS, ARP_PATTERNS } from '../constants';
+import { KEY_MAPS, ARP_PATTERNS, LOOPBAR_LENGTH_DEFAULT } from '../constants';
+
+function getLoopBarLength() {
+  if (window.state?.sequencerModule?.loopBarLength) return window.state?.sequencerModule?.loopBarLength;
+  return LOOPBAR_LENGTH_DEFAULT;
+}
 
 export const stepRecordModule = {
   // { name: sampleName, time: number }[]
@@ -17,7 +22,24 @@ export const stepRecordModule = {
       'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l',
         'z', 'x', 'c', 'v', 'b', 'n', 'm',
   ],
-  arpPatterns: ARP_PATTERNS,
+  get arpPatterns() {
+    if (!window.state?.sequencerModule?.loopBarLength || window.state?.sequencerModule?.loopBarLength === LOOPBAR_LENGTH_DEFAULT) {
+      return ARP_PATTERNS;
+    } else {
+      return {
+        Off: [],
+        1: Array(window.state?.sequencerModule?.loopBarLength).fill(ARP_PATTERNS['1']).flatMap(n => n),
+        2: Array(window.state?.sequencerModule?.loopBarLength).fill(ARP_PATTERNS['2']).flatMap(n => n),
+        3: Array(window.state?.sequencerModule?.loopBarLength).fill(ARP_PATTERNS['3']).flatMap(n => n),
+        4: Array(window.state?.sequencerModule?.loopBarLength).fill(ARP_PATTERNS['4']).flatMap(n => n),
+        5: Array(window.state?.sequencerModule?.loopBarLength).fill(ARP_PATTERNS['5']).flatMap(n => n),
+        6: Array(window.state?.sequencerModule?.loopBarLength).fill(ARP_PATTERNS['6']).flatMap(n => n),
+        7: Array(window.state?.sequencerModule?.loopBarLength).fill(ARP_PATTERNS['7']).flatMap(n => n),
+        8: Array(window.state?.sequencerModule?.loopBarLength).fill(ARP_PATTERNS['8']).flatMap(n => n),
+        9: Array(window.state?.sequencerModule?.loopBarLength).fill(ARP_PATTERNS['9']).flatMap(n => n),
+      };
+    }
+  },
   arpStarts: {},
   checkArpStep(keyMap, currentStep) {
     const step = () => {

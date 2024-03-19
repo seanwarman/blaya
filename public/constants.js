@@ -30,3 +30,5 @@ export const ARP_PATTERNS = {
   // 128   144   160   176
   // 192   208   224   240
 };
+
+export const LOOPBAR_LENGTH_DEFAULT = 1;
