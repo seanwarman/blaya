@@ -160,6 +160,7 @@ function segmentEvents(peaks, trackUrl) {
   }
 
   peaks.views.getView('zoomview').enableSegmentDragging(true)
+  peaks.views.getView('zoomview').setSegmentDragMode('no-overlap');
 
   const { segments, player } = peaks
   let playingSegment = false;
