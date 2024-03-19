@@ -33,19 +33,19 @@
 }
 
 #zoom-in-track-loader {
-  content: url(../icons/zoom-in.svg);
+  content: url(/icons/zoom-in.svg);
 }
 
 #zoom-out-track-loader {
-  content: url(../icons/zoom-out.svg);
+  content: url(/icons/zoom-out.svg);
 }
 
 [data-selector-active="false"]#italic-track-loader {
-  content: url(../icons/italic.svg);
+  content: url(/icons/italic.svg);
 }
 
 [data-selector-active="true"]#italic-track-loader {
-  content: url(../icons/italic-active.svg);
+  content: url(/icons/italic-active.svg);
 }
 
 #play-pause-track-loader {
@@ -60,11 +60,11 @@
 }
 
 [data-track-loader-playing="true"]#play-pause-track-loader {
-  content: url(../icons/pause-solid.svg);
+  content: url(/icons/pause-solid.svg);
 }
 
 [data-track-loader-playing="false"]#play-pause-track-loader {
-  content: url(../icons/play-solid.svg);
+  content: url(/icons/play-solid.svg);
 }
 
 /* [data-show-track-loader="true"][data-searching="true"] #track-list-container { */

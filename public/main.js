@@ -34,7 +34,7 @@ import io from './node_modules/socket.io/client-dist/socket.io.esm.min.js';
 
 // Service Worker (mainly for offline cacheing)
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/workers/worker-offline.js').then(
+  navigator.serviceWorker.register('/worker-offline.js').then(
   (registration) => {
 
     // Dom events that need the worker...

@@ -408,7 +408,7 @@ body[data-searching="true"] #page-1 .track:first-child.track-adding-track .track
 }
 
 .downloaded:after {
-  content: url(./icons/cloud-arrow-down-solid.svg);
+  content: url(/icons/cloud-arrow-down-solid.svg);
   min-width: 15px;
   position: absolute;
   left: 0.2rem;
@@ -420,7 +420,7 @@ body[data-searching="true"] #page-1 .track:first-child.track-adding-track .track
 }
 
 #selection-container .downloaded:after {
-  content: url(./icons/cloud-arrow-down-solid-lighter.svg);
+  content: url(/icons/cloud-arrow-down-solid-lighter.svg);
 }
 
 body[data-playlist-mode="true"] .track {
@@ -457,7 +457,7 @@ div[data-playlist="true"] .track-name-album-container {
 }
 
 .playing .track-name::before {
-  content: url(./icons/play-solid.svg);
+  content: url(/icons/play-solid.svg);
   min-width: 9px;
   margin-right: 0.7rem;
 }
@@ -467,7 +467,7 @@ div[data-playlist="true"] .track-name-album-container {
 #selection-container .playing .track-name-album-container .track-name::before,
 #selection-container .downloaded.playing .track-name::before,
 #selection-container .playing .track-name-album-container:focus .track-name::before {
-  content: url(./icons/play-solid-white.svg);
+  content: url(/icons/play-solid-white.svg);
 }
 
 body[data-playlist-mode="false"] #playlist .track {
@@ -524,7 +524,7 @@ body[data-playlist-mode="false"] .add-to-playlist {
 
 .add-to-playlist-icon {
   height:1rem;
-  content: url(../icons/plus-solid.svg);
+  content: url(/icons/plus-solid.svg);
   -webkit-user-select: none;
   -moz-user-select: none;
   user-select: none;
@@ -532,7 +532,7 @@ body[data-playlist-mode="false"] .add-to-playlist {
 
 #selection-container .track-name-album-container + .add-to-playlist .add-to-playlist-icon,
 #selection-container .track-name-album-container:focus + .add-to-playlist .add-to-playlist-icon {
-  content: url(../icons/plus-solid-white.svg);
+  content: url(/icons/plus-solid-white.svg);
   margin-left: -4px;
 }
 
@@ -543,17 +543,17 @@ body[data-playlist-mode="false"] .add-to-playlist {
 
 .downloaded .add-to-playlist-icon {
   height:1rem;
-  content: url(../icons/plus-solid-white.svg);
+  content: url(/icons/plus-solid-white.svg);
 }
 
 .remove-from-playlist-icon {
-  content: url(../icons/minus-solid.svg);
+  content: url(/icons/minus-solid.svg);
   height: 0.8rem;
 }
 
 #playlist #selection-container .track .remove-from-playlist-icon,
 .downloaded .remove-from-playlist-icon {
-  content: url(../icons/minus-solid-white.svg);
+  content: url(/icons/minus-solid-white.svg);
   height: 0.8rem;
 }
 
