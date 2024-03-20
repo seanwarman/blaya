@@ -3,3 +3,6 @@ complete
 .env
 public/track-list.js
 watchlogs
+music/**/*
+__test/**/*
+.DS_Store
