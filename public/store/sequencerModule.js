@@ -59,7 +59,7 @@ export const sequencerModule = {
   setLoopBarLength(loopBarLength) {
     if (loopBarLength < 1) return;
     // Duplicates the original loop into the new bars
-    this.sequence = Array(this.sequence.length * loopBarLength)
+    this.sequence = Array(this.noteResolution * loopBarLength)
       .fill()
       .map((_,i) => this.sequence[i % (this.loopBarLength * this.noteResolution)]?.map(step => ({ ...step, id: this.makeId() })));
     this.loopBarLength = loopBarLength;

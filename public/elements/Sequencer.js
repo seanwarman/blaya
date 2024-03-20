@@ -152,6 +152,7 @@ function onMove(item, cb) {
   const position =
     item.index + diff / window.state.sequencerModule.beatPerDateMultiple;
   const newindex = Math.floor(position) + 1;
+  console.log(`@FILTER newindex:`, newindex)
 
   window.state.sequencerModule.sequence[item.index] = window.state.sequencerModule.sequence[item.index]?.filter(step => step.id !== item.step.id);
   if (!window.state.sequencerModule.sequence[newindex]) window.state.sequencerModule.sequence[newindex] = [];
@@ -162,7 +163,7 @@ function onMove(item, cb) {
   // The position will add .5 for 12th hour, we just want that decimal for the delay...
   window.state.sequencerModule.sequence[item.index].push({
     ...item.step,
-    delay: position - Math.floor(position),
+    index: newindex,
     endTime: window.state.sequencerModule.getStepLength() * endPosition,
   });
   cb(item);
