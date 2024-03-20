@@ -1,6 +1,7 @@
 import Samples from '../elements/Samples';
 import { START_DATE_PARAMS, LOOPBAR_LENGTH_DEFAULT } from '../constants';
 import '../node_modules/waveform-data/dist/waveform-data.js';
+import { cloneWaveImgCanvas } from '../helpers/dom';
 import { floor, ceil, simpleHash } from '../helpers/utils';
 
 // const click = createBitPlayer(3, i => {
@@ -57,6 +58,10 @@ export const sequencerModule = {
   loopBarLength: LOOPBAR_LENGTH_DEFAULT,
   setLoopBarLength(loopBarLength) {
     if (loopBarLength < 1) return;
+    // Duplicates the original loop into the new bars
+    this.sequence = Array(this.sequence.length * loopBarLength)
+      .fill()
+      .map((_,i) => this.sequence[i % (this.loopBarLength * this.noteResolution)]?.map(step => ({ ...step, id: this.makeId() })));
     this.loopBarLength = loopBarLength;
     window.dispatchEvent(Object.assign(loopBarLengthEvent, { loopBarLength }))
   },
@@ -139,10 +144,8 @@ export const sequencerModule = {
         this.sequence[startStep] = [step]
       }
     }, 100);
-    const selectedSample = document.querySelector(`#samples-container .item[data-name="${sampleName}"]`);
-    const waveImgCanvas = this.cloneCanvas(selectedSample.querySelector('canvas'));
-    waveImgCanvas.style = 'height:30px;margin-left:-12px';
     const start = vis.moment(...START_DATE_PARAMS).add(startStep * this.beatPerDateMultiple, this.beatPerDateResolution);
+    const { waveImgCanvas, selectedSample} = cloneWaveImgCanvas(sampleName);
     this.timeline.itemsData.add({
       className: selectedSample.dataset.colourClass,
       name: selectedSample.dataset.name,
@@ -376,18 +379,6 @@ export const sequencerModule = {
         this.metronome = this.metronome(time)();
       }
     }
-  },
-  cloneCanvas(oldCanvas) {
-    //create a new canvas
-    var newCanvas = oldCanvas.cloneNode(true);
-    var context = newCanvas.getContext('2d');
-    //set dimensions
-    newCanvas.width = oldCanvas.width;
-    newCanvas.height = oldCanvas.height;
-    //apply the old canvas to the new one
-    context.drawImage(oldCanvas, 0, 0);
-    //return the new canvas
-    return newCanvas;
   },
 };
 
