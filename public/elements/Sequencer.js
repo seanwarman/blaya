@@ -74,36 +74,37 @@ function initTimeline(container) {
       max,
     });
 
-    const items = window.state.sequencerModule.sequence
-      .reduce((acc, steps, i) => {
-        if (!steps) return acc;
-        return [
-          ...acc,
-          ...steps.map((step, indx) => {
-            if (!step) return;
-            const { waveImgCanvas, selectedSample } = cloneWaveImgCanvas(step.name);
-            const stepLength = window.state.sequencerModule.beatInTime / step.endTime;
-            const start = vis
-              .moment(...START_DATE_PARAMS)
-              .add(
-                (i+step.delay) * window.state.sequencerModule.beatPerDateMultiple,
-                window.state.sequencerModule.beatPerDateResolution
-              );
-            return {
-              id: step.id,
-              step,
-              index: i,
-              className: selectedSample.dataset.colourClass,
-              name: selectedSample.dataset.name,
-              content: waveImgCanvas,
-              start,
-              end: vis.moment(start).add(window.state.sequencerModule.beatInMMs * stepLength, window.state.sequencerModule.beatPerDateResolution),
-            };
-          }).filter(Boolean),
-        ];
-      }, []);
+    // TODO: put this in when you have time, not currently working, it has to do with the bug below where sometimes the sequencer indexes are wrong by 1
+    // const items = window.state.sequencerModule.sequence
+    //   .reduce((acc, steps, i) => {
+    //     if (!steps) return acc;
+    //     return [
+    //       ...acc,
+    //       ...steps.map((step, indx) => {
+    //         if (!step) return;
+    //         const { waveImgCanvas, selectedSample } = cloneWaveImgCanvas(step.name);
+    //         const stepLength = window.state.sequencerModule.beatInTime / step.endTime;
+    //         const start = vis
+    //           .moment(...START_DATE_PARAMS)
+    //           .add(
+    //             (i+step.delay) * window.state.sequencerModule.beatPerDateMultiple,
+    //             window.state.sequencerModule.beatPerDateResolution
+    //           );
+    //         return {
+    //           id: step.id,
+    //           step,
+    //           index: i,
+    //           className: selectedSample.dataset.colourClass,
+    //           name: selectedSample.dataset.name,
+    //           content: waveImgCanvas,
+    //           start,
+    //           end: vis.moment(start).add(window.state.sequencerModule.beatInMMs * stepLength, window.state.sequencerModule.beatPerDateResolution),
+    //         };
+    //       }).filter(Boolean),
+    //     ];
+    //   }, []);
 
-    window.state.sequencerModule.timeline.setItems(new vis.DataSet(items));
+    // window.state.sequencerModule.timeline.setItems(new vis.DataSet(items));
 
     window.state.sequencerModule.timeline.setWindow(
       options.min,
@@ -151,19 +152,22 @@ function onMove(item, cb) {
     window.state.sequencerModule.beatPerDateResolution);
   const position =
     item.index + diff / window.state.sequencerModule.beatPerDateMultiple;
-  const newindex = Math.floor(position) + 1;
-  console.log(`@FILTER newindex:`, newindex)
+  const newIndex = Math.floor(position) + 1;
+
+  // *** TODO: BUG ALERT ***
+  // Sometimes, but not always, newIndex is wrong. Often by + 1.
+  console.log(`@FILTER newIndex:`, newIndex)
 
   window.state.sequencerModule.sequence[item.index] = window.state.sequencerModule.sequence[item.index]?.filter(step => step.id !== item.step.id);
-  if (!window.state.sequencerModule.sequence[newindex]) window.state.sequencerModule.sequence[newindex] = [];
+  if (!window.state.sequencerModule.sequence[newIndex]) window.state.sequencerModule.sequence[newIndex] = [];
 
   const diffFromItemStart = vis.moment(item.end).diff(vis.moment(item.start), window.state.sequencerModule.beatPerDateResolution);
   const endPosition = diffFromItemStart / window.state.sequencerModule.beatPerDateMultiple;
-  item.index = newindex;
+  item.index = newIndex;
   // The position will add .5 for 12th hour, we just want that decimal for the delay...
   window.state.sequencerModule.sequence[item.index].push({
     ...item.step,
-    index: newindex,
+    index: newIndex,
     endTime: window.state.sequencerModule.getStepLength() * endPosition,
   });
   cb(item);
