@@ -234,7 +234,7 @@ function segmentEvents(peaks, trackUrl) {
       peaks.segments.removeById(e.segment.id);
       return
     }
-    window.state.sequencerModule.updateCurrentSegment(e.segment, trackUrl);
+    window.state.sequencerModule.addOrUpdateSample(e.segment, trackUrl);
   });
 }
 

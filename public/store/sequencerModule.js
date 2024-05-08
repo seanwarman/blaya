@@ -21,6 +21,7 @@ import { floor, ceil, simpleHash } from '../helpers/utils';
 const stepEvent = new Event('onstep', { bubbles: true });
 const stepRemovedEvent = new Event('stepremove', { bubbles: true });
 const loopBarLengthEvent = new Event('changeloopbarlength', { bubbles: true });
+const playEvent = new Event('playsample', { bubbles: true });
 
 export const sequencerModule = {
   unlocked: false,
@@ -221,7 +222,7 @@ export const sequencerModule = {
     // Add samples to ui
     Samples(this.samples, this.segmentData);
   },
-  setSegmentData(sampleName, segment, trackUrl) {
+  setSegmentData(sampleName, segment, trackUrl, startByte, endByte) {
     if (this.segmentData[sampleName] && this.segmentData[sampleName].color !== segment.color) {
       Array.from(document.querySelectorAll(`#sequencer .vis-item.${this.segmentData[sampleName].className}-light`)).forEach(el => {
         el.classList.remove(this.segmentData[sampleName].className + '-light');
@@ -237,52 +238,23 @@ export const sequencerModule = {
         className: segment.className,
         color: segment.color,
         sampleName,
+        startByte,
+        endByte,
+        trackUrl,
       },
     };
   },
 //sampleParams: { [sampleName]: { detune } }
   sampleParams: {},
-  updateCurrentSegment(segment, trackUrl) {
-    const sampleName = segment.keyMap;
-    this.setSegmentData(sampleName, segment, trackUrl);
-
-    const startI = this.packets.findIndex(packet => {
-      return packet.pts_time > segment.startTime;
-    });
-    const endI = this.packets.findIndex(packet => {
-      return packet.pts_time > segment.endTime;
-    });
-
-    const startByte = this.packets[startI === 0 ? 0 : startI - 1]?.pos;
-    const endByte = this.packets[endI - 1]?.pos;
-    createFetchPlayer(sampleName, {
-      url: trackUrl,
-      range: `bytes=${startByte}-${endByte}`,
-    }, response => {
-      // Set samples so the canvas exists for drawWaveforms
-      if (!this.samples[sampleName]) {
-        this.setSamples({
-          [sampleName]: null,
-        });
-      }
-      // Response gets consumed so clone it first
-      const r = response.clone();
-      // This context is just for the waveform image
-      const ctx = new AudioContext();
-      r.arrayBuffer()
-        .then(b => ctx.decodeAudioData(b))
-        .then(audioBuffer => {
-          WaveformData.createFromAudio({
-            audio_context: ctx,
-            audio_buffer: audioBuffer,
-            scale: 50,
-          }, (error, waveform) => {
-            if (error) throw error;
-            drawWaveforms(waveform, sampleName);
-          });
-        });
-      return response;
-    }).then(prepare => {
+  setSegmentDataAndSample(sampleName, shallowSegment, trackUrl, startByte, endByte) {
+    this.setSegmentData(sampleName, shallowSegment, trackUrl, startByte, endByte)
+    // Set samples so the canvas exists for drawWaveforms
+    if (!this.samples[sampleName]) {
+      this.setSamples({
+        [sampleName]: null,
+      });
+    }
+    return fetchAndPrepareSample(sampleName, trackUrl, startByte, endByte).then(prepare => {
       if (!this.sampleParams[sampleName]) {
         this.sampleParams[sampleName] = { detune: 0, gain: 1, arpegg: 'Off' };
       }
@@ -290,9 +262,19 @@ export const sequencerModule = {
         [sampleName]: prepare(),
       });
     });
-
   },
-
+  setAllSamplesAndSegmentData(segmentData, sampleParams) {
+    this.samples = {};
+    Promise.all(Object.values(segmentData).map(async (shallowSegment) => {
+      const { startByte, endByte, trackUrl, sampleName } = shallowSegment;
+      await this.setSegmentDataAndSample(sampleName, shallowSegment, trackUrl, startByte, endByte);
+    }));
+  },
+  addOrUpdateSample(segment, trackUrl) {
+    const sampleName = segment.keyMap;
+    const { startByte, endByte } = getStartAndEndBytes(segment, this.packets);
+    this.setSegmentDataAndSample(sampleName, segment, trackUrl, startByte, endByte);
+  },
   async init(cb) {
     this.timerWorker = new Worker('../workers/clock-worker.js');
     this.timerWorker.addEventListener('message', (e) => {
@@ -387,6 +369,41 @@ window.addEventListener('deletesample', e => {
   sequencerModule.deleteSample(e.segment.keyMap);
 });
 
+function getStartAndEndBytes(segment, packets) {
+  const startI = packets.findIndex(packet => {
+    return packet.pts_time > segment.startTime;
+  });
+  const endI = packets.findIndex(packet => {
+    return packet.pts_time > segment.endTime;
+  });
+
+  const startByte = packets[startI === 0 ? 0 : startI - 1]?.pos;
+  const endByte = packets[endI - 1]?.pos;
+  return {
+    startByte,
+    endByte,
+  };
+}
+
+function createSegmentWaveformAndPassResponse(cb) {
+  return response => {
+    // Response gets consumed so clone it first
+    const r = response.clone();
+    // This context is just for the waveform image
+    const ctx = new AudioContext();
+    r.arrayBuffer()
+      .then(b => ctx.decodeAudioData(b))
+      .then(audioBuffer => {
+        WaveformData.createFromAudio({
+          audio_context: ctx,
+          audio_buffer: audioBuffer,
+          scale: 50,
+        }, cb);
+      });
+    return response;
+  };
+}
+
 function createBitPlayer(length, mapBuffer) {
   if (!window.state.sequencerModule.audioContext)
     window.state.sequencerModule.setAudioContext(new AudioContext());
@@ -442,9 +459,16 @@ function drawWaveforms(waveform, sampleName) {
   })
 }
 
-const playEvent = new Event('playsample', { bubbles: true });
+function fetchAndPrepareSample(sampleName, trackUrl, startByte, endByte) {
+  return createFetchPlayer(
+    { url: trackUrl, range: `bytes=${startByte}-${endByte}` },
+    createSegmentWaveformAndPassResponse((e, waveform) => {if (e) throw e; drawWaveforms(waveform, sampleName)}),
+    () => window.dispatchEvent(Object.assign(playEvent, { sampleName })),
+  );
+}
+
 // PLAYER
-export function createFetchPlayer(sampleName, { url, range }, responseHandler) {
+export function createFetchPlayer({ url, range }, responseHandler, onPlay) {
   if (!window.state.sequencerModule.audioContext)
     window.state.sequencerModule.setAudioContext(new AudioContext());
   const context = window.state.sequencerModule.audioContext;
@@ -463,7 +487,7 @@ export function createFetchPlayer(sampleName, { url, range }, responseHandler) {
       source.connect(gainNode);
       gainNode.connect(context.destination);
       let start = function(startTime, endTime, sampleParams = { detune: 0, gain: 1 }) {
-        window.dispatchEvent(Object.assign(playEvent, { sampleName }));
+        onPlay();
         if (typeof sampleParams.gain === 'number') {
           gainNode.gain.value = sampleParams.gain;
         }
