@@ -161,6 +161,15 @@ export const sequencerModule = {
   },
   // vis.Timeline
   timeline: {},
+  setTimeline(sequence) {
+    this.sequence = [];
+    sequence.forEach(items => {
+      if (!items) return
+      items.forEach(item => {
+        this.setSequence(item.index, item.endTime / this.beatInTime, item.name, true);
+      });
+    });
+  },
   samples: {},
   idCount: 0,
   makeId() {
