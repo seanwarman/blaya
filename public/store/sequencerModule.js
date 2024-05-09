@@ -375,7 +375,35 @@ export const sequencerModule = {
       }
     }
   },
+  save() {
+    return exportSequencerModule(this);
+  },
+  load(exportedSequencerModule) {
+    Object.assign(this, exportedSequencerModule);
+    this.setAllSamplesAndSegmentData(exportedSequencerModule.segmentData, exportedSequencerModule.sampleParams);
+    this.setTimeline(exportedSequencerModule.sequence);
+  },
 };
+
+function exportSequencerModule(sequencerModule) {
+    return Object.entries(sequencerModule).reduce((obj,[k,v]) => {
+    try {
+        let val;
+        if (typeof v === 'number' || typeof v === 'boolean' || v === null || typeof v === 'string') {
+            val = v;
+        } else {
+            val = JSON.stringify(v);
+            if (!val) return obj;
+        }
+        return {
+            ...obj,
+            [k]: val,
+        };
+    } catch (e) {
+        return obj;
+    }
+}, {});
+}
 
 window.addEventListener('deletesample', e => {
   sequencerModule.deleteSample(e.segment.keyMap);
