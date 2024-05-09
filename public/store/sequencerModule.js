@@ -376,34 +376,27 @@ export const sequencerModule = {
     }
   },
   save() {
-    return exportSequencerModule(this);
+    return {
+      segmentData: JSON.parse(JSON.stringify(this.segmentData)),
+      sequence: JSON.parse(JSON.stringify(this.sequence)),
+      sampleParams: JSON.parse(JSON.stringify(this.sampleParams)),
+      tempo: this.tempo,
+      loopBarLength: this.loopBarLength,
+    };
   },
-  load(exportedSequencerModule) {
-    Object.assign(this, exportedSequencerModule);
-    this.setAllSamplesAndSegmentData(exportedSequencerModule.segmentData, exportedSequencerModule.sampleParams);
-    this.setTimeline(exportedSequencerModule.sequence);
+  load({ 
+    segmentData,
+    sequence,
+    sampleParams,
+    tempo,
+    loopBarLength,
+  }) {
+    this.tempo = tempo;
+    this.loopBarLength = loopBarLength;
+    this.setAllSamplesAndSegmentData(segmentData, sampleParams);
+    this.setTimeline(sequence);
   },
 };
-
-function exportSequencerModule(sequencerModule) {
-    return Object.entries(sequencerModule).reduce((obj,[k,v]) => {
-    try {
-        let val;
-        if (typeof v === 'number' || typeof v === 'boolean' || v === null || typeof v === 'string') {
-            val = v;
-        } else {
-            val = JSON.stringify(v);
-            if (!val) return obj;
-        }
-        return {
-            ...obj,
-            [k]: val,
-        };
-    } catch (e) {
-        return obj;
-    }
-}, {});
-}
 
 window.addEventListener('deletesample', e => {
   sequencerModule.deleteSample(e.segment.keyMap);
