@@ -44,7 +44,27 @@ PORT=3000
 BASIC_AUTH_USERS=bobuser:bobspassword
 ```
 
-### 2. Install
+### 2. Dependencies
+
+You'll need audiowaveform and ffmpeg installed on your machine.
+
+## Installation For Macos (homebrew)
+
+I'm using a mac and use these to install...
+
+```bash
+brew install ffmpeg
+brew tap bbc/audiowaveform
+brew install audiowaveform
+```
+
+If you're using something else, see their docs, should be easy enough.
+
+- [audiowaveform](https://github.com/bbc/audiowaveform?tab=readme-ov-file#installation)
+- [ffmpeg](https://github.com/FFmpeg/FFmpeg?tab=readme-ov-file#ffmpeg-readme)
+
+
+### 3. Install
 
 Do the usual install
 
@@ -52,7 +72,7 @@ Do the usual install
 $ npm i
 ```
 
-### 3. Run
+### 4. Run
 
 Run with `dev`.
 
@@ -60,7 +80,7 @@ Run with `dev`.
 $ npm run dev
 ```
 
-### 4. Testing
+### 5. Testing
 
 The player uses Cypress e2e testing, to open the Cypress UI.
 
