@@ -274,6 +274,9 @@ export const sequencerModule = {
   },
   setAllSamplesAndSegmentData(segmentData, sampleParams) {
     this.samples = {};
+    if (sampleParams) {
+      Object.assign(this.sampleParams, sampleParams);
+    }
     Promise.all(Object.values(segmentData).map(async (shallowSegment) => {
       const { startByte, endByte, trackUrl, sampleName } = shallowSegment;
       await this.setSegmentDataAndSample(sampleName, shallowSegment, trackUrl, startByte, endByte);
