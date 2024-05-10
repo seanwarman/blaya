@@ -24,6 +24,7 @@ const loopBarLengthEvent = new Event('changeloopbarlength', { bubbles: true });
 const playEvent = new Event('playsample', { bubbles: true });
 
 export const sequencerModule = {
+  name: null,
   unlocked: false,
   isPlaying: false,       // Are we currently playing?
   isRecording: false,
@@ -375,8 +376,25 @@ export const sequencerModule = {
       }
     }
   },
-  save() {
+  saveToFile() {
+    const name = this.name || prompt('Save as...');
+    this.name = name;
+    if (name) {
+      const url = URL.createObjectURL(new File([JSON.stringify(this.save())], name, { type: 'application/json' }));
+      let link = document.createElement('a');
+      link.dataType = 'json';
+      link.href = url;
+      link.download = name;
+      link.dispatchEvent(new MouseEvent('click'));
+      setTimeout(() => {
+        link = undefined;
+        window.URL.revokeObjectURL(url);
+      }, 60);
+    }
+  },
+  save(name) {
     return {
+      name,
       segmentData: JSON.parse(JSON.stringify(this.segmentData)),
       sequence: JSON.parse(JSON.stringify(this.sequence)),
       sampleParams: JSON.parse(JSON.stringify(this.sampleParams)),
@@ -384,13 +402,15 @@ export const sequencerModule = {
       loopBarLength: this.loopBarLength,
     };
   },
-  async load({ 
+  async load({
+    name,
     segmentData,
     sequence,
     sampleParams,
     tempo,
     loopBarLength,
   }) {
+    this.name = name;
     this.tempo = tempo;
     this.loopBarLength = loopBarLength;
     await this.setAllSamplesAndSegmentData(segmentData, sampleParams);
