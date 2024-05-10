@@ -141,6 +141,8 @@ export default function SequencerControls() {
           <option value="15">15 bars</option>
           <option value="16">16 bars</option>
         </select>
+        <button id="save-as" onclick="window.state.sequencerModule.saveToFile()">Save as</button>
+        <input id="load-from-file" type="file" accept=".json" onchange="window.state.sequencerModule.loadFromFile(event)" />
         <br>
     `,
     }),

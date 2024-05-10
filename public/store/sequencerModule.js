@@ -376,6 +376,28 @@ export const sequencerModule = {
       }
     }
   },
+  loadFromFile(changeEvent) {
+    if (!changeEvent.target.files[0]) return;
+    const reader = new FileReader();
+    reader.onload = async (onloadEvent) => {
+      try {
+        const exportedSequencerModule = JSON.parse(onloadEvent.target.result);
+        if (
+          exportedSequencerModule.segmentData
+          && exportedSequencerModule.sequence
+          && exportedSequencerModule.sampleParams
+        ) {
+          await this.load(exportedSequencerModule);
+        } else {
+          alert('This file is the wrong format');
+        }
+      } catch (error) {
+        console.error(error);
+        alert('There was a problem loading this file');
+      }
+    };
+    reader.readAsText(changeEvent.target.files[0]);
+  },
   saveToFile() {
     const name = this.name || prompt('Save as...');
     this.name = name;
@@ -410,9 +432,9 @@ export const sequencerModule = {
     tempo,
     loopBarLength,
   }) {
-    this.name = name;
-    this.tempo = tempo;
-    this.loopBarLength = loopBarLength;
+    if (name) this.name = name;
+    if (tempo) this.tempo = tempo;
+    if (loopBarLength) this.loopBarLength = loopBarLength;
     await this.setAllSamplesAndSegmentData(segmentData, sampleParams);
     this.setTimeline(sequence);
   },

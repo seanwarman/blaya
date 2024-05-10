@@ -6,12 +6,20 @@
   display: block;
   padding: 1rem;
   justify-content: center;
-  grid-template-columns: repeat(13, auto);
+  grid-template-columns: repeat(16, auto);
   grid-gap: 6px;
   /* box-shadow: 0px 3px 11px #00000017; */
   /* position: absolute; */
   /* bottom: 0; */
   font-size: .8rem;
+}
+
+#save-as {
+  margin-left: 4rem;
+}
+
+#load-from-file {
+  width: 87px;
 }
 
 @media (min-width: 768px) {
