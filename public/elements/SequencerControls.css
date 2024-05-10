@@ -6,7 +6,7 @@
   display: block;
   padding: 1rem;
   justify-content: center;
-  grid-template-columns: repeat(16, auto);
+  grid-template-columns: repeat(14, auto);
   grid-gap: 6px;
   /* box-shadow: 0px 3px 11px #00000017; */
   /* position: absolute; */
@@ -21,10 +21,19 @@
 #load-from-file {
   width: 87px;
 }
+#save-as,
+#load-from-file {
+  display: none;
+}
 
 @media (min-width: 768px) {
   #sequencer-controls {
     display: grid;
     font-size: 1rem;
+    grid-template-columns: repeat(16, auto);
+  }
+  #save-as,
+  #load-from-file {
+    display: block;
   }
 }
