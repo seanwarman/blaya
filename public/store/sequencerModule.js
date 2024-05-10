@@ -277,7 +277,7 @@ export const sequencerModule = {
     if (sampleParams) {
       Object.assign(this.sampleParams, sampleParams);
     }
-    Promise.all(Object.values(segmentData).map(async (shallowSegment) => {
+    return Promise.all(Object.values(segmentData).map(async (shallowSegment) => {
       const { startByte, endByte, trackUrl, sampleName } = shallowSegment;
       await this.setSegmentDataAndSample(sampleName, shallowSegment, trackUrl, startByte, endByte);
     }));
@@ -384,7 +384,7 @@ export const sequencerModule = {
       loopBarLength: this.loopBarLength,
     };
   },
-  load({ 
+  async load({ 
     segmentData,
     sequence,
     sampleParams,
@@ -393,7 +393,7 @@ export const sequencerModule = {
   }) {
     this.tempo = tempo;
     this.loopBarLength = loopBarLength;
-    this.setAllSamplesAndSegmentData(segmentData, sampleParams);
+    await this.setAllSamplesAndSegmentData(segmentData, sampleParams);
     this.setTimeline(sequence);
   },
 };
