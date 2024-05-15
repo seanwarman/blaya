@@ -34,6 +34,15 @@ export default app => {
       res.send('Uploaded')
     })
   }),
+  app.get('/api/sort', (req, res) => {
+    const script = spawn('./ls_s3_sort.sh')
+    script.on('close', () => {
+      res.send('Ok')
+    })
+    script.on('error', error => {
+      res.status(404).send(error)
+    })
+  }),
   app.get('/api/refresh', (req, res) => {
     const script = spawn('./ls_s3.sh')
     script.on('close', () => {
