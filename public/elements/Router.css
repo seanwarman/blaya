@@ -5,7 +5,7 @@
   width: 100%;
   background-color: white;
   transition: transform .5s;
-  z-index: 10;
+  z-index: 6;
 }
 
 [data-show-sequencer="true"] #router-container {

@@ -21,6 +21,7 @@ import {
   onCopyPlaylist,
   onSelectUp,
   onSelectDown,
+  onOpenTrackLoader,
 } from './helpers/events.js';
 import * as f from './helpers/functional-utils.js';
 import * as dom from './helpers/dom.js';
@@ -134,6 +135,7 @@ build(state => {
   window.addEventListener('playsample', onPlaySample);
   window.addEventListener('scroll', onScroll([onUpScroll(window.state.trackList), onDownScroll(window.state.trackList)]), false)
   document.getElementById('player').onended = onEndNext;
+  document.getElementById('open-track-loader-button')?.addEventListener('click', onOpenTrackLoader);
   document.getElementById('next-button').onclick = onClickOrEnter(onNext)
   document.getElementById('next-button').onkeydown = onClickOrEnter(onNext)
   document.getElementById('prev-button').onclick = onClickOrEnter(onPrev)

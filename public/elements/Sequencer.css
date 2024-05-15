@@ -23,6 +23,10 @@
   transform: translateY(100vh);
 }
 
+[data-show-track-loader="false"] #sequencer-container {
+  top: 0;
+}
+
 #sequencer {
   display: none;
 }

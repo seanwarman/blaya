@@ -19,6 +19,13 @@ import {
 } from './index.js'
 import Menu from '../elements/Menu.js'
 
+const openTrackLoaderEvent = new Event('opentrackloader', { bubbles: true });
+
+export const onOpenTrackLoader = () => {
+  window.dispatchEvent(Object.assign(openTrackLoaderEvent, { showTrackLoader: !(document.body.dataset.showTrackLoader === 'true') }));
+  document.body.dataset.showTrackLoader = !(document.body.dataset.showTrackLoader === 'true');
+};
+
 // onClickOrEnter :: (a -> b) -> Event -> undefined
 export const onClickOrEnter = cb => (e) => {
   if (e.type === "click" || e.key === "Enter") {

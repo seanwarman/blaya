@@ -142,6 +142,18 @@ function initTimeline(container) {
     items.remove(window.state.sequencerModule.timeline.getSelection())
     }
   })
+  window.addEventListener('opentrackloader', (e) => {
+    const { showTrackLoader } = e;
+    if (showTrackLoader) {
+      window.state.sequencerModule.timeline.setOptions({
+        height: 350,
+      });
+    } else {
+      window.state.sequencerModule.timeline.setOptions({
+        height: 700,
+      });
+    }
+  });
 }
 function onMove(item, cb) {
   const diff = vis.moment(item.start).diff(
