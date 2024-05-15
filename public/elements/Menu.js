@@ -52,8 +52,10 @@ function LoadTrack() {
         .map((s) => encodeURIComponent(s))
         .join('/');
       TrackLoader(trackUrl, (trackLoader) => {
-        window.state.trackLoader = trackLoader
-        window.state.loadingTrack = false
+        window.state.trackLoader = trackLoader;
+        window.state.loadingTrack = false;
+        const player = document.getElementById('player');
+        player.pause();
       });
     }),
   });
