@@ -24,7 +24,7 @@
 }
 
 [data-show-track-loader="false"] #sequencer-container {
-  top: 0;
+  top: 82px;
 }
 
 #sequencer {
