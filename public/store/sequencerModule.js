@@ -164,6 +164,7 @@ export const sequencerModule = {
   timeline: {},
   setTimeline(sequence) {
     this.sequence = [];
+    this.timeline?.itemsData?.clear();
     sequence.forEach(items => {
       if (!items) return
       items.forEach(item => {
