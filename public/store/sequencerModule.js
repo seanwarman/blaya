@@ -377,8 +377,10 @@ export const sequencerModule = {
       }
     }
   },
+  barsToDuplicate: 1,
+  barsToDuplicateOver: 2,
   duplicateTimeline({ bars } = { bars: null }) {
-    if (!bars) bars = [1,2];
+    if (!bars) bars = [this.barsToDuplicate,this.barsToDuplicateOver];
     const [barsToDuplicate, barsToDuplicateOver] = bars;
     this.setTimeline(
       Array(this.noteResolution*barsToDuplicateOver).fill().map((_,i) => {
