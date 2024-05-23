@@ -377,6 +377,17 @@ export const sequencerModule = {
       }
     }
   },
+  duplicateTimeline({ bars }) {
+    if (!bars) bars = [1,2];
+    const [barsToDuplicate, barsToDuplicateOver] = bars;
+    this.setTimeline(
+      Array(this.noteResolution*barsToDuplicateOver).fill().map((_,i) => {
+        const arr = this.sequence[i % (this.noteResolution*barsToDuplicate)];
+        if (!arr) return null;
+        return arr.map(segmentData => (segmentData ? { ...segmentData, index: i } : null));
+      }),
+    );
+  },
   loadFromFile(changeEvent) {
     if (!changeEvent.target.files[0]) return;
     const reader = new FileReader();
