@@ -377,7 +377,7 @@ export const sequencerModule = {
       }
     }
   },
-  duplicateTimeline({ bars }) {
+  duplicateTimeline({ bars } = { bars: null }) {
     if (!bars) bars = [1,2];
     const [barsToDuplicate, barsToDuplicateOver] = bars;
     this.setTimeline(
