@@ -30,6 +30,7 @@ import SequencerControls, { onKeyDownPlay, onKeyDownRecord } from './elements/Se
 import TrackLoader from './elements/TrackLoader.js';
 import Samples, { onKeyDownSamples, onKeyUpSamples, onPlaySample, onStep } from './elements/Samples.js';
 import Router from './elements/Router.js';
+import SequencerPlaylist from './elements/SequencerPlaylist.js';
 
 import io from './node_modules/socket.io/client-dist/socket.io.esm.min.js';
 
@@ -110,8 +111,8 @@ build(state => {
   Router();
   Sequencer();
   SequencerControls();
+  SequencerPlaylist();
   Samples();
-  // TrackLoader('music/88_BrokenBapDrums_14_827.mp3');
 
   // Socket events
   io().on('RELOAD', () => location.reload())

@@ -132,6 +132,11 @@ input#search-input:focus {
   width: 1.4rem;
 }
 
+[data-show-sequencer="true"] #playlist-container {
+  display: none;
+  position: absolute !important;
+}
+
 #playlist-container {
   z-index: 5;
   position: fixed;

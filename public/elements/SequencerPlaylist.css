@@ -1,0 +1,219 @@
+[data-show-sequencer="false"] #sequencer-playlist-container {
+  display: none;
+  position: absolute !important;
+}
+
+#sequencer-playlist-container {
+  z-index: 100;
+  position: fixed;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  transition: top .6s, height .6s, padding .6s, box-shadow .6s, background .6s;
+  display: flex;
+  align-items: start;
+  bottom: -100px;
+
+  /* This setting prevents the drag polyfill from making this container any wider */
+  width: 100vw;
+}
+
+#sequencer-playlist-container[data-playlist-minimised="true"] {
+  background-color: transparent;
+  height: 152px;
+  overflow-y: hidden;
+  padding-bottom: 0;
+  box-shadow: 1px 7px 17px 0px #00000000;
+}
+
+#sequencer-playlist-container[data-playlist-minimised="false"] {
+  background-color: white;
+  position: fixed;
+  top: 0;
+  bottom: 6.5rem;
+  left: 0;
+  right: 0;
+  box-shadow: none;
+}
+
+[data-show-sequencer="false"] #sequencer-playlist-container[data-playlist-minimised="false"] {
+  z-index: 3000;
+}
+
+@media (min-width: 768px) {
+  #sequencer-playlist-container[data-playlist-minimised="false"] {
+    box-shadow: 1px 7px 17px 0px #00000024;
+  }
+}
+
+#sequencer-playlist {
+  background: white;
+  border-radius: 2px;
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-end;
+  width: 100%;
+  padding-bottom: 9rem;
+  margin-top: 3rem;
+}
+
+@media (min-width: 768px) {
+  #sequencer-playlist {
+    margin-top: 0;
+  }
+}
+
+[data-show-track-loader="true"] #sequencer-playlist-container {
+  /* bottom: -24px; */
+}
+
+#sequencer-playlist-container[data-playlist-minimised="true"] #sequencer-playlist {
+  display: none;
+}
+
+#sequencer-playlist .track .playlist-placeholder {
+  color: grey;
+}
+
+#sequencer-playlist .playlist-name {
+  width: 100%;
+  border: none;
+  font-size: 0.8rem;
+  border-bottom: 3px solid #6f73ff;
+  transition: margin-left .6s;
+  /* height: 2.1rem; */
+}
+
+#sequencer-playlist-container[data-playlist-minimised="true"] #sequencer-playlist .playlist-name {
+  margin-left: 0;
+}
+
+#sequencer-playlist-container[data-playlist-minimised="false"] #sequencer-playlist .playlist-name {
+  margin-left: 6rem;
+}
+
+.dragover {
+  /* background: #dedede !important; */
+  border-bottom: 3px solid #6f73ff;
+}
+
+#sequencer-playlist .track {
+  transition: background .3s;
+}
+
+#maximise-button-sequencer-playlist {
+  background-color: transparent;
+  box-shadow: none;
+  height: unset;
+  border-radius: unset;
+  transition: opacity .6s;
+}
+
+
+@media (min-width: 768px) {
+  #sequencer-playlist-container {
+    left: auto;
+    /* bottom: 4.5rem; */
+    right: 1rem;
+    width: 30%;
+    min-width: 368px;
+    position: fixed;
+    overflow-y: auto;
+    transition: height .6s, padding .6s, box-shadow .6s, background .6s;
+    margin-left: 0;
+    box-shadow: 1px 7px 17px 0px #00000024;
+    top: unset;
+    bottom: 73px;
+  }
+
+  #sequencer-playlist-container[data-playlist-minimised="true"] {
+    background-color: transparent;
+    height: 0;
+    padding-bottom: 0;
+    box-shadow: 1px 7px 17px 0px #00000000;
+    bottom: 55px;
+  }
+
+  [data-show-track-loader="true"] #sequencer-playlist-container {
+    bottom: 55px;
+  }
+
+  #sequencer-playlist-container[data-playlist-minimised="false"] {
+    background-color: white;
+    height: 70%;
+    /* padding-bottom: 5rem; */
+    box-shadow: 1px 7px 17px 0px #00000024;
+    bottom: 55px;
+    top: unset;
+    left: unset;
+    right: 1rem;
+  }
+
+  #sequencer-playlist-container[data-playlist-minimised="false"] #sequencer-playlist .playlist-name {
+    margin-left: 0;
+  }
+
+  body[data-playlist-mode="false"] #sequencer-playlist,
+  #sequencer-playlist {
+    border-radius: 2px;
+    display: flex;
+    flex-direction: column-reverse;
+  }
+
+  #sequencer-playlist .track-name {
+    font-size: 0.8rem;
+    height: 3rem;
+  }
+
+  #sequencer-playlist .track-album {
+    display: none;
+    /*     text-align: right; */
+    /* font-size: 0.7rem; */
+  }
+
+  #menu {
+    translate: -9px -61px;
+  }
+
+  .track-tab .track-name {
+    order: 2;
+  }
+
+  .track-tab .track-album {
+    order: 1;
+  }
+
+
+  body[data-playlist-minimised="false"] #menu {
+    translate: -50vw -61px;
+  }
+
+  #sequencer-playlist #menu {
+    translate: -16px -8px;
+  }
+
+  .button-playlist-container {
+    z-index: 1;
+    right: 1rem;
+    position: fixed;
+    transition: bottom .6s;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    width: 30%;
+    min-width: 368px;
+    translate: 0 -3rem;
+  }
+
+  #sequencer-playlist-container[data-playlist-minimised="true"] .button-playlist-container {
+  }
+
+  #maximise-button-playlist {
+    background-color: transparent;
+    box-shadow: none;
+    height: unset;
+
+    top: -0.5rem;
+  }
+
+}
