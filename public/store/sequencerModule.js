@@ -460,14 +460,14 @@ window.addEventListener('deletesample', e => {
 
 function getStartAndEndBytes(segment, packets) {
   const startI = packets.findIndex(packet => {
-    return packet.pts_time > segment.startTime;
+    return packet.pts_time === segment.startTime || packet.pts_time > segment.startTime;
   });
   const endI = packets.findIndex(packet => {
-    return packet.pts_time > segment.endTime;
+    return packet.pts_time === segment.endTime || packet.pts_time > segment.endTime;
   });
 
-  const startByte = packets[startI === 0 ? 0 : startI - 1]?.pos;
-  const endByte = packets[endI - 1]?.pos;
+  const startByte = packets[(startI === 0 ? 0 : startI === 1 ? 1 : startI - 2]?.pos;
+  const endByte = packets[endI - 2]?.pos;
   return {
     startByte,
     endByte,

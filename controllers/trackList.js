@@ -170,7 +170,7 @@ export const loadTrack = async (req, res) => {
     });
 
     const process = spawn('audiowaveform', [
-      '--input-format', 'mp3', '--output-format', 'dat', '-b', '8', '>'
+      '--input-format', 'mp3', '--output-format', 'dat', '--zoom', '50', '-b', '8', '>'
     ]);
     // cat Black-Mountain.mp3 | audiowaveform --input-format mp3 --output-format json > thingy.json
 

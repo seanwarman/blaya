@@ -3,8 +3,6 @@ import * as dom from '../helpers/dom';
 
 let options = {};
 
-const MIN_PIX_PER_SEC = 256;
-
 export function fetchPackets(url) {
   return fetch('/packets/' + url)
     .then(r => r.json())
@@ -85,6 +83,7 @@ function playerEvents(peaks) {
 
 function zoomEvents(peaks, zoomview) {
   const { zoom } = peaks;
+  zoom.setZoom(options.zoomLevels.findIndex(n => n === 256));
   zoomview.setZoom({ seconds: 'auto' });
   const incr = 15;
 
@@ -299,6 +298,8 @@ export function Player(audioBuffer) {
       });
   };
 }
+
+const MIN_PIX_PER_SEC = 50;
 
 export default function TrackLoader(trackUrl, initFinished = () => {}) {
   fetchPackets(trackUrl);
