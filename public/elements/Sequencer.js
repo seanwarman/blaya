@@ -73,39 +73,6 @@ function initTimeline(container) {
     window.state.sequencerModule.timeline.setOptions({
       max,
     });
-
-    // TODO: put this in when you have time, not currently working, it has to do with the bug below where sometimes the sequencer indexes are wrong by 1
-    // const items = window.state.sequencerModule.sequence
-    //   .reduce((acc, steps, i) => {
-    //     if (!steps) return acc;
-    //     return [
-    //       ...acc,
-    //       ...steps.map((step, indx) => {
-    //         if (!step) return;
-    //         const { waveImgCanvas, selectedSample } = cloneWaveImgCanvas(step.name);
-    //         const stepLength = window.state.sequencerModule.beatInTime / step.endTime;
-    //         const start = vis
-    //           .moment(...START_DATE_PARAMS)
-    //           .add(
-    //             (i+step.delay) * window.state.sequencerModule.beatPerDateMultiple,
-    //             window.state.sequencerModule.beatPerDateResolution
-    //           );
-    //         return {
-    //           id: step.id,
-    //           step,
-    //           index: i,
-    //           className: selectedSample.dataset.colourClass,
-    //           name: selectedSample.dataset.name,
-    //           content: waveImgCanvas,
-    //           start,
-    //           end: vis.moment(start).add(window.state.sequencerModule.beatInMMs * stepLength, window.state.sequencerModule.beatPerDateResolution),
-    //         };
-    //       }).filter(Boolean),
-    //     ];
-    //   }, []);
-
-    // window.state.sequencerModule.timeline.setItems(new vis.DataSet(items));
-
     window.state.sequencerModule.timeline.setWindow(
       options.min,
       max,
