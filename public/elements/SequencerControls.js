@@ -149,7 +149,7 @@ export default function SequencerControls() {
         <div class="container">
           <span>Duplicate </span>
           <select onchange="window.state.sequencerModule.barsToDuplicate = Number(event.target.value);">
-            <option value="0.062">1/16 bars</option>
+            <option value="0.0625">1/16 bars</option>
             <option value="0.125">1/8 bars</option>
             <option value="0.25">1/4 bars</option>
             <option value="0.5">1/2 bars</option>
