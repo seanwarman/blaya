@@ -153,13 +153,16 @@ export default function SequencerControls() {
             <option value="0.125">1/8 bars</option>
             <option value="0.25">1/4 bars</option>
             <option value="0.5">1/2 bars</option>
-            <option value="1" selected>1 bars</option>
+            <option value="1" selected>1 bar</option>
             <option value="2">2 bars</option>
             <option value="3">3 bars</option>
             <option value="4">4 bars</option>
           </select>
           <span> over </span>
           <select onchange="window.state.sequencerModule.barsToDuplicateOver = Number(event.target.value);">
+            <option value="0.125">1/8 bars</option>
+            <option value="0.25">1/4 bars</option>
+            <option value="0.5">1/2 bars</option>
             <option value="1">1 bar</option>
             <option value="2" selected>2 bars</option>
             <option value="3">3 bars</option>
