@@ -1,6 +1,6 @@
-import { div, cloneWaveImgCanvas } from '../helpers/dom';
+import { div } from '../helpers/dom';
 import { START_DATE_PARAMS } from '../../public/constants';
-import { ceil, floor } from '../helpers/utils';
+import { ceil } from '../helpers/utils';
 
 const makeStep = ({ name, index, delay, endTime }) => ({
   index: index || 0,
@@ -47,11 +47,7 @@ function initTimeline(container) {
       const beatInMMs = window.state.sequencerModule.beatInMMs;
       // Snap to 16ths
       const mm = vis.moment(date).millisecond();
-      if (mm / beatInMMs - Math.floor(mm / beatInMMs) < 0.5) {
-        return vis.moment(date).millisecond(floor(mm, beatInMMs));
-      } else {
-        return vis.moment(date).millisecond(ceil(mm, beatInMMs));
-      }
+      return vis.moment(date).millisecond(ceil(mm, beatInMMs));
     },
     showWeekScale: true,
     showMajorLabels: false,
@@ -131,11 +127,8 @@ function onMove(item, cb) {
     window.state.sequencerModule.beatPerDateResolution);
   const position =
     item.index + diff / window.state.sequencerModule.beatPerDateMultiple;
-  const newIndex = Math.floor(position) + 1;
 
-  // *** TODO: BUG ALERT ***
-  // Sometimes, but not always, newIndex is wrong. Often by + 1.
-  console.log(`@FILTER newIndex:`, newIndex)
+  const newIndex = Math.round(position);
 
   window.state.sequencerModule.sequence[item.index] = window.state.sequencerModule.sequence[item.index]?.filter(step => step.id !== item.step.id);
   if (!window.state.sequencerModule.sequence[newIndex]) window.state.sequencerModule.sequence[newIndex] = [];
