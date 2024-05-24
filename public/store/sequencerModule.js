@@ -466,7 +466,7 @@ function getStartAndEndBytes(segment, packets) {
     return packet.pts_time === segment.endTime || packet.pts_time > segment.endTime;
   });
 
-  const startByte = packets[(startI === 0 ? 0 : startI === 1 ? 1 : startI - 2]?.pos;
+  const startByte = packets[startI === 0 ? 0 : startI === 1 ? 1 : startI - 2]?.pos;
   const endByte = packets[endI - 2]?.pos;
   return {
     startByte,
