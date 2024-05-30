@@ -249,8 +249,8 @@ export function onCenterPitch() {
 
 export default function Sequencer() {
   const id = 'sequencer-container';
-  document.getElementById('center-gain-param').removeEventListener('click', onCenterGain);
-  document.getElementById('center-pitch-param').removeEventListener('click', onCenterPitch);
+  document.getElementById('center-gain-param')?.removeEventListener('click', onCenterGain);
+  document.getElementById('center-pitch-param')?.removeEventListener('click', onCenterPitch);
   document.getElementById(id).replaceWith(div({
     id,
     innerHTML: `
