@@ -1,5 +1,5 @@
 import { trackList as RAW_TRACKLIST } from '../track-list.js'
-import { appendTracksByPage, parseTrackList } from '../helpers/index.js'
+import { appendTracksByPage, parseTrackList, randomWord } from '../helpers/index.js'
 import { PLAYLISTS_STATE_KEY, INITIAL_PLAYLISTS_STATE, INITIAL_PLAYLIST } from '../constants.js'
 
 import * as dom from '../helpers/dom.js'
@@ -23,6 +23,9 @@ export default (postHook) => {
       return this.loadingTrackState
     },
     trackList: parseTrackList(RAW_TRACKLIST),
+    randomWord() {
+      return randomWord(this.trackList);
+    },
     playlistScrollPosition: 0,
     playlistModeState: null,
     set playlistMode(playlistMode) {

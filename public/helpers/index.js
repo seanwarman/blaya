@@ -10,6 +10,9 @@ import {
   slice,
   split,
   reverse,
+  join,
+  head,
+  reduce,
 } from './functional-utils.js'
 import * as f from './functional-utils.js'
 import {
@@ -31,6 +34,17 @@ export const parseTrackList = pipe(
   ),
   filter(Boolean),
 )
+
+export const getWordsFromTrackList = pipe(
+  join('/'),
+  split('/'),
+  reduce([])((ws,word) => ws.some(w => word === w) ? ws : ws.concat(...pipe(split('.'),head,split(' '))(word))),
+);
+
+export const randomWord = pipe(
+  getWordsFromTrackList,
+  words => words[Math.floor(Math.random() * words.length)],
+);
 
 // trackListElements :: [String] -> [Element]
 export const trackListElements = pipe(

@@ -137,3 +137,5 @@ export const arrifyArgs = (...args) => args
 
 // reduce :: a -> (b -> c) -> [b] -> c
 export const reduce = arg => fn => arr => arr.reduce(fn, arg)
+
+export const join = by => arr => arr.join(by);
