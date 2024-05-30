@@ -145,6 +145,28 @@
   box-shadow: 0px 3px 9px #00000029;
 }
 
+.params {
+  width: 100%;
+  padding: 0 1rem;
+}
+
+.param-container {
+  margin-bottom: 1rem;
+}
+
+.center-param,
+.params label {
+  display: block;
+  text-align: center;
+}
+
+.param-range {
+  width: 100%;
+  margin: auto;
+  display: block;
+  max-width: 270px;
+}
+
 @media (min-width: 768px) {
   .side-right {
     flex-direction: column;

@@ -15,6 +15,9 @@
 
   /* This setting prevents the drag polyfill from making this container any wider */
   width: 100vw;
+
+  /* Hiding this for now */
+  display: none;
 }
 
 #sequencer-playlist-container[data-playlist-minimised="true"] {

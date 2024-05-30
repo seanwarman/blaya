@@ -231,8 +231,26 @@ export function onKeyDownPitch(event) {
   window.state.sequencerModule.sampleParams[sampleName].detune = Number(target.value);
 }
 
+export function onCenterGain() {
+  const sampleName = document.querySelectorAll('#samples-container .vis-selected')[0].dataset.name;
+  if (!sampleName) return;
+  window.state.sequencerModule.sampleParams[sampleName].gain = 1;
+  const input = document.getElementById('sample-gain');
+  input.value = 1;
+}
+
+export function onCenterPitch() {
+  const sampleName = document.querySelectorAll('#samples-container .vis-selected')[0].dataset.name;
+  if (!sampleName) return;
+  window.state.sequencerModule.sampleParams[sampleName].detune = 0;
+  const input = document.getElementById('sample-pitch');
+  input.value = 0;
+}
+
 export default function Sequencer() {
   const id = 'sequencer-container';
+  document.getElementById('center-gain-param').removeEventListener('click', onCenterGain);
+  document.getElementById('center-pitch-param').removeEventListener('click', onCenterPitch);
   document.getElementById(id).replaceWith(div({
     id,
     innerHTML: `
@@ -257,21 +275,33 @@ export default function Sequencer() {
             </div>
           </div>
           <div class="side-right">
-            <div>
-              <div>Volume</div>
-              <input id="sample-gain" type="range" step="0.1" min="0" max="5" value="1" oninput="
-                const { value } = event.target;
-                const sampleName = document.querySelectorAll('#samples-container .vis-selected')[0].dataset.name;
-                if (!sampleName) return;
-                window.state.sequencerModule.sampleParams[sampleName].gain = Number(value);
-              "/>
-              <div>Pitch</div>
-              <input id="sample-pitch" type="range" step="1" min="-2000" max="2000" value="0" oninput="
-                const { value } = event.target;
-                const sampleName = document.querySelectorAll('#samples-container .vis-selected')[0].dataset.name;
-                if (!sampleName) return;
-                window.state.sequencerModule.sampleParams[sampleName].detune = Number(value);
-              "/>
+            <div class="params">
+              <div class="param-container">
+                <label for="sample-gain">Volume</label>
+                <input id="sample-gain" class="param-range" type="range" step="0.1" min="0" max="5" value="1" oninput="
+                  const { value } = event.target;
+                  const sampleName = document.querySelectorAll('#samples-container .vis-selected')[0].dataset.name;
+                  if (!sampleName) return;
+                  window.state.sequencerModule.sampleParams[sampleName].gain = Number(value);
+                  event.target.title = value;
+                "/>
+                <div id="center-gain-param" class="center-param">
+                  <svg viewBox="0 0 24 24" stroke-width="1.5" width="20" height="20" color="#000000"><defs><style>.cls-63ce7424ea57ea6c8380053d-1{fill:none;stroke:currentColor;stroke-miterlimit:10;}</style></defs><line class="cls-63ce7424ea57ea6c8380053d-1" x1="0.5" y1="12" x2="9.13" y2="12"></line><line class="cls-63ce7424ea57ea6c8380053d-1" x1="14.88" y1="12" x2="23.5" y2="12"></line><polyline class="cls-63ce7424ea57ea6c8380053d-1" points="18.71 8.17 14.88 12 18.71 15.83"></polyline><polyline class="cls-63ce7424ea57ea6c8380053d-1" points="5.29 15.83 9.13 12 5.29 8.17"></polyline><line class="cls-63ce7424ea57ea6c8380053d-1" x1="12" y1="2.42" x2="12" y2="21.58"></line></svg>
+                </div>
+              </div>
+              <div class="param-container">
+                <label for="sample-pitch">Pitch</label>
+                <input id="sample-pitch" class="param-range" type="range" step="1" min="-2000" max="2000" value="0" oninput="
+                  const { value } = event.target;
+                  const sampleName = document.querySelectorAll('#samples-container .vis-selected')[0].dataset.name;
+                  if (!sampleName) return;
+                  window.state.sequencerModule.sampleParams[sampleName].detune = Number(value);
+                  event.target.title = value;
+                "/>
+                <div id="center-pitch-param" class="center-param">
+                  <svg viewBox="0 0 24 24" stroke-width="1.5" width="20" height="20" color="#000000"><defs><style>.cls-63ce7424ea57ea6c8380053d-1{fill:none;stroke:currentColor;stroke-miterlimit:10;}</style></defs><line class="cls-63ce7424ea57ea6c8380053d-1" x1="0.5" y1="12" x2="9.13" y2="12"></line><line class="cls-63ce7424ea57ea6c8380053d-1" x1="14.88" y1="12" x2="23.5" y2="12"></line><polyline class="cls-63ce7424ea57ea6c8380053d-1" points="18.71 8.17 14.88 12 18.71 15.83"></polyline><polyline class="cls-63ce7424ea57ea6c8380053d-1" points="5.29 15.83 9.13 12 5.29 8.17"></polyline><line class="cls-63ce7424ea57ea6c8380053d-1" x1="12" y1="2.42" x2="12" y2="21.58"></line></svg>
+                </div>
+              </div>
             </div>
             <div id="arpeggiator">
               <div>Arp</div>
@@ -322,5 +352,7 @@ export default function Sequencer() {
     });
     window.dispatchEvent(Object.assign(deleteSampleE, { segment }));
   });
+  document.getElementById('center-gain-param').addEventListener('click', onCenterGain);
+  document.getElementById('center-pitch-param').addEventListener('click', onCenterPitch);
 }
 
