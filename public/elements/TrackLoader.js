@@ -87,6 +87,21 @@ function zoomEvents(peaks, zoomview) {
   zoomview.setZoom({ seconds: 'auto' });
   const incr = 15;
 
+  peaks.on('zoomview.dblclick', (e) => {
+    const { time } = e;
+    const points = peaks.points.getPoints();
+    points.sort((a,b) => {
+      if (a.time > b.time) return 1;
+      if (a.time < b.time) return -1;
+      return 0;
+    });
+    const startIndex = points.findLastIndex(p => p.time < time);
+    const endIndex = points.findIndex(p => p.time > time);
+    if (points[endIndex]) {
+      peaks.segments.add({ editable: true, startTime: points[startIndex]?.time || 0, endTime: points[endIndex]?.time });
+    }
+  });
+
   document.getElementById('zoom-in-track-loader').addEventListener('click', () => {
     const index = zoom.getZoom()
     if (index - incr > -1) {

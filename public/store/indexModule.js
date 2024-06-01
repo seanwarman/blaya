@@ -8,6 +8,7 @@ import * as utils from '../helpers/utils.js'
 import { playModule } from './playModule.js'
 import { sequencerModule } from './sequencerModule.js'
 import { stepRecordModule } from './stepRecordModule.js'
+import { trackSliceModule } from './trackSliceModule.js'
 
 const modes = ['sequencer', 'track-player'];
 
@@ -166,6 +167,7 @@ export default (postHook) => {
   state.playModule = playModule;
   state.sequencerModule = sequencerModule;
   state.stepRecordModule = stepRecordModule;
+  state.trackSliceModule = trackSliceModule;
 
   // BEGIN
   state.page = appendTracksByPage(state.trackList)(state.page)
