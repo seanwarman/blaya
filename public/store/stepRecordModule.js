@@ -93,6 +93,13 @@ export const stepRecordModule = {
     }
     return this.keysToMapNumbers[this.currentMapNumber++].toUpperCase();
   },
+  getNextFreeKeyMapRange(count) {
+    const i = KEY_MAPS.findIndex(k => !window.state.sequencerModule.samples[k]);
+    if (isNaN(i)) {
+      return KEY_MAPS.slice(0, count);
+    }
+    return KEY_MAPS.slice(i, count);
+  },
 };
 
 function recordSequence(sampleName) {

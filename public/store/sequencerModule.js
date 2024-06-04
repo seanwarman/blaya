@@ -2,7 +2,8 @@ import Samples from '../elements/Samples';
 import { START_DATE_PARAMS, LOOPBAR_LENGTH_DEFAULT } from '../constants';
 import '../node_modules/waveform-data/dist/waveform-data.js';
 import { cloneWaveImgCanvas } from '../helpers/dom';
-import { floor, ceil, simpleHash } from '../helpers/utils';
+import { floor, ceil, getStartAndEndBytes } from '../helpers/utils';
+import { reduceSegmentData } from './segmentReducers';
 
 // const click = createBitPlayer(3, i => {
 //   if (i < 100) {
@@ -240,22 +241,7 @@ export const sequencerModule = {
         el.classList.add(segment.className + '-light');
       });
     }
-    this.segmentData = {
-      ...this.segmentData,
-      [sampleName]: {
-        id: segment.id,
-        uniqueId: segment.id + '__' + simpleHash(trackUrl) + String(Date.now()),
-        keyMap: segment.keyMap,
-        className: segment.className,
-        color: segment.color,
-        startTime: segment.startTime,
-        endTime: segment.endTime,
-        sampleName,
-        startByte,
-        endByte,
-        trackUrl,
-      },
-    };
+    this.segmentData = reduceSegmentData(this.segmentData, sampleName, segment, trackUrl, startByte, endByte);
   },
 //sampleParams: { [sampleName]: { detune } }
   sampleParams: {},
@@ -459,22 +445,6 @@ export const sequencerModule = {
 window.addEventListener('deletesample', e => {
   sequencerModule.deleteSample(e.segment.keyMap);
 });
-
-function getStartAndEndBytes(segment, packets) {
-  const startI = packets.findIndex(packet => {
-    return packet.pts_time === segment.startTime || packet.pts_time > segment.startTime;
-  });
-  const endI = packets.findIndex(packet => {
-    return packet.pts_time === segment.endTime || packet.pts_time > segment.endTime;
-  });
-
-  const startByte = packets[startI === 0 ? 0 : startI - 1]?.pos;
-  const endByte = packets[endI - 1]?.pos;
-  return {
-    startByte,
-    endByte,
-  };
-}
 
 function createSegmentWaveformAndPassResponse(cb) {
   return response => {

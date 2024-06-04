@@ -11,10 +11,18 @@ import { stepRecordModule } from './stepRecordModule.js'
 import { trackSliceModule } from './trackSliceModule.js'
 
 const modes = ['sequencer', 'track-player'];
+const sliceModes = ['off', 'slicing', 'on'];
 
 export default (postHook) => {
   const state = {
     mode: 'sequencer',
+    set sliceMode(mode) {
+      if (!sliceModes.includes(mode)) return;
+      document.body.dataset.sliceMode = mode;
+    },
+    get sliceMode() {
+      return document.body.dataset.sliceMode;
+    },
     loadingTrackState: false,
     set loadingTrack(bool) {
       document.getElementById('track-loader-loading').dataset.trackLoading = bool

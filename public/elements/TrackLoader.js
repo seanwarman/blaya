@@ -1,5 +1,6 @@
 import '../node_modules/peaks.js/dist/peaks.js';
 import * as dom from '../helpers/dom';
+import { getStartAndEndBytes } from '../helpers/utils';
 
 let options = {};
 
@@ -81,26 +82,59 @@ function playerEvents(peaks) {
   // });
 }
 
+let segmentColourIteration = 0;
+function segmentColour() {
+  function rndm() {
+    const min = 0;
+    const max = 48;
+    return Math.floor(Math.random() * (max - min + 1) + min)
+  }
+  const className = 'sample-colour-' + rndm();
+  const colourPicker = document.getElementById('colour-picker');
+  const newColourPicker = dom.div({
+    id: 'colour-picker',
+    className,
+    style: 'display:none',
+  });
+  if (colourPicker) {
+    colourPicker.replaceWith(newColourPicker);
+  } else {
+    document.body.prepend(newColourPicker);
+  }
+  const compStyle = window.getComputedStyle(document.getElementById('colour-picker'));
+  segmentColourIteration++
+  if (segmentColourIteration+1 > themeColours.length) {
+    segmentColourIteration = 0;
+  }
+  return { color: compStyle.getPropertyValue('background-color'), className };
+}
+
+export function getSegmentSampleData(keyMap) { 
+  const { color, className } = segmentColour();
+  return {
+    labelText: keyMap,
+    keyMap,
+    color,
+    className,
+  };
+}
+
+export function onAddSegmentCreateRangeForSlices(e) {
+  const { segments } = e;
+  const [segment] = segments;
+  segment.update({
+    // labelText: 'Slicing...',
+    keyMap: 'RANGE',
+    color: '#00000033',
+    className: 'range-segment',
+  });
+}
+
 function zoomEvents(peaks, zoomview) {
   const { zoom } = peaks;
   zoom.setZoom(options.zoomLevels.findIndex(n => n === 256));
   zoomview.setZoom({ seconds: 'auto' });
   const incr = 15;
-
-  peaks.on('zoomview.dblclick', (e) => {
-    const { time } = e;
-    const points = peaks.points.getPoints();
-    points.sort((a,b) => {
-      if (a.time > b.time) return 1;
-      if (a.time < b.time) return -1;
-      return 0;
-    });
-    const startIndex = points.findLastIndex(p => p.time < time);
-    const endIndex = points.findIndex(p => p.time > time);
-    if (points[endIndex]) {
-      peaks.segments.add({ editable: true, startTime: points[startIndex]?.time || 0, endTime: points[endIndex]?.time });
-    }
-  });
 
   document.getElementById('zoom-in-track-loader').addEventListener('click', () => {
     const index = zoom.getZoom()
@@ -206,41 +240,32 @@ function segmentEvents(peaks, trackUrl) {
       peaks.views.getView('zoomview').enableSeek(false);
       italic.dataset.selectorActive = true
     }
-  })
-  let segmentColourIteration = 0;
+  });
+  peaks.on('zoomview.dblclick', (e) => {
+    const { time } = e;
+    const points = peaks.points.getPoints();
+    points.sort((a,b) => {
+      if (a.time > b.time) return 1;
+      if (a.time < b.time) return -1;
+      return 0;
+    });
+    const startIndex = points.findLastIndex(p => p.time < time);
+    const endIndex = points.findIndex(p => p.time > time);
+    if (points[endIndex]) {
+      peaks.segments.add({ editable: true, startTime: points[startIndex]?.time || 0, endTime: points[endIndex]?.time });
+    }
+  });
   peaks.on('segments.add', e => {
     const { segments } = e;
     const [segment] = segments;
-    function rndm() {
-      const min = 0;
-      const max = 48;
-      return Math.floor(Math.random() * (max - min + 1) + min)
-    }
-    const className = 'sample-colour-' + rndm();
-    const colourPicker = document.getElementById('colour-picker');
-    const newColourPicker = dom.div({
-      id: 'colour-picker',
-      className,
-      style: 'display:none',
-    });
-    if (colourPicker) {
-      colourPicker.replaceWith(newColourPicker);
-    } else {
-      document.body.prepend(newColourPicker);
-    }
-    const compStyle = window.getComputedStyle(document.getElementById('colour-picker'));
-    const keyMap = window.state.stepRecordModule.getNextFreeKeyMap();
-    segment.update(
-      {
-        labelText: keyMap,
-        keyMap,
-        color: compStyle.getPropertyValue('background-color'),
-        className,
-      }
-    );
-    segmentColourIteration++
-    if (segmentColourIteration+1 > themeColours.length) {
-      segmentColourIteration = 0;
+    if (window.state.sliceMode === 'on') {
+      onAddSegmentCreateRangeForSlices(e);
+    } else if (window.state.sliceMode === 'slicing') {
+      window.state.trackSliceModule.addSegmentToQueue(segment, trackUrl);
+    } else if (window.state.sliceMode === 'off') {
+      segment.update(
+        getSegmentSampleData(window.state.stepRecordModule.getNextFreeKeyMap())
+      );
     }
   });
   peaks.on('segments.dragend', e => {
@@ -248,7 +273,34 @@ function segmentEvents(peaks, trackUrl) {
       peaks.segments.removeById(e.segment.id);
       return
     }
-    window.state.sequencerModule.addOrUpdateSample(e.segment, trackUrl);
+    const sampleName = e.segment.keyMap;
+    const { startByte, endByte } = getStartAndEndBytes(e.segment, window.state.sequencerModule.packets);
+
+    if (window.state.sliceMode === 'off') {
+      window.state.sequencerModule.setSegmentDataAndSample(sampleName, e.segment, trackUrl, startByte, endByte);
+    }
+  });
+  peaks.on('segments.insert', e => {
+    if (e.segment.startTime === e.segment.endTime) {
+      peaks.segments.removeById(e.segment.id);
+      return
+    }
+    const sampleName = e.segment.keyMap;
+    const { startByte, endByte } = getStartAndEndBytes(e.segment, window.state.sequencerModule.packets);
+
+    if (window.state.sliceMode === 'on') {
+      window.state.sliceMode = 'slicing';
+      window.state.trackSliceModule.setSegmentDataForRangeAndAddSamples(
+        sampleName,
+        e.segment,
+        trackUrl,
+        startByte,
+        endByte
+      ).then(() => {
+        window.state.sliceMode = 'on';
+        peaks.segments.removeById(e.segment.id);
+      });
+    }
   });
 }
 

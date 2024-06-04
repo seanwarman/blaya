@@ -1,5 +1,8 @@
 import { PolarFFTWASM } from '../libraries/essentia.polarFFT.module.js';
 import { OnsetsWASM } from '../libraries/essentia.onsets.module.js';
+import { getStartAndEndBytes } from '../helpers/utils';
+import { reduceSegmentData } from './segmentReducers';
+import { getSegmentSampleData } from '../elements/TrackLoader';
 
 const frameSize = 512;
 const hopSize = 256;
@@ -68,13 +71,44 @@ function computeOnsets(float32Arr) {
   });
 }
 
+let timeout;
+
 export const trackSliceModule = {
+  segmentQueue: [],
+  addSegmentToQueue(segment, trackUrl) {
+    this.segmentQueue.push(segment);
+    if (timeout) clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      const keyMaps = window.state.stepRecordModule.getNextFreeKeyMapRange(this.segmentQueue.length + 1);
+      this.segmentQueue.map((segment, i) => {
+        const keyMap = keyMaps[i];
+        segment.update(getSegmentSampleData(keyMap));
+        const sampleName = keyMap;
+        const { startByte, endByte } = getStartAndEndBytes(segment, window.state.sequencerModule.packets);
+        window.state.sequencerModule.setSegmentDataAndSample(sampleName, segment, trackUrl, startByte, endByte);
+      });
+      this.segmentQueue = [];
+    }, 10);
+  },
   addPoints({ trackUrl, startByte = '0', endByte = '', startTime = undefined }) {
-    this.fetchBeatSamplePositions(trackUrl, 'bytes=' + startByte + '-' + endByte, startTime).then(times => {
-      window.state.trackLoader.points.add(times.map(time => ({
-        time,
-        color: '#00ff00',
-      })));
+    return this.fetchBeatSamplePositions(trackUrl, 'bytes=' + startByte + '-' + endByte, startTime).then(times => {
+
+      times.reduce((pair, time) => {
+        const [segment, segments] = pair;
+        if (segment.startTime) {
+          return [
+            { startTime: time, editable: true },
+            [...segments, { ...segment, endTime: time }],
+          ];
+        }
+        return [{ editable: true, startTime: time }, segments];
+      }, [{}, []])[1]
+        .map(segment => window.state.trackLoader.segments.add(segment));
+
+      // window.state.trackLoader.points.add(times.map(time => ({
+      //   time,
+      //   color: '#00ff00',
+      // })));
     });
   },
   fetchBeatSamplePositions(url, range, startTime) {
@@ -88,5 +122,19 @@ export const trackSliceModule = {
       .then(onsets => Array.from(onsets).map(time => {
         return time + (startTime || 0);
       }))
+  },
+  segmentRangeData: {},
+  setSegmentDataForRangeAndAddSamples(sampleName, segment, trackUrl, startByte, endByte) {
+    this.segmentRangeData = reduceSegmentData(
+      this.segmentRangeData,
+      sampleName,
+      segment,
+      trackUrl,
+      startByte,
+      endByte
+    );
+    return this.addPoints(this.segmentRangeData.RANGE).then(() => {
+      this.segmentRangeData = {};
+    });
   },
 };
