@@ -199,7 +199,7 @@ function segmentEvents(peaks, trackUrl) {
     peaks.segments.removeById(segment.id);
   });
   const italic = document.getElementById('italic-track-loader')
-  if (italic.dataset.selectorActive === 'true') {
+  if (document.body.dataset.selectorActive === 'true') {
     peaks.views.getView('zoomview').setWaveformDragMode('insert-segment')
     peaks.views.getView('zoomview').enableSeek(false);
   } else {
@@ -223,7 +223,7 @@ function segmentEvents(peaks, trackUrl) {
   })
   peaks.on('segments.mouseleave', () => {
     const italic = document.getElementById('italic-track-loader')
-    if (italic.dataset.selectorActive === 'true') {
+    if (document.body.dataset.selectorActive === 'true') {
       peaks.views.getView('zoomview').setWaveformDragMode('insert-segment')
     }
   })
@@ -231,14 +231,14 @@ function segmentEvents(peaks, trackUrl) {
     peaks.views.getView('zoomview').setWaveformDragMode('scroll')
   })
   document.getElementById('italic-track-loader').addEventListener('click', () => {
-    if (italic.dataset.selectorActive === 'true') {
+    if (document.body.dataset.selectorActive === 'true') {
       peaks.views.getView('zoomview').setWaveformDragMode('scroll')
       peaks.views.getView('zoomview').enableSeek(true);
-      italic.dataset.selectorActive = false
+      document.body.dataset.selectorActive = false
     } else {
       peaks.views.getView('zoomview').setWaveformDragMode('insert-segment')
       peaks.views.getView('zoomview').enableSeek(false);
-      italic.dataset.selectorActive = true
+      document.body.dataset.selectorActive = true
     }
   });
   peaks.on('zoomview.dblclick', (e) => {

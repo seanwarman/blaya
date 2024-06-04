@@ -40,12 +40,31 @@
   content: url(/icons/zoom-out.svg);
 }
 
-[data-selector-active="false"]#italic-track-loader {
+[data-selector-active="false"] #italic-track-loader {
   content: url(/icons/italic.svg);
 }
 
-[data-selector-active="true"]#italic-track-loader {
+[data-selector-active="true"] #italic-track-loader {
   content: url(/icons/italic-active.svg);
+}
+
+#slice-mode-track-loader {
+  border-radius: 14%;
+  width: 34px !important;
+  padding: 7px;
+  margin-top: -7px;
+  margin-bottom: -7px;
+  margin-left: -7px;
+}
+
+[data-slice-mode="off"] #slice-mode-track-loader {
+  content: url(/icons/waves.svg);
+}
+
+[data-slice-mode="slicing"] #slice-mode-track-loader,
+[data-slice-mode="on"] #slice-mode-track-loader {
+  content: url(/icons/waves-white.svg);
+  background: #6e73ff;
 }
 
 #play-pause-track-loader {
