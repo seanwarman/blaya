@@ -134,7 +134,7 @@ function zoomEvents(peaks, zoomview) {
   const { zoom } = peaks;
   zoom.setZoom(options.zoomLevels.findIndex(n => n === 256));
   zoomview.setZoom({ seconds: 'auto' });
-  const incr = 15;
+  const incr = 50;
 
   document.getElementById('zoom-in-track-loader').addEventListener('click', () => {
     const index = zoom.getZoom()
