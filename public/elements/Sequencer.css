@@ -177,7 +177,13 @@
 }
 
 #arpeggiator {
-  max-width: 210px;
+  width: 100%;
+}
+
+#arpeggiator label {
+  width: 100%;
+  display: block;
+  text-align: center;
 }
 
 .items-panel {

@@ -6,15 +6,16 @@ const id = 'samples-container';
 const timeoutRefs = {};
 
 export function onPlaySample(e) {
-  requestAnimationFrame(() => {
-    const sampleEl = Array.from(document.getElementById(id).children).find(el => el.dataset.name === e.sampleName);
-    clearTimeout(timeoutRefs[e.sampleName]);
-    sampleEl.classList.remove('trigger');
-    sampleEl.classList.add('trigger');
-    timeoutRefs[e.sampleName] = setTimeout(() => {
-      sampleEl.classList.remove('trigger');
-    }, 10);
-  });
+  // This has horrible performance, so removing it for now...
+  // requestAnimationFrame(() => {
+  //   const sampleEl = Array.from(document.getElementById(id).children).find(el => el.dataset.name === e.sampleName);
+  //   clearTimeout(timeoutRefs[e.sampleName]);
+  //   sampleEl.classList.remove('trigger');
+  //   sampleEl.classList.add('trigger');
+  //   timeoutRefs[e.sampleName] = setTimeout(() => {
+  //     sampleEl.classList.remove('trigger');
+  //   }, 10);
+  // });
 }
 
 export function onKeyUpSamples(e) {
@@ -30,10 +31,10 @@ export function onKeyDownSamples(e) {
     return;
   }
   if (!isNaN(Number(e.key))) {
-    const input = document.querySelector(`#arpeggiator [value="${e.key === '0' ? 'Off' : e.key}"]`);
+    const input = document.querySelector(`#arpeggiator input`);
     if (input) {
-      input.checked = true;
-      input.dispatchEvent(new Event('change'));
+      input.value = e.key;
+      input.dispatchEvent(new Event('input'));
     }
   }
   if (window.state.stepRecordModule.keysToMapNumbers.includes(e.key)) {
@@ -105,8 +106,9 @@ function selectSample(keyMap) {
   gainRange.value = window.state.sequencerModule.sampleParams[sampleEl.dataset.name].gain;
   const pitchRange = document.getElementById('sample-pitch');
   pitchRange.value = window.state.sequencerModule.sampleParams[sampleEl.dataset.name].detune;
-  const arpegg = document.querySelector(`input[name="arpegg"][value="${window.state.sequencerModule.sampleParams[sampleEl.dataset.name].arpegg}"]`)
-  arpegg.checked = true;
+  const arpegg = document.querySelector(`input[name="arpegg"]`)
+  const value = window.state.sequencerModule.sampleParams[sampleEl.dataset.name].arpegg;
+  arpegg.value = value === 'Off' ? '0' : value;
 }
 
 export default function Samples(samples = [], segmentData = {}) {

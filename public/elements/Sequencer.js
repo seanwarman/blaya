@@ -304,34 +304,23 @@ export default function Sequencer() {
               </div>
             </div>
             <div id="arpeggiator">
-              <div>Arp</div>
-              ${Object.keys(window.state.stepRecordModule.arpPatterns).map(patternName => {
-                return `
-                  <input
-                    onchange="
-                      window.state.sequencerModule.sampleParams[document.querySelectorAll('#samples-container .vis-selected')[0].dataset.name].arpegg = '${patternName}'
-                    "
-                    ontouchstart="
-                      event.target.checked = true;
-                      window.state.sequencerModule.sampleParams[document.querySelectorAll('#samples-container .vis-selected')[0].dataset.name].arpegg = '${patternName}'
-                    "
-                    ontouchend="
-                      event.target.checked = true;
-                      window.state.sequencerModule.sampleParams[document.querySelectorAll('#samples-container .vis-selected')[0].dataset.name].arpegg = '${patternName}'
-                    "
-                    ontouchcancel="
-                      event.target.checked = true;
-                      window.state.sequencerModule.sampleParams[document.querySelectorAll('#samples-container .vis-selected')[0].dataset.name].arpegg = '${patternName}'
-                    "
-                    id="${patternName}"
-                    type="radio"
-                    name="arpegg"
-                    value="${patternName}"
-                    ${patternName === 'Off' ? 'checked' : ''}
-                  />
-                  <label for="${patternName}">${patternName}</label>
-                `;
-              }).join('')}
+              <label for="arpeggiator-range">Arp</label>
+              <input class="param-range" id="arpeggiator-range" name="arpegg" type="range" list="arps" step="1" min="0" value="0" max="9" oninput="
+                window.state.sequencerModule.sampleParams[document.querySelectorAll('#samples-container .vis-selected')[0].dataset.name].arpegg = event.target.value === '0' ? 'Off' : event.target.value;
+              ">
+                <datalist id="arps">
+                  <option value="Off" label="Off"></option>
+                  <option value="1" label="1"></option>
+                  <option value="2" label="2"></option>
+                  <option value="3" label="3"></option>
+                  <option value="4" label="4"></option>
+                  <option value="5" label="5"></option>
+                  <option value="6" label="6"></option>
+                  <option value="7" label="7"></option>
+                  <option value="8" label="8"></option>
+                  <option value="9" label="9"></option>
+                </datalist>
+              </input>
             </div>
           </div>
         </div>
