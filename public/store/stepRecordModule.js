@@ -94,11 +94,8 @@ export const stepRecordModule = {
     return this.keysToMapNumbers[this.currentMapNumber++].toUpperCase();
   },
   getNextFreeKeyMapRange(count) {
-    const i = KEY_MAPS.findIndex(k => !window.state.sequencerModule.samples[k]);
-    if (isNaN(i)) {
-      return KEY_MAPS.slice(0, count);
-    }
-    return KEY_MAPS.slice(i, count);
+    const keys = KEY_MAPS.filter(key => !Object.entries(window.state.sequencerModule.samples).some(([k,v]) => key === k && !!v))
+    return keys.slice(0, count);
   },
 };
 

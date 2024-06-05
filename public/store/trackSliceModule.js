@@ -79,7 +79,7 @@ export const trackSliceModule = {
     this.segmentQueue.push(segment);
     if (timeout) clearTimeout(timeout);
     timeout = setTimeout(() => {
-      const keyMaps = window.state.stepRecordModule.getNextFreeKeyMapRange(this.segmentQueue.length + 1);
+      const keyMaps = window.state.stepRecordModule.getNextFreeKeyMapRange(this.segmentQueue.length);
       this.segmentQueue.map((segment, i) => {
         const keyMap = keyMaps[i];
         segment.update(getSegmentSampleData(keyMap));
