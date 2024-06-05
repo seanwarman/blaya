@@ -6,10 +6,6 @@ import { getSegmentSampleData } from '../elements/TrackLoader';
 
 const frameSize = 512;
 const hopSize = 256;
-const odfs = ['hfc', 'complex'];
-const odfsWeights = [0.5, 0.5];
-const sampleRate = 48000;
-const sensitivity = 0.1;
 
 function computeFFT(signal, essentia) {
   let polarFrames = []; // clear frames from previous computation
@@ -35,7 +31,12 @@ function computeFFT(signal, essentia) {
   return polarFrames;
 }
 
-function computeOnsets(float32Arr) {
+function computeOnsets(float32Arr, {
+  odfs = ['hfc', 'complex'],
+  odfsWeights = [0.5, 0.5],
+  sampleRate = 48000,
+  sensitivity = 0.1,
+}) {
   return EssentiaWASM().then(essentiaWasm => {
     const E = new Essentia(essentiaWasm);
     const vector = E.arrayToVector(float32Arr);
@@ -111,6 +112,15 @@ export const trackSliceModule = {
       // })));
     });
   },
+  get sensitivity() {
+    return document.querySelector('input#track-loader-track-slice-sensitivity')?.value || 0.1;
+  },
+  set sensitivity(v) {
+    const range = document.querySelector('input#track-loader-track-slice-sensitivity');
+    if (range) {
+      range.value = v;
+    }
+  },
   fetchBeatSamplePositions(url, range, startTime) {
     const context = new AudioContext();
     return fetch(url, {
@@ -118,7 +128,9 @@ export const trackSliceModule = {
     })
       .then(res => res.arrayBuffer())
       .then(buffer => context.decodeAudioData(buffer))
-      .then(audioBuffer => computeOnsets(audioBuffer.getChannelData(0)))
+      .then(audioBuffer => computeOnsets(audioBuffer.getChannelData(0), {
+        sensitivity: this.sensitivity,
+      }))
       .then(onsets => Array.from(onsets).map(time => {
         return time + (startTime || 0);
       }))

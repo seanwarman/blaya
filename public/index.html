@@ -81,10 +81,17 @@
       <img id="close-track-loader" src="./icons/caret-up.svg" onclick="document.body.dataset.showTrackLoader = 'false'" />
       <div id="track-loader-controls-container">
         <div id="track-loader-controls">
-          <img id="italic-track-loader" />
-          <img id="slice-mode-track-loader" onclick="document.body.dataset.sliceMode = document.body.dataset.sliceMode === 'off' ? 'on' : 'off'" />
-          <img id="zoom-in-track-loader" />
-          <img id="zoom-out-track-loader" />
+          <div class="controls-left">
+            <img id="italic-track-loader" />
+            <img id="slice-mode-track-loader" onclick="document.body.dataset.sliceMode = document.body.dataset.sliceMode === 'off' ? 'on' : 'off'" />
+            <label for="track-loader-track-slice-sensitivity">
+              <input id="track-loader-track-slice-sensitivity" min="0.1" max="1" step="0.1" value="0.1" type="range" />
+            </label>
+          </div>
+          <div class="controls-right">
+            <img id="zoom-in-track-loader" />
+            <img id="zoom-out-track-loader" />
+          </div>
         </div>
       </div>
     </div>
