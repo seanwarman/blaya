@@ -231,11 +231,15 @@
   display: none;
 }
 
+[data-slice-mode="slicing"] #track-loader-loading,
 #track-loader-loading[data-track-loading="true"] {
   cursor: progress;
   z-index: 3;
-  /* background-color: #0000008c; */
   padding-bottom: 64px;
+}
+
+[data-slice-mode="slicing"] #track-loader-loading {
+  background-color: #0000008c;
 }
 
 #zoomview-container {
