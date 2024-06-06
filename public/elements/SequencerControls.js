@@ -76,7 +76,7 @@ export default function SequencerControls() {
             }),
             dom.label({
               for: 'sequencer-record',
-              innterText: 'Rec',
+              innerText: 'Rec',
             }),
             dom.input({
               tabindex: '-1',

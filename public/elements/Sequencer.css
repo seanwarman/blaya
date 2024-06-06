@@ -31,6 +31,10 @@
   display: none;
 }
 
+[data-sequencer-is-recording="true"] #sequencer {
+  box-shadow: inset 0px 0px 0px 3px #ffcd84;
+}
+
 @media (min-width: 768px) {
   #sequencer {
     display: block;

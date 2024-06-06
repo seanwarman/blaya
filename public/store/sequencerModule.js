@@ -28,7 +28,12 @@ export const sequencerModule = {
   name: null,
   unlocked: false,
   isPlaying: false,       // Are we currently playing?
-  isRecording: false,
+  get isRecording() {
+    return document.body.dataset.sequencerIsRecording === 'true';
+  },
+  set isRecording(checked) {
+    document.body.dataset.sequencerIsRecording = checked;
+  },
                           //
   startTime: undefined,   // The start time of the entire sequence.
                           //
