@@ -401,6 +401,13 @@ export const sequencerModule = {
     };
     reader.readAsText(changeEvent.target.files[0]);
   },
+  sequenceList: [],
+  listSequence() {
+    this.sequenceList.push(this.save().sequence);
+  },
+  pickSequence(i) {
+    this.setTimeline(this.sequenceList[i]);
+  },
   saveToFile() {
     const name = this.name || prompt('Save as...');
     this.name = name;
