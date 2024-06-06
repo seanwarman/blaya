@@ -61,11 +61,12 @@ export const sequencerModule = {
   loopBarLength: LOOPBAR_LENGTH_DEFAULT,
   setLoopBarLength(loopBarLength) {
     if (loopBarLength < 1) return;
-    // TODO: this needs work see the Sequencer.js file, there's a bug with new sequencer indexes
-    // Duplicates the original loop into the new bars
-    // this.sequence = Array(this.noteResolution * loopBarLength)
-    //   .fill()                                                                                  // Each vis item needs to have a unique id
-    //   .map((_,i) => this.sequence[i % (this.loopBarLength * this.noteResolution)]?.map(step => ({ ...step, id: this.makeId() })));
+    if (
+      loopBarLength > this.loopBarLength
+      && this.sequence.length < (256 * loopBarLength)
+    ) {
+      this.duplicateTimeline({ bars: [this.loopBarLength, loopBarLength] });
+    }
     this.loopBarLength = loopBarLength;
     window.dispatchEvent(Object.assign(loopBarLengthEvent, { loopBarLength }))
   },

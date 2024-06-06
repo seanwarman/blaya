@@ -473,14 +473,16 @@ export const element = tag => ({ children, dataset, ...props }) => f.pipe(
 )(document.createElement(tag))
 
 export const img = element('img')
-
 export const div = element('div')
-
 export const ul = element('ul')
-
 export const li = element('li')
-
 export const link = element('link')
+export const select = element('select');
+export const span = element('span');
+export const button = element('button');
+export const label = element('label');
+export const input = element('input');
+export const br = element('br');
 
 export function emptySelectionContainer({ reverseTracks }) {
   const trackListContainer = document.getElementById('track-list-container')

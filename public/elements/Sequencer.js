@@ -2,6 +2,8 @@ import { div } from '../helpers/dom';
 import { START_DATE_PARAMS } from '../../public/constants';
 import { ceil } from '../helpers/utils';
 
+const id = 'sequencer-container';
+
 const makeStep = ({ name, index, delay, endTime }) => ({
   index: index || 0,
   id: window.state.sequencerModule.makeId(),
@@ -247,15 +249,36 @@ export function onCenterPitch() {
   input.value = 0;
 }
 
+function onChangeBarsToDuplicate() {
+  const seq = document.getElementById(id);
+  if (!seq) return;
+  seq.dataset.from = window.state.sequencerModule.barsToDuplicate*16;
+}
+
+function onChangeBarsToDuplicateOver() {
+  const seq = document.getElementById(id);
+  if (!seq) return;
+  seq.dataset.to = window.state.sequencerModule.barsToDuplicateOver*16;
+}
+
 export default function Sequencer() {
-  const id = 'sequencer-container';
   document.getElementById('center-gain-param')?.removeEventListener('click', onCenterGain);
   document.getElementById('center-pitch-param')?.removeEventListener('click', onCenterPitch);
+  window.removeEventListener('changebarstoduplicate', onChangeBarsToDuplicate);
+  window.removeEventListener('changebarstoduplicateover', onChangeBarsToDuplicateOver);
+  window.addEventListener('changebarstoduplicate', onChangeBarsToDuplicate);
+  window.addEventListener('changebarstoduplicateover', onChangeBarsToDuplicateOver);
+
   document.getElementById(id).replaceWith(div({
     id,
+    dataset: {
+      from: 1,
+      to: 8,
+    },
     innerHTML: `
       <div class="container">
         <link href="/elements/Sequencer.css" rel="stylesheet"></style>
+        <!-- <link href="/elements/SequencerDuplication.css" rel="stylesheet"></style> --!>
         <div id="sequencer">
         </div>
         <div id="sequencer-controls"></div>
