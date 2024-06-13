@@ -106,10 +106,10 @@ export const trackSliceModule = {
       }, [{}, []])[1]
         .map(segment => window.state.trackLoader.segments.add(segment));
 
-      // window.state.trackLoader.points.add(times.map(time => ({
-      //   time,
-      //   color: '#00ff00',
-      // })));
+//       window.state.trackLoader.points.add(times.map(time => ({
+//         time,
+//         color: '#d5ddf6',
+//       })));
     });
   },
   get sensitivity() {
