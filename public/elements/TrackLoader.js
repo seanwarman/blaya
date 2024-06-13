@@ -276,7 +276,7 @@ function segmentEvents(peaks, trackUrl) {
     const sampleName = e.segment.keyMap;
     const { startByte, endByte } = getStartAndEndBytes(e.segment, window.state.sequencerModule.packets);
 
-    if (window.state.sliceMode === 'off') {
+    if (sampleName !== 'RANGE') {
       window.state.sequencerModule.setSegmentDataAndSample(sampleName, e.segment, trackUrl, startByte, endByte);
     }
   });
