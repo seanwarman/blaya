@@ -115,7 +115,6 @@ export default function SequencerControls() {
               max: '300',
               oninput: event => {
                 window.state.sequencerModule.tempo = event.target.value;
-                document.getElementById('show-tempo').innerText=event.target.value;
               },
             }),
             dom.label({

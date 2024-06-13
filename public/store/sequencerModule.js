@@ -38,7 +38,15 @@ export const sequencerModule = {
   startTime: undefined,   // The start time of the entire sequence.
                           //
   currentStep: 0,         // What note is currently last scheduled?
-  tempo: 120.0,           // tempo (in beats per minute)
+  set tempo(val) {
+    document.getElementById('show-tempo').innerText = val;
+    if (document.getElementById('sequencer-tempo')?.value !== val) {
+      document.getElementById('sequencer-tempo').value = val;
+    }
+  },
+  get tempo() {
+    return document.getElementById('sequencer-tempo')?.value;
+  },
   lookahead: 5.0,        // How frequently to call scheduling function 
                           // (in milliseconds)
 
