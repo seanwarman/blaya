@@ -415,10 +415,16 @@ export const sequencerModule = {
     reader.readAsText(changeEvent.target.files[0]);
   },
   sequenceList: [],
-  listSequence() {
-    this.sequenceList.push(this.save().sequence);
+  get sequenceNumber() {
+    return document.getElementById('pick-sequence-number')?.value || 0;
+  },
+  pushSequence() {
+    const seq = this.save().sequence;
+    if (!seq?.length) return;
+    this.sequenceList.push(seq);
   },
   pickSequence(i) {
+    if (!this.sequenceList[i]) return;
     this.setTimeline(this.sequenceList[i]);
   },
   saveToFile() {

@@ -33,6 +33,14 @@
   display: none;
 }
 
+#pick-sequence {
+  margin-left: 4rem;
+}
+
+#pick-sequence-number {
+  width: 56px;
+}
+
 @media (min-width: 768px) {
   #sequencer-controls .container {
     display: flex;

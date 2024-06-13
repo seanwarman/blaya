@@ -157,6 +157,25 @@ export default function SequencerControls() {
               `,
             }),
             dom.button({
+              id: 'pick-sequence',
+              innerText: 'Load',
+              onclick: () => window.state.sequencerModule.pickSequence(window.state.sequencerModule.sequenceNumber),
+            }),
+            dom.input({
+              id: 'pick-sequence-number',
+              type: 'number',
+              value: window.state.sequencerModule.sequenceNumber,
+              min: '0',
+            }),
+            dom.button({
+              id: 'push-sequence',
+              innerText: 'Save Seq',
+              onclick: () => {
+                window.state.sequencerModule.pushSequence();
+                document.getElementById('pick-sequence-number').value = window.state.sequencerModule.sequenceList?.length || 0;
+              },
+            }),
+            dom.button({
               id: 'save-as',
               onclick: () => window.state.sequencerModule.saveToFile(),
               innerText: 'Save as',
