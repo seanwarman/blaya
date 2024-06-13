@@ -71,6 +71,9 @@ export const sequencerModule = {
                             //
   timerWorker: null,        // The Web Worker used to fire timer messages
                             //
+  get loopBarLengthInNotes() {
+    return this.noteResolution * this.loopBarLength;
+  },
   loopBarLength: LOOPBAR_LENGTH_DEFAULT,
   setLoopBarLength(loopBarLength) {
     if (loopBarLength < 1) return;

@@ -45,12 +45,12 @@ export const stepRecordModule = {
     const step = () => {
       const arpStart = this.arpStarts[keyMap];
       if (currentStep - arpStart < 0) {
-        return 256 + (currentStep - arpStart);
+        return window.state.sequencerModule.loopBarLengthInNotes + (currentStep - arpStart);
       } else {
         return currentStep - arpStart;
       }
     }
-    return this.arpPatterns[window.state.sequencerModule.sampleParams[keyMap].arpegg][step()];
+    return this.arpPatterns[window.state.sequencerModule.sampleParams[keyMap].arpegg][step()%window.state.sequencerModule.noteResolution];
   },
   currentMapNumber: 0,
   nextNoteTime: 0,
