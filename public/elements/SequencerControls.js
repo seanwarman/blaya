@@ -7,6 +7,19 @@ export function onKeyDownPlay(event) {
   }
 }
 
+export function onKeyDownNextPrevSequence(event) {
+  if (event.key === ',') {
+    if (document.getElementById('pick-sequence-number').value > 0) {
+      document.getElementById('pick-sequence-number').value--;
+      window.state.sequencerModule.pickSequence(document.getElementById('pick-sequence-number').value);
+    }
+  }
+  if (event.key === '.') {
+    document.getElementById('pick-sequence-number').value++;
+    window.state.sequencerModule.pickSequence(document.getElementById('pick-sequence-number').value);
+  }
+}
+
 export function onKeyDownRecord(event) {
   if (event.key === ' ') {
     event.preventDefault();

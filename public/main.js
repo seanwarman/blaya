@@ -26,7 +26,11 @@ import {
 import * as f from './helpers/functional-utils.js';
 import * as dom from './helpers/dom.js';
 import Sequencer, { onKeyDownGain, onKeyDownPitch } from './elements/Sequencer.js';
-import SequencerControls, { onKeyDownPlay, onKeyDownRecord } from './elements/SequencerControls.js';
+import SequencerControls, {
+  onKeyDownPlay,
+  onKeyDownRecord,
+  onKeyDownNextPrevSequence,
+} from './elements/SequencerControls.js';
 import TrackLoader from './elements/TrackLoader.js';
 import Samples, { onKeyDownSamples, onKeyUpSamples, onPlaySample, onStep } from './elements/Samples.js';
 import Router from './elements/Router.js';
@@ -132,6 +136,7 @@ build(state => {
   window.addEventListener('keydown', onKeyDownPitch);
   window.addEventListener('keydown', onKeyDownPlay);
   window.addEventListener('keydown', onKeyDownRecord);
+  window.addEventListener('keydown', onKeyDownNextPrevSequence);
   window.addEventListener('keyup', onKeyUpSamples);
   window.addEventListener('playsample', onPlaySample);
   window.addEventListener('scroll', onScroll([onUpScroll(window.state.trackList), onDownScroll(window.state.trackList)]), false)
