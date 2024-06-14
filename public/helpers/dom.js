@@ -544,7 +544,7 @@ export function cloneWaveImgCanvas(sampleName) {
   }
   const selectedSample = document.querySelector(`#samples-container .item[data-name="${sampleName}"]`);
   const waveImgCanvas = cloneCanvas(selectedSample.querySelector('canvas'));
-  waveImgCanvas.style = 'height:30px;margin-left:-12px';
+  waveImgCanvas.style = 'height:20px;margin-left:-12px';
   return { waveImgCanvas, selectedSample };
 }
 
