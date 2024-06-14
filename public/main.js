@@ -29,7 +29,7 @@ import Sequencer, { onKeyDownGain, onKeyDownPitch } from './elements/Sequencer.j
 import SequencerControls, {
   onKeyDownPlay,
   onKeyDownRecord,
-  onKeyDownNextPrevSequence,
+  onKeyDownChooseSequence,
 } from './elements/SequencerControls.js';
 import TrackLoader from './elements/TrackLoader.js';
 import Samples, { onKeyDownSamples, onKeyUpSamples, onPlaySample, onStep } from './elements/Samples.js';
@@ -136,7 +136,7 @@ build(state => {
   window.addEventListener('keydown', onKeyDownPitch);
   window.addEventListener('keydown', onKeyDownPlay);
   window.addEventListener('keydown', onKeyDownRecord);
-  window.addEventListener('keydown', onKeyDownNextPrevSequence);
+  window.addEventListener('keydown', onKeyDownChooseSequence);
   window.addEventListener('keyup', onKeyUpSamples);
   window.addEventListener('playsample', onPlaySample);
   window.addEventListener('scroll', onScroll([onUpScroll(window.state.trackList), onDownScroll(window.state.trackList)]), false)

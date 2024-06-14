@@ -30,13 +30,13 @@ export function onKeyDownSamples(e) {
     // return recordSequence();
     return;
   }
-  if (!isNaN(Number(e.key)) && e.key !== ' ') {
-    const input = document.querySelector(`#arpeggiator input`);
-    if (input) {
-      input.value = e.key;
-      input.dispatchEvent(new Event('input'));
-    }
-  }
+  // if (!isNaN(Number(e.key)) && e.key !== ' ') {
+  //   const input = document.querySelector(`#arpeggiator input`);
+  //   if (input) {
+  //     input.value = e.key;
+  //     input.dispatchEvent(new Event('input'));
+  //   }
+  // }
 
   if (window.state.stepRecordModule.keysToMapNumbers.includes(e.key)) {
     const keyMap = e.key.toUpperCase();
@@ -100,7 +100,8 @@ function onDragStart(event) {
 function selectSample(keyMap) {
   Array.from(document.querySelectorAll('#samples-container .vis-selected')).forEach(el => el.classList.remove('vis-selected'));
   const sampleEl = document.querySelector(`#samples-container [data-name="${keyMap}"].vis-item`);
-  sampleEl.classList.add('vis-selected');
+  if (!sampleEl) return;
+  sampleEl.classList?.add('vis-selected');
   window.state.sequencerModule.selectedSampleName = keyMap;
 
   const gainRange = document.getElementById('sample-gain');

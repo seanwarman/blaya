@@ -7,7 +7,7 @@ export function onKeyDownPlay(event) {
   }
 }
 
-export function onKeyDownNextPrevSequence(event) {
+export function onKeyDownChooseSequence(event) {
   if (event.key === ',') {
     if (document.getElementById('pick-sequence-number').value > 0) {
       document.getElementById('pick-sequence-number').value--;

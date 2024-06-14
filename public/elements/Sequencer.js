@@ -27,7 +27,7 @@ function setMaxTime(vis) {
 function initTimeline(container) {
   const options = {
     orientation: 'top',
-    height: 350,
+    height: window.innerHeight / 2.469767441860465,
     start: vis.moment(...START_DATE_PARAMS),
     min: vis.moment(...START_DATE_PARAMS),
     max: setMaxTime(vis),
@@ -108,16 +108,16 @@ function initTimeline(container) {
     }
   })
   window.addEventListener('opentrackloader', (e) => {
-    const { showTrackLoader } = e;
-    if (showTrackLoader) {
-      window.state.sequencerModule.timeline.setOptions({
-        height: 350,
-      });
-    } else {
-      window.state.sequencerModule.timeline.setOptions({
-        height: 700,
-      });
-    }
+    // const { showTrackLoader } = e;
+    // if (showTrackLoader) {
+    //   window.state.sequencerModule.timeline.setOptions({
+    //     height: 350,
+    //   });
+    // } else {
+    //   window.state.sequencerModule.timeline.setOptions({
+    //     height: 700,
+    //   });
+    // }
   });
 }
 function onMove(item, cb) {
@@ -215,7 +215,7 @@ export function onKeyDownGain(event) {
     target.value = Number(target.value) + Number(target.step);
   }
   if (!target) return;
-  const sampleName = document.querySelectorAll('#samples-container .vis-selected')[0].dataset.name;
+  const sampleName = document.querySelectorAll('#samples-container .vis-selected')?.[0]?.dataset.name;
   if (!sampleName) return;
   window.state.sequencerModule.sampleParams[sampleName].gain = Number(target.value);
 }
@@ -228,13 +228,13 @@ export function onKeyDownPitch(event) {
     target.value = Number(target.value) + 40;
   }
   if (!target) return;
-  const sampleName = document.querySelectorAll('#samples-container .vis-selected')[0].dataset.name;
+  const sampleName = document.querySelectorAll('#samples-container .vis-selected')?.[0]?.dataset.name;
   if (!sampleName) return;
   window.state.sequencerModule.sampleParams[sampleName].detune = Number(target.value);
 }
 
 export function onCenterGain() {
-  const sampleName = document.querySelectorAll('#samples-container .vis-selected')[0].dataset.name;
+  const sampleName = document.querySelectorAll('#samples-container .vis-selected')?.[0]?.dataset.name;
   if (!sampleName) return;
   window.state.sequencerModule.sampleParams[sampleName].gain = 1;
   const input = document.getElementById('sample-gain');
@@ -242,7 +242,7 @@ export function onCenterGain() {
 }
 
 export function onCenterPitch() {
-  const sampleName = document.querySelectorAll('#samples-container .vis-selected')[0].dataset.name;
+  const sampleName = document.querySelectorAll('#samples-container .vis-selected')?.[0]?.dataset.name;
   if (!sampleName) return;
   window.state.sequencerModule.sampleParams[sampleName].detune = 0;
   const input = document.getElementById('sample-pitch');
@@ -281,69 +281,71 @@ export default function Sequencer() {
         <!-- <link href="/elements/SequencerDuplication.css" rel="stylesheet"></style> --!>
         <div id="sequencer">
         </div>
-        <div id="sequencer-controls"></div>
-        <div class="items-panel">
-          <div class="side-left">
-            <div class="drag-over-icon"
-              ondragover="event.preventDefault();this.classList.add('highlight')"
-              ondragenter="event.preventDefault()"
-              ondragleave="this.classList.remove('highlight')"
-              ondragend="this.classList.remove('highlight')"
-            >
-              <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" width="24" height="24"><defs><style>.cls-6374f8d9b67f094e4896c66b-1{fill:none;stroke:currentColor;stroke-miterlimit:10;}</style></defs><path class="cls-6374f8d9b67f094e4896c66b-1" d="M16.88,22.5H7.12a1.9,1.9,0,0,1-1.9-1.8L4.36,5.32H19.64L18.78,20.7A1.9,1.9,0,0,1,16.88,22.5Z"></path><line class="cls-6374f8d9b67f094e4896c66b-1" x1="2.45" y1="5.32" x2="21.55" y2="5.32"></line><path class="cls-6374f8d9b67f094e4896c66b-1" d="M10.09,1.5h3.82a1.91,1.91,0,0,1,1.91,1.91V5.32a0,0,0,0,1,0,0H8.18a0,0,0,0,1,0,0V3.41A1.91,1.91,0,0,1,10.09,1.5Z"></path><line class="cls-6374f8d9b67f094e4896c66b-1" x1="12" y1="8.18" x2="12" y2="19.64"></line><line class="cls-6374f8d9b67f094e4896c66b-1" x1="15.82" y1="8.18" x2="15.82" y2="19.64"></line><line class="cls-6374f8d9b67f094e4896c66b-1" x1="8.18" y1="8.18" x2="8.18" y2="19.64"></line></svg>
-            </div>
-          </div>
-          <div class="side">
-            <div id="samples-container" class="items">
-            </div>
-          </div>
-          <div class="side-right">
-            <div class="params">
-              <div class="param-container">
-                <label for="sample-gain">Volume</label>
-                <input id="sample-gain" class="param-range" type="range" step="0.1" min="0" max="5" value="1" oninput="
-                  const { value } = event.target;
-                  const sampleName = document.querySelectorAll('#samples-container .vis-selected')[0].dataset.name;
-                  if (!sampleName) return;
-                  window.state.sequencerModule.sampleParams[sampleName].gain = Number(value);
-                  event.target.title = value;
-                "/>
-                <div id="center-gain-param" class="center-param">
-                  <svg viewBox="0 0 24 24" stroke-width="1.5" width="20" height="20" color="#000000"><defs><style>.cls-63ce7424ea57ea6c8380053d-1{fill:none;stroke:currentColor;stroke-miterlimit:10;}</style></defs><line class="cls-63ce7424ea57ea6c8380053d-1" x1="0.5" y1="12" x2="9.13" y2="12"></line><line class="cls-63ce7424ea57ea6c8380053d-1" x1="14.88" y1="12" x2="23.5" y2="12"></line><polyline class="cls-63ce7424ea57ea6c8380053d-1" points="18.71 8.17 14.88 12 18.71 15.83"></polyline><polyline class="cls-63ce7424ea57ea6c8380053d-1" points="5.29 15.83 9.13 12 5.29 8.17"></polyline><line class="cls-63ce7424ea57ea6c8380053d-1" x1="12" y1="2.42" x2="12" y2="21.58"></line></svg>
-                </div>
-              </div>
-              <div class="param-container">
-                <label for="sample-pitch">Pitch</label>
-                <input id="sample-pitch" class="param-range" type="range" step="1" min="-2000" max="2000" value="0" oninput="
-                  const { value } = event.target;
-                  const sampleName = document.querySelectorAll('#samples-container .vis-selected')[0].dataset.name;
-                  if (!sampleName) return;
-                  window.state.sequencerModule.sampleParams[sampleName].detune = Number(value);
-                  event.target.title = value;
-                "/>
-                <div id="center-pitch-param" class="center-param">
-                  <svg viewBox="0 0 24 24" stroke-width="1.5" width="20" height="20" color="#000000"><defs><style>.cls-63ce7424ea57ea6c8380053d-1{fill:none;stroke:currentColor;stroke-miterlimit:10;}</style></defs><line class="cls-63ce7424ea57ea6c8380053d-1" x1="0.5" y1="12" x2="9.13" y2="12"></line><line class="cls-63ce7424ea57ea6c8380053d-1" x1="14.88" y1="12" x2="23.5" y2="12"></line><polyline class="cls-63ce7424ea57ea6c8380053d-1" points="18.71 8.17 14.88 12 18.71 15.83"></polyline><polyline class="cls-63ce7424ea57ea6c8380053d-1" points="5.29 15.83 9.13 12 5.29 8.17"></polyline><line class="cls-63ce7424ea57ea6c8380053d-1" x1="12" y1="2.42" x2="12" y2="21.58"></line></svg>
-                </div>
+        <div class="bottom-control-panel">
+          <div id="sequencer-controls"></div>
+          <div class="items-panel">
+            <div class="side-left">
+              <div class="drag-over-icon"
+                ondragover="event.preventDefault();this.classList.add('highlight')"
+                ondragenter="event.preventDefault()"
+                ondragleave="this.classList.remove('highlight')"
+                ondragend="this.classList.remove('highlight')"
+              >
+                <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" width="24" height="24"><defs><style>.cls-6374f8d9b67f094e4896c66b-1{fill:none;stroke:currentColor;stroke-miterlimit:10;}</style></defs><path class="cls-6374f8d9b67f094e4896c66b-1" d="M16.88,22.5H7.12a1.9,1.9,0,0,1-1.9-1.8L4.36,5.32H19.64L18.78,20.7A1.9,1.9,0,0,1,16.88,22.5Z"></path><line class="cls-6374f8d9b67f094e4896c66b-1" x1="2.45" y1="5.32" x2="21.55" y2="5.32"></line><path class="cls-6374f8d9b67f094e4896c66b-1" d="M10.09,1.5h3.82a1.91,1.91,0,0,1,1.91,1.91V5.32a0,0,0,0,1,0,0H8.18a0,0,0,0,1,0,0V3.41A1.91,1.91,0,0,1,10.09,1.5Z"></path><line class="cls-6374f8d9b67f094e4896c66b-1" x1="12" y1="8.18" x2="12" y2="19.64"></line><line class="cls-6374f8d9b67f094e4896c66b-1" x1="15.82" y1="8.18" x2="15.82" y2="19.64"></line><line class="cls-6374f8d9b67f094e4896c66b-1" x1="8.18" y1="8.18" x2="8.18" y2="19.64"></line></svg>
               </div>
             </div>
-            <div id="arpeggiator">
-              <label for="arpeggiator-range">Arp</label>
-              <input class="param-range" id="arpeggiator-range" name="arpegg" type="range" list="arps" step="1" min="0" value="0" max="9" oninput="
-                window.state.sequencerModule.sampleParams[document.querySelectorAll('#samples-container .vis-selected')[0].dataset.name].arpegg = event.target.value === '0' ? 'Off' : event.target.value;
-              ">
-                <datalist id="arps">
-                  <option value="Off" label="Off"></option>
-                  <option value="1" label="1"></option>
-                  <option value="2" label="2"></option>
-                  <option value="3" label="3"></option>
-                  <option value="4" label="4"></option>
-                  <option value="5" label="5"></option>
-                  <option value="6" label="6"></option>
-                  <option value="7" label="7"></option>
-                  <option value="8" label="8"></option>
-                  <option value="9" label="9"></option>
-                </datalist>
-              </input>
+            <div class="side">
+              <div id="samples-container" class="items">
+              </div>
+            </div>
+            <div class="side-right">
+              <div class="params">
+                <div class="param-container">
+                  <label for="sample-gain">Volume</label>
+                  <input id="sample-gain" class="param-range" type="range" step="0.1" min="0" max="5" value="1" oninput="
+                    const { value } = event.target;
+                    const sampleName = document.querySelectorAll('#samples-container .vis-selected')[0].dataset.name;
+                    if (!sampleName) return;
+                    window.state.sequencerModule.sampleParams[sampleName].gain = Number(value);
+                    event.target.title = value;
+                  "/>
+                  <div id="center-gain-param" class="center-param">
+                    <svg viewBox="0 0 24 24" stroke-width="1.5" width="20" height="20" color="#000000"><defs><style>.cls-63ce7424ea57ea6c8380053d-1{fill:none;stroke:currentColor;stroke-miterlimit:10;}</style></defs><line class="cls-63ce7424ea57ea6c8380053d-1" x1="0.5" y1="12" x2="9.13" y2="12"></line><line class="cls-63ce7424ea57ea6c8380053d-1" x1="14.88" y1="12" x2="23.5" y2="12"></line><polyline class="cls-63ce7424ea57ea6c8380053d-1" points="18.71 8.17 14.88 12 18.71 15.83"></polyline><polyline class="cls-63ce7424ea57ea6c8380053d-1" points="5.29 15.83 9.13 12 5.29 8.17"></polyline><line class="cls-63ce7424ea57ea6c8380053d-1" x1="12" y1="2.42" x2="12" y2="21.58"></line></svg>
+                  </div>
+                </div>
+                <div class="param-container">
+                  <label for="sample-pitch">Pitch</label>
+                  <input id="sample-pitch" class="param-range" type="range" step="1" min="-2000" max="2000" value="0" oninput="
+                    const { value } = event.target;
+                    const sampleName = document.querySelectorAll('#samples-container .vis-selected')[0].dataset.name;
+                    if (!sampleName) return;
+                    window.state.sequencerModule.sampleParams[sampleName].detune = Number(value);
+                    event.target.title = value;
+                  "/>
+                  <div id="center-pitch-param" class="center-param">
+                    <svg viewBox="0 0 24 24" stroke-width="1.5" width="20" height="20" color="#000000"><defs><style>.cls-63ce7424ea57ea6c8380053d-1{fill:none;stroke:currentColor;stroke-miterlimit:10;}</style></defs><line class="cls-63ce7424ea57ea6c8380053d-1" x1="0.5" y1="12" x2="9.13" y2="12"></line><line class="cls-63ce7424ea57ea6c8380053d-1" x1="14.88" y1="12" x2="23.5" y2="12"></line><polyline class="cls-63ce7424ea57ea6c8380053d-1" points="18.71 8.17 14.88 12 18.71 15.83"></polyline><polyline class="cls-63ce7424ea57ea6c8380053d-1" points="5.29 15.83 9.13 12 5.29 8.17"></polyline><line class="cls-63ce7424ea57ea6c8380053d-1" x1="12" y1="2.42" x2="12" y2="21.58"></line></svg>
+                  </div>
+                </div>
+              </div>
+              <div id="arpeggiator">
+                <label for="arpeggiator-range">Arp</label>
+                <input class="param-range" id="arpeggiator-range" name="arpegg" type="range" list="arps" step="1" min="0" value="0" max="9" oninput="
+                  window.state.sequencerModule.sampleParams[document.querySelectorAll('#samples-container .vis-selected')[0].dataset.name].arpegg = event.target.value === '0' ? 'Off' : event.target.value;
+                ">
+                  <datalist id="arps">
+                    <option value="Off" label="Off"></option>
+                    <option value="1" label="1"></option>
+                    <option value="2" label="2"></option>
+                    <option value="3" label="3"></option>
+                    <option value="4" label="4"></option>
+                    <option value="5" label="5"></option>
+                    <option value="6" label="6"></option>
+                    <option value="7" label="7"></option>
+                    <option value="8" label="8"></option>
+                    <option value="9" label="9"></option>
+                  </datalist>
+                </input>
+              </div>
             </div>
           </div>
         </div>

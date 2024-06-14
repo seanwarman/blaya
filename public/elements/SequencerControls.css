@@ -1,15 +1,10 @@
 #sequencer-controls {
   background: white;
   z-index: 1;
-  left: 0;
-  right: 0;
-  display: contents;
 }
 
 #sequencer-controls .container {
-  height: 120px;
-  left: 0;
-  right: 0;
+  height: 70px;
   display: block;
   margin: 0rem 1rem;
   justify-content: center;
@@ -47,7 +42,7 @@
     font-size: 1rem;
     flex-direction: row;
     width: 100%;
-    justify-content: start;
+    /* justify-content: start; */
     align-items: center;
   }
   #save-as,
