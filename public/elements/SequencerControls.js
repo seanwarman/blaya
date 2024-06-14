@@ -8,12 +8,17 @@ export function onKeyDownPlay(event) {
 }
 
 export function onKeyDownChooseSequence(event) {
+  const isANumber = !isNaN(event.key) && event.key !== ' ';
+  if (isANumber) {
+    document.getElementById('pick-sequence-number').value = event.key;
+    window.state.sequencerModule.pickSequence(document.getElementById('pick-sequence-number').value);
+  } else
   if (event.key === ',') {
     if (document.getElementById('pick-sequence-number').value > 0) {
       document.getElementById('pick-sequence-number').value--;
       window.state.sequencerModule.pickSequence(document.getElementById('pick-sequence-number').value);
     }
-  }
+  } else
   if (event.key === '.') {
     document.getElementById('pick-sequence-number').value++;
     window.state.sequencerModule.pickSequence(document.getElementById('pick-sequence-number').value);

@@ -17,6 +17,13 @@
 [data-show-sequencer="true"] #sequencer-container {
   transform: translateY(0);
 }
+[data-show-sequencer="false"] #sequencer-container {
+  transform: translateY(100vh);
+}
+
+/* [data-show-track-loader="false"] #sequencer-container { */
+/*   top: 82px; */
+/* } */
 
 #sequencer {
   display: none;
