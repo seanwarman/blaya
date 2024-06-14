@@ -190,7 +190,6 @@ export default function SequencerControls() {
               innerText: 'Save Seq',
               onclick: () => {
                 window.state.sequencerModule.pushSequence();
-                document.getElementById('pick-sequence-number').value = window.state.sequencerModule.sequenceList?.length || 0;
               },
             }),
             dom.button({
