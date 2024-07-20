@@ -85,6 +85,10 @@ export const sequencerModule = {
     }
     this.loopBarLength = loopBarLength;
     window.dispatchEvent(Object.assign(loopBarLengthEvent, { loopBarLength }))
+    const select = document.getElementById('sequencer-loop-bar-length-select');
+    if (Number(select.value) !== Number(loopBarLength)) {
+      select.value = loopBarLength;
+    }
   },
   timeLinePosition: 0,
   timing: {
@@ -466,7 +470,9 @@ export const sequencerModule = {
   }) {
     if (name) this.name = name;
     if (tempo) this.tempo = tempo;
-    if (loopBarLength) this.loopBarLength = loopBarLength;
+    if (loopBarLength) {
+      this.setLoopBarLength(loopBarLength);
+    }
     await this.setAllSamplesAndSegmentData(segmentData, sampleParams);
     this.setTimeline(sequence);
   },
