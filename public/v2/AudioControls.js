@@ -1,7 +1,14 @@
+import { usePlayStore } from './stores/play';
+
 export default {
+  computed: {
+    currentTrack() {
+      return usePlayStore().currentTrack;
+    },
+  },
   template: `
     <link rel="stylesheet" href="./AudioControls.css" />
-    <div tabindex="0" id="current-playing-text" role="link"></div>
+    <div tabindex="0" id="current-playing-text" role="link">{{ currentTrack }}</div>
     <audio preload tabindex="-1" id="player" controls>
       <source id="current-track" type="audio/mpeg"></source>
     </audio>
