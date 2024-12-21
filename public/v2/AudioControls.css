@@ -1,0 +1,56 @@
+#player {
+  position: relative;
+  background: #f1f3f4;
+  width: 100%;
+  grid-column: 1/5;
+  grid-row: 2;
+}
+
+button#prev-button svg {
+  width: .6rem;
+}
+
+button#next-button svg {
+  width: .6rem;
+}
+
+button#prev-button {
+  grid-column: 4/5;
+}
+
+button#next-button {
+  grid-column: 5/6;
+}
+
+button#prev-button, button#next-button {
+  border: none;
+  background-color: #f1f3f4;
+  width: 80px;
+  grid-column: unset;
+}
+
+button#prev-button:hover, button#next-button:hover {
+  background-color: #e2e2e2;
+}
+
+div#current-playing-text {
+  padding: 0.7rem;
+  font-size: 0.9rem;
+  height: 50px;
+  grid-column: 1/3;
+}
+
+@media (min-width: 768px) {
+
+  #player {
+    grid-column: unset;
+    grid-row: unset;
+  }
+
+  div#current-playing-text {
+    grid-row: unset;
+    min-height: 30px;
+    grid-column: unset;
+  }
+
+}

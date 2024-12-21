@@ -1,0 +1,9 @@
+#track-list .trackname-col {
+  width: 50%;
+}
+
+#track-list .album-col {
+  width: 50%;
+  text-align: end;
+}
+

@@ -28,6 +28,7 @@
     "music-metadata": "^8.1.4",
     "nodemon": "^2.0.21",
     "peaks.js": "^3.2.1",
+    "pinia": "^2.3.0",
     "serve-index": "^1.9.1",
     "socket.io": "^4.6.1",
     "waveform-data": "^4.5.0"

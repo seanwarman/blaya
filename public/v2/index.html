@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <script type="importmap">
+    {
+      "imports": {
+        "vue": "/libraries/vue.esm-browser.prod.js",
+        "io": "/node_modules/socket.io/client-dist/socket.io.esm.min.js",
+        "pinia": "/node_modules/pinia/dist/pinia.esm-browser.js",
+        "vue-demi": "/node_modules/vue-demi/lib/index.mjs",
+        "@vue/devtools-api": "/node_modules/@vue/devtools-api/lib/esm/index.js"
+      }
+    }
+  </script>
+  <meta content="width=device-width, initial-scale=1" name="viewport" />
+  <head>
+    <meta charset="UTF-8">
+    <title>Blaya</title>
+    <link href="./index.css" rel="stylesheet" />
+  </head>
+  <body id="app">
+    <header></header>
+    <main>
+      <track-list></track-list>
+    </main>
+    <footer>
+      <audio-controls></audio-controls>
+    </footer>
+  </body>
+  <script type="module">
+    import { createApp } from 'vue';
+    import { createPinia } from 'pinia';
+    import io from 'io';
+
+    import TrackList from './TrackList.js';
+    import AudioControls from './AudioControls.js';
+
+    const app = createApp({ components: {
+      TrackList,
+      AudioControls 
+    }});
+
+    app.use(createPinia());
+    app.mount('#app');
+
+    io().on('RELOAD', () => window.location.reload())
+  </script>
+</html>
