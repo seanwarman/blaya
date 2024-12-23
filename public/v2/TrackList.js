@@ -1,3 +1,6 @@
+import { usePlayStore } from '@stores/play';
+
+import { getSelectedElements } from '../helpers/events.js'
 import { trackList as RAW_TRACKLIST } from '../track-list.js'
 import { getTrackAndAlbumFromTrackString, parseTrackList } from '../helpers/index.js'
 
@@ -32,6 +35,7 @@ export default {
       page: 0,
       pageLength: 100,
       selectedTrack: null,
+      selectedTracks: [],
     };
   },
   methods: {
@@ -43,10 +47,23 @@ export default {
     },
     onClick(track) {
       if (this.selectedTrack === track) {
-        // Send state action..
+        usePlayStore().setCurrentTrack(track);
       } else {
         this.selectedTrack = track;
       }
+    },
+    onSelect() {
+      const { elements } = getSelectedElements(
+        'track-non-tab',
+        document.getElementById('track-list'),
+      );
+      this.selectedTracks = Array.from(elements)
+        .map((el) => el.dataset.track)
+        .reduce(
+          (tracks, track) =>
+            tracks.includes(track) ? tracks : tracks.concat([track]),
+          []
+        );
     },
   },
   computed: {
@@ -61,15 +78,19 @@ export default {
     },
   },
   template: `
-    <link rel="stylesheet" href="./TrackList.css" />
-    <template v-for="([trackName, album], i) in paginatedTrackList.map(getTrackAndAlbumFromTrackString)">
-      <track-details :tab="true" :track-name="trackName" :album="album" v-if="showTab(album, i)" />
-      <track-details
-        :class="selectedTrack === paginatedTrackList[i] && 'track-selected'"
-        @click="onClick(paginatedTrackList[i])"
-        :track-name="trackName"
-        :album="album"
-      />
-    </template>
+    <div id="track-list">
+      <link rel="stylesheet" href="./TrackList.css" />
+      <template v-for="([trackName, album], i) in paginatedTrackList.map(getTrackAndAlbumFromTrackString)">
+        <track-details :tab="true" :track-name="trackName" :album="album" v-if="showTab(album, i)" />
+        <track-details
+          :data-track="paginatedTrackList[i]"
+          :class="selectedTracks.includes(paginatedTrackList[i]) && 'track-selected'"
+          @mouseup="onSelect"
+          @click="onClick(paginatedTrackList[i])"
+          :track-name="trackName"
+          :album="album"
+        />
+      </template>
+    </div>
   `,
 }
