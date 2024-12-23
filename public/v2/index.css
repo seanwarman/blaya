@@ -4,10 +4,12 @@
   --brand-lighter: #9497ff;
   --button-neutral-colour: #f0f0f0;
   --green-gradient: linear-gradient(to right, #6dffb2, #d5ffe9);
+  --green-to-white: linear-gradient(to right, #6dffb2, white);
   --transition-time: .5s;
   --black: #353535;
   --header-height-desktop: 82px;
   --header-height-mobile: 105.59px;
+  --track-border: #ededed;
 }
 
 :fullscreen,
@@ -17,13 +19,13 @@
 
 ::selection {
   color: white;
-  background-color: #8d90ff;
+  background-color: var(--brand);
 }
 
 html {
   font-family: sans-serif;
   font-size: 16px;
-  color: #353535;
+  color: var(--black);
 }
 
 @media (min-width: 768px) {
@@ -140,7 +142,7 @@ footer {
   width: 100vw;
   box-shadow: 0px -5px 12px 0px #00000024;
   display: grid;
-  background: linear-gradient(to right, #6dffb2, white);
+  background: var(--green-to-white);
   grid-template-columns: 30% auto 80px 80px;
   grid-template-rows: 52px 52px;
   user-select: none;

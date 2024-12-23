@@ -54,7 +54,7 @@ div[role="link"] {
 .track-name-album-container {
   display: grid;
   grid-template-columns: auto 50%;
-  border-top: 1px solid #ededed;
+  border-top: 1px solid var(--track-border);
 }
 
 .track-artist-tab.track .track-name-album-container,
@@ -90,7 +90,7 @@ body[data-playlist-mode="false"] .track-name {
   justify-content: end;
   margin-left: -50%;
   box-shadow: 0px 0px 6px 0px #00000026;
-  color: #35353582;
+  color: var(--black);
   padding: 0 2rem 0 0;
   margin-bottom: -1px;
 }
@@ -136,4 +136,20 @@ div[role="link"] {
 .track-album-tab.track .track-name .name,
 .track-artist-tab.track .track-name .name {
   display: none;
+}
+
+.track-selected {
+  background: var(--brand);
+  outline: none;
+  padding-top: 0;
+  color: white;
+}
+
+.track-selected .track-name-album-container {
+  border-top: 1px solid var(--brand);
+  border-bottom: 1px solid var(--brand);
+}
+
+.track-selected + .track > .track-name-album-container {
+  border-top: none;
 }
