@@ -7,12 +7,16 @@ export default {
   data() {
     return {
       trackList,
+      albumList: [],
       page: 0,
       pageLength: 100,
     };
   },
   methods: {
-    getTrackAndAlbumFromTrackString,
+    showTab(album, i) {
+      const [,lastAlbum] = this.paginatedTrackList[i-1] || ['',''];
+      return lastAlbum !== album;
+    },
   },
   computed: {
     start() {
@@ -21,18 +25,33 @@ export default {
     end() {
       return this.pageLength * (this.page + 1);
     },
+    paginatedTrackList() {
+      return this.trackList.slice(this.start,this.end).map(getTrackAndAlbumFromTrackString);
+    },
   },
   template: `
     <link rel="stylesheet" href="./TrackList.css" />
-    <ul class="container" id="track-list">
-      <li class="row" v-for="[trackName, album] of trackList.slice(start, end).map(getTrackAndAlbumFromTrackString)">
-        <div class="col trackname-col">
-          {{ trackName }}
+    <template v-for="([trackName, album], i) in paginatedTrackList">
+      <div role="link" class="track track-artist-tab track-tab" v-if="showTab(album, i)">
+        <div class="track-name-album-container">
+          <div class="track-name">
+            <div class="name">{{ trackName }}</div>
+          </div>
+          <div class="track-album">
+            <div class="album">{{ album }}</div>
+          </div>
         </div>
-        <div class="col album-col">
-          {{ album }}
+      </div>
+      <div role="link" class="track track-non-tab">
+        <div class="track-name-album-container">
+          <div class="track-name">
+            <div class="name">{{ trackName }}</div>
+          </div>
+          <div class="track-album">
+            <div class="album">{{ album }}</div>
+          </div>
         </div>
-      </li>
-    </ul>
+      </div>
+    </template>
   `,
 }
