@@ -46,7 +46,7 @@ export default {
       return lastAlbum !== album;
     },
     onClick(track) {
-      if (this.selectedTrack === track) {
+      if (this.selectedTrack === track && this.selectedTracks.length === 1) {
         usePlayStore().setCurrentTrack(track);
       } else {
         this.selectedTrack = track;
