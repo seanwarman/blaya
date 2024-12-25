@@ -10,7 +10,6 @@ export default {
       offset: 5000,
       pageLength: 100,
       lazyLoadDebounce: false,
-      firstPage: 0,
     };
   },
   methods: {
@@ -22,9 +21,11 @@ export default {
     },
     onScrollUp({ target }) {
       if (target.scrollTop < this.offset) {
-        this.firstPage = Math.max(0, this.firstPage-1);
-        this.pageRange.unshift(this.firstPage);
-        this.pageRange.pop();
+        if (this.pageRange[0] === 0) {
+          this.pageRange = [0,1,2];
+        } else {
+          this.pageRange = this.pageRange.map(n => n-1);
+        }
         this.setDebounce();
       }
     },
@@ -33,9 +34,7 @@ export default {
       // Work out what pageRange index to stop at the end
       //
       if (target.scrollHeight - target.scrollTop < this.offset) {
-        this.firstPage = this.firstPage+1;
-        this.pageRange.push(this.firstPage+2);
-        this.pageRange.shift();
+        this.pageRange = this.pageRange.map(n => n+1);
         this.setDebounce();
       }
     },
