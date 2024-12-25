@@ -1,3 +1,8 @@
+#track-list {
+  height: 100vh;
+  overflow: auto;
+}
+
 #track-list .trackname-col {
   width: 50%;
 }
@@ -91,7 +96,7 @@ body[data-playlist-mode="false"] .track-name {
   margin-left: -50%;
   box-shadow: 0px 0px 6px 0px #00000026;
   color: var(--black);
-  padding: 0 2rem 0 0;
+  padding: 0 1.6rem 0 0;
   margin-bottom: -1px;
 }
 
