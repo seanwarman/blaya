@@ -1,16 +1,16 @@
 import Page from './TrackList/Page.js';
 
-let pageRange = [0, 1, 2];
 let lastScrollTop = 0;
 
 export default {
   components: { Page },
   data() {
     return {
-      pageRange,
+      pageRange: [0,1,2],
       offset: 5000,
       pageLength: 100,
       lazyLoadDebounce: false,
+      firstPage: 0,
     };
   },
   methods: {
@@ -21,12 +21,10 @@ export default {
       }, 500);
     },
     onScrollUp({ target }) {
-      if (pageRange[0] === 0) return;
       if (target.scrollTop < this.offset) {
-        this.pageRange.unshift(pageRange[0]-1);
-        const trackList = this.$refs.trackList;
-        trackList.lastElementChild && trackList.removeChild(trackList.lastElementChild);
-        pageRange = pageRange.map(n => n-1);
+        this.firstPage = Math.max(0, this.firstPage-1);
+        this.pageRange.unshift(this.firstPage);
+        this.pageRange.pop();
         this.setDebounce();
       }
     },
@@ -35,10 +33,9 @@ export default {
       // Work out what pageRange index to stop at the end
       //
       if (target.scrollHeight - target.scrollTop < this.offset) {
-        this.pageRange.push(pageRange[pageRange.length-1]+1);
-        const trackList = this.$refs.trackList;
-        trackList.firstElementChild && trackList.removeChild(trackList.firstElementChild);
-        pageRange = pageRange.map(n => n+1);
+        this.firstPage = this.firstPage+1;
+        this.pageRange.push(this.firstPage+2);
+        this.pageRange.shift();
         this.setDebounce();
       }
     },
@@ -56,7 +53,7 @@ export default {
   template: `
     <link rel="stylesheet" href="./TrackList.css" />
     <div ref="trackList" id="track-list" @scroll="onScroll">
-      <page v-for="page of pageRange" :page-length="pageLength" :page="page" />
+      <page :key="page" :data-page="page" v-for="page of pageRange" :page-length="pageLength" :page="page" />
     </div>
   `,
 }
