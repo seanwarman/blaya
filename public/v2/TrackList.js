@@ -19,21 +19,8 @@ export default {
   },
   mounted() {
     usePlayStore().$subscribe(({ events }) => {
-      const searchingEvent = events.find(e => e.key === 'searching');
-      if (searchingEvent && searchingEvent.newValue === true) {
-        this.previousScrollTop = this.$refs.trackList.scrollTop;
-        this.previousPageRange = this.pageRange;
-      } else if (searchingEvent && searchingEvent.newValue === false) {
-        this.pageRange = this.previousPageRange;
-        this.$nextTick(() => {
-          this.$refs.trackList.scrollTo(0, this.previousScrollTop);
-        });
-      }
-      const searchEvent = events.find(e => e.key === 'search');
-      if (searchEvent && searchEvent.newValue?.length) {
-        this.pageRange = initPageRage;
-        this.$refs.trackList.scrollTo(0, 0);
-      }
+      this.searchingEvent(events);
+      this.searchEvent(events);
     });
   },
   computed: {
@@ -45,6 +32,25 @@ export default {
     },
   },
   methods: {
+    searchEvent(events) {
+      const event = events.length ? events.find(e => e.key === 'search') : events;
+      if (event.key === 'search' && event.newValue?.length) {
+        this.pageRange = initPageRage;
+        this.$refs.trackList.scrollTo(0, 0);
+      }
+    },
+    searchingEvent(events) {
+      const event = events.length ? events.find(e => e.key === 'searching') : events;
+      if (event.key === 'searching' && event.newValue === true) {
+        this.previousScrollTop = this.$refs.trackList.scrollTop;
+        this.previousPageRange = this.pageRange;
+      } else if (event.key === 'searching' && event.newValue === false) {
+        this.pageRange = this.previousPageRange;
+        this.$nextTick(() => {
+          this.$refs.trackList.scrollTo(0, this.previousScrollTop);
+        });
+      }
+    },
     start(page) {
       return this.pageLength * page;
     },

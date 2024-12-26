@@ -160,3 +160,7 @@ footer {
     grid-template-rows: unset;
   }
 }
+
+button.button-circle.button-active {
+  background-color: var(--brand-lighter);
+}

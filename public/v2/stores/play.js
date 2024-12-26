@@ -21,6 +21,7 @@ export const usePlayStore = defineStore('play', {
     trackListUnFiltered,
     search: '',
     searching: false,
+    playlistMode: false,
   }),
   getters: {
     trackList: state => fzfFilter(state.trackListUnFiltered)(state.search),
