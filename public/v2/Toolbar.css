@@ -1,0 +1,185 @@
+#toolbar {
+  position: fixed;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 25% 25% 25% 25%;
+  padding: 1rem 1rem;
+  /* margin-top: -6rem; */
+  grid-gap: 0;
+  align-items: center;
+  z-index: 1000;
+}
+
+.button-container-left {
+  display: flex;
+}
+
+button.button-circle {
+  box-shadow: 5px 5px 12px 0px #00000024;
+  border-radius: 50%;
+  border: none;
+  width: 60px;
+  height: 60px;
+  background: whitesmoke;
+}
+
+button.button-circle-transparent {
+  background-color: transparent;
+  box-shadow: none;
+}
+
+[data-show-sequencer="true"] .mode-button-playlist,
+[data-show-track-loader="true"] .mode-button-playlist {
+  display: none;
+}
+
+.mode-button-playlist {
+  font-size: 1.5rem;
+}
+
+.mode-button-playlist:hover {
+  background: #f0f0f0;
+}
+
+.mode-button-playlist:active {
+  background: #e3e2e2
+}
+
+.button-circle img,
+.button-circle svg {
+  width: 1rem;
+}
+
+@media (min-width: 768px) {
+  button.button-circle {
+    width: 50px;
+    height: 50px;
+  }
+
+}
+
+body[data-playlist-mode="true"] .mode-button-playlist {
+  background: var(--brand-lighter);
+}
+
+@media (min-width: 768px) {
+  .mode-button-playlist {
+    display: block;
+    width: 40px;
+    height: 40px;
+  }
+}
+
+.search-container {
+  grid-column: 2 / span 3;
+  height: 4rem;
+  position: relative;
+  width: 100%;
+  margin: 0.3rem 0;
+  padding: none;
+}
+
+@media (min-width: 768px) {
+  .search-container {
+    grid-column: 2 / span 2;
+    height: 2.5rem;
+    padding: 0 1rem;
+  }
+
+}
+
+input#search-input {
+  height: 100%;
+  width: 100%;
+  border: none;
+  box-shadow: 1px 7px 17px 0px #00000024;
+  border-radius: 2px;
+  padding-left: 1rem;
+  font-size: 1.2rem;
+  user-select: none;
+  -webkit-user-select: none;
+  /* Safari */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+}
+
+input#search-input:focus {
+  user-select: text;
+  -webkit-user-select: text;
+  /* Safari */
+  -moz-user-select: text;
+  /* Firefox */
+  -ms-user-select: text;
+}
+
+@media (min-width: 768px) {
+  input#search-input {
+    font-size: 1rem;
+  }
+
+}
+
+#clear-search-button {
+  position: absolute;
+  border: none;
+  background: white;
+  right: 1rem;
+  top: 1.2rem;
+}
+
+#clear-search-button svg {
+  width: 1.4rem;
+}
+
+@media (min-width: 768px) {
+
+  #clear-search-button {
+    right: 1.2rem;
+    top: 0.7rem;
+  }
+
+  #clear-search-button svg {
+    width: 1rem;
+  }
+}
+
+.open-upload-modal-button-container {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .open-upload-modal-button-container {
+    display: flex;
+    justify-content: end;
+  }
+
+}
+
+body[data-uploading="false"] .upload-progress,
+body[data-downloading="false"] .download-progress {
+  display: none;
+}
+
+.upload-progress img,
+.download-progress img {
+  height: 1rem;
+  animation-name: spin;
+  animation-duration: 1600ms;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-name: spin;
+  -webkit-animation-duration: 1600ms;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-timing-function: linear;
+  -moz-animation-name: spin;
+  -moz-animation-duration: 1600ms;
+  -moz-animation-iteration-count: infinite;
+  -moz-animation-timing-function: linear;
+  -ms-animation-name: spin;
+  -ms-animation-duration: 1600ms;
+  -ms-animation-iteration-count: infinite;
+  -ms-animation-timing-function: linear;
+  -o-transition: rotate(3600deg);
+  transition: rotate(3600deg);
+}
