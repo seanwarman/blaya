@@ -10,6 +10,8 @@
   --header-height-desktop: 82px;
   --header-height-mobile: 105.59px;
   --track-border: #ededed;
+  --tab-background: hsl(0 0% 98% / 1);
+  --tab-shadow: inset 0px -2.4px 5px 0px hsl(0deg 0% 0% / 6%);
 }
 
 :fullscreen,

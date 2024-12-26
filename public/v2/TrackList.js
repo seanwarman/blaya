@@ -12,7 +12,20 @@ export default {
       offset: 5000,
       pageLength: 100,
       lazyLoadDebounce: false,
+      previousScrollTop: 0,
     };
+  },
+  mounted() {
+    usePlayStore().$subscribe(({ events }) => {
+      const searchingEvent = events.find(e => e.key === 'searching');
+      if (searchingEvent && searchingEvent.newValue === true) {
+        this.previousScrollTop = this.$refs.trackList.scrollTop;
+      } else if (searchingEvent && searchingEvent.newValue === false) {
+        this.$nextTick(() => {
+          this.$refs.trackList.scrollTo(0, this.previousScrollTop);
+        });
+      }
+    });
   },
   computed: {
     isTheTop() {

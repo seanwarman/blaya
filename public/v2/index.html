@@ -3,12 +3,13 @@
   <script type="importmap">
     {
       "imports": {
-        "vue": "/node_modules/vue/dist/vue.esm-browser.prod.js",
+        "vue": "/node_modules/vue/dist/vue.esm-browser.js",
         "io": "/node_modules/socket.io/client-dist/socket.io.esm.min.js",
         "pinia": "/node_modules/pinia/dist/pinia.esm-browser.js",
         "vue-demi": "/node_modules/vue-demi/lib/index.mjs",
         "@vue/devtools-api": "/node_modules/@vue/devtools-api/lib/esm/index.js",
-        "@stores/play": "./stores/play.js"
+        "@stores/play": "./stores/play.js",
+        "fzf": "/node_modules/fzf/dist/fzf.es.js"
       }
     }
   </script>
@@ -19,7 +20,9 @@
     <link href="./index.css" rel="stylesheet" />
   </head>
   <body id="app" data-searching="false" data-uploading="false" data-downloading="false" data-playlist-minimised="true" data-show-track-loader="false" data-show-sequencer="false" data-slice-mode="off" data-selector-active="true" data-playlist-mode="false">
-    <header></header>
+    <header>
+      <toolbar></toolbar>
+    </header>
     <main>
       <track-list></track-list>
     </main>
@@ -32,10 +35,12 @@
     import { createPinia } from 'pinia';
     import io from 'io';
 
+    import Toolbar from './Toolbar.js';
     import TrackList from './TrackList.js';
     import AudioControls from './AudioControls.js';
 
     const app = createApp({ components: {
+      Toolbar,
       TrackList,
       AudioControls 
     }});

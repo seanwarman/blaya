@@ -1,4 +1,6 @@
 #track-list {
+  background-color: var(--tab-background);
+  padding-top: 7rem;
   height: 100vh;
   overflow: auto;
 }
@@ -14,11 +16,11 @@
 
 .track-artist-tab.track,
 .track-album-tab.track {
-  background: hsl(0 0% 98% / 1);
+  background: var(--tab-background);
   border: none;
   height: 3rem;
   padding-top: 1rem;
-  box-shadow: inset 0px 0.6px 5px 0px hsl(0deg 0% 0% / 6%);
+  box-shadow: var(--tab-shadow);
 }
 
 div[role="link"] {
