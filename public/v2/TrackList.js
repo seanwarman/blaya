@@ -3,16 +3,18 @@ import { usePlayStore } from '@stores/play';
 import Page from './TrackList/Page.js';
 
 let lastScrollTop = 0;
+const initPageRage = [0,1,2];
 
 export default {
   components: { Page },
   data() {
     return {
-      pageRange: [0,1,2],
+      pageRange: initPageRage,
       offset: 5000,
       pageLength: 100,
       lazyLoadDebounce: false,
       previousScrollTop: 0,
+      previousPageRange: initPageRage,
     };
   },
   mounted() {
@@ -20,10 +22,17 @@ export default {
       const searchingEvent = events.find(e => e.key === 'searching');
       if (searchingEvent && searchingEvent.newValue === true) {
         this.previousScrollTop = this.$refs.trackList.scrollTop;
+        this.previousPageRange = this.pageRange;
       } else if (searchingEvent && searchingEvent.newValue === false) {
+        this.pageRange = this.previousPageRange;
         this.$nextTick(() => {
           this.$refs.trackList.scrollTo(0, this.previousScrollTop);
         });
+      }
+      const searchEvent = events.find(e => e.key === 'search');
+      if (searchEvent && searchEvent.newValue?.length) {
+        this.pageRange = initPageRage;
+        this.$refs.trackList.scrollTo(0, 0);
       }
     });
   },
