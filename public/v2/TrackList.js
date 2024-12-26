@@ -1,3 +1,5 @@
+import { usePlayStore } from '@stores/play';
+
 import Page from './TrackList/Page.js';
 
 let lastScrollTop = 0;
@@ -12,7 +14,24 @@ export default {
       lazyLoadDebounce: false,
     };
   },
+  computed: {
+    isTheTop() {
+      return this.pageRange[0] === 0;
+    },
+    isTheBottom() {
+      return !this.paginatedTrackList(this.pageRange[2] + 1)?.length;
+    },
+  },
   methods: {
+    start(page) {
+      return this.pageLength * page;
+    },
+    end(page) {
+      return this.pageLength * (page + 1);
+    },
+    paginatedTrackList(page) {
+      return usePlayStore().trackList.slice(this.start(page),this.end(page));
+    },
     setDebounce() {
       this.lazyLoadDebounce = true;
       setTimeout(() => {
@@ -20,19 +39,14 @@ export default {
       }, 500);
     },
     onScrollUp({ target }) {
+      if (this.isTheTop) return;
       if (target.scrollTop < this.offset) {
-        if (this.pageRange[0] === 0) {
-          this.pageRange = [0,1,2];
-        } else {
-          this.pageRange = this.pageRange.map(n => n-1);
-        }
+        this.pageRange = this.pageRange.map(n => n-1);
         this.setDebounce();
       }
     },
     onScrollDown({ target }) {
-      //
-      // Work out what pageRange index to stop at the end
-      //
+      if (this.isTheBottom) return;
       if (target.scrollHeight - target.scrollTop < this.offset) {
         this.pageRange = this.pageRange.map(n => n+1);
         this.setDebounce();
@@ -40,7 +54,8 @@ export default {
     },
     onScroll(event) {
       if (this.lazyLoadDebounce) return;
-      const st = window.pageYOffset || this.$refs.trackList.scrollTop
+
+      const st = window.scrollY || this.$refs.trackList.scrollTop
       if (st > lastScrollTop) {
         this.onScrollDown(event);
       } else if (st < lastScrollTop) {
@@ -52,7 +67,7 @@ export default {
   template: `
     <link rel="stylesheet" href="./TrackList.css" />
     <div ref="trackList" id="track-list" @scroll="onScroll">
-      <page :key="page" :data-page="page" v-for="page of pageRange" :page-length="pageLength" :page="page" />
+      <page :key="page" :data-page="page" v-for="page of pageRange" :page-length="pageLength" :paginated-track-list="paginatedTrackList(page)" />
     </div>
   `,
 }

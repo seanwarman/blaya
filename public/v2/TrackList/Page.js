@@ -2,19 +2,14 @@ import { usePlayStore } from '@stores/play';
 
 import TrackDetails from './TrackDetails.js';
 
-import { trackList as RAW_TRACKLIST } from '../../track-list.js'
-
-import { getTrackAndAlbumFromTrackString, parseTrackList } from '../../helpers/index.js'
+import { getTrackAndAlbumFromTrackString } from '../../helpers/index.js'
 import { getSelectedElements } from '../../helpers/events.js'
 
-const trackList = parseTrackList(RAW_TRACKLIST);
-
 export default {
-  props: ['page', 'pageLength'],
+  props: ['paginatedTrackList'],
   components: { TrackDetails },
   data() {
     return {
-      trackList,
       albumList: [],
       selectedTrack: null,
       selectedTracks: [],
@@ -46,17 +41,6 @@ export default {
             tracks.includes(track) ? tracks : tracks.concat([track]),
           []
         );
-    },
-  },
-  computed: {
-    start() {
-      return this.pageLength * this.page;
-    },
-    end() {
-      return this.pageLength * (this.page + 1);
-    },
-    paginatedTrackList() {
-      return this.trackList.slice(this.start,this.end);
     },
   },
   template: `
