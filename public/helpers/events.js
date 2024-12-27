@@ -153,17 +153,26 @@ export const getSelectedElements = (parentClassName, scopeElement) => {
   const start = findParentByClassName(parentClassName, anchorNode)
   const end = findParentByClassName(parentClassName, focusNode)
   let elements = []
-  if (start) elements.push(start)
+  let index = 0;
+  let indexes = [];
   for (const node of scopeElement.getElementsByClassName(parentClassName)) {
-    if (selection.containsNode(node)) elements.push(node)
+    if (
+      node.isSameNode(start)
+      || selection.containsNode(node)
+      || node.isSameNode(end)
+    ) {
+      elements.push(node);
+      indexes.push(index);
+    }
+    index++;
   }
-  if (end) elements.push(end)
   return {
     start,
     end,
     elements,
+    indexes,
   }
-}
+};
 
 export const getSelectedTracksFromElements = ({ start, end, elements }) => {
   return Array.from(elements)
@@ -174,6 +183,14 @@ export const getSelectedTracksFromElements = ({ start, end, elements }) => {
       []
     );
 };
+
+export const getSelectedTrackIndexes = (parentElement) => pipe(
+  getSelectedElements,
+  ({ indexes }) => indexes,
+)(
+  'track-non-tab',
+  parentElement,
+);
 
 export const getSelectedTracks = (parentElement) => pipe(
   getSelectedElements,

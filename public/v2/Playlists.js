@@ -1,7 +1,7 @@
 import { usePlaylistStore } from '@stores/playlist';
 import { usePlayStore } from '@stores/play';
 
-import { getSelectedTracks } from '../helpers/events';
+import { getSelectedTrackIndexes } from '../helpers/events';
 
 import Tracks from './TrackList/Tracks.js';
 
@@ -12,22 +12,21 @@ export default {
       pageRange: [0,1,2],
       pageLength: 10,
       selectedTrackIndex: null,
-      selectedTrack: null,
-      selectedTracks: [],
+      selectedTrackIndexes: [],
     };
   },
   methods: {
     onClickTogglePlaylistsVisible() {
       usePlaylistStore().togglePlaylistsVisible();
     },
-    onSelectTrack(i) {
-      this.selectedTrackIndex = i;
+    onSelectTrack() {
+      this.selectedTrackIndexes = getSelectedTrackIndexes(this.$refs.playlist);
     },
-    onClickTrack(track) {
-      if (this.selectedTrack === track && this.selectedTracks.length === 1) {
-        usePlayStore().setCurrentTrack(track);
+    onClickTrack(event) {
+      if (this.selectedTrackIndexes.length === 1 && this.selectedTrackIndex === event.index) {
+        usePlayStore().setCurrentTrack(event.track);
       } else {
-        this.selectedTrack = track;
+        this.selectedTrackIndex = event.index;
       }
     },
   },
@@ -54,9 +53,9 @@ export default {
           :page-length="pageLength"
           :hide-tabs="true"
           :tracks="tracks"
+          :track-selected="i => selectedTrackIndexes.includes(i)"
           @click-track="onClickTrack"
           @select-track="onSelectTrack"
-          :track-selected="i => i === selectedTrackIndex"
         />
       </ul>
     </div>

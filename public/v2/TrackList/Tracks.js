@@ -28,8 +28,8 @@ export default {
           :show-add-to-playlist="showAddToPlaylist"
           :data-track="tracks[i]"
           :class="trackSelected(i) && 'track-selected'"
-          @click="$emit('clickTrack', tracks[i])"
-          @mouseup="$emit('selectTrack', i)"
+          @click="$emit('clickTrack', { ...$event, track: tracks[i], index: i })"
+          @mouseup="$emit('selectTrack', { ...$event, track: tracks[i], index: i })"
           @add-to-playlist="$emit('addToPlaylist', $event)"
         />
       </template>

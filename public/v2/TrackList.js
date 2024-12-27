@@ -40,7 +40,8 @@ export default {
     },
   },
   methods: {
-    onClickTrack(track) {
+    onClickTrack(event) {
+      const track = event.track;
       if (this.selectedTrack === track && this.selectedTracks.length === 1) {
         usePlayStore().setCurrentTrack(track);
       } else {
