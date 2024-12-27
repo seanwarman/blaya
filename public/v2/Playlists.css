@@ -1,4 +1,5 @@
 #playlists {
+  overflow: auto;
   position: fixed;
   z-index: var(--playlists-index);
   left: 0;
@@ -6,6 +7,7 @@
   bottom: var(--footer-height);
   transition: top .6s, background-color .6s;
   top: calc(calc(100% - var(--footer-height)) - var(--playlists-menu-height));
+  padding-bottom: var(--footer-height);
 }
 
 #playlists.playlists-visible {
@@ -14,6 +16,7 @@
 }
 
 menu {
+  position: fixed;
   border-bottom: 3px solid #6f73ff;
   z-index: 1;
   transition: bottom .6s, top .6s;
@@ -25,6 +28,10 @@ menu {
   width: 100%;
   margin: 0;
   height: var(--playlists-menu-height);
+}
+
+.playlists-visible menu {
+  background-color: white;
 }
 
 @media (min-width: 768px) {
@@ -40,6 +47,10 @@ menu {
     min-width: 368px;
     translate: 0 -3rem;
   }
+}
+
+#playlists > ul {
+  margin-top: var(--playlists-menu-height);
 }
 
 #download-button-playlist,
