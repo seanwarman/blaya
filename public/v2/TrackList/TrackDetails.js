@@ -1,10 +1,10 @@
+import { getTrackAndAlbumFromTrackString } from '../../helpers/index.js';
+
 export default {
   props: {
-    trackName: null,
-    album: null,
+    track: null,
     tab: false,
     showAddToPlaylist: false,
-    onAddToPlaylist: null,
   },
   computed: {
     containerStyles() {
@@ -14,17 +14,17 @@ export default {
           : 'auto 50%',
       };
     },
-  },
-  methods: {
-    onAddToPlaylistInternal(event) {
-      event.stopPropagation();
-      this.onAddToPlaylist && this.onAddToPlaylist(event);
+    trackName() {
+      return getTrackAndAlbumFromTrackString(this.track)[0];
+    },
+    album() {
+      return getTrackAndAlbumFromTrackString(this.track)[1];
     },
   },
   template: `
     <div role="link" class="track" :class="tab ? 'track-artist-tab track-tab' : 'track-non-tab'">
       <div :style="containerStyles" class="track-name-album-container">
-        <div rol="link" @click="$event.stopPropagation()" @mouseup="onAddToPlaylistInternal" v-if="showAddToPlaylist" class="add-to-playlist" role="link">
+        <div rol="link" @click.stop @mouseup.stop="$emit('addToPlaylist', { ...$event, track })" v-if="showAddToPlaylist" class="add-to-playlist">
           <img class="add-to-playlist-icon">
         </div>
         <div class="track-name">

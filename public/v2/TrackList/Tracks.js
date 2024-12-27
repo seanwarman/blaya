@@ -1,72 +1,38 @@
-import { usePlayStore } from '@stores/play';
-import { usePlaylistStore } from '@stores/playlist';
-
 import TrackDetails from './TrackDetails.js';
 
 import { getTrackAndAlbumFromTrackString } from '../../helpers/index.js'
-import { getSelectedElements } from '../../helpers/events.js'
 
 export default {
-  props: ['paginatedTrackList'],
+  props: ['tracks', 'hideTabs', 'trackSelected', 'showAddToPlaylist'],
   components: { TrackDetails },
   data() {
     return {
       albumList: [],
-      selectedTrack: null,
-      selectedTracks: [],
     };
-  },
-  computed: {
-    showAddToPlaylist() {
-      return usePlaylistStore().playlistMode;
-    },
   },
   methods: {
     getTrackAndAlbumFromTrackString,
     showTab(album, i) {
-      const track = this.paginatedTrackList[i-1] || '';
+      if (this.hideTabs) return false;
+      const track = this.tracks[i-1] || '';
       const [,lastAlbum] = getTrackAndAlbumFromTrackString(track);
       return lastAlbum !== album;
     },
-    onClick(track) {
-      if (this.selectedTrack === track && this.selectedTracks.length === 1) {
-        usePlayStore().setCurrentTrack(track);
-      } else {
-        this.selectedTrack = track;
-      }
-    },
-    onSelect() {
-      const { elements } = getSelectedElements(
-        'track-non-tab',
-        document.getElementById('track-list'),
-      );
-      this.selectedTracks = Array.from(elements)
-        .map((el) => el.dataset.track)
-        .reduce(
-          (tracks, track) =>
-            tracks.includes(track) ? tracks : tracks.concat([track]),
-          []
-        );
-    },
-    onAddToPlaylist(track) {
-      usePlaylistStore().pushToCurrentPlaylist(track);
-    },
   },
   template: `
-    <div class="page">
-      <template v-for="([trackName, album], i) in paginatedTrackList.map(getTrackAndAlbumFromTrackString)">
-        <track-details :tab="true" :track-name="trackName" :album="album" v-if="showTab(album, i)" />
+    <li class="page">
+      <template v-for="([trackName, album], i) in tracks.map(getTrackAndAlbumFromTrackString)">
+        <track-details :tab="true" :track="tracks[i]" v-if="showTab(album, i)" />
         <track-details
-          :on-add-to-playlist="() => onAddToPlaylist(paginatedTrackList[i])"
+          :track="tracks[i]"
           :show-add-to-playlist="showAddToPlaylist"
-          :data-track="paginatedTrackList[i]"
-          :class="selectedTracks.includes(paginatedTrackList[i]) && 'track-selected'"
-          @mouseup="onSelect"
-          @click="onClick(paginatedTrackList[i])"
-          :track-name="trackName"
-          :album="album"
+          :data-track="tracks[i]"
+          :class="trackSelected(i) && 'track-selected'"
+          @click="$emit('clickTrack', tracks[i])"
+          @mouseup="$emit('selectTrack', i)"
+          @add-to-playlist="$emit('addToPlaylist', $event)"
         />
       </template>
-    </div>
+    </li>
   `,
 };

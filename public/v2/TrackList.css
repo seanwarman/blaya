@@ -29,6 +29,7 @@ div[role="link"] {
 }
 
 .track {
+  background-color: white;
   display: grid;
   overflow: hidden;
 }

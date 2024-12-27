@@ -13,6 +13,11 @@
   --track-border: #ededed;
   --tab-background: hsl(0 0% 98% / 1);
   --tab-shadow: inset 0px -2.4px 5px 0px hsl(0deg 0% 0% / 6%);
+  --footer-height: 104px;
+  --footer-index: 7;
+  --playlists-index: 6;
+  --toolbar-index: 5;
+  --playlists-menu-height: 60px;
 }
 
 :fullscreen,
@@ -140,10 +145,10 @@ ul {
 }
 
 footer {
+  height: var(--footer-height);
   position: fixed;
   bottom: 0;
   width: 100vw;
-  box-shadow: 0px -5px 12px 0px #00000024;
   display: grid;
   background: var(--green-to-white);
   grid-template-columns: 30% auto 80px 80px;
@@ -152,7 +157,7 @@ footer {
   -webkit-user-select: none; /* Safari */        
   -moz-user-select: none; /* Firefox */
   -ms-user-select: none;
-  z-index: 5;
+  z-index: var(--footer-index);
 }
 
 @media (min-width: 768px) {

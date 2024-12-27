@@ -1,6 +1,9 @@
 import { usePlayStore } from '@stores/play';
+import { usePlaylistStore } from '@stores/playlist';
 
 import Tracks from './TrackList/Tracks.js';
+
+import { getSelectedTracks } from '../helpers/events.js'
 
 let lastScrollTop = 0;
 const initPageRage = [0,1,2];
@@ -15,6 +18,8 @@ export default {
       lazyLoadDebounce: false,
       previousScrollTop: 0,
       previousPageRange: initPageRage,
+      selectedTrack: null,
+      selectedTracks: [],
     };
   },
   mounted() {
@@ -24,6 +29,9 @@ export default {
     });
   },
   computed: {
+    showAddToPlaylist() {
+      return usePlaylistStore().playlistMode;
+    },
     isTheTop() {
       return this.pageRange[0] === 0;
     },
@@ -32,6 +40,13 @@ export default {
     },
   },
   methods: {
+    onClickTrack(track) {
+      if (this.selectedTrack === track && this.selectedTracks.length === 1) {
+        usePlayStore().setCurrentTrack(track);
+      } else {
+        this.selectedTrack = track;
+      }
+    },
     searchEvent(events) {
       const event = events.length ? events.find(e => e.key === 'search') : events;
       if (event.key === 'search' && event.newValue?.length) {
@@ -91,11 +106,30 @@ export default {
       }
       lastScrollTop = st <= 0 ? 0 : st;
     },
+    onSelectTrack() {
+      this.selectedTracks = getSelectedTracks(this.$refs.trackList);
+    },
+    onAddToPlaylist(event) {
+      this.$nextTick(() => {
+        usePlaylistStore().pushToCurrentPlaylist(event.track);
+      });
+    },
   },
   template: `
     <link rel="stylesheet" href="./TrackList.css" />
-    <div ref="trackList" id="track-list" @scroll="onScroll">
-      <tracks :key="page" :data-page="page" v-for="page of pageRange" :page-length="pageLength" :paginated-track-list="paginatedTrackList(page)" />
-    </div>
+    <ul ref="trackList" id="track-list" @scroll="onScroll">
+      <tracks
+        v-for="page of pageRange"
+        @click-track="onClickTrack"
+        @select-track="onSelectTrack"
+        @add-to-playlist="onAddToPlaylist"
+        :show-add-to-playlist="showAddToPlaylist"
+        :key="page"
+        :data-page="page"
+        :page-length="pageLength"
+        :tracks="paginatedTrackList(page)"
+        :track-selected="i => selectedTracks.includes(paginatedTrackList(page)[i])"
+      />
+    </ul>
   `,
 }

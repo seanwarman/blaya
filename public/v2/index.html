@@ -27,6 +27,9 @@
     <main>
       <track-list></track-list>
     </main>
+    <aside>
+      <playlists></playlists>
+    </aside>
     <footer>
       <audio-controls></audio-controls>
     </footer>
@@ -39,11 +42,13 @@
     import Toolbar from './Toolbar.js';
     import TrackList from './TrackList.js';
     import AudioControls from './AudioControls.js';
+    import Playlists from './Playlists.js';
 
     const app = createApp({ components: {
       Toolbar,
       TrackList,
-      AudioControls 
+      AudioControls,
+      Playlists,
     }});
 
     app.use(createPinia());

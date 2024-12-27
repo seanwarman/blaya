@@ -1,5 +1,6 @@
 import { setDebounce, fzfFilter } from './utils.js'
 import * as dom from './dom.js'
+import { pipe } from './functional-utils.js'
 import {
   removeTrackEls,
   afterSearchReset,
@@ -163,6 +164,24 @@ export const getSelectedElements = (parentClassName, scopeElement) => {
     elements,
   }
 }
+
+export const getSelectedTracksFromElements = ({ start, end, elements }) => {
+  return Array.from(elements)
+    .map((el) => el.dataset.track)
+    .reduce(
+      (tracks, track) =>
+      tracks.includes(track) ? tracks : tracks.concat([track]),
+      []
+    );
+};
+
+export const getSelectedTracks = (parentElement) => pipe(
+  getSelectedElements,
+  getSelectedTracksFromElements,
+)(
+  'track-non-tab',
+  parentElement,
+);
 
 export const onSelectHandler = ({ target, reverseTracks, trackContainerClass, event }, playEventHandler) => {
   if (event.currentTarget.getElementsByClassName('track-selected')?.length > 1) {
