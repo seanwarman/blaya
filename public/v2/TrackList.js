@@ -1,12 +1,12 @@
 import { usePlayStore } from '@stores/play';
 
-import Page from './TrackList/Page.js';
+import Tracks from './TrackList/Tracks.js';
 
 let lastScrollTop = 0;
 const initPageRage = [0,1,2];
 
 export default {
-  components: { Page },
+  components: { Tracks },
   data() {
     return {
       pageRange: initPageRage,
@@ -95,7 +95,7 @@ export default {
   template: `
     <link rel="stylesheet" href="./TrackList.css" />
     <div ref="trackList" id="track-list" @scroll="onScroll">
-      <page :key="page" :data-page="page" v-for="page of pageRange" :page-length="pageLength" :paginated-track-list="paginatedTrackList(page)" />
+      <tracks :key="page" :data-page="page" v-for="page of pageRange" :page-length="pageLength" :paginated-track-list="paginatedTrackList(page)" />
     </div>
   `,
 }

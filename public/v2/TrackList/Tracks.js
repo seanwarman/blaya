@@ -1,4 +1,5 @@
 import { usePlayStore } from '@stores/play';
+import { usePlaylistStore } from '@stores/playlist';
 
 import TrackDetails from './TrackDetails.js';
 
@@ -14,6 +15,11 @@ export default {
       selectedTrack: null,
       selectedTracks: [],
     };
+  },
+  computed: {
+    showAddToPlaylist() {
+      return usePlaylistStore().playlistMode;
+    },
   },
   methods: {
     getTrackAndAlbumFromTrackString,
@@ -42,12 +48,17 @@ export default {
           []
         );
     },
+    onAddToPlaylist(track) {
+      usePlaylistStore().pushToCurrentPlaylist(track);
+    },
   },
   template: `
     <div class="page">
       <template v-for="([trackName, album], i) in paginatedTrackList.map(getTrackAndAlbumFromTrackString)">
         <track-details :tab="true" :track-name="trackName" :album="album" v-if="showTab(album, i)" />
         <track-details
+          :on-add-to-playlist="() => onAddToPlaylist(paginatedTrackList[i])"
+          :show-add-to-playlist="showAddToPlaylist"
           :data-track="paginatedTrackList[i]"
           :class="selectedTracks.includes(paginatedTrackList[i]) && 'track-selected'"
           @mouseup="onSelect"
@@ -59,5 +70,3 @@ export default {
     </div>
   `,
 };
-
-

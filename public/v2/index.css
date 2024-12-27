@@ -1,6 +1,7 @@
 :root {
   --top-split-height: 306px;
   --brand: #6f73ff;
+  --brand-transparent: #6f73ff00;
   --brand-lighter: #9497ff;
   --button-neutral-colour: #f0f0f0;
   --green-gradient: linear-gradient(to right, #6dffb2, #d5ffe9);

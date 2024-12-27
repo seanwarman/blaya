@@ -47,11 +47,37 @@ div[role="link"] {
 .track-tab .add-to-playlist,
 .track-tab+.track-non-tab .add-to-playlist,
 .track-tab+.track-non-tab .track-name-album-container,
-#selection-container .track-tab .track-name-album-container+.add-to-playlist,
-#selection-container .track-tab .track-name-album-container:focus+.add-to-playlist {
+.track-selected  .track-tab .track-name-album-container+.add-to-playlist,
+.track-selected .track-tab .track-name-album-container:focus+.add-to-playlist {
   border-top: none;
   border-top: 1px solid transparent;
   padding-top: 1px;
+}
+
+.add-to-playlist {
+  border-radius: 5px;
+  height: 55px;
+  transform: translate(2px, 5px);
+  width: 70px;
+  margin-left: 2px;
+  transition: outline-color 0.1s;
+  outline-color: var(--brand-transparent);
+}
+
+.track-selected {
+  outline-color: #ffffff00;
+}
+
+.add-to-playlist:active {
+  outline: 2px solid var(--brand);
+}
+
+.track-selected .add-to-playlist:active {
+  outline-color: white;
+}
+
+.track-selected .add-to-playlist {
+  height: 55px;
 }
 
 .track-name-album-container {
@@ -60,7 +86,7 @@ div[role="link"] {
 
 .track-name-album-container {
   display: grid;
-  grid-template-columns: auto 50%;
+  /* grid-template-columns: auto auto; */
   border-top: 1px solid var(--track-border);
 }
 
@@ -128,6 +154,10 @@ body[data-playlist-mode="false"] .track-name {
   justify-content: end;
 }
 
+.album {
+  width: 230px;
+}
+
 div[role="link"] {
   cursor: pointer;
   padding: 1px;
@@ -137,6 +167,33 @@ div[role="link"] {
   display: grid;
   overflow: hidden;
 }
+
+.add-to-playlist-icon {
+  height:1rem;
+  content: url(/icons/plus-solid.svg);
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  margin: 1.2rem 1.8rem 1.2rem 1.8rem;
+}
+
+.track-selected .track-name-album-container + .add-to-playlist .add-to-playlist-icon,
+.track-selected .track-name-album-container:focus + .add-to-playlist .add-to-playlist-icon {
+  content: url(/icons/plus-solid-white.svg);
+  margin-left: -4px;
+}
+
+.track-selected .track-name-album-container:focus + .add-to-playlist .add-to-playlist-icon,
+.track-name-album-container:focus + .add-to-playlist .add-to-playlist-icon {
+  margin-left: -12px;
+}
+
+.track-selected .add-to-playlist-icon,
+.downloaded .add-to-playlist-icon {
+  height: 1rem;
+  content: url(/icons/plus-solid-white.svg);
+}
+
 
 .track-album-tab.track .add-to-playlist-icon,
 .track-artist-tab.track .add-to-playlist-icon,

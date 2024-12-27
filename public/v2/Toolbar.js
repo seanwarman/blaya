@@ -1,9 +1,10 @@
 import { usePlayStore } from '@stores/play';
+import { usePlaylistStore } from '@stores/playlist';
 
 export default {
   methods: {
     onClickPlaylistMode() {
-      usePlayStore().playlistMode = !usePlayStore().playlistMode;
+      usePlaylistStore().togglePlaylistMode();
     },
     onSearch({ target }) {
       usePlayStore().onSearch(target.value);
@@ -11,7 +12,7 @@ export default {
   },
   computed: {
     playlistMode() {
-      return usePlayStore().playlistMode;
+      return usePlaylistStore().playlistMode;
     },
   },
   template: `
