@@ -63,7 +63,7 @@ export default {
           <img class="add-to-playlist-icon">
         </div>
         <div class="track-name">
-          <span class="track-playing-icon" v-if="trackPlaying">
+          <span class="track-playing-icon" v-if="!tab && trackPlaying">
             <img alt="Playing icon">
           </span>
           <div class="name">{{ trackName }}</div>
