@@ -170,3 +170,17 @@ footer {
 button.button-circle.button-active {
   background-color: var(--brand-lighter);
 }
+
+.track-playing-icon {
+  width: 0.7rem;
+  line-height: 0;
+  margin: 0 0.9rem 0 0;
+}
+
+.track-playing-icon img {
+  content: url(../icons/play-solid.svg);
+}
+
+.track-selected .track-playing-icon img {
+  content: url(../icons/play-solid-white.svg);
+}

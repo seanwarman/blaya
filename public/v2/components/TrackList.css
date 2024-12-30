@@ -1,6 +1,7 @@
 #track-list {
   background-color: var(--tab-background);
   padding-top: 7rem;
+  padding-bottom: 12rem;
   height: 100vh;
   overflow: auto;
 }

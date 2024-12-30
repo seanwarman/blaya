@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia';
 
+import { usePlayStore } from '@stores/play';
+
 const INITIAL_PLAYLISTS_STATE = [
   {
     name: '',

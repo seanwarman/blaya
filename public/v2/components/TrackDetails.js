@@ -1,4 +1,5 @@
 import { usePlaylistStore } from '@stores/playlist';
+import { usePlayStore } from '@stores/play';
 import { getTrackAndAlbumFromTrackString } from '@helpers';
 
 export default {
@@ -18,6 +19,11 @@ export default {
     },
   },
   computed: {
+    trackPlaying() {
+      return usePlayStore().playingFromPlaylist
+        ? this.index === usePlayStore().playlistTrackIndex
+        : this.track === usePlayStore().currentTrack;
+    },
     containerStyles() {
       return {
         'grid-template-columns': this.playlistMode && !this.tab
@@ -57,6 +63,9 @@ export default {
           <img class="add-to-playlist-icon">
         </div>
         <div class="track-name">
+          <span class="track-playing-icon" v-if="trackPlaying">
+            <img alt="Playing icon">
+          </span>
           <div class="name">{{ trackName }}</div>
         </div>
         <div class="track-album">
