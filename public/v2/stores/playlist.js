@@ -1,7 +1,5 @@
 import { defineStore } from 'pinia';
 
-import { usePlayStore } from '@stores/play';
-
 const INITIAL_PLAYLISTS_STATE = [
   {
     name: '',
@@ -14,8 +12,8 @@ export const PLAYLISTS_STATE_KEY = 'blaya__PLAYLISTS_STATE_KEY_V2';
 
 export const usePlaylistStore = defineStore('playlist', {
   state: () => ({
-    playlistsVisible: true,
-    playlistMode: true,
+    playlistsVisible: false,
+    playlistMode: false,
     currentPlaylist: 0,
     playlists: initStateItem(PLAYLISTS_STATE_KEY, INITIAL_PLAYLISTS_STATE),
   }),

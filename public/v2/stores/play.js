@@ -22,12 +22,12 @@ export const usePlayStore = defineStore('play', {
     currentTrack: '',
     trackListUnFiltered,
     search: '',
-    searching: false,
     playingFromPlaylist: false,
     playlistTrackIndex: 0,
   }),
   getters: {
     trackList: state => fzfFilter(state.trackListUnFiltered)(state.search),
+    searching: state => state.search?.length > 0,
   },
   actions: {
     nextTrack() {
@@ -47,8 +47,8 @@ export const usePlayStore = defineStore('play', {
     },
     onSearch(value) {
       this.$patch({
-        searching: value.length > 0,
-        search: value,
+        searching: value?.length > 0,
+        search: value || '',
       });
     },
   },
