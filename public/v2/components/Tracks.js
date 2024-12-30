@@ -25,6 +25,7 @@ export default {
           :class="trackSelected(i) && 'track-selected'"
           @click="$emit('clickTrack', { ...$event, track: tracks[i], index: i })"
           @mouseup="$emit('selectTrack', { ...$event, track: tracks[i], index: i })"
+          @contextmenu="$emit('selectTrack', { ...$event, track: tracks[i], index: i })"
           @add-to-playlist="$emit('addToPlaylist', $event)"
           :show-add-to-playlist="showAddToPlaylist"
           :show-remove-from-playlist="showRemoveFromPlaylist"
