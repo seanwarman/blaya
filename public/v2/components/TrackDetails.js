@@ -20,6 +20,7 @@ export default {
   },
   computed: {
     trackPlaying() {
+      if (this.tab) return false;
       return usePlayStore().playingFromPlaylist
         ? this.index === usePlayStore().playlistTrackIndex
         : this.track === usePlayStore().currentTrack;
@@ -39,6 +40,13 @@ export default {
     },
     playlistMode() {
       return usePlaylistStore().playlistMode;
+    },
+    iconMakupStyles() {
+      if (this.trackPlaying) {
+        return {
+          marginRight: '-2rem',
+        };
+      }
     },
   },
   template: `
@@ -62,8 +70,8 @@ export default {
         >
           <img class="add-to-playlist-icon">
         </div>
-        <div class="track-name">
-          <span class="track-playing-icon" v-if="!tab && trackPlaying">
+        <div class="track-name" :style="iconMakupStyles">
+          <span class="track-playing-icon" v-if="trackPlaying">
             <img alt="Playing icon">
           </span>
           <div class="name">{{ trackName }}</div>
