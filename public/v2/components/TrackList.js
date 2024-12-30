@@ -30,9 +30,6 @@ export default {
     });
   },
   computed: {
-    showAddToPlaylist() {
-      return usePlaylistStore().playlistMode;
-    },
     isTheTop() {
       return this.pageRange[0] === 0;
     },
@@ -111,11 +108,6 @@ export default {
     onSelectTrack() {
       this.selectedTracks = getSelectedTracks(this.$refs.trackList);
     },
-    onAddToPlaylist(event) {
-      this.$nextTick(() => {
-        usePlaylistStore().pushToCurrentPlaylist(event.track);
-      });
-    },
   },
   template: `
     <link v-if="stylesheet" rel="stylesheet" :href="stylesheet" />
@@ -124,8 +116,7 @@ export default {
         v-for="page of pageRange"
         @click-track="onClickTrack"
         @select-track="onSelectTrack"
-        @add-to-playlist="onAddToPlaylist"
-        :show-add-to-playlist="showAddToPlaylist"
+        :show-add-to-playlist="true"
         :key="page"
         :data-page="page"
         :page-length="pageLength"

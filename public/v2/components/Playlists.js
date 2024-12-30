@@ -50,13 +50,13 @@ export default {
       </menu>
       <ul ref="playlist">
         <tracks
-          v-if="playlistsVisible"
           :page-length="pageLength"
           :hide-tabs="true"
           :tracks="tracks"
           :track-selected="i => selectedTrackIndexes.includes(i)"
           @click-track="onClickTrack"
           @select-track="onSelectTrack"
+          :show-remove-from-playlist="true"
         />
       </ul>
     </div>

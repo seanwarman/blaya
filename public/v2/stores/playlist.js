@@ -13,7 +13,7 @@ export const PLAYLISTS_STATE_KEY = 'blaya__PLAYLISTS_STATE_KEY_V2';
 export const usePlaylistStore = defineStore('playlist', {
   state: () => ({
     playlistsVisible: true,
-    playlistMode: false,
+    playlistMode: true,
     currentPlaylist: 0,
     playlists: initStateItem(PLAYLISTS_STATE_KEY, INITIAL_PLAYLISTS_STATE),
   }),
@@ -23,6 +23,21 @@ export const usePlaylistStore = defineStore('playlist', {
     },
     togglePlaylistMode() {
       this.playlistMode = !this.playlistMode;
+    },
+    removeFromCurrentPlaylist(index) {
+      if (!this.playlists[this.currentPlaylist]) {
+        this.currentPlaylist = this.playlists.length-1;
+      }
+      this.playlists = this.playlists.reduce((playlists, playlist, i) => {
+        if (i !== this.currentPlaylist) return [...playlists, playlist];
+        return [
+          ...playlists,
+          {
+            ...playlist,
+            tracks: playlist.tracks.filter((_,tIndx) => index !== tIndx),
+          },
+        ];
+      }, []);
     },
     pushToCurrentPlaylist(track) {
       if (!this.playlists[this.currentPlaylist]) {
