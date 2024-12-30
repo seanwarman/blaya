@@ -2,6 +2,7 @@ import { usePlayStore } from '@stores/play';
 import { usePlaylistStore } from '@stores/playlist';
 
 export default {
+  props: ['stylesheet'],
   methods: {
     onClickPlaylistMode() {
       usePlaylistStore().togglePlaylistMode();
@@ -16,7 +17,7 @@ export default {
     },
   },
   template: `
-    <link rel="stylesheet" href="./Toolbar.css" />
+    <link v-if="stylesheet" rel="stylesheet" :href="stylesheet" />
     <div id="toolbar">
       <div class="button-container-left">
         <button @click="onClickPlaylistMode" :class="playlistMode && 'button-active'" class="mode-button-playlist button-circle">

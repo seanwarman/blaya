@@ -1,6 +1,6 @@
-import TrackDetails from './TrackDetails.js';
+import TrackDetails from '@components/TrackDetails';
 
-import { getTrackAndAlbumFromTrackString } from '../../helpers/index.js'
+import { getTrackAndAlbumFromTrackString } from '@helpers'
 
 export default {
   props: ['tracks', 'hideTabs', 'trackSelected', 'showAddToPlaylist'],

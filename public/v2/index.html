@@ -9,9 +9,10 @@
         "vue-demi": "/node_modules/vue-demi/lib/index.mjs",
         "@vue/devtools-api": "/node_modules/@vue/devtools-api/lib/esm/index.js",
         "fzf": "/node_modules/fzf/dist/fzf.es.js",
-        "@stores/play": "./stores/play.js",
-        "@stores/playlist": "./stores/playlist.js",
-        "@subscriptions/playlist": "./subscriptions/playlist.subscription.js"
+        "@stores/": "./stores/",
+        "@helpers": "../helpers/index.js",
+        "@helpers/": "../helpers/",
+        "@components/": "./components/"
       }
     }
   </script>
@@ -21,18 +22,37 @@
     <title>Blaya</title>
     <link href="./index.css" rel="stylesheet" />
   </head>
-  <body id="app" data-searching="false" data-uploading="false" data-downloading="false" data-playlist-minimised="true" data-show-track-loader="false" data-show-sequencer="false" data-slice-mode="off" data-selector-active="true" data-playlist-mode="false">
+  <body
+    id="app"
+    data-searching="false"
+    data-uploading="false"
+    data-downloading="false"
+    data-playlist-minimised="true"
+    data-show-track-loader="false"
+    data-show-sequencer="false"
+    data-slice-mode="off"
+    data-selector-active="true"
+    data-playlist-mode="false"
+  >
     <header>
-      <toolbar></toolbar>
+      <toolbar
+        stylesheet="./components/Toolbar.css"
+      ></toolbar>
     </header>
     <main>
-      <track-list></track-list>
+      <track-list
+        stylesheet="./components/TrackList.css"
+      ></track-list>
     </main>
     <aside>
-      <playlists></playlists>
+      <playlists
+        stylesheet="./components/Playlists.css"
+      ></playlists>
     </aside>
     <footer>
-      <audio-controls></audio-controls>
+      <audio-controls
+        stylesheet="./components/AudioControls.css"
+      ></audio-controls>
     </footer>
   </body>
   <script type="module">
@@ -42,10 +62,10 @@
 
     import { usePlaylistStore, playlistSubscription } from '@stores/playlist';
 
-    import Toolbar from './Toolbar.js';
-    import TrackList from './TrackList.js';
-    import AudioControls from './AudioControls.js';
-    import Playlists from './Playlists.js';
+    import Toolbar from '@components/Toolbar';
+    import TrackList from '@components/TrackList';
+    import AudioControls from '@components/AudioControls';
+    import Playlists from '@components/Playlists';
 
     const app = createApp({ components: {
       Toolbar,

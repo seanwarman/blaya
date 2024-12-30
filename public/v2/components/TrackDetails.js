@@ -1,4 +1,4 @@
-import { getTrackAndAlbumFromTrackString } from '../../helpers/index.js';
+import { getTrackAndAlbumFromTrackString } from '@helpers';
 
 export default {
   props: {

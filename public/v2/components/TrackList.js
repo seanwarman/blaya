@@ -1,14 +1,15 @@
 import { usePlayStore } from '@stores/play';
 import { usePlaylistStore } from '@stores/playlist';
 
-import Tracks from './TrackList/Tracks.js';
+import Tracks from '@components/Tracks';
 
-import { getSelectedTracks } from '../helpers/events.js'
+import { getSelectedTracks } from '@helpers/events'
 
 let lastScrollTop = 0;
 const initPageRage = [0,1,2];
 
 export default {
+  props: ['stylesheet'],
   components: { Tracks },
   data() {
     return {
@@ -117,7 +118,7 @@ export default {
     },
   },
   template: `
-    <link rel="stylesheet" href="./TrackList.css" />
+    <link v-if="stylesheet" rel="stylesheet" :href="stylesheet" />
     <ul ref="trackList" id="track-list" @scroll="onScroll">
       <tracks
         v-for="page of pageRange"

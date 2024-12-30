@@ -1,9 +1,11 @@
 import { defineStore } from 'pinia';
 import { Fzf } from 'fzf';
 
-import { trackList as RAW_TRACKLIST } from '../../track-list.js'
+import { trackList as RAW_TRACKLIST } from '../../track-list.js';
 
-import { parseTrackList } from '../../helpers/index.js'
+import { usePlaylistStore } from '@stores/playlist';
+
+import { parseTrackList } from '@helpers';
 
 const trackListUnFiltered = parseTrackList(RAW_TRACKLIST);
 
@@ -21,13 +23,27 @@ export const usePlayStore = defineStore('play', {
     trackListUnFiltered,
     search: '',
     searching: false,
+    playingFromPlaylist: false,
+    playlistTrackIndex: 0,
   }),
   getters: {
     trackList: state => fzfFilter(state.trackListUnFiltered)(state.search),
   },
   actions: {
-    setCurrentTrack(track) {
+    nextTrack() {
+      if (this.playingFromPlaylist) {
+        const playlistStore = usePlaylistStore();
+        const track = playlistStore.playlists[playlistStore.currentPlaylist]?.tracks?.[this.playlistTrackIndex+1];
+        this.setCurrentTrack(track, { playingFromPlaylist: true, playlistTrackIndex: this.playlistTrackIndex+1 });
+      } else {
+        this.setCurrentTrack(this.trackList[this.trackList.findIndex(t => this.currentTrack === t)+1]);
+      }
+    },
+    setCurrentTrack(track, options = {}) {
+      const { playingFromPlaylist, playlistTrackIndex } = options;
       this.currentTrack = track || '';
+      this.playingFromPlaylist = !!playingFromPlaylist;
+      this.playlistTrackIndex = playlistTrackIndex || 0;
     },
     onSearch(value) {
       this.$patch({

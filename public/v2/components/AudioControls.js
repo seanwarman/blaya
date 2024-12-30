@@ -1,8 +1,20 @@
 import { usePlayStore } from '@stores/play';
 
-import { getTrackAndAlbumFromTrackString } from '../helpers/index.js'
+import { getTrackAndAlbumFromTrackString } from '@helpers'
+
+function handleEventsByKey({ keys }, cb) {
+  return (mutation) => {
+    const foundEvent = mutation.events?.length
+      ? mutation.events.find(e => keys.includes(e.key))
+      : keys.includes(mutation.events.key);
+    if (foundEvent) {
+      cb();
+    }
+  };
+}
 
 export default {
+  props: ['stylesheet'],
   computed: {
     trackAndAlbum() {
       return getTrackAndAlbumFromTrackString(usePlayStore().currentTrack);
@@ -13,16 +25,30 @@ export default {
         + usePlayStore().currentTrack?.split('/')?.map(section => encodeURIComponent(section))?.join('/');
     },
   },
+  methods: {
+    onEnded() {
+      usePlayStore().nextTrack();
+    },
+  },
   mounted() {
-    usePlayStore().$subscribe(({ events }) => {
-      if (events.key === 'currentTrack') {
-        this.$refs.player.load();
-        this.$refs.player.play();
-      }
-    });
+    usePlayStore().$subscribe(
+      handleEventsByKey(
+        {
+          keys: ['currentTrack', 'playlistTrackIndex'],
+        },
+        () => {
+          this.$refs.player.load();
+          this.$refs.player.play();
+        },
+      ),
+    );
+    this.$refs.player.addEventListener('ended', this.onEnded);
+  },
+  unmounted() {
+    this.$refs.player.removeEventListener('ended', this.onEnded);
   },
   template: `
-    <link rel="stylesheet" href="./AudioControls.css" />
+    <link v-if="stylesheet" rel="stylesheet" :href="stylesheet" />
     <div tabindex="0" id="current-playing-text" role="link">
       <div v-for="entry of trackAndAlbum">{{ entry }}</div>
     </div>

@@ -1,11 +1,12 @@
 import { usePlaylistStore } from '@stores/playlist';
 import { usePlayStore } from '@stores/play';
 
-import { getSelectedTrackIndexes } from '../helpers/events';
+import { getSelectedTrackIndexes } from '@helpers/events';
 
-import Tracks from './TrackList/Tracks.js';
+import Tracks from '@components/Tracks';
 
 export default {
+  props: ['stylesheet'],
   components: { Tracks },
   data() {
     return {
@@ -24,7 +25,7 @@ export default {
     },
     onClickTrack(event) {
       if (this.selectedTrackIndexes.length === 1 && this.selectedTrackIndex === event.index) {
-        usePlayStore().setCurrentTrack(event.track);
+        usePlayStore().setCurrentTrack(event.track, { playingFromPlaylist: true, playlistTrackIndex: event.index });
       } else {
         this.selectedTrackIndex = event.index;
       }
@@ -40,7 +41,7 @@ export default {
     },
   },
   template: `
-    <link rel="stylesheet" href="./Playlists.css" />
+    <link v-if="stylesheet" rel="stylesheet" :href="stylesheet" />
     <div id="playlists" :class="playlistsVisible && 'playlists-visible'">
       <menu>
         <button @click="onClickTogglePlaylistsVisible" id="maximise-button-playlist" class="button-circle">
