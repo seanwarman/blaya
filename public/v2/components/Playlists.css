@@ -24,10 +24,10 @@ menu {
   display: flex;
   align-items: center;
   transition: background .6s;
-  justify-content: end;
   width: 100%;
   margin: 0;
   height: var(--playlists-menu-height);
+  padding-left: 0;
 }
 
 .playlists-visible menu {
@@ -50,7 +50,7 @@ menu {
 }
 
 #playlists > ul {
-  margin-top: var(--playlists-menu-height);
+  margin-top: calc(var(--playlists-menu-height)*1.3);
 }
 
 #download-button-playlist,
@@ -76,4 +76,115 @@ menu {
     height: unset;
     top: -0.5rem;
   }
+}
+
+#playlist-tabs {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  overflow-y: hidden;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+#playlist-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+ul#playlist-tabs li {
+  list-style-type: none;
+}
+
+.tab-leaf {
+  font-size: 0.7rem;
+  border-radius: 14px 14px 0 0;
+  justify-content: end;
+  margin-top: 10px;
+  padding: 0.8rem 1rem 1rem 1rem;
+  min-width: 140px;
+  background-color: white;
+  height: 100%;
+  border: 1px solid var(--playlist-tab-outline);
+}
+
+.tab-leaf-container {
+  transition: width 0.2s;
+  width: 38px;
+}
+
+.tab-leaf-container.background-tab {
+  color: var(--neutral);
+}
+
+.tab-leaf-container.focussed-tab-leaf {
+  width: 100px;
+}
+
+.background-tab:last-of-type .tab-leaf {
+  min-width: 100px;
+}
+
+.new-tab-leaf-container {
+  min-width: 50px;
+  margin-left: 2.5rem;
+}
+
+.new-tab-leaf-container .tab-leaf {
+  min-width: unset;
+}
+
+.new-tab-leaf {
+  width: 18px;
+}
+
+#playlist-tabs li.focussed-tab-leaf:last-of-type .tab-leaf {
+ min-width: 140px;
+}
+
+#playlist-tabs li:last-of-type .tab-leaf {
+ min-width: 100px;
+}
+
+#playlist {
+  position: relative;
+  min-height: 100%;
+}
+
+.playlist-editable-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  padding: 0.5rem;
+}
+
+.playlist-editable-title input {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: -3px;
+  width: 100%;
+}
+
+.playlist-editable-title div {
+  padding: 0px 1px;
+  position: relative;
+}
+
+.playlist-editable-title div button {
+  position: absolute;
+  right: 0;
+  top: -4px;
+  background-color: transparent;
+  box-shadow: none;
+  padding: 0;
+}
+
+.playlist-delete-button {
+  margin-top: 1rem;
+}
+
+.playlist-delete-button-container {
+  padding: 0 1px;
+  position: absolute;
+  bottom: -5rem;
+  left: 1rem;
+  right: 1rem;
 }

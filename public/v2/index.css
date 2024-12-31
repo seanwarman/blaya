@@ -4,10 +4,12 @@
   --brand-transparent: #6f73ff00;
   --brand-lighter: #9497ff;
   --button-neutral-colour: #f0f0f0;
+  --button-danger-colour: #ff7e7e;
   --green-gradient: linear-gradient(to right, #6dffb2, #d5ffe9);
   --green-to-white: linear-gradient(to right, #6dffb2, white);
   --transition-time: .5s;
   --black: #353535;
+  --neutral: #b1b1b1;
   --header-height-desktop: 82px;
   --header-height-mobile: 105.59px;
   --track-border: #ededed;
@@ -18,6 +20,7 @@
   --playlists-index: 6;
   --toolbar-index: 5;
   --playlists-menu-height: 60px;
+  --playlist-tab-outline: #ececec;
 }
 
 :fullscreen,
@@ -174,8 +177,47 @@ footer {
   }
 }
 
+.button-container-left {
+  display: flex;
+}
+
+button.button {
+  border: none;
+  padding: 1rem;
+  font-size: 1rem;
+  background-color: white;
+  border-radius: 5px;
+  width: 100%;
+}
+
+button.button-danger {
+  border: 2px solid var(--button-danger-colour);
+  color: var(--button-danger-colour);
+}
+
+button.button-circle {
+  box-shadow: 5px 5px 12px 0px #00000024;
+  border-radius: 50%;
+  border: none;
+  width: 60px;
+  height: 60px;
+  background: whitesmoke;
+}
+
+button.button-circle-transparent {
+  background-color: transparent;
+  box-shadow: none;
+}
+
 button.button-circle.button-active {
   background-color: var(--brand-lighter);
+}
+
+button.button-small {
+  width: 40px;
+  height: 40px;
+  padding: 0.5rem;
+  box-shadow: 2px 2px 4px 0px #00000024;
 }
 
 .track-playing-icon {

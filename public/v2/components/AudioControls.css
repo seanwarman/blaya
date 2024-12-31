@@ -41,7 +41,6 @@ div#current-playing-text {
 }
 
 @media (min-width: 768px) {
-
   #player {
     grid-column: unset;
     grid-row: unset;

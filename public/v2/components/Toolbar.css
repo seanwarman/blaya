@@ -10,24 +10,6 @@
   z-index: var(--toolbar-index);
 }
 
-.button-container-left {
-  display: flex;
-}
-
-button.button-circle {
-  box-shadow: 5px 5px 12px 0px #00000024;
-  border-radius: 50%;
-  border: none;
-  width: 60px;
-  height: 60px;
-  background: whitesmoke;
-}
-
-button.button-circle-transparent {
-  background-color: transparent;
-  box-shadow: none;
-}
-
 [data-show-sequencer="true"] .mode-button-playlist,
 [data-show-track-loader="true"] .mode-button-playlist {
   display: none;
