@@ -75,10 +75,11 @@ export default {
           @click-track="onClickTrack"
           @select-track="onSelectTrack"
           :show-remove-from-playlist="true"
+          :selected-track-indexes="selectedTrackIndexes"
         />
         <div class="playlist-delete-button-container">
           <button @click="onDeletePlaylist" class="button button-danger playlist-delete-button">
-            Delete
+            Delete playlist
           </button>
         </div>
       </ul>

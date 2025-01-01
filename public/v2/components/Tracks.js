@@ -3,17 +3,25 @@ import TrackDetails from '@components/TrackDetails';
 import { getTrackAndAlbumFromTrackString } from '@helpers'
 
 export default {
-  props: ['showAddToPlaylist', 'showRemoveFromPlaylist', 'tracks', 'hideTabs', 'trackSelected'],
+  props: [
+    'showAddToPlaylist',
+    'showRemoveFromPlaylist',
+    'tracks',
+    'hideTabs',
+    'trackSelected',
+    'selectedTrackIndexes',
+  ],
   components: { TrackDetails },
   methods: {
     getTrackAndAlbumFromTrackString,
     showTab(album, i) {
       if (this.hideTabs) return false;
-      const track = this.tracks[i-1] || '';
-      const [,lastAlbum] = getTrackAndAlbumFromTrackString(track);
+      const track = this.tracks[i - 1] || "";
+      const [, lastAlbum] = getTrackAndAlbumFromTrackString(track);
       return lastAlbum !== album;
     },
   },
+  computed: {},
   template: `
     <li class="page">
       <template v-for="([trackName, album], i) in tracks.map(getTrackAndAlbumFromTrackString)">
@@ -22,7 +30,7 @@ export default {
           :index="i"
           :track="tracks[i]"
           :data-track="tracks[i]"
-          :class="trackSelected(i) && 'track-selected'"
+          :track-selected="trackSelected(i)"
           @click="$emit('clickTrack', { ...$event, track: tracks[i], index: i })"
           @mouseup="$emit('selectTrack', { ...$event, track: tracks[i], index: i })"
           @contextmenu="$emit('selectTrack', { ...$event, track: tracks[i], index: i })"

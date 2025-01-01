@@ -221,7 +221,7 @@ button.button-small {
 }
 
 .track-playing-icon {
-  width: 0.7rem;
+  width: 1.3rem;
   line-height: 0;
   margin: 0 0.9rem 0 0;
 }
@@ -230,6 +230,16 @@ button.button-small {
   content: url(../icons/play-solid.svg);
 }
 
-.track-selected .track-playing-icon img {
+[draggable="true"] .track-playing-icon img {
   content: url(../icons/play-solid-white.svg);
+}
+
+.drag-placeholder {
+  height: 15px;
+  width: 200px;
+  background-color: var(--brand);
+  border: 2px solid white;
+  border-radius: 5px;
+  font-size: 0.5rem;
+  color: white;
 }

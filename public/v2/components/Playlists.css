@@ -1,5 +1,6 @@
 #playlists {
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
   position: fixed;
   z-index: var(--playlists-index);
   left: 0;
@@ -118,6 +119,10 @@ ul#playlist-tabs li {
 
 .tab-leaf-container.focussed-tab-leaf {
   width: 100px;
+}
+
+.focussed-tab-leaf .tab-leaf {
+  font-weight: bold;
 }
 
 .background-tab:last-of-type .tab-leaf {
