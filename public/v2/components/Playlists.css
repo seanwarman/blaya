@@ -11,6 +11,10 @@
   padding-bottom: var(--footer-height);
 }
 
+#playlists.scroll-lock {
+  overflow-y: hidden;
+}
+
 #playlists.playlists-visible {
   top: 0;
   background-color: white;
@@ -192,4 +196,8 @@ ul#playlist-tabs li {
   bottom: -5rem;
   left: 1rem;
   right: 1rem;
+}
+
+.dragover.track-non-tab {
+  border-bottom: 3px solid var(--brand);
 }

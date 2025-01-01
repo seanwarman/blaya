@@ -16,8 +16,21 @@ export const usePlaylistStore = defineStore('playlist', {
     playlistMode: false,
     currentPlaylist: 0,
     playlists: initStateItem(PLAYLISTS_STATE_KEY, INITIAL_PLAYLISTS_STATE),
+    draggedOverIndex: null,
+    selectedTrackIndex: null,
+    selectedTrackIndexes: [],
   }),
   actions: {
+    setTrackIndexFrom(from, to) {
+      if (from === to) return;
+      if (from > to) {
+        to++;
+      }
+      const [track] = this.playlists[this.currentPlaylist].tracks.splice(from, 1);
+      this.playlists[this.currentPlaylist].tracks.splice(to, 0, track);
+      this.selectedTrackIndex = to;
+      this.selectedTrackIndexes = [to];
+    },
     togglePlaylistsVisible() {
       this.playlistsVisible = !this.playlistsVisible;
     },

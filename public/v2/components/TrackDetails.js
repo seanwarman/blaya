@@ -2,16 +2,6 @@ import { usePlaylistStore } from '@stores/playlist';
 import { usePlayStore } from '@stores/play';
 import { getTrackAndAlbumFromTrackString } from '@helpers';
 
-export function onDragover(e) {
-  e.preventDefault()
-  e.currentTarget.classList.add('dragover')
-}
-
-export function onDragLeave(e) {
-  e.preventDefault()
-  e.currentTarget.classList.remove('dragover')
-}
-
 export default {
   props: [
     'index',
@@ -26,22 +16,28 @@ export default {
       x: 0,
       y: 0,
       dragging: false,
-      dragOptions: {
-        filterTaps: true,
-        useTouch: true,
-        preventWindowScrollY: true,
-      },
     };
   },
   methods: {
-    onDrag({ movement: [x, y], dragging }) {
+    onDrag({ movement: [x, y], dragging, ...rest }) {
+      if (!this.trackSelected) return;
       this.dragging = dragging;
       if (!dragging) {
         this.x = 0;
         this.y = 0;
+        usePlaylistStore().setTrackIndexFrom(this.index, this.draggedOverIndex);
+        this.draggedOverIndex = null;
       } else {
         this.x = x;
         this.y = y;
+        const trackHeight = this.$refs.track.clientHeight;
+        const trackY = this.$refs.track.getBoundingClientRect().y;
+        Array.from(document.querySelectorAll('#playlist .track-non-tab')).forEach((track, i) => {
+          const rect = track.getBoundingClientRect();
+          if (rect.y > trackY && rect.y < trackY+trackHeight) {
+            this.draggedOverIndex = i;
+          }
+        });
       }
     },
     onAddToPlaylist() {
@@ -88,17 +84,24 @@ export default {
         };
       }
     },
+    draggedOverIndex: {
+      get() {
+        return usePlaylistStore().draggedOverIndex;
+      },
+      set(i) {
+        usePlaylistStore().draggedOverIndex = i;
+      },
+    },
   },
   template: `
     <div
       v-drag="onDrag"
-      :drag-options="dragOptions"
       ref="track"
       role="link"
       class="track"
       :class="tab ? 'track-artist-tab track-tab' : 'track-non-tab'"
       :class="trackSelected && 'track-selected'"
-      @dragover="console.log($event)"
+      :class="draggedOverIndex === index && 'dragover'"
       :style="position"
     >
       <div :style="containerStyles" class="track-name-album-container">

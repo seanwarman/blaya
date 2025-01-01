@@ -14,8 +14,6 @@ export default {
     return {
       pageRange: [0,1,2],
       pageLength: 10,
-      selectedTrackIndex: null,
-      selectedTrackIndexes: [],
     };
   },
   methods: {
@@ -40,6 +38,22 @@ export default {
     },
   },
   computed: {
+    selectedTrackIndexes: {
+      get() {
+        return usePlaylistStore().selectedTrackIndexes;
+      },
+      set(indexes) {
+        usePlaylistStore().selectedTrackIndexes = indexes;
+      },
+    },
+    selectedTrackIndex: {
+      get() {
+        return usePlaylistStore().selectedTrackIndex;
+      },
+      set(i) {
+        usePlaylistStore().selectedTrackIndex = i;
+      },
+    },
     playlistsVisible() {
       return usePlaylistStore().playlistsVisible;
     },
@@ -55,10 +69,19 @@ export default {
         usePlaylistStore().setSelectedPlaylistName(name);
       },
     },
+    lockScroll() {
+      return typeof usePlaylistStore().draggedOverIndex === 'number';
+    },
+    playlistsClasses() {
+      return {
+        'playlists-visible': this.playlistsVisible,
+        'scroll-lock': this.lockScroll,
+      };
+    },
   },
   template: `
     <link v-if="stylesheet" rel="stylesheet" :href="stylesheet" />
-    <div id="playlists" :class="playlistsVisible && 'playlists-visible'">
+    <div id="playlists" :class="playlistsClasses">
       <menu>
         <playlist-tabs />
         <button @click="onClickTogglePlaylistsVisible" id="maximise-button-playlist" class="button-circle">
