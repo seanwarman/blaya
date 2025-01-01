@@ -9,7 +9,6 @@ export default {
     'tracks',
     'hideTabs',
     'trackSelected',
-    'selectedTrackIndexes',
   ],
   components: { TrackDetails },
   methods: {
@@ -21,7 +20,6 @@ export default {
       return lastAlbum !== album;
     },
   },
-  computed: {},
   template: `
     <li class="page">
       <template v-for="([trackName, album], i) in tracks.map(getTrackAndAlbumFromTrackString)">
@@ -29,12 +27,9 @@ export default {
         <track-details
           :index="i"
           :track="tracks[i]"
-          :data-track="tracks[i]"
           :track-selected="trackSelected(i)"
-          @click="$emit('clickTrack', { ...$event, track: tracks[i], index: i })"
-          @mouseup="$emit('selectTrack', { ...$event, track: tracks[i], index: i })"
-          @contextmenu="$emit('selectTrack', { ...$event, track: tracks[i], index: i })"
-          @add-to-playlist="$emit('addToPlaylist', $event)"
+          @click-track="$emit('clickTrack', { ...$event, track: tracks[i], index: i })"
+          @select-track="$emit('selectTrack', { ...$event, track: tracks[i], index: i })"
           :show-add-to-playlist="showAddToPlaylist"
           :show-remove-from-playlist="showRemoveFromPlaylist"
         />

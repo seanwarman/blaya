@@ -19,25 +19,33 @@ export default {
     };
   },
   methods: {
-    onDrag({ movement: [x, y], dragging, ...rest }) {
+    onDrag({ movement: [x, y], dragging }) {
       if (!this.trackSelected) return;
       this.dragging = dragging;
       if (!dragging) {
+        document.getElementById('playlists').classList.remove('scroll-lock');
         this.x = 0;
         this.y = 0;
         usePlaylistStore().setTrackIndexFrom(this.index, this.draggedOverIndex);
         this.draggedOverIndex = null;
       } else {
+        document.getElementById('playlists').classList.add('scroll-lock');
         this.x = x;
         this.y = y;
         const trackHeight = this.$refs.track.clientHeight;
         const trackY = this.$refs.track.getBoundingClientRect().y;
-        Array.from(document.querySelectorAll('#playlist .track-non-tab')).forEach((track, i) => {
-          const rect = track.getBoundingClientRect();
-          if (rect.y > trackY && rect.y < trackY+trackHeight) {
-            this.draggedOverIndex = i;
-          }
-        });
+        const trackPlaceholder = this.$refs.placeholder;
+        const placeholderY = trackPlaceholder.getBoundingClientRect().y;
+        if (placeholderY > trackY && placeholderY < trackY+trackHeight) {
+          this.draggedOverIndex = this.index;
+        } else {
+          Array.from(document.querySelectorAll('#playlist .track-non-tab')).forEach((track, i) => {
+            const rect = track.getBoundingClientRect();
+            if (rect.y > trackY && rect.y < trackY+trackHeight) {
+              this.draggedOverIndex = i;
+            }
+          });
+        }
       }
     },
     onAddToPlaylist() {
@@ -92,6 +100,22 @@ export default {
         usePlaylistStore().draggedOverIndex = i;
       },
     },
+    selectedTrackIndex() {
+      return usePlaylistStore().selectedTrackIndex;
+    },
+    trackClasses() {
+      return {
+        'track-artist-tab track-tab': this.tab,
+        'track-non-tab': !this.tab,
+        'track-selected': this.trackSelected,
+      };
+    },
+    dragoverClasses() {
+      return {
+        'dragover': this.draggedOverIndex === this.index && this.index >= this.selectedTrackIndex,
+        'dragover-top': this.draggedOverIndex === this.index && this.index < this.selectedTrackIndex,
+      };
+    },
   },
   template: `
     <div
@@ -99,10 +123,11 @@ export default {
       ref="track"
       role="link"
       class="track"
-      :class="tab ? 'track-artist-tab track-tab' : 'track-non-tab'"
-      :class="trackSelected && 'track-selected'"
-      :class="draggedOverIndex === index && 'dragover'"
+      :class="[trackClasses, dragoverClasses]"
       :style="position"
+      @click="$emit('clickTrack', $event)"
+      @mouseup="$emit('selectTrack', $event)"
+      @contextmenu="$emit('selectTrack', $event)"
     >
       <div :style="containerStyles" class="track-name-album-container">
         <div
@@ -134,5 +159,6 @@ export default {
         </div>
       </div>
     </div>
+    <div ref="placeholder" class="track-placeholder" :class="dragoverClasses" v-show="dragging" />
   `,
 };

@@ -198,6 +198,16 @@ ul#playlist-tabs li {
   right: 1rem;
 }
 
-.dragover.track-non-tab {
+.dragover {
   border-bottom: 3px solid var(--brand);
+}
+
+.dragover-top {
+  border-top: 3px solid var(--brand);
+}
+
+.track-placeholder {
+  height: 67px;
+  width: 100%;
+  background-color: var(--brand-lighter);
 }

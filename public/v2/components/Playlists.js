@@ -69,13 +69,9 @@ export default {
         usePlaylistStore().setSelectedPlaylistName(name);
       },
     },
-    lockScroll() {
-      return typeof usePlaylistStore().draggedOverIndex === 'number';
-    },
     playlistsClasses() {
       return {
         'playlists-visible': this.playlistsVisible,
-        'scroll-lock': this.lockScroll,
       };
     },
   },
@@ -98,7 +94,6 @@ export default {
           @click-track="onClickTrack"
           @select-track="onSelectTrack"
           :show-remove-from-playlist="true"
-          :selected-track-indexes="selectedTrackIndexes"
         />
         <div class="playlist-delete-button-container">
           <button @click="onDeletePlaylist" class="button button-danger playlist-delete-button">
