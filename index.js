@@ -59,7 +59,7 @@ if (!TEST) {
 const options = {
   dotfiles: 'ignore',
   fallthrough: true,
-  extensions: ['js'],
+  extensions: ['js', 'mjs'],
   setHeaders: (res) => {
     res.set('Cache-Control', 'max-age=0');
   },
@@ -76,7 +76,6 @@ app.use('/public', express.static('public', options))
 if (TEST) {
   app.use('/__test', express.static('__test', options))
 }
-app.use('/node_modules', express.static('node_modules', options), redirectWithExt)
 app.use('/node_modules', express.static('node_modules', options), redirectWithExt)
 
 if (!TEST) {
