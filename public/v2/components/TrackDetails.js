@@ -3,6 +3,7 @@ import { usePlayStore } from '@stores/play';
 import { getTrackAndAlbumFromTrackString } from '@helpers';
 
 export default {
+  emits: ['selectTrack', 'clickTrack'],
   props: [
     'index',
     'track',
