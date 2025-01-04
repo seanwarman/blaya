@@ -1,6 +1,3 @@
-import { ref, computed, useTemplateRef } from 'vue';
-import { useDrag } from '@vueuse/gesture';
-
 import { usePlaylistStore } from '@stores/playlist';
 import { usePlayStore } from '@stores/play';
 import { getTrackAndAlbumFromTrackString } from '@helpers';
@@ -15,58 +12,13 @@ export default {
     'showRemoveFromPlaylist',
     'trackSelected',
   ],
-   setup(props) {
-     const draggedOverIndex = computed({
-       get() {
-         return usePlaylistStore().draggedOverIndex;
-       },
-       set(i) {
-         usePlaylistStore().draggedOverIndex = i;
-       },
-     });
-     const draggingRef = ref(false);
-     const xRef = ref(0);
-     const yRef = ref(0);
-     const track = useTemplateRef('track');
-     const placeholder = useTemplateRef('placeholder');
-     const { handlers } = useDrag(({ movement: [x, y], dragging }) => {
-       if (!props.trackSelected) return;
-       draggingRef.value = dragging;
-       if (!dragging) {
-         xRef.value = 0;
-         yRef.value = 0;
-         usePlaylistStore().setTrackIndexFrom(props.index, draggedOverIndex.value);
-       } else {
-         xRef.value = x;
-         yRef.value = y;
-         const trackHeight = track.value.clientHeight;
-         const trackY = track.value.getBoundingClientRect().y;
-         const trackPlaceholder = placeholder.value;
-         const placeholderY = trackPlaceholder.getBoundingClientRect().y;
-         if (placeholderY > trackY && placeholderY < trackY + trackHeight) {
-           draggedOverIndex.value = props.index;
-         } else {
-           Array.from(
-             document.querySelectorAll('#playlist .track-non-tab')
-           ).forEach((track, i) => {
-             const rect = track.getBoundingClientRect();
-             if (rect.y > trackY && rect.y < trackY + trackHeight) {
-               draggedOverIndex.value = i;
-             }
-           });
-         }
-       }
-     }, {
-       preventWindowScrollY: true,
-     });
-     return {
-       dragging: draggingRef,
-       x: xRef,
-       y: yRef,
-       onDrag: handlers.drag,
-       draggedOverIndex,
-     };
-   },
+  data() {
+    return {
+       x: 0,
+       y: 0,
+       dragging: false,
+    };
+  },
   methods: {
     onAddToPlaylist() {
       usePlaylistStore().pushToCurrentPlaylist(this.track);
@@ -74,8 +26,48 @@ export default {
     onRemoveFromPlaylist() {
       usePlaylistStore().removeFromCurrentPlaylist(this.index);
     },
+    onDrag({ movement: [x, y], dragging, tap }) {
+      if (tap || !this.trackSelected) {
+        this.dragging = false;
+        return;
+      }
+      this.dragging = dragging;
+      if (!dragging) {
+        document.getElementById('playlists').classList.remove('scroll-lock');
+        this.x = 0;
+        this.y = 0;
+        usePlaylistStore().setTrackIndexFrom(this.index, this.draggedOverIndex);
+        this.draggedOverIndex = null;
+      } else {
+        document.getElementById('playlists').classList.add('scroll-lock');
+        this.x = x;
+        this.y = y;
+        const trackHeight = this.$refs.track.clientHeight;
+        const trackY = this.$refs.track.getBoundingClientRect().y;
+        const trackPlaceholder = this.$refs.placeholder;
+        const placeholderY = trackPlaceholder.getBoundingClientRect().y;
+        if (placeholderY > trackY && placeholderY < trackY+trackHeight) {
+          this.draggedOverIndex = this.index;
+        } else {
+          Array.from(document.querySelectorAll('#playlist .track-non-tab')).forEach((track, i) => {
+            const rect = track.getBoundingClientRect();
+            if (rect.y > trackY && rect.y < trackY+trackHeight) {
+              this.draggedOverIndex = i;
+            }
+          });
+        }
+      }
+    },
   },
   computed: {
+    draggedOverIndex: {
+      get() {
+        return usePlaylistStore().draggedOverIndex;
+      },
+      set(i) {
+        usePlaylistStore().draggedOverIndex = i;
+      },
+    },
     position() {
       return this.trackSelected && this.dragging && {
         transform: `translate3d(${this.x}px, ${this.y}px, 0px)`,
@@ -131,8 +123,8 @@ export default {
   },
   template: `
     <div
-      v-drag="onDrag"
       ref="track"
+      v-drag="onDrag"
       role="link"
       class="track"
       :class="[trackClasses, dragoverClasses]"
