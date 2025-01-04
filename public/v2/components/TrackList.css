@@ -222,7 +222,7 @@ img.remove-from-playlist-icon {
 .track-selected {
   background: var(--brand);
   outline: none;
-  padding-top: 0;
+  padding-top: 0 !important;
   color: white;
 }
 
