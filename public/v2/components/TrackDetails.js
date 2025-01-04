@@ -120,13 +120,16 @@ export default {
         'dragover-top': this.draggedOverIndex === this.index && this.index < this.selectedTrackIndex,
       };
     },
-    draggingTrack() {
+    thisIsOneOfAnyTracksBeingDragged() {
       return this.dragging || (this.trackSelected && typeof this.draggedOverIndex === 'number');
+    },
+    hideWhileDraggingUnlessThisTrackIsTheDragAnchor() {
+      return !this.thisIsOneOfAnyTracksBeingDragged || this.dragging;
     },
   },
   template: `
     <div
-      v-show="!draggingTrack || dragging"
+      v-show="hideWhileDraggingUnlessThisTrackIsTheDragAnchor"
       ref="track"
       v-drag="onDrag"
       role="link"
@@ -167,6 +170,6 @@ export default {
         </div>
       </div>
     </div>
-    <div ref="placeholder" class="track-placeholder" :class="dragoverClasses" v-show="draggingTrack" />
+    <div ref="placeholder" class="track-placeholder" :class="dragoverClasses" v-show="thisIsOneOfAnyTracksBeingDragged" />
   `,
 };
