@@ -21,13 +21,17 @@ export const usePlaylistStore = defineStore('playlist', {
     selectedTrackIndexes: [],
   }),
   actions: {
-    setTrackIndexFrom(from, to) {
-      if (from === to) return;
-      const [track] = this.playlists[this.currentPlaylist].tracks.splice(from, 1);
-      this.playlists[this.currentPlaylist].tracks.splice(to, 0, track);
+    moveTracks(from) {
+      if (from === this.draggedOverIndex) return;
+      const tracks = this.playlists[this.currentPlaylist].tracks.splice(from, this.selectedTrackIndexes.length);
+      const to = this.draggedOverIndex > from
+        ? this.draggedOverIndex - (tracks.length-1)
+        : this.draggedOverIndex;
+      this.playlists[this.currentPlaylist].tracks.splice(to, 0, ...tracks);
       this.selectedTrackIndex = to;
-      this.selectedTrackIndexes = [to];
+      this.selectedTrackIndexes = tracks.map((_,i) => i + to);
       this.draggedOverIndex = null;
+      window.getSelection().removeAllRanges();
     },
     togglePlaylistsVisible() {
       this.playlistsVisible = !this.playlistsVisible;

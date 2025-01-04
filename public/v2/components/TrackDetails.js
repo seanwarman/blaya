@@ -36,8 +36,7 @@ export default {
         document.getElementById('playlists').classList.remove('scroll-lock');
         this.x = 0;
         this.y = 0;
-        usePlaylistStore().setTrackIndexFrom(this.index, this.draggedOverIndex);
-        this.draggedOverIndex = null;
+        usePlaylistStore().moveTracks(this.index);
       } else {
         document.getElementById('playlists').classList.add('scroll-lock');
         this.x = x;
@@ -120,8 +119,11 @@ export default {
         'dragover-top': this.draggedOverIndex === this.index && this.index < this.selectedTrackIndex,
       };
     },
+    aTrackIsBeingDragged() {
+      return typeof this.draggedOverIndex === 'number';
+    },
     thisIsOneOfAnyTracksBeingDragged() {
-      return this.dragging || (this.trackSelected && typeof this.draggedOverIndex === 'number');
+      return this.dragging || (this.trackSelected && this.aTrackIsBeingDragged);
     },
     hideWhileDraggingUnlessThisTrackIsTheDragAnchor() {
       return !this.thisIsOneOfAnyTracksBeingDragged || this.dragging;
