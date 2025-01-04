@@ -11,10 +11,6 @@
   padding-bottom: var(--footer-height);
 }
 
-#playlists.scroll-lock {
-  overflow-y: hidden;
-}
-
 #playlists.playlists-visible {
   top: 0;
   background-color: white;

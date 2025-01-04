@@ -27,6 +27,7 @@ export const usePlaylistStore = defineStore('playlist', {
       this.playlists[this.currentPlaylist].tracks.splice(to, 0, track);
       this.selectedTrackIndex = to;
       this.selectedTrackIndexes = [to];
+      this.draggedOverIndex = null;
     },
     togglePlaylistsVisible() {
       this.playlistsVisible = !this.playlistsVisible;
