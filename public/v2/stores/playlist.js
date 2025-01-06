@@ -22,7 +22,11 @@ export const usePlaylistStore = defineStore('playlist', {
   }),
   actions: {
     moveTracks(from) {
-      if (from === this.draggedOverIndex) return;
+      if (from === this.draggedOverIndex) {
+        this.draggedOverIndex = null;
+        window.getSelection().removeAllRanges();
+        return;
+      }
       const tracks = this.playlists[this.currentPlaylist].tracks.splice(from, this.selectedTrackIndexes.length);
       const to = this.draggedOverIndex > from
         ? this.draggedOverIndex - (tracks.length-1)
