@@ -21,6 +21,8 @@
 }
 
 menu {
+  background-color: white;
+  box-shadow: 1px 0px 8px #a9a9a94f;
   position: fixed;
   border-bottom: 3px solid #6f73ff;
   z-index: 1;
