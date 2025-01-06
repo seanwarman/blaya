@@ -16,7 +16,16 @@ export default {
       pageLength: 10,
     };
   },
+  mounted() {
+    this.$refs.playlists.addEventListener('scroll', this.onScroll);
+  },
+  unmounted() {
+    this.$refs.playlists.removeEventListener('scroll', this.onScroll);
+  },
   methods: {
+    onScroll(e) {
+      usePlaylistStore().scrollTop = e.target.scrollTop;
+    },
     onClickTogglePlaylistsVisible() {
       usePlaylistStore().togglePlaylistsVisible();
     },
@@ -72,12 +81,13 @@ export default {
     playlistsClasses() {
       return {
         'playlists-visible': this.playlistsVisible,
+        'scroll-lock': usePlaylistStore().scrollLock,
       };
     },
   },
   template: `
     <link v-if="stylesheet" rel="stylesheet" :href="stylesheet" />
-    <div id="playlists" :class="playlistsClasses">
+    <div ref="playlists" id="playlists" :class="playlistsClasses">
       <menu>
         <playlist-tabs />
         <button @click="onClickTogglePlaylistsVisible" id="maximise-button-playlist" class="button-circle">

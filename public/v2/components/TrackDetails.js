@@ -14,9 +14,9 @@ export default {
   ],
   data() {
     return {
-       x: 0,
-       y: 0,
-       dragging: false,
+      x: 0,
+      yState: 0,
+      draggingState: false,
     };
   },
   methods: {
@@ -32,17 +32,17 @@ export default {
         return;
       }
       this.dragging = dragging;
+      usePlaylistStore().scrollLock = dragging;
       if (!dragging) {
-        document.getElementById('playlists').classList.remove('scroll-lock');
         this.x = 0;
         this.y = 0;
         usePlaylistStore().moveTracks(this.index);
       } else {
-        document.getElementById('playlists').classList.add('scroll-lock');
         this.x = x;
         this.y = y;
         const trackHeight = this.$refs.track.clientHeight;
         const trackY = this.$refs.track.getBoundingClientRect().y;
+        usePlaylistStore().trackScroll(trackY);
         const trackPlaceholder = this.$refs.placeholder;
         const placeholderY = trackPlaceholder.getBoundingClientRect().y;
         if (placeholderY > trackY && placeholderY < trackY+trackHeight) {
@@ -59,6 +59,23 @@ export default {
     },
   },
   computed: {
+    y: {
+      get() {
+        return this.yState + usePlaylistStore().scrollTracker;
+      },
+      set(y) {
+        this.yState = y;
+      },
+    },
+    dragging: {
+      get() {
+        return this.draggingState;
+      },
+      set(dragging) {
+        this.draggingState = dragging;
+        usePlaylistStore().scrollLock = dragging;
+      },
+    },
     draggedOverIndex: {
       get() {
         return usePlaylistStore().draggedOverIndex;

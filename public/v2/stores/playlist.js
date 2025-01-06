@@ -11,17 +11,49 @@ const INITIAL_PLAYLISTS_STATE = [
 export const PLAYLISTS_STATE_KEY = 'blaya__PLAYLISTS_STATE_KEY_V2';
 
 export const usePlaylistStore = defineStore('playlist', {
-  state: () => ({
-    playlistsVisible: true,
-    playlistMode: false,
-    currentPlaylist: 0,
-    playlists: initStateItem(PLAYLISTS_STATE_KEY, INITIAL_PLAYLISTS_STATE),
-    draggedOverIndex: null,
-    selectedTrackIndex: null,
-    selectedTrackIndexes: [],
-  }),
+  state: () => {
+    return {
+      playlistsVisible: true,
+      playlistMode: false,
+      currentPlaylist: 0,
+      playlists: initStateItem(PLAYLISTS_STATE_KEY, INITIAL_PLAYLISTS_STATE),
+      draggedOverIndex: null,
+      selectedTrackIndex: null,
+      selectedTrackIndexes: [],
+      scrollLock: false,
+      scrollTopStoppedAt: 0,
+      scrollTop: 0,
+      stop: false,
+    };
+  },
   actions: {
+    scroll(playlists, step) {
+      playlists.scrollTo(0, playlists.scrollTop + step);
+      if (!this.stop) {
+        setTimeout(() => {
+          this.scroll(playlists, step);
+        }, 100);
+      }
+    },
+    trackScroll(y) {
+      const step = 1;
+      const playlists = document.getElementById('playlists');
+      const plHeight = playlists.clientHeight;
+      if (y > playlists.scrollHeight) {
+        this.stop = true;
+      } else if (y > plHeight-100) {
+        this.stop = false;
+        this.scroll(playlists, step);
+      } else if (playlists.scrollTop > 0 && y < 100) {
+        this.stop = false;
+        this.scroll(playlists, -step);
+      } else {
+        this.stop = true;
+      }
+    },
     moveTracks(from) {
+      this.stop = true;
+      this.scrollTopStoppedAt = this.scrollTop;
       if (from === this.draggedOverIndex) {
         this.draggedOverIndex = null;
         window.getSelection().removeAllRanges();
@@ -36,6 +68,7 @@ export const usePlaylistStore = defineStore('playlist', {
       this.selectedTrackIndexes = tracks.map((_,i) => i + to);
       this.draggedOverIndex = null;
       window.getSelection().removeAllRanges();
+      this.scrollY = null;
     },
     togglePlaylistsVisible() {
       this.playlistsVisible = !this.playlistsVisible;
@@ -94,6 +127,7 @@ export const usePlaylistStore = defineStore('playlist', {
   },
   getters: {
     selectedPlaylist: state => state.playlists[state.currentPlaylist],
+    scrollTracker: state => state.scrollTop - state.scrollTopStoppedAt,
   },
 });
 
