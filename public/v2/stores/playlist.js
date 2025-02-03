@@ -21,7 +21,7 @@ export const usePlaylistStore = defineStore('playlist', {
       selectedTrackIndex: null,
       selectedTrackIndexes: [],
       scrollLock: false,
-      scrollTopStoppedAt: 0,
+      trackPositionX: 0,
       scrollTop: 0,
       stop: false,
     };
@@ -53,7 +53,7 @@ export const usePlaylistStore = defineStore('playlist', {
     },
     moveTracks(from) {
       this.stop = true;
-      this.scrollTopStoppedAt = this.scrollTop;
+      this.trackPositionX = this.scrollTop;
       if (from === this.draggedOverIndex) {
         this.draggedOverIndex = null;
         window.getSelection().removeAllRanges();
@@ -68,7 +68,6 @@ export const usePlaylistStore = defineStore('playlist', {
       this.selectedTrackIndexes = tracks.map((_,i) => i + to);
       this.draggedOverIndex = null;
       window.getSelection().removeAllRanges();
-      this.scrollY = null;
     },
     togglePlaylistsVisible() {
       this.playlistsVisible = !this.playlistsVisible;
@@ -127,7 +126,7 @@ export const usePlaylistStore = defineStore('playlist', {
   },
   getters: {
     selectedPlaylist: state => state.playlists[state.currentPlaylist],
-    scrollTracker: state => state.scrollTop - state.scrollTopStoppedAt,
+    scrollTracker: state => state.scrollTop - state.trackPositionX,
   },
 });
 

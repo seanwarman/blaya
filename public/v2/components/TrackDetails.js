@@ -57,6 +57,9 @@ export default {
         }
       }
     },
+    onMouseDown() {
+      usePlaylistStore().trackPositionX = this.$refs.track.getBoundingClientRect().top;
+    },
   },
   computed: {
     y: {
@@ -151,6 +154,7 @@ export default {
       v-show="hideWhileDraggingUnlessThisTrackIsTheDragAnchor"
       ref="track"
       v-drag="onDrag"
+      @mousedown="onMouseDown"
       role="link"
       class="track"
       :class="[trackClasses, dragoverClasses]"
