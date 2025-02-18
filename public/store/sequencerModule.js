@@ -195,6 +195,15 @@ export const sequencerModule = {
     });
   },
   samples: {},
+  exportSamples() {
+    const names = Object.keys(this.samples);
+    const buffers = names.map(name => {
+      return this.samples[name](0, 0, { ...this.sampleParams[name], export: true });
+    });
+    for (const buffer of buffers) {
+      exportWAV(buffer);
+    }
+  },
   idCount: 0,
   makeId() {
     return Date.now() + this.idCount++;
@@ -583,7 +592,16 @@ export function createFetchPlayer({ url, range }, responseHandler, onPlay) {
       source.buffer = audioBuffer;
       source.connect(gainNode);
       gainNode.connect(context.destination);
-      let start = function(startTime, endTime, sampleParams = { detune: 0, gain: 1 }) {
+      let start = function(startTime, endTime, sampleParams = { detune: 0, gain: 1, export: false }) {
+        if (sampleParams.export) {
+          return {
+            buffer: audioBuffer,
+            startTime,
+            endTime,
+            gain: sampleParams.gain,
+            detune: sampleParams.detune,
+          };
+        }
         onPlay();
         if (typeof sampleParams.gain === 'number') {
           gainNode.gain.value = sampleParams.gain;
@@ -603,3 +621,70 @@ export function createFetchPlayer({ url, range }, responseHandler, onPlay) {
   });
 }
 
+function bufferToWav(abuffer) {
+  const numChannels = abuffer.numberOfChannels;
+  const sampleRate = abuffer.sampleRate;
+  const format = numChannels === 1 ? 1 : 2; // 1 for PCM, 2 for stereo
+  const byteRate = sampleRate * numChannels * 2; // 16-bit PCM
+  const wavData = new Uint8Array(44 + abuffer.length * 2);
+  const dataView = new DataView(wavData.buffer);
+  let offset = 0;
+
+  // Write WAV header
+  writeString(dataView, offset, 'RIFF');
+  offset += 4;
+  dataView.setUint32(offset, 36 + abuffer.length * 2, true);
+  offset += 4;
+  writeString(dataView, offset, 'WAVE');
+  offset += 4;
+  writeString(dataView, offset, 'fmt ');
+  offset += 4;
+  dataView.setUint32(offset, 16, true);
+  offset += 4;
+  dataView.setUint16(offset, format, true);
+  offset += 2;
+  dataView.setUint16(offset, numChannels, true);
+  offset += 2;
+  dataView.setUint32(offset, sampleRate, true);
+  offset += 4;
+  dataView.setUint32(offset, byteRate, true);
+  offset += 4;
+  dataView.setUint16(offset, numChannels * 2, true);
+  offset += 2;
+  dataView.setUint16(offset, 16, true);
+  offset += 2;
+  writeString(dataView, offset, 'data');
+  offset += 4;
+  dataView.setUint32(offset, abuffer.length * 2, true);
+  offset += 4;
+
+  // Write PCM samples
+  for (let channel = 0; channel < numChannels; channel++) {
+    const channelData = abuffer.getChannelData(channel);
+    for (let i = 0; i < channelData.length; i++) {
+      const sample = Math.max(-1, Math.min(1, channelData[i])); // Clamp to [-1, 1]
+      const intSample = sample < 0 ? sample * 0x8000 : sample * 0x7FFF; // Convert to 16-bit PCM
+      dataView.setInt16(44 + i * 2, intSample, true); // Write to data view
+    }
+  }
+
+  return new Blob([wavData], { type: 'audio/wav' });
+}
+
+function writeString(dataView, offset, str) {
+  for (let i = 0; i < str.length; i++) {
+    dataView.setUint8(offset + i, str.charCodeAt(i));
+  }
+}
+
+async function exportWAV(audioBuffer) {
+  const wavBlob = bufferToWav(audioBuffer);
+  const url = URL.createObjectURL(wavBlob);
+  const a = document.createElement('a');
+  a.style.display = 'none';
+  a.href = url;
+  a.download = 'exported_audio.wav';
+  document.body.appendChild(a);
+  a.click();
+  window.URL.revokeObjectURL(url);
+}
