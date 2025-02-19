@@ -207,7 +207,7 @@ export const sequencerModule = {
     const zip = new JSZip();
     for (const sample of samples) {
       const blob = exportWAV(sample.buffer);
-      zip.file(sample.name, blob);
+      zip.file(sample.name + '.wav', blob);
     }
     zip.generateAsync({ type: 'blob' }).then((content) => {
     const zipBlobUrl = URL.createObjectURL(content);
