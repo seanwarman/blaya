@@ -4,6 +4,7 @@ import '../node_modules/waveform-data/dist/waveform-data.js';
 import { cloneWaveImgCanvas } from '../helpers/dom';
 import { floor, ceil, getStartAndEndBytes } from '../helpers/utils';
 import { reduceSegmentData } from './segmentReducers';
+import '../node_modules/jszip/dist/jszip.min.js';
 
 // const click = createBitPlayer(3, i => {
 //   if (i < 100) {
@@ -197,12 +198,28 @@ export const sequencerModule = {
   samples: {},
   exportSamples() {
     const names = Object.keys(this.samples);
-    const buffers = names.map(name => {
+    const samples = names.map(name => {
       return this.samples[name](0, 0, { ...this.sampleParams[name], export: true });
     });
-    for (const buffer of buffers) {
-      exportWAV(buffer);
+    const JSZip = window.JSZip;
+    const zip = new JSZip();
+    const blobs = [];
+let count = 0
+    for (const sample of samples) {
+      const blob = exportWAV(sample.buffer);
+      zip.file(count++, blob);
     }
+    zip.generateAsync({ type: 'blob' }).then((content) => {
+    const zipBlobUrl = URL.createObjectURL(content);
+      const a = document.createElement('a');
+      a.href = zipBlobUrl;
+      a.download = 'MyserveSamples';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(zipBlobUrl);
+    });
+
   },
   idCount: 0,
   makeId() {
@@ -621,65 +638,10 @@ export function createFetchPlayer({ url, range }, responseHandler, onPlay) {
   });
 }
 
-function bufferToWav(abuffer) {
-  const numChannels = abuffer.numberOfChannels;
-  const sampleRate = abuffer.sampleRate;
-  const format = numChannels === 1 ? 1 : 2; // 1 for PCM, 2 for stereo
-  const byteRate = sampleRate * numChannels * 2; // 16-bit PCM
-  const wavData = new Uint8Array(44 + abuffer.length * 2);
-  const dataView = new DataView(wavData.buffer);
-  let offset = 0;
-
-  // Write WAV header
-  writeString(dataView, offset, 'RIFF');
-  offset += 4;
-  dataView.setUint32(offset, 36 + abuffer.length * 2, true);
-  offset += 4;
-  writeString(dataView, offset, 'WAVE');
-  offset += 4;
-  writeString(dataView, offset, 'fmt ');
-  offset += 4;
-  dataView.setUint32(offset, 16, true);
-  offset += 4;
-  dataView.setUint16(offset, format, true);
-  offset += 2;
-  dataView.setUint16(offset, numChannels, true);
-  offset += 2;
-  dataView.setUint32(offset, sampleRate, true);
-  offset += 4;
-  dataView.setUint32(offset, byteRate, true);
-  offset += 4;
-  dataView.setUint16(offset, numChannels * 2, true);
-  offset += 2;
-  dataView.setUint16(offset, 16, true);
-  offset += 2;
-  writeString(dataView, offset, 'data');
-  offset += 4;
-  dataView.setUint32(offset, abuffer.length * 2, true);
-  offset += 4;
-
-  // Write PCM samples
-  for (let channel = 0; channel < numChannels; channel++) {
-    const channelData = abuffer.getChannelData(channel);
-    for (let i = 0; i < channelData.length; i++) {
-      const sample = Math.max(-1, Math.min(1, channelData[i])); // Clamp to [-1, 1]
-      const intSample = sample < 0 ? sample * 0x8000 : sample * 0x7FFF; // Convert to 16-bit PCM
-      dataView.setInt16(44 + i * 2, intSample, true); // Write to data view
-    }
-  }
-
-  return new Blob([wavData], { type: 'audio/wav' });
-}
-
-function writeString(dataView, offset, str) {
-  for (let i = 0; i < str.length; i++) {
-    dataView.setUint8(offset + i, str.charCodeAt(i));
-  }
-}
-
 async function exportWAV(audioBuffer) {
-  const wavBlob = bufferToWav(audioBuffer);
-  const url = URL.createObjectURL(wavBlob);
+  const wav = audioBufferToWav(audioBuffer);
+  return new Blob( [wav], {type: 'audio/wav' });
+  const url = URL.createObjectURL(new Blob([wav], { type: 'audio/wav' }));
   const a = document.createElement('a');
   a.style.display = 'none';
   a.href = url;
@@ -687,4 +649,98 @@ async function exportWAV(audioBuffer) {
   document.body.appendChild(a);
   a.click();
   window.URL.revokeObjectURL(url);
+}
+
+function audioBufferToWav (buffer, opt) {
+  opt = opt || {}
+
+  var numChannels = buffer.numberOfChannels
+  var sampleRate = buffer.sampleRate
+  var format = opt.float32 ? 3 : 1
+  var bitDepth = format === 3 ? 32 : 16
+
+  var result
+  if (numChannels === 2) {
+    result = interleave(buffer.getChannelData(0), buffer.getChannelData(1))
+  } else {
+    result = buffer.getChannelData(0)
+  }
+
+  return encodeWAV(result, format, sampleRate, numChannels, bitDepth)
+}
+
+function encodeWAV (samples, format, sampleRate, numChannels, bitDepth) {
+  var bytesPerSample = bitDepth / 8
+  var blockAlign = numChannels * bytesPerSample
+
+  var buffer = new ArrayBuffer(44 + samples.length * bytesPerSample)
+  var view = new DataView(buffer)
+
+  /* RIFF identifier */
+  writeString(view, 0, 'RIFF')
+  /* RIFF chunk length */
+  view.setUint32(4, 36 + samples.length * bytesPerSample, true)
+  /* RIFF type */
+  writeString(view, 8, 'WAVE')
+  /* format chunk identifier */
+  writeString(view, 12, 'fmt ')
+  /* format chunk length */
+  view.setUint32(16, 16, true)
+  /* sample format (raw) */
+  view.setUint16(20, format, true)
+  /* channel count */
+  view.setUint16(22, numChannels, true)
+  /* sample rate */
+  view.setUint32(24, sampleRate, true)
+  /* byte rate (sample rate * block align) */
+  view.setUint32(28, sampleRate * blockAlign, true)
+  /* block align (channel count * bytes per sample) */
+  view.setUint16(32, blockAlign, true)
+  /* bits per sample */
+  view.setUint16(34, bitDepth, true)
+  /* data chunk identifier */
+  writeString(view, 36, 'data')
+  /* data chunk length */
+  view.setUint32(40, samples.length * bytesPerSample, true)
+  if (format === 1) { // Raw PCM
+    floatTo16BitPCM(view, 44, samples)
+  } else {
+    writeFloat32(view, 44, samples)
+  }
+
+  return buffer
+}
+
+function interleave (inputL, inputR) {
+  var length = inputL.length + inputR.length
+  var result = new Float32Array(length)
+
+  var index = 0
+  var inputIndex = 0
+
+  while (index < length) {
+    result[index++] = inputL[inputIndex]
+    result[index++] = inputR[inputIndex]
+    inputIndex++
+  }
+  return result
+}
+
+function writeFloat32 (output, offset, input) {
+  for (var i = 0; i < input.length; i++, offset += 4) {
+    output.setFloat32(offset, input[i], true)
+  }
+}
+
+function floatTo16BitPCM (output, offset, input) {
+  for (var i = 0; i < input.length; i++, offset += 2) {
+    var s = Math.max(-1, Math.min(1, input[i]))
+    output.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true)
+  }
+}
+
+function writeString (view, offset, string) {
+  for (var i = 0; i < string.length; i++) {
+    view.setUint8(offset + i, string.charCodeAt(i))
+  }
 }
