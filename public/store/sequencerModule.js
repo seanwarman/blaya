@@ -1,10 +1,11 @@
+import '../node_modules/waveform-data/dist/waveform-data.js';
+import '../node_modules/jszip/dist/jszip.min.js';
+
 import Samples from '../elements/Samples';
 import { START_DATE_PARAMS, LOOPBAR_LENGTH_DEFAULT } from '../constants';
-import '../node_modules/waveform-data/dist/waveform-data.js';
 import { cloneWaveImgCanvas } from '../helpers/dom';
 import { floor, ceil, getStartAndEndBytes } from '../helpers/utils';
 import { reduceSegmentData } from './segmentReducers';
-import '../node_modules/jszip/dist/jszip.min.js';
 
 // const click = createBitPlayer(3, i => {
 //   if (i < 100) {
@@ -199,15 +200,14 @@ export const sequencerModule = {
   exportSamples() {
     const names = Object.keys(this.samples);
     const samples = names.map(name => {
-      return this.samples[name](0, 0, { ...this.sampleParams[name], export: true });
+      const { buffer, detune, gain } = this.samples[name](0, 0, { ...this.sampleParams[name], export: true }),
+      return { name, buffer, detune, gain };
     });
-    console.log(`@FILTER samples:`, samples)
-    return
     const JSZip = window.JSZip;
     const zip = new JSZip();
     for (const sample of samples) {
       const blob = exportWAV(sample.buffer);
-      zip.file(count++, blob);
+      zip.file(sample.name, blob);
     }
     zip.generateAsync({ type: 'blob' }).then((content) => {
     const zipBlobUrl = URL.createObjectURL(content);
@@ -641,14 +641,6 @@ export function createFetchPlayer({ url, range }, responseHandler, onPlay) {
 async function exportWAV(audioBuffer) {
   const wav = audioBufferToWav(audioBuffer);
   return new Blob( [wav], {type: 'audio/wav' });
-  const url = URL.createObjectURL(new Blob([wav], { type: 'audio/wav' }));
-  const a = document.createElement('a');
-  a.style.display = 'none';
-  a.href = url;
-  a.download = 'exported_audio.wav';
-  document.body.appendChild(a);
-  a.click();
-  window.URL.revokeObjectURL(url);
 }
 
 function audioBufferToWav (buffer, opt) {
