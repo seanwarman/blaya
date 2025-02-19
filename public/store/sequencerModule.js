@@ -200,7 +200,7 @@ export const sequencerModule = {
   exportSamples() {
     const names = Object.keys(this.samples);
     const samples = names.map(name => {
-      const { buffer, detune, gain } = this.samples[name](0, 0, { ...this.sampleParams[name], export: true }),
+      const { buffer, detune, gain } = this.samples[name](0, 0, { ...this.sampleParams[name], export: true });
       return { name, buffer, detune, gain };
     });
     const JSZip = window.JSZip;
