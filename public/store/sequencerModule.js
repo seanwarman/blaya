@@ -201,10 +201,10 @@ export const sequencerModule = {
     const samples = names.map(name => {
       return this.samples[name](0, 0, { ...this.sampleParams[name], export: true });
     });
+    console.log(`@FILTER samples:`, samples)
+    return
     const JSZip = window.JSZip;
     const zip = new JSZip();
-    const blobs = [];
-let count = 0
     for (const sample of samples) {
       const blob = exportWAV(sample.buffer);
       zip.file(count++, blob);
