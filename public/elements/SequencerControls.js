@@ -203,6 +203,11 @@ export default function SequencerControls() {
               accept: '.json',
               onchange: event => window.state.sequencerModule.loadFromFile(event),
             }),
+            dom.button({
+              id: 'export-samples',
+              onclick: () => window.state.sequencerModule.exportSamples(),
+              innerText: 'Export samples',
+            }),
             dom.br({}),
           ],
         }),
