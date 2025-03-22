@@ -38,7 +38,7 @@ export const usePlaylistStore = defineStore('playlist', {
       }
     },
     trackScroll(y) {
-      const step = 1;
+      const step = 3;
       const playlists = document.getElementById('playlists');
       const plHeight = playlists.clientHeight;
       if (y > playlists.scrollHeight) {
