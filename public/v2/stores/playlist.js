@@ -132,7 +132,11 @@ export const usePlaylistStore = defineStore('playlist', {
 });
 
 export const playlistSubscription = ({ events }, { playlists }) => {
-  if (events.key === 'playlists')  {
+  if ([
+    'playlists',
+    'name',
+    'selectedTrackIndex',
+  ].includes(events.key))  {
     window.localStorage.setItem(PLAYLISTS_STATE_KEY, JSON.stringify(playlists));
   }
 };
