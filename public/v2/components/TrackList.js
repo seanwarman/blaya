@@ -38,6 +38,10 @@ export default {
     },
   },
   methods: {
+    isTrackSelected(i, page) {
+      const track = this.paginatedTrackList(page)[i]; 
+      return this.selectedTrack === track || this.selectedTracks.includes(track);
+    },
     onClickTrack(event) {
       const track = event.track;
       if (this.selectedTrack === track && this.selectedTracks.length === 1) {
@@ -121,7 +125,7 @@ export default {
         :data-page="page"
         :page-length="pageLength"
         :tracks="paginatedTrackList(page)"
-        :track-selected="i => selectedTracks.includes(paginatedTrackList(page)[i])"
+        :track-selected="i => isTrackSelected(i, page)"
       />
     </ul>
   `,

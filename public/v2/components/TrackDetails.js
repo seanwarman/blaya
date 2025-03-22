@@ -27,6 +27,7 @@ export default {
       usePlaylistStore().removeFromCurrentPlaylist(this.index);
     },
     onDrag({ movement: [x, y], dragging, tap }) {
+      if (!usePlaylistStore().playlistsVisible) return;
       if (tap || !this.trackSelected) {
         this.dragging = false;
         return;
