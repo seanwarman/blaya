@@ -15,7 +15,7 @@ export default {
   data() {
     return {
       x: 0,
-      yState: 0,
+      y: 0,
       draggingState: false,
     };
   },
@@ -30,6 +30,9 @@ export default {
       if (tap || !this.trackSelected) {
         this.dragging = false;
         return;
+      }
+      if (!this.dragging) {
+        usePlaylistStore().scrollOffset = document.getElementById('playlists').scrollTop;
       }
       this.dragging = dragging;
       usePlaylistStore().scrollLock = dragging;
@@ -62,12 +65,12 @@ export default {
     },
   },
   computed: {
-    y: {
+    scrollTracker: {
       get() {
-        return this.yState + usePlaylistStore().scrollTracker;
+        return usePlaylistStore().scrollTracker;
       },
       set(y) {
-        this.yState = y;
+        usePlaylistStore().scrollTracker = y;
       },
     },
     dragging: {
@@ -89,7 +92,7 @@ export default {
     },
     position() {
       return this.trackSelected && this.dragging && {
-        transform: `translate3d(${this.x}px, ${this.y}px, 0px)`,
+        transform: `translate3d(${this.x}px, ${this.y + this.scrollTracker}px, 0px)`,
         position: 'absolute',
         zIndex: 1000,
       };

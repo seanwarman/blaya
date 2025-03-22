@@ -24,6 +24,8 @@ export const usePlaylistStore = defineStore('playlist', {
       trackPositionX: 0,
       scrollTop: 0,
       stop: false,
+      tracker: 0,
+      scrollOffset: 0,
     };
   },
   actions: {
@@ -53,7 +55,6 @@ export const usePlaylistStore = defineStore('playlist', {
     },
     moveTracks(from) {
       this.stop = true;
-      this.trackPositionX = this.scrollTop;
       if (from === this.draggedOverIndex) {
         this.draggedOverIndex = null;
         window.getSelection().removeAllRanges();
@@ -126,7 +127,7 @@ export const usePlaylistStore = defineStore('playlist', {
   },
   getters: {
     selectedPlaylist: state => state.playlists[state.currentPlaylist],
-    scrollTracker: state => state.scrollTop - state.trackPositionX,
+    scrollTracker: state => state.scrollTop - state.scrollOffset,
   },
 });
 
