@@ -2,6 +2,7 @@ import { spawn } from 'child_process'
 import { dirname } from 'path'
 import { fileURLToPath } from 'url'
 import multer from 'multer';
+
 import {
   downloadFile,
   streamFile,
@@ -10,8 +11,10 @@ import {
   rmDir,
   loadTrack,
   loadTrackPackets,
-} from './controllers/trackList.js';
-import { copy } from './mover.mjs';
+} from '../controllers/trackList.js';
+import { copy } from '../mover.mjs';
+
+import rssRoutes from './rss.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -22,7 +25,7 @@ const upload = multer({
   })
 })
 
-export default app => {
+function indexRoutes(app) {
   app.get('/music/*', streamFile)
   app.get('/packets/music/*', loadTrackPackets);
   app.get('/load-track/music/*', loadTrack)
@@ -52,4 +55,9 @@ export default app => {
       res.status(404).send(error)
     })
   })
+}
+
+export default app => {
+  indexRoutes(app);
+  rssRoutes(app);
 }
