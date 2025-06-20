@@ -4,6 +4,7 @@ import RSS from 'rss';
 
 export default app => {
   app.get('/rss/thesymbolicworld', async (req, res) => {
+    res.set('Content-Type', 'application/xml');
  
     const { data: html } = await axios.get('https://www.thesymbolicworld.com/content-categories/articles', { responseType: 'text' });
     const $ = cheerio.load(html);
