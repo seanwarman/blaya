@@ -1,6 +1,8 @@
 import '../node_modules/waveform-data/dist/waveform-data.js';
 import '../node_modules/jszip/dist/jszip.min.js';
 
+import MidiWriter from '/node_modules/midi-writer-js/build/index.browser';
+
 import Samples from '../elements/Samples';
 import { START_DATE_PARAMS, LOOPBAR_LENGTH_DEFAULT } from '../constants';
 import { cloneWaveImgCanvas } from '../helpers/dom';
@@ -201,7 +203,7 @@ export const sequencerModule = {
     const names = Object.keys(this.samples);
     const samples = names.map(name => {
       const { buffer, detune, gain } = this.samples[name](0, 0, { ...this.sampleParams[name], export: true });
-      return { name, buffer, detune, gain };
+      return { name: mapNameToMIDINote(name), buffer, detune, gain };
     });
     const JSZip = window.JSZip;
     const zip = new JSZip();
@@ -210,7 +212,7 @@ export const sequencerModule = {
       zip.file(sample.name + '.wav', blob);
     }
     zip.generateAsync({ type: 'blob' }).then((content) => {
-    const zipBlobUrl = URL.createObjectURL(content);
+      const zipBlobUrl = URL.createObjectURL(content);
       const a = document.createElement('a');
       a.href = zipBlobUrl;
       a.download = 'MyserveSamples';
@@ -486,6 +488,21 @@ export const sequencerModule = {
       loopBarLength: this.loopBarLength,
     };
   },
+  exportMIDI() {
+    const track = new MidiWriter.Track();
+    this.sequence.flat().filter(Boolean).forEach(s => {
+      const beats = s.endTime * 10;
+      const event = {
+        pitch: mapNameToMIDINote(s.name),
+        tick: Math.floor(s.index * 2),
+        duration: 'T' + Math.floor(128 / beats),
+        sequential: false,
+      };
+      track.addEvent(new MidiWriter.NoteEvent(event));
+    });
+    const write = new MidiWriter.Writer(track);
+    window.open(write.dataUri(), '_blank').focus();
+  },
   async load({
     name,
     segmentData,
@@ -735,4 +752,36 @@ function writeString (view, offset, string) {
   for (var i = 0; i < string.length; i++) {
     view.setUint8(offset + i, string.charCodeAt(i))
   }
+}
+
+function mapNameToMIDINote(name) {
+  const nameToMIDINote = {
+    Q: 'C2',
+    W: 'C#2',
+    E: 'D2',
+    R: 'D#2',
+    T: 'E2',
+    Y: 'F2',
+    U: 'F#2',
+    I: 'G2',
+    O: 'G#2',
+    P: 'A2',
+    A: 'A#2',
+    S: 'B2',
+    D: 'C3',
+    F: 'C#3',
+    G: 'D3',
+    H: 'D#3',
+    J: 'E3',
+    K: 'F3',
+    L: 'F#3',
+    Z: 'G3',
+    X: 'G#3',
+    C: 'A3',
+    V: 'A#3',
+    B: 'B3',
+    N: 'C4',
+    M: 'C#4',
+  };
+  return nameToMIDINote[name];
 }
