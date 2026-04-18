@@ -203,7 +203,7 @@ export const sequencerModule = {
     const names = Object.keys(this.samples);
     const samples = names.map(name => {
       const { buffer, detune, gain } = this.samples[name](0, 0, { ...this.sampleParams[name], export: true });
-      return { name: mapNameToMIDINote(name), buffer, detune, gain };
+      return { name: mapNameToNumber(name), buffer, detune, gain };
     });
     const JSZip = window.JSZip;
     const zip = new JSZip();
@@ -752,6 +752,38 @@ function writeString (view, offset, string) {
   for (var i = 0; i < string.length; i++) {
     view.setUint8(offset + i, string.charCodeAt(i))
   }
+}
+
+function mapNameToNumber(name) {
+  const nameToNumber = {
+    Q: 1,
+    W: 2,
+    E: 3,
+    R: 4,
+    T: 5,
+    Y: 6,
+    U: 7,
+    I: 8,
+    O: 9,
+    P: 10,
+    A: 11,
+    S: 12,
+    D: 13,
+    F: 14,
+    G: 15,
+    H: 16,
+    J: 17,
+    K: 18,
+    L: 19,
+    Z: 20,
+    X: 21,
+    C: 22,
+    V: 23,
+    B: 24,
+    N: 25,
+    M: 26,
+  };
+  return nameToNumber[name];
 }
 
 function mapNameToMIDINote(name) {
