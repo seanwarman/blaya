@@ -495,7 +495,7 @@ export const sequencerModule = {
       const event = {
         pitch: mapNameToMIDINote(s.name),
         tick: Math.floor(s.index * 2),
-        duration: 'T' + Math.floor(128 / beats),
+        duration: 'T' + Math.floor((128 * beats) / 2),
         sequential: false,
       };
       track.addEvent(new MidiWriter.NoteEvent(event));
