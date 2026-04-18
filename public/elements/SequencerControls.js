@@ -206,12 +206,7 @@ export default function SequencerControls() {
             dom.button({
               id: 'export-samples',
               onclick: () => window.state.sequencerModule.exportSamples(),
-              innerText: 'Export samples',
-            }),
-            dom.button({
-              id: 'export-midi',
-              onclick: () => window.state.sequencerModule.exportMIDI(),
-              innerText: 'Export MIDI',
+              innerText: 'Export',
             }),
             dom.br({}),
           ],

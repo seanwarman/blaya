@@ -211,6 +211,8 @@ export const sequencerModule = {
       const blob = exportWAV(sample.buffer);
       zip.file(sample.name + '.wav', blob);
     }
+    const write = this.exportMIDI(false);
+    zip.file('sequence.midi', new Blob([write.buildFile()]));
     zip.generateAsync({ type: 'blob' }).then((content) => {
       const zipBlobUrl = URL.createObjectURL(content);
       const a = document.createElement('a');
@@ -488,7 +490,7 @@ export const sequencerModule = {
       loopBarLength: this.loopBarLength,
     };
   },
-  exportMIDI() {
+  exportMIDI(makeLink = true) {
     const track = new MidiWriter.Track();
     this.sequence.flat().filter(Boolean).forEach(s => {
       const beats = s.endTime * 10;
@@ -501,6 +503,7 @@ export const sequencerModule = {
       track.addEvent(new MidiWriter.NoteEvent(event));
     });
     const write = new MidiWriter.Writer(track);
+    if (!makeLink) return write;
     window.open(write.dataUri(), '_blank').focus();
   },
   async load({
