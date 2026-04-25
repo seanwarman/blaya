@@ -217,7 +217,7 @@ export const sequencerModule = {
       const zipBlobUrl = URL.createObjectURL(content);
       const a = document.createElement('a');
       a.href = zipBlobUrl;
-      a.download = 'MyserveSamples';
+      a.download = this.tempo + 'bpm';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -759,32 +759,32 @@ function writeString (view, offset, string) {
 
 function mapNameToNumber(name) {
   const nameToNumber = {
-    Q: 1,
-    W: 2,
-    E: 3,
-    R: 4,
-    T: 5,
-    Y: 6,
-    U: 7,
-    I: 8,
-    O: 9,
-    P: 10,
-    A: 11,
-    S: 12,
-    D: 13,
-    F: 14,
-    G: 15,
-    H: 16,
-    J: 17,
-    K: 18,
-    L: 19,
-    Z: 20,
-    X: 21,
-    C: 22,
-    V: 23,
-    B: 24,
-    N: 25,
-    M: 26,
+    Q: 'A01',
+    W: 'A02',
+    E: 'A03',
+    R: 'A04',
+    T: 'A05',
+    Y: 'A06',
+    U: 'A07',
+    I: 'A08',
+    O: 'A09',
+    P: 'A10',
+    A: 'A11',
+    S: 'A12',
+    D: 'A13',
+    F: 'A14',
+    G: 'A15',
+    H: 'A16',
+    J: 'B01',
+    K: 'B02',
+    L: 'B03',
+    Z: 'B04',
+    X: 'B05',
+    C: 'B06',
+    V: 'B07',
+    B: 'B08',
+    N: 'B09',
+    M: 'B10',
   };
   return nameToNumber[name];
 }
